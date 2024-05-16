@@ -31,8 +31,8 @@ body:
   - type: markdown
     id: details
     attributes:
-      label: details (Optional)
-      description: 추가로 적을 내용 (마크다운)
-      placeholder: 
-    validations:
+      value: |  # Here you can enter the markdown content directly or use this to add details
+        ## Additional Details
+        추가로 적을 내용 (마크다운)
+     validations:
       required: false
