@@ -1,0 +1,42 @@
+name: Bug Template
+description: Bug 사항이 있을 때 사용하는 템플릿
+title: "[Bug]: "
+labels: ["🐞 bug"]
+
+body:
+  - type: dropdown
+    id: target
+    attributes:
+      label: Target Device
+      description: 버그가 발생된 앱이 실행된 곳
+      options:
+        - Simulator
+        - Device
+    validations:
+      required: true
+  - type: textarea
+    id: what-bug
+    attributes:
+      label: Bug Report
+      description: 어떤 버그인지 설명해주세요.
+      placeholder: ex. 이메일 입력 케이스 처리를 안 해서 앱이 꺼지는 버그
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug-flow
+    attributes:
+      label: Bug Flow(Optional)
+      description: 버그가 발생하게 된 Flow를 알려주세요.
+      placeholder: ex. MainView에서 이메일을 잘못 입력하면 앱이 종료된다.
+    validations:
+      required: true
+     
+  - type: input
+    id: related-bug
+    attributes:
+      label: Related Bug(Optaional)
+      description: 관련된 버그 이슈
+      placeholder: "ex. #32, #23"
+    validations:
+      required: false
