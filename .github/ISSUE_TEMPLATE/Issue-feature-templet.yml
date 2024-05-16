@@ -28,11 +28,3 @@ body:
       placeholder: ex. HomeView
     validations:
       required: false
-  - type: markdown
-    id: details
-    attributes:
-      value: |  # Here you can enter the markdown content directly or use this to add details
-        ## Additional Details
-        추가로 적을 내용 (마크다운)
-     validations:
-      required: false
