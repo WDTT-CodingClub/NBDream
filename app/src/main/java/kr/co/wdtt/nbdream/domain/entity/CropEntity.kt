@@ -1,7 +1,6 @@
 package kr.co.wdtt.nbdream.domain.entity
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import kr.co.wdtt.nbdream.ui.theme.DreamColor
 
 data class CropEntity(
     val cropCode:String, //작물 코드 = 응답 DTO cntntsNo
