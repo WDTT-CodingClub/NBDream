@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -20,6 +22,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "NONGSARO_API_KEY", getApiKey("NONGSARO_API_KEY"))
     }
 
     buildTypes {
@@ -40,6 +44,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.11"
@@ -51,9 +56,12 @@ android {
     }
 }
 
+fun getApiKey(propertyKey:String):String = gradleLocalProperties(rootDir, providers).getProperty(propertyKey)
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.google.guava)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -69,6 +77,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //kotlin
+    implementation(libs.jetbrains.kotlin.reflect)
+
     //hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
@@ -77,6 +88,15 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
+
+    // kotlinx serialization
+    implementation(libs.kotlinx.serialization)
+
+    // tikxml (retrofit xml converter)
+    implementation(libs.tikxml.annotation)
+    implementation(libs.tikxml.core)
+    implementation(libs.tikxml.processor)
+    implementation(libs.tikxml.retrofit.converter)
 
     //google
     implementation(libs.play.services.auth)
@@ -88,6 +108,7 @@ dependencies {
 
     //composeNav
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.fragment)
 
     //Compose ViewModel
     implementation (libs.androidx.lifecycle.viewmodel.compose)

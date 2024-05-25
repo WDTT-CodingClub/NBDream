@@ -1,6 +1,18 @@
 <resources>
     <string name="app_name">NBDream</string>
 
+    //앱 전체 - 작물 이름
+    <string name="dream_crop_name_pepper">고추</string>
+    <string name="dream_crop_name_rice">벼</string>
+    <string name="dream_crop_name_potato">감자</string>
+    <string name="dream_crop_name_sweet_potato">고구마</string>
+    <string name="dream_crop_name_apple">사과</string>
+    <string name="dream_crop_name_strawberry">딸기</string>
+    <string name="dream_crop_name_garlic">마늘</string>
+    <string name="dream_crop_name_lettuce">상추</string>
+    <string name="dream_crop_name_nappa_cabbage">배추</string>
+    <string name="dream_crop_name_tomato">토마토</string>
+
     //캘린더 화면 - 영농일지 작업 분류
     <string name="calendar_work_type_seed_prep">종자 예조 및 소독</string>
     <string name="calendar_work_type_seedbed_prep">묘상 준비 및 설치</string>
