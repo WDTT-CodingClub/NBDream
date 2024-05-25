@@ -3,7 +3,7 @@ package kr.co.wdtt.nbdream.domain.repository
 import kotlinx.coroutines.flow.Flow
 import kr.co.wdtt.nbdream.domain.entity.CalendarWorkDiaryEntity
 
-interface CalendarWorkDiaryRepository {
+interface CalWorkDiaryRepo {
     //TODO 서버에 작물 정보 어떤 형태로 보내야 할지 상의
     suspend fun getCalendarWorkDiarys(userId:String, cropCode: String, year:Int, month:Int):
             Flow<List<CalendarWorkDiaryEntity>>

@@ -1,7 +1,5 @@
 package kr.co.wdtt.nbdream.domain.entity
 
-import java.util.Date
-
 data class CalendarScheduleEntity(
     val id: String? = null,
     val userId: String? = null,
