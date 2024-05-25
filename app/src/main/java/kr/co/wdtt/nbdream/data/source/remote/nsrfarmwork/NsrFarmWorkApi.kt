@@ -8,14 +8,14 @@ import retrofit2.http.Query
 
 interface NsrFarmWorkApi {
     @GET("workScheduleGrpList")
-    suspend fun getCropCategories(): NsrCropCategoriesResponse
+    suspend fun getCropCategoriesXml(): NsrCropCategoriesResponse
     @GET("workScheduleList")
-    suspend fun getCropsByCategory(
+    suspend fun getCropsByCategoryXml(
         @Query("idofcomdtySeCode") categoryCode:String
     ): NsrCropsByCategoryResponse
 
     @GET("")
-    suspend fun getFarmWorkByCropJson(
+    suspend fun getFarmWorkByCrop(
         @Query("cntntsCode") cropCode:String
     ): NsrFarmWorkByCropResponse
 }

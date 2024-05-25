@@ -12,7 +12,7 @@ class GetCropKindsUseCase @Inject constructor(
     private val calFarmWorkRepo: CalFarmWorkRepo,
     private val calFarmWorkMapper: CalFarmWorkMapper
 ) {
-    suspend operator fun invoke() = calFarmWorkRepo.getFarmWorkByCropJson(cropCode = dreamCrop.cropCode)
+    suspend operator fun invoke() = calFarmWorkRepo.getFarmWorkByCrop(cropCode = dreamCrop.cropCode)
         .transform { apiResponse ->
             if (apiResponse is ApiResponse.Success) {
                 emit(

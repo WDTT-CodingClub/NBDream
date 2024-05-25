@@ -13,14 +13,14 @@ import javax.inject.Inject
 class CalFarmWorkRepoImpl @Inject constructor(
     private val nsrFarmWorkApi: NsrFarmWorkApi
 ) : CalFarmWorkRepo {
-    override suspend fun getCropCategories(): Flow<ApiResponse<NsrCropCategoriesResponse>> =
-        ApiResponseHandler.handle { nsrFarmWorkApi.getCropCategories() }
+    override suspend fun getCropCategoriesXml(): Flow<ApiResponse<NsrCropCategoriesResponse>> =
+        ApiResponseHandler.handle { nsrFarmWorkApi.getCropCategoriesXml() }
 
-    override suspend fun getCropsByCategory(categoryCode: String): Flow<ApiResponse<NsrCropsByCategoryResponse>> =
-        ApiResponseHandler.handle { nsrFarmWorkApi.getCropsByCategory(categoryCode) }
+    override suspend fun getCropsByCategoryXml(categoryCode: String): Flow<ApiResponse<NsrCropsByCategoryResponse>> =
+        ApiResponseHandler.handle { nsrFarmWorkApi.getCropsByCategoryXml(categoryCode) }
 
-    override suspend fun getFarmWorkByCropJson(cropCode: String): Flow<ApiResponse<NsrFarmWorkByCropResponse>> =
-        ApiResponseHandler.handle { nsrFarmWorkApi.getFarmWorkByCropJson(cropCode) }
+    override suspend fun getFarmWorkByCrop(cropCode: String): Flow<ApiResponse<NsrFarmWorkByCropResponse>> =
+        ApiResponseHandler.handle { nsrFarmWorkApi.getFarmWorkByCrop(cropCode) }
 
 }
 

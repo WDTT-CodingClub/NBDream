@@ -7,7 +7,7 @@ import kr.co.wdtt.nbdream.data.source.remote.nsrfarmwork.dto.NsrCropsByCategoryR
 import kr.co.wdtt.nbdream.data.source.remote.nsrfarmwork.dto.NsrFarmWorkByCropResponse
 
 interface CalFarmWorkRepo {
-    suspend fun getCropCategories(): Flow<ApiResponse<NsrCropCategoriesResponse>>
-    suspend fun getCropsByCategory(categoryCode: String): Flow<ApiResponse<NsrCropsByCategoryResponse>>
-    suspend fun getFarmWorkByCropJson(cropCode: String): Flow<ApiResponse<NsrFarmWorkByCropResponse>>
+    suspend fun getCropCategoriesXml(): Flow<ApiResponse<NsrCropCategoriesResponse>>
+    suspend fun getCropsByCategoryXml(categoryCode: String): Flow<ApiResponse<NsrCropsByCategoryResponse>>
+    suspend fun getFarmWorkByCrop(cropCode: String): Flow<ApiResponse<NsrFarmWorkByCropResponse>>
 }
