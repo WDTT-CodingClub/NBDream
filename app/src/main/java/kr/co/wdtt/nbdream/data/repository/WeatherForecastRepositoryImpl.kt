@@ -12,7 +12,7 @@ import kr.co.wdtt.nbdream.domain.repository.WeatherForecastRepository
 import javax.inject.Inject
 
 internal class WeatherForecastRepositoryImpl @Inject constructor(
-    private val network: INetworkFactoryManager,
+    network: INetworkFactoryManager,
     private val mapper: WeatherForecastMapper,
 ) : WeatherForecastRepository {
 
@@ -28,8 +28,8 @@ internal class WeatherForecastRepositoryImpl @Inject constructor(
         "dataType" to "JSON",
     )
 
-    private val networkApi = NetworkApi.create(
-        network.create(BASE_URL),
+    private val networkApi = network.create(
+        BASE_URL,
         HEAD_AUTH,
         HEAD_KEY
     )

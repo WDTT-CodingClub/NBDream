@@ -1,6 +1,7 @@
 package kr.co.wdtt.nbdream.data.remote.retrofit
 
-interface INetworkFactoryManager {
+import kr.co.wdtt.nbdream.data.remote.api.NetworkApi
 
-    fun create(baseUrl: String): NetWorkRequestFactory
+interface INetworkFactoryManager {
+    fun create(baseUrl: String, headAuth: String, headKey: String): NetworkApi
 }

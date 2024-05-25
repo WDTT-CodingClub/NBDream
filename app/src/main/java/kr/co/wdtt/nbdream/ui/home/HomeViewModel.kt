@@ -4,6 +4,7 @@ import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kr.co.wdtt.core.ui.base.BaseViewModel
@@ -29,17 +30,12 @@ class HomeViewModel @Inject constructor(
                 "0500",
                 "55",
                 "127"
-            ).onEach {
-                when (it) {
-                    is EntityWrapper.Success -> {
-                        _state.value += it.data.last().weather
-                    }
-
-                    is EntityWrapper.Fail -> {}
-                }
-            }.collect {
-                Log.d("test", it.toString())
+            ).map {
+                if (it is EntityWrapper.Success)
+                it.data.map { it.toString() }
+                else listOf("")
             }
+                .bindState(_state)
         }
     }
 
