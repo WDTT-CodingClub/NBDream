@@ -4,12 +4,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kr.co.wdtt.nbdream.data.remote.api.NetworkService
+import kr.co.wdtt.nbdream.data.remote.retrofit.NetworkService
+import kr.co.wdtt.nbdream.data.remote.retrofit.HeaderParser
+import kr.co.wdtt.nbdream.data.remote.retrofit.NetWorkRequestFactory
+import kr.co.wdtt.nbdream.data.remote.retrofit.NetWorkRequestFactoryImpl
 import kr.co.wdtt.nbdream.data.remote.retrofit.StringConverterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -35,5 +37,13 @@ class NetworkModule {
         .client(okHttpClient)
         .addConverterFactory(StringConverterFactory())
         .build()
-        .create(NetworkService::class.java)
+
+    @Singleton
+    @Provides
+    fun providesNetworkService(retrofit: Retrofit) = retrofit.create(NetworkService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideRequestFactory(remote: NetworkService, headerParser: HeaderParser): NetWorkRequestFactory
+    = NetWorkRequestFactoryImpl(remote,headerParser)
 }

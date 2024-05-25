@@ -4,7 +4,6 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import kr.co.wdtt.nbdream.data.remote.api.NetworkService
 import kr.co.wdtt.nbdream.data.remote.model.ApiResponse
 import kr.co.wdtt.nbdream.data.remote.model.ApiResult
 import kr.co.wdtt.nbdream.data.remote.model.NetWorkRequestInfo
@@ -37,7 +36,7 @@ class NetWorkRequestFactoryImpl @Inject constructor(
         val apiResponse = if (response.isSuccessful) {
             val body = response.body()
             val serializer: KSerializer<T> = type.serializer()
-            val responseModel: T = Json.decodeFromString(serializer, body ?: throw IllegalArgumentException("Response body is null"))
+            val responseModel: T = json.decodeFromString(serializer, body ?: throw IllegalArgumentException("Response body is null"))
             ApiResponse.Success(responseModel)
         } else {
             val errorMessage = response.errorBody()?.toString() ?: response.message()

@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.data.remote.api
+package kr.co.wdtt.nbdream.data.remote.retrofit
 
 import retrofit2.Response
 import retrofit2.http.Body
