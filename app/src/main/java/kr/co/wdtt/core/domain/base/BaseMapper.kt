@@ -1,6 +1,7 @@
-package kr.co.wdtt.nbdream.data.mapper
+package kr.co.wdtt.core.domain.base
 
 import kotlinx.coroutines.flow.Flow
+import kr.co.wdtt.nbdream.data.mapper.EntityWrapper
 import kr.co.wdtt.nbdream.data.remote.model.ApiResponse
 import kr.co.wdtt.nbdream.data.remote.model.ApiResult
 

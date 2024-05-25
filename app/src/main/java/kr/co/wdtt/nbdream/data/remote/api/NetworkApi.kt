@@ -6,26 +6,24 @@ import kr.co.wdtt.nbdream.data.remote.retrofit.NetWorkRequestFactory
 
 class NetworkApi private constructor(
     private val netWorkRequestFactory: NetWorkRequestFactory,
-    private val url: String,
     private val headAuth: String,
     private val headKey: String,
 ) {
     companion object {
         fun create(
             netWorkRequestFactory: NetWorkRequestFactory,
-            url: String,
             headAuth: String,
             headKey: String,
-        ) = NetworkApi(netWorkRequestFactory, url, headAuth, headKey)
+        ) = NetworkApi(netWorkRequestFactory, headAuth, headKey)
 
     }
 
     internal suspend inline fun <reified T : Any> sendRequest(
-        addUrl: String? = null,
+        url: String? = null,
         queryMap: Map<String, String>? = null,
     ): ApiResult<T> =
         netWorkRequestFactory.create(
-            url = url + addUrl,
+            url = url?: "",
             requestInfo = NetWorkRequestInfo.Builder()
                 .withHeaders(mapOf(headAuth to headKey))
                 .withQueryMap(queryMap ?: mapOf())

@@ -6,18 +6,18 @@ import kr.co.wdtt.nbdream.data.mapper.EntityWrapper
 import kr.co.wdtt.nbdream.data.mapper.WeatherForecastMapper
 import kr.co.wdtt.nbdream.data.remote.api.NetworkApi
 import kr.co.wdtt.nbdream.data.remote.dto.WeatherForecastResponse
-import kr.co.wdtt.nbdream.data.remote.retrofit.NetWorkRequestFactory
+import kr.co.wdtt.nbdream.data.remote.retrofit.INetworkFactoryManager
 import kr.co.wdtt.nbdream.domain.entity.WeatherForecastEntity
 import kr.co.wdtt.nbdream.domain.repository.WeatherForecastRepository
 import javax.inject.Inject
 
 internal class WeatherForecastRepositoryImpl @Inject constructor(
-    netWorkRequestFactory: NetWorkRequestFactory,
+    private val network: INetworkFactoryManager,
     private val mapper: WeatherForecastMapper,
 ) : WeatherForecastRepository {
 
     companion object {
-        const val BASE_URL = "http://apis.data.go.kr/1360000/"
+        const val BASE_URL = "https://apis.data.go.kr/1360000/"
         const val SHORT = "VilageFcstInfoService_2.0/getVilageFcst"
         const val MID = "MidFcstInfoService/getMidFcst"
         const val HEAD_AUTH = "serviceKey"
@@ -29,8 +29,7 @@ internal class WeatherForecastRepositoryImpl @Inject constructor(
     )
 
     private val networkApi = NetworkApi.create(
-        netWorkRequestFactory,
-        BASE_URL,
+        network.create(BASE_URL),
         HEAD_AUTH,
         HEAD_KEY
     )
@@ -43,7 +42,7 @@ internal class WeatherForecastRepositoryImpl @Inject constructor(
     ): Flow<EntityWrapper<List<WeatherForecastEntity>>> =
         mapper.mapFromResult(
             networkApi.sendRequest<WeatherForecastResponse>(
-                addUrl = SHORT,
+                url = SHORT,
                 queryMap = queryMap.apply {
                     put("base_date", baseDate)
                     put("base_time", baseTime)
@@ -61,7 +60,7 @@ internal class WeatherForecastRepositoryImpl @Inject constructor(
     ): Flow<EntityWrapper<List<WeatherForecastEntity>>> =
         mapper.mapFromResult(
             networkApi.sendRequest<WeatherForecastResponse>(
-                addUrl = MID,
+                url = MID,
                 queryMap = queryMap.apply {
                     put("base_date", baseDate)
                     put("nx", nx)

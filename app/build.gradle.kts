@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.google.hilt.android)
-    kotlin("plugin.serialization")
+    kotlin("plugin.serialization") version "2.0.0-RC3"
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
@@ -16,7 +16,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -55,6 +55,7 @@ android {
 }
 
 dependencies {
+    implementation(kotlin("stdlib"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -88,9 +89,9 @@ dependencies {
     implementation(libs.play.services.auth)
 
     //kakao
-    implementation (libs.v2.all) // 전체 모듈 설치, 2.11.0 버전부터 지원
-    implementation (libs.v2.user) // 카카오 로그인 API 모듈
-    implementation (libs.v2.cert) // 카카오톡 인증 서비스 API 모듈
+//    implementation (libs.v2.all) // 전체 모듈 설치, 2.11.0 버전부터 지원
+//    implementation (libs.v2.user) // 카카오 로그인 API 모듈
+//    implementation (libs.v2.cert) // 카카오톡 인증 서비스 API 모듈
 
     //composeNav
     implementation(libs.androidx.navigation.compose)

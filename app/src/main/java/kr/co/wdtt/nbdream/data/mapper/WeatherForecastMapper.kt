@@ -2,6 +2,7 @@ package kr.co.wdtt.nbdream.data.mapper
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kr.co.wdtt.core.domain.base.BaseMapper
 import kr.co.wdtt.nbdream.data.remote.dto.WeatherForecastResponse
 import kr.co.wdtt.nbdream.domain.entity.WeatherForecastEntity
 import javax.inject.Inject
@@ -13,7 +14,7 @@ internal class WeatherForecastMapper @Inject constructor(): BaseMapper<WeatherFo
     ): Flow<EntityWrapper.Success<List<WeatherForecastEntity>>> = flow {
         data?.let {
             emit(EntityWrapper.Success(
-                data = it.body.convert()
+                data = it.response.body.items.convert()
             ))
         } ?: emit(EntityWrapper.Success(emptyList()))
     }
@@ -22,8 +23,8 @@ internal class WeatherForecastMapper @Inject constructor(): BaseMapper<WeatherFo
     override fun getFailure(error: Throwable): Flow<EntityWrapper.Fail<List<WeatherForecastEntity>>>
         = flow { emit(EntityWrapper.Fail(error)) }
 
-    private fun WeatherForecastResponse.Body.convert() =
-        items.groupBy { it.fcstDate }.map { (forecastDate, items) ->
+    private fun WeatherForecastResponse.Body.Items.convert() =
+        item.groupBy { it.fcstDate }.map { (forecastDate, items) ->
             WeatherForecastEntity(
                 forecastDate = forecastDate,
                 weather = items.find { it.category == "SKY" }?.fcstValue ?: "",
