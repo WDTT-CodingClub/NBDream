@@ -1,6 +1,5 @@
 package kr.co.wdtt.nbdream.domain.entity
 
-import kr.co.wdtt.nbdream.ui.theme.ColorSet
 import java.io.File
 
 sealed class DreamImage private constructor(){
