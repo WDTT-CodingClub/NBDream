@@ -6,4 +6,5 @@ plugins {
     alias(libs.plugins.google.devtools.ksp) apply false
     kotlin("jvm") version "2.0.0-RC3"
     kotlin("plugin.serialization") version "2.0.0-RC3"
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1" apply false
 }
