@@ -78,6 +78,9 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
 
+    //kotlinx.serialization
+    implementation(libs.kotlinx.serialization.json)
+
     //google
     implementation(libs.play.services.auth)
 
