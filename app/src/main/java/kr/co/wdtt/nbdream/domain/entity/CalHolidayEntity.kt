@@ -1,6 +1,6 @@
 package kr.co.wdtt.nbdream.domain.entity
 
-data class CalendarHolidayEntity (
+data class CalHolidayEntity (
     val year:Int,
     val month: Int,
     val day: Int,
