@@ -3,6 +3,7 @@ package kr.co.wdtt.nbdream.domain.entity
 import androidx.annotation.StringRes
 import kr.co.wdtt.nbdream.R
 
+// TODO 작물 콘텐츠 번호 하드 코딩
 enum class DreamCrop(
     val cropCode: String,
     @StringRes val cropName: Int,

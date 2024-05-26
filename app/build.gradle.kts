@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.google.hilt.android)
+    //alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -91,12 +92,13 @@ dependencies {
 
     // kotlinx serialization
     implementation(libs.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.converter)
 
     // tikxml (retrofit xml converter)
-    implementation(libs.tikxml.annotation)
-    implementation(libs.tikxml.core)
-    implementation(libs.tikxml.processor)
-    implementation(libs.tikxml.retrofit.converter)
+//    implementation(libs.tikxml.annotation)
+//    implementation(libs.tikxml.core)
+//    implementation(libs.tikxml.processor)
+//    implementation(libs.tikxml.retrofit.converter)
 
     //google
     implementation(libs.play.services.auth)

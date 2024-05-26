@@ -5,7 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kr.co.wdtt.nbdream.data.source.remote.nsrfarmwork.NsrFarmWorkApi
-import kr.co.wdtt.nbdream.data.source.remote.nsrfarmwork.NsrWorkScheduleRetrofit
+import kr.co.wdtt.nbdream.data.source.remote.nsrfarmwork.NsrFarmWorkRetrofit
 import javax.inject.Singleton
 
 
@@ -14,5 +14,5 @@ import javax.inject.Singleton
 object ApiModule {
     @Singleton
     @Provides
-    fun provideNsrWorkScheduleApi(): NsrFarmWorkApi = NsrWorkScheduleRetrofit.nsrFarmWorkApi
+    fun provideNsrWorkScheduleApi(): NsrFarmWorkApi = NsrFarmWorkRetrofit.nsrFarmWorkApi
 }

@@ -1,5 +1,6 @@
 package kr.co.wdtt.nbdream.data.source.remote.nsrfarmwork.dto
 
+/*
 import com.tickaroo.tikxml.annotation.Element
 import com.tickaroo.tikxml.annotation.Path
 import com.tickaroo.tikxml.annotation.PropertyElement
@@ -39,3 +40,4 @@ data class CropCategoriesItem(
     @PropertyElement
     val sort:Int
 )
+*/

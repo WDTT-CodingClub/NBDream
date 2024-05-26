@@ -1,25 +1,29 @@
 package kr.co.wdtt.nbdream.data.source.remote.nsrfarmwork
 
-import com.tickaroo.tikxml.TikXml
-import com.tickaroo.tikxml.retrofit.TikXmlConverterFactory
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.json.Json
 import kr.co.wdtt.nbdream.BuildConfig
 import okhttp3.Interceptor
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 
-object NsrWorkScheduleRetrofit {
+object NsrFarmWorkRetrofit {
     private const val BASE_URL = "http://api.nongsaro.go.kr/service/farmWorkingPlanNew"
+
+    private val networkJson = Json {ignoreUnknownKeys = true}
 
     private val NsrWorkScheduleRetrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
-        .addConverterFactory(
-            TikXmlConverterFactory.create(
-                TikXml.Builder().exceptionOnUnreadXml(false).build()
-            )
-        )
+//        .addConverterFactory(
+//            TikXmlConverterFactory.create(
+//                TikXml.Builder().exceptionOnUnreadXml(false).build()
+//            )
+//        )
+        .addConverterFactory(networkJson.asConverterFactory("application/json".toMediaType()))
         .client(createOkHttpClient())
         .build()
 
@@ -42,10 +46,10 @@ object NsrWorkScheduleRetrofit {
 
 class NsrInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val builder = chain.request().newBuilder()
-        val auth = BuildConfig.NONGSARO_API_KEY
-
-        builder.addHeader("apiKey", auth)
+        val serviceKey = BuildConfig.NONGSARO_API_KEY
+        val request = chain.request()
+        val url = request.url.newBuilder().addQueryParameter("apiKey", serviceKey).build()
+        val builder = request.newBuilder().url(url)
         return chain.proceed(builder.build())
     }
 }
