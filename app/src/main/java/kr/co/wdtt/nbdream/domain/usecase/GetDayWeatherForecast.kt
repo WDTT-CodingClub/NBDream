@@ -1,20 +1,14 @@
 package kr.co.wdtt.nbdream.domain.usecase
 
-import kr.co.wdtt.nbdream.domain.repository.WeatherForecastRepository
-import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kr.co.wdtt.nbdream.data.mapper.EntityWrapper
+import kr.co.wdtt.nbdream.domain.entity.WeatherForecastEntity
 
-internal class GetDayWeatherForecast @Inject constructor(
-    private val repository: WeatherForecastRepository
-): IGetDayWeatherForecast {
-    override suspend operator fun invoke(
+interface GetDayWeatherForecast {
+    suspend operator fun invoke(
         baseDate: String,
         baseTime: String,
         nx: String,
         ny: String
-    ) = repository.getDayWeatherForecast(
-        baseDate = baseDate,
-        baseTime = baseTime,
-        nx = nx,
-        ny = ny
-    )
+    ): Flow<EntityWrapper<List<WeatherForecastEntity>>>
 }
