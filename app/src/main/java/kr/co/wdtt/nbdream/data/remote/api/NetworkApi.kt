@@ -1,28 +1,20 @@
 package kr.co.wdtt.nbdream.data.remote.api
 
-import android.util.Log
 import kr.co.wdtt.nbdream.data.remote.model.ApiResult
 import kr.co.wdtt.nbdream.data.remote.model.NetWorkRequestInfo
 import kr.co.wdtt.nbdream.data.remote.retrofit.NetWorkRequestFactory
 
 class NetworkApi private constructor(
     private val netWorkRequestFactory: NetWorkRequestFactory,
-    private val headAuth: String,
-    private val headKey: String,
-    private val paramAuth: String,
-    private val paramKey: String,
+    private val headAuth: String? = null,
+    private val headKey: String? = null
 ) {
     companion object {
         fun create(
             netWorkRequestFactory: NetWorkRequestFactory,
-            headAuth: String = "",
-            headKey: String = "",
-            paramAuth: String = "",
-            paramKey: String = "",
-        ): NetworkApi {
-            Log.d("NetworkApi", "create) headAuth : $headAuth, headKey : $headKey, paramAuth : $paramAuth, paramKey : $paramKey")
-            return NetworkApi(netWorkRequestFactory, headAuth, headKey, paramAuth, paramKey)
-        }
+            headAuth: String? = null,
+            headKey: String? = null
+        ) = NetworkApi(netWorkRequestFactory, headAuth, headKey)
     }
 
     internal suspend inline fun <reified T : Any> sendRequest(
@@ -33,22 +25,11 @@ class NetworkApi private constructor(
             url = url ?: "",
             requestInfo = NetWorkRequestInfo.Builder()
                 .apply {
-                    if (headAuth.isNotEmpty() && headKey.isNotEmpty()) {
+                    if (headAuth != null && headKey != null) {
                         withHeaders(mapOf(headAuth to headKey))
                     }
                 }
-                .apply {
-                    withQueryMap(
-                        (queryMap ?: mapOf())
-                            .toMutableMap()
-                            .apply {
-                                if (paramAuth.isNotEmpty() && paramKey.isNotEmpty())
-                                    put(paramAuth, paramKey)
-
-                                Log.d("NetworkApi", "queryMap : $this")
-                            }
-                    )
-                }
+                .withQueryMap(queryMap ?: emptyMap())
                 .build(),
             type = T::class
         )
