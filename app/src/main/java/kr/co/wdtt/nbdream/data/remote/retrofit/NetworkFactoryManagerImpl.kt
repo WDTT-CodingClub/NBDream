@@ -22,11 +22,13 @@ class NetworkFactoryManagerImpl @Inject constructor(
         baseUrl: String,
         headAuth: String,
         headKey: String,
+        paramAuth: String,
+        paramKey: String
     ) = createRetrofit(baseUrl, okHttpClient).create(NetworkService::class.java)
         .let { networkService ->
             NetWorkRequestFactory.create(networkService, headerParser).let { factory ->
                 NetworkApi.create(
-                    factory, headAuth, headKey
+                    factory, headAuth, headKey, paramAuth, paramKey
                 )
             }
         }

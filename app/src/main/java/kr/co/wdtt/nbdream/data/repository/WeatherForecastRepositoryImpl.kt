@@ -28,9 +28,9 @@ internal class WeatherForecastRepositoryImpl @Inject constructor(
     )
 
     private val networkApi = network.create(
-        BASE_URL,
-        HEAD_AUTH,
-        HEAD_KEY
+        baseUrl = BASE_URL,
+        headAuth = HEAD_AUTH,
+        headKey = HEAD_KEY
     )
 
     override suspend fun getDayWeatherForecast(
