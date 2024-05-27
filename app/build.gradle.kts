@@ -1,11 +1,9 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.google.hilt.android)
-    //alias(libs.plugins.kotlin.serialization)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -17,14 +15,12 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        buildConfigField("String", "NONGSARO_API_KEY", getApiKey("NONGSARO_API_KEY"))
     }
 
     buildTypes {
@@ -57,12 +53,10 @@ android {
     }
 }
 
-fun getApiKey(propertyKey:String):String = gradleLocalProperties(rootDir, providers).getProperty(propertyKey)
-
 dependencies {
+    implementation(kotlin("stdlib"))
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.google.guava)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -104,9 +98,9 @@ dependencies {
     implementation(libs.play.services.auth)
 
     //kakao
-//    implementation (libs.v2.all) // 전체 모듈 설치, 2.11.0 버전부터 지원
-//    implementation (libs.v2.user) // 카카오 로그인 API 모듈
-//    implementation (libs.v2.cert) // 카카오톡 인증 서비스 API 모듈
+    implementation (libs.v2.all) // 전체 모듈 설치, 2.11.0 버전부터 지원
+    implementation (libs.v2.user) // 카카오 로그인 API 모듈
+    implementation (libs.v2.cert) // 카카오톡 인증 서비스 API 모듈
 
     //composeNav
     implementation(libs.androidx.navigation.compose)
