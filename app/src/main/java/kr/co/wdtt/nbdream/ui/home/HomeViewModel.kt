@@ -24,7 +24,7 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScopeEH.launch {
             getDayWeatherForecast(
-                "20240525",
+                "20240527",
                 "0500",
                 "55",
                 "127"
