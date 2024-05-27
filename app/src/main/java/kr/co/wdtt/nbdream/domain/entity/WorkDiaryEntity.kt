@@ -3,7 +3,7 @@ package kr.co.wdtt.nbdream.domain.entity
 import androidx.annotation.StringRes
 import kr.co.wdtt.nbdream.R
 
-data class CalWorkDiaryEntity(
+data class WorkDiaryEntity(
     val id:String? = null,
     val userId: String? = null,
     val dreamCrop: DreamCrop,
@@ -11,7 +11,7 @@ data class CalWorkDiaryEntity(
     val year:Int,
     val month:Int,
     val day:Int,
-//    val weatherForecast: WeatherForecastEntity, //규상님 PR과 합치기
+    val weatherForecast: WeatherForecastEntity,
     val workLaborer: Int = 0,
     val workHours: Int = 0,
     val workArea: Int = 0,

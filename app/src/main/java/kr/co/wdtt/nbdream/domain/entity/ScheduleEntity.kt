@@ -1,6 +1,6 @@
 package kr.co.wdtt.nbdream.domain.entity
 
-data class CalScheduleEntity(
+data class ScheduleEntity(
     val id: String? = null,
     val userId: String? = null,
     val dreamCrop: DreamCrop?= null,

@@ -1,6 +1,6 @@
 package kr.co.wdtt.nbdream.domain.entity
 
-data class CalFarmWorkEntity(
+data class FarmWorkEntity(
     val dreamCrop: DreamCrop,
     val startMonth: Int,
     val startEra: CropScheduleEra,
