@@ -4,8 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kr.co.wdtt.nbdream.domain.usecase.GetDayWeatherForecastImpl
 import kr.co.wdtt.nbdream.domain.usecase.GetDayWeatherForecast
-import kr.co.wdtt.nbdream.domain.usecase.IGetDayWeatherForecast
 import javax.inject.Singleton
 
 @Module
@@ -13,5 +13,5 @@ import javax.inject.Singleton
 internal abstract class UsecaseModule {
     @Binds
     @Singleton
-    abstract fun bindgetDayUsecase(usecase: GetDayWeatherForecast): IGetDayWeatherForecast
+    abstract fun bindGetDayUsecase(usecase: GetDayWeatherForecastImpl): GetDayWeatherForecast
 }

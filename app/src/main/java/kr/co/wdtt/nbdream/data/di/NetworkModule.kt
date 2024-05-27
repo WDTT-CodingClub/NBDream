@@ -5,8 +5,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kr.co.wdtt.nbdream.data.remote.retrofit.HeaderParser
-import kr.co.wdtt.nbdream.data.remote.retrofit.INetworkFactoryManager
 import kr.co.wdtt.nbdream.data.remote.retrofit.NetworkFactoryManager
+import kr.co.wdtt.nbdream.data.remote.retrofit.NetworkFactoryManagerImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import javax.inject.Singleton
@@ -31,7 +31,6 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideNetworkManager(okHttpClient: OkHttpClient): INetworkFactoryManager
-    = NetworkFactoryManager(HeaderParser(),okHttpClient)
-
+    fun provideNetworkManager(okHttpClient: OkHttpClient): NetworkFactoryManager
+    = NetworkFactoryManagerImpl(HeaderParser(),okHttpClient)
 }

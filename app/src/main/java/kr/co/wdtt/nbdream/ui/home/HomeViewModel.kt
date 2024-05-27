@@ -1,21 +1,19 @@
 package kr.co.wdtt.nbdream.ui.home
 
-import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kr.co.wdtt.core.ui.base.BaseViewModel
 import kr.co.wdtt.core.ui.base.CustomErrorType
 import kr.co.wdtt.nbdream.data.mapper.EntityWrapper
-import kr.co.wdtt.nbdream.domain.usecase.IGetDayWeatherForecast
+import kr.co.wdtt.nbdream.domain.usecase.GetDayWeatherForecast
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getDayWeatherForecast: IGetDayWeatherForecast,
+    private val getDayWeatherForecast: GetDayWeatherForecast,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(listOf(""))
     val state = _state.asStateFlow()

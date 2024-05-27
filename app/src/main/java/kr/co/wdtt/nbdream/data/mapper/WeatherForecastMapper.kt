@@ -7,7 +7,8 @@ import kr.co.wdtt.nbdream.data.remote.dto.WeatherForecastResponse
 import kr.co.wdtt.nbdream.domain.entity.WeatherForecastEntity
 import javax.inject.Inject
 
-internal class WeatherForecastMapper @Inject constructor(): BaseMapper<WeatherForecastResponse, List<WeatherForecastEntity>>() {
+internal class WeatherForecastMapper @Inject constructor()
+    : BaseMapper<WeatherForecastResponse, List<WeatherForecastEntity>>() {
     override fun getSuccess(
         data: WeatherForecastResponse?,
         extra: Any?,

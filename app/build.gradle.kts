@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.google.hilt.android)
-    kotlin("plugin.serialization") version "2.0.0-RC3"
+
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
@@ -73,6 +73,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //kotlin
+    implementation(libs.jetbrains.kotlin.reflect)
+
     //hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
@@ -82,8 +85,9 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
 
-    //kotlinx.serialization
-    implementation(libs.kotlinx.serialization.json)
+    // kotlinx serialization
+    implementation(libs.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.converter)
 
     //google
     implementation(libs.play.services.auth)
@@ -95,6 +99,7 @@ dependencies {
 
     //composeNav
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.fragment)
 
     //Compose ViewModel
     implementation (libs.androidx.lifecycle.viewmodel.compose)
