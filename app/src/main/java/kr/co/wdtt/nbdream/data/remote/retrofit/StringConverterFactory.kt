@@ -49,11 +49,6 @@ class StringConverterFactory : Converter.Factory() {
     }
 
     inner class ResponseBodyConverter : Converter<ResponseBody, String> {
-        override fun convert(p0: ResponseBody):String{
-            Log.d("StringConverterFactory", p0.string())
-            return p0.string()
-        }
+        override fun convert(p0: ResponseBody) = p0.string()
     }
-
-
 }
