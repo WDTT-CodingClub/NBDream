@@ -2,7 +2,7 @@ package kr.co.wdtt.nbdream.domain.entity
 
 import java.io.File
 
-sealed class DreamImage private constructor(){
+sealed class DreamImage{
     companion object{
         fun <T> create(image:T): DreamImage = when(image){
             is File -> RequestImage(image)
