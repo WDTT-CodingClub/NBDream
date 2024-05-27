@@ -1,15 +1,15 @@
 package kr.co.wdtt.nbdream.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kr.co.wdtt.nbdream.domain.entity.CalWorkDiaryEntity
+import kr.co.wdtt.nbdream.domain.entity.WorkDiaryEntity
 
-interface CalWorkDiaryRepo {
+interface WorkDiaryRepository {
     //TODO 서버에 작물 정보 어떤 형태로 보내야 할지 상의
     suspend fun getCalendarWorkDiarys(userId:String, cropCode: String, year:Int, month:Int):
-            Flow<List<CalWorkDiaryEntity>>
+            Flow<List<WorkDiaryEntity>>
 
     // TODO 추가/편집 요청 따로 해야 하는지 상의
-    suspend fun upsertCalendarWorkDiary(calWorkDiaryEntity: CalWorkDiaryEntity)
+    suspend fun upsertCalendarWorkDiary(workDiaryEntity: WorkDiaryEntity)
     suspend fun deleteCalendarWorkDiary(calendarWorkDiaryId: String)
 
     suspend fun searchCalendarWorkDiary(
@@ -22,5 +22,5 @@ interface CalWorkDiaryRepo {
         endMonth:Int,
         endDay:Int,
         sort:String = "recent"
-    ): Flow<List<CalWorkDiaryEntity>>
+    ): Flow<List<WorkDiaryEntity>>
 }
