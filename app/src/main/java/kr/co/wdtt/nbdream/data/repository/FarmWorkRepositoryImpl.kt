@@ -15,7 +15,7 @@ internal class FarmWorkRepositoryImpl @Inject constructor(
     private val mapper: FarmWorkMapper
 ) : FarmWorkRepository {
     companion object {
-        const val BASE_URL = "http://api.nongsaro.go.kr/service/farmWorkingPlanNew"
+        const val BASE_URL = "http://api.nongsaro.go.kr/service/farmWorkingPlanNew/"
         const val FARM_WORK = "workScheduleEraInfoJsonLst"
         const val HEAD_AUTH = "apiKey"
         const val HEAD_KEY = BuildConfig.NONGSARO_API_KEY
