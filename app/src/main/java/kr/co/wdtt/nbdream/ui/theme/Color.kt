@@ -34,6 +34,9 @@ private val blue1 = Color(0xFFABC5F8)
 
 private val orange1 = Color(0xFFDE9E63)
 
+val kakaoYellow = Color(0xFFFEE500)
+val naverGreen = Color(0xFF03C75A)
+
 sealed class ColorSet {
     open lateinit var lightColors: DreamColor
     open lateinit var darkColors: DreamColor
