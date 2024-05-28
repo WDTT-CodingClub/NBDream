@@ -4,8 +4,10 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kr.co.wdtt.nbdream.data.repository.AccountBookRepositoryImpl
 import kr.co.wdtt.nbdream.data.repository.FarmWorkRepositoryImpl
 import kr.co.wdtt.nbdream.data.repository.WeatherForecastRepositoryImpl
+import kr.co.wdtt.nbdream.domain.repository.AccountBookRepository
 import kr.co.wdtt.nbdream.domain.repository.FarmWorkRepository
 import kr.co.wdtt.nbdream.domain.repository.WeatherForecastRepository
 import javax.inject.Singleton
@@ -19,5 +21,7 @@ internal abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindsCalFarmWorkRepository(repositoryImpl: FarmWorkRepositoryImpl): FarmWorkRepository
-
+    @Singleton
+    @Binds
+    abstract fun bindsAccountBookRepository(repositoryImpl: AccountBookRepositoryImpl): AccountBookRepository
 }
