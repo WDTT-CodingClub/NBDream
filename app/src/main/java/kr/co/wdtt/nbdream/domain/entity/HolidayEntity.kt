@@ -1,13 +1,9 @@
 package kr.co.wdtt.nbdream.domain.entity
 
-import java.time.DayOfWeek
+import java.time.LocalDate
 
 data class HolidayEntity (
-    val id: String? = null,
-    val year:Int,
-    val month: Int,
-    val day: Int,
-    val dayOfWeek: DayOfWeek,
+    val date: LocalDate,
     val isHoliday: Boolean,
     val type:HolidayType,
     val name: String

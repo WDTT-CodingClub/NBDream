@@ -9,6 +9,7 @@ import kr.co.wdtt.nbdream.data.remote.dto.HolidayResponse
 import kr.co.wdtt.nbdream.domain.entity.HolidayEntity
 import kr.co.wdtt.nbdream.domain.entity.HolidayType
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 internal class HolidayMapper @Inject constructor() :
@@ -22,7 +23,7 @@ internal class HolidayMapper @Inject constructor() :
         data?.let {
             emit(
                 EntityWrapper.Success(
-                    data = it.response.body.items.map { item ->
+                    data = it.response.body.items.item.map { item ->
                         item.convert()
                     }
                 )
@@ -34,29 +35,19 @@ internal class HolidayMapper @Inject constructor() :
         flow { emit(EntityWrapper.Fail(error)) }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun HolidayResponse.Response.Body.Item.convert(): HolidayEntity {
-        val chunkedDate = date.chunked(2)
-        return HolidayEntity(
-            year = chunkedDate[0].toInt(),
-            month = chunkedDate[1].toInt(),
-            day = chunkedDate[2].toInt(),
-            dayOfWeek = LocalDate.of(
-                chunkedDate[0].toInt(),
-                chunkedDate[1].toInt(),
-                chunkedDate[2].toInt()
-            ).dayOfWeek,
+    private fun HolidayResponse.Response.Body.Item.convert(): HolidayEntity =
+        HolidayEntity(
+            date = LocalDate.parse(date.toString(), DateTimeFormatter.ofPattern("yyyymmdd")),
             isHoliday = (isHoliday == "Y"),
             type = mapHolidayType(dateType, isHoliday),
             name = dateName
         )
-    }
 
     private fun mapHolidayType(dateType: String, isHoliday: String): HolidayType =
         when (dateType) {
             "01" -> if (isHoliday == "Y") HolidayType.NATIONAL_HOLIDAY else HolidayType.CONSTITUTION_DAY
             "02" -> HolidayType.ANNIVERSARY
             "03" -> HolidayType.SOLAR_TERM
-            "04" -> HolidayType.ETC
-            else -> throw IllegalArgumentException("wrong date type")
+            else -> HolidayType.ETC
         }
 }
