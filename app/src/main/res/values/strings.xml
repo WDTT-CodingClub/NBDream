@@ -1,5 +1,12 @@
 <resources>
-    <string name="app_name">NBDream</string>
+
+    //앱 이름
+    <string name="app_name">농부의 꿈</string>
+
+    //로그인
+    <string name="login_kakao_login">카카오 로그인</string>
+    <string name="login_naver_login">네이버 로그인</string>
+    <string name="login_google_login">구글 로그인</string>
 
     //앱 전체 - 작물 이름
     <string name="dream_crop_name_pepper">고추</string>
