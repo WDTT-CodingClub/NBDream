@@ -17,9 +17,7 @@ class HomeViewModel @Inject constructor(
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(listOf(""))
     val state = _state.asStateFlow()
-    override suspend fun onError(errorType: CustomErrorType) {
-        TODO("Not yet implemented")
-    }
+
 
     init {
         viewModelScopeEH.launch {
