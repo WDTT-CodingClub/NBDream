@@ -13,12 +13,6 @@ import kr.co.wdtt.nbdream.ui.theme.NBDreamTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(
-                scrim = Color.TRANSPARENT,
-                darkScrim = Color.TRANSPARENT
-            )
-        )
         setContent {
             NBDreamTheme {
                 DreamApp()
