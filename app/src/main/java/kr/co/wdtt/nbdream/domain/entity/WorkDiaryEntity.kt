@@ -2,15 +2,13 @@ package kr.co.wdtt.nbdream.domain.entity
 
 import androidx.annotation.StringRes
 import kr.co.wdtt.nbdream.R
+import java.time.LocalDate
 
 data class WorkDiaryEntity(
     val id:String? = null,
     val userId: String? = null,
     val dreamCrop: DreamCrop,
-    val registerDate: String,
-    val year:Int,
-    val month:Int,
-    val day:Int,
+    val registerDate: LocalDate,
     val weatherForecast: WeatherForecastEntity,
     val workLaborer: Int = 0,
     val workHours: Int = 0,
@@ -26,7 +24,7 @@ data class WorkDescription(
     val description: String,
 )
 
-enum class WorkType(@StringRes val id: Int){
+enum class WorkType(@StringRes val labelId: Int){
     SEED_PREP(R.string.calendar_work_type_seed_prep),
     SEEDBED_PREP(R.string.calendar_work_type_seedbed_prep),
     SOW(R.string.calendar_work_type_sow),

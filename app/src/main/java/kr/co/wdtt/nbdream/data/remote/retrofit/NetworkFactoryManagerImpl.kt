@@ -20,8 +20,8 @@ class NetworkFactoryManagerImpl @Inject constructor(
 
     override fun create(
         baseUrl: String,
-        headAuth: String,
-        headKey: String,
+        headAuth: String?,
+        headKey: String?
     ) = createRetrofit(baseUrl, okHttpClient).create(NetworkService::class.java)
         .let { networkService ->
             NetWorkRequestFactory.create(networkService, headerParser).let { factory ->
