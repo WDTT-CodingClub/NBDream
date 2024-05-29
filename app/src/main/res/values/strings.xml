@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">NBDream</string>
+
+    //앱 이름
+    <string name="app_name">농부의 꿈</string>
 
     //앱 전체 - 작물 이름
     <string name="dream_crop_name_pepper">고추</string>
