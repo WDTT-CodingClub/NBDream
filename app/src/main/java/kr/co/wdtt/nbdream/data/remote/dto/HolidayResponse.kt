@@ -18,15 +18,19 @@ data class HolidayResponse(val response: Response) {
 
         @Serializable
         data class Body(
-            val items: List<Item>,
+            val items: Items,
             val numOfRows: Int,
             val pageNo: Int,
             val totalCount: Int
         ) {
             @Serializable
+            data class Items(
+                val item: List<Item>
+            )
+            @Serializable
             data class Item(
-                @SerialName("locDate")
-                val date: String, //날짜 (ex. 20240527)
+                @SerialName("locdate")
+                val date: Int, //날짜 (ex. 20240527)
                 val seq: Int, //순번 (ex. 1)
                 @SerialName("dateKind")
                 val dateType: String, //종류 (ex. 01)
