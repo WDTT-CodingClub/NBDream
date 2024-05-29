@@ -65,7 +65,7 @@ fun LoginBtn() {
         ) {
             LoginButton(
                 image = painterResource(id = R.drawable.img_kakao_login),
-                text = stringResource(R.string.kakao_login),
+                text = stringResource(R.string.login_kakao_login),
                 backgroundColor = kakaoYellow,
                 textColor = Color.Black,
                 onClick = { /* TODO: 카카오 로그인 클릭 시 동작 */ }
@@ -73,7 +73,7 @@ fun LoginBtn() {
             Spacer(modifier = Modifier.height(8.dp))
             LoginButton(
                 image = painterResource(id = R.drawable.img_naver_login),
-                text = stringResource(R.string.naver_login),
+                text = stringResource(R.string.login_naver_login),
                 backgroundColor = naverGreen,
                 textColor = Color.White,
                 onClick = { /* TODO: 네이버 로그인 클릭 시 동작 */ }
@@ -81,7 +81,7 @@ fun LoginBtn() {
             Spacer(modifier = Modifier.height(8.dp))
             LoginButton(
                 image = painterResource(id = R.drawable.img_google_login),
-                text = stringResource(R.string.google_login),
+                text = stringResource(R.string.login_google_login),
                 backgroundColor = Color.White,
                 textColor = Color.Black,
                 onClick = { /* TODO: 구글 로그인 클릭 시 동작 */ }
