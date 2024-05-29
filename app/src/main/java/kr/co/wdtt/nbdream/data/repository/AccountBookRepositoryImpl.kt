@@ -6,8 +6,10 @@ import kr.co.wdtt.nbdream.data.mapper.AccountBookMapper
 import kr.co.wdtt.nbdream.data.mapper.EntityWrapper
 import kr.co.wdtt.nbdream.data.remote.dto.AccountBookResponse
 import kr.co.wdtt.nbdream.data.remote.model.ApiResponse
+import kr.co.wdtt.nbdream.data.remote.model.RequestType
 import kr.co.wdtt.nbdream.data.remote.retrofit.NetworkFactoryManager
 import kr.co.wdtt.nbdream.domain.entity.AccountBookEntity
+import kr.co.wdtt.nbdream.domain.entity.Category
 import kr.co.wdtt.nbdream.domain.repository.AccountBookRepository
 import javax.inject.Inject
 
@@ -36,7 +38,7 @@ internal class AccountBookRepositoryImpl @Inject constructor(
         endDate: String,
         type: String,
         sortOrder: String,
-        category: String
+        category: Category
     ): Flow<List<AccountBookEntity>> {
         queryMap.clear()
         queryMap.putAll(
@@ -46,11 +48,12 @@ internal class AccountBookRepositoryImpl @Inject constructor(
                 "endDate" to endDate,
                 "type" to type,
                 "sortOrder" to sortOrder,
-                "category" to category
+                "category" to category.name
             )
         )
         val apiResult = networkApi.sendRequest<AccountBookResponse>(
             url = "get_url",
+            method = RequestType.GET,
             queryMap = queryMap
         )
         return mapper.mapFromResult(apiResult).map {
@@ -62,28 +65,26 @@ internal class AccountBookRepositoryImpl @Inject constructor(
     }
 
     override suspend fun createAccountBook(accountBook: AccountBookEntity): AccountBookEntity {
-        queryMap.clear()
-        queryMap.putAll(
-            mapOf(
-                "title" to accountBook.title,
-                "category" to accountBook.category,
-                "imageUrl" to accountBook.imageUrl.joinToString(separator = ","),
-                "registerDateTime" to (accountBook.registerDateTime ?: ""),
-                "year" to (accountBook.year?.toString() ?: ""),
-                "month" to (accountBook.month?.toString() ?: ""),
-                "day" to (accountBook.day?.toString() ?: ""),
-                "dayName" to (accountBook.dayName ?: ""),
-                "revenue" to (accountBook.revenue?.toString() ?: ""),
-                "expense" to (accountBook.expense?.toString() ?: ""),
-                "totalRevenue" to (accountBook.totalRevenue?.toString() ?: ""),
-                "totalExpense" to (accountBook.totalExpense?.toString() ?: ""),
-                "totalCost" to (accountBook.totalCost?.toString() ?: "")
-            )
+        val body = mapOf(
+            "title" to accountBook.title,
+            "category" to accountBook.category.name,
+            "imageUrl" to accountBook.imageUrl.joinToString(separator = ","),
+            "registerDateTime" to (accountBook.registerDateTime ?: ""),
+            "year" to (accountBook.year?.toString() ?: ""),
+            "month" to (accountBook.month?.toString() ?: ""),
+            "day" to (accountBook.day?.toString() ?: ""),
+            "dayName" to (accountBook.dayName ?: ""),
+            "revenue" to (accountBook.revenue?.toString() ?: ""),
+            "expense" to (accountBook.expense?.toString() ?: ""),
+            "totalRevenue" to (accountBook.totalRevenue?.toString() ?: ""),
+            "totalExpense" to (accountBook.totalExpense?.toString() ?: ""),
+            "totalCost" to (accountBook.totalCost?.toString() ?: "")
         )
 
         val apiResult = networkApi.sendRequest<AccountBookEntity>(
             url = "create_url",
-            queryMap = queryMap
+            method = RequestType.POST,
+            body = body
         )
         return when (val response = apiResult.response) {
             is ApiResponse.Success -> response.data
@@ -95,29 +96,27 @@ internal class AccountBookRepositoryImpl @Inject constructor(
         id: String,
         accountBook: AccountBookEntity
     ): AccountBookEntity {
-        queryMap.clear()
-        queryMap.putAll(
-            mapOf(
-                "id" to id,
-                "title" to accountBook.title,
-                "category" to accountBook.category,
-                "imageUrl" to accountBook.imageUrl.joinToString(separator = ","),
-                "registerDateTime" to (accountBook.registerDateTime ?: ""),
-                "year" to (accountBook.year?.toString() ?: ""),
-                "month" to (accountBook.month?.toString() ?: ""),
-                "day" to (accountBook.day?.toString() ?: ""),
-                "dayName" to (accountBook.dayName ?: ""),
-                "revenue" to (accountBook.revenue?.toString() ?: ""),
-                "expense" to (accountBook.expense?.toString() ?: ""),
-                "totalRevenue" to (accountBook.totalRevenue?.toString() ?: ""),
-                "totalExpense" to (accountBook.totalExpense?.toString() ?: ""),
-                "totalCost" to (accountBook.totalCost?.toString() ?: "")
-            )
+        val body = mapOf(
+            "id" to id,
+            "title" to accountBook.title,
+            "category" to accountBook.category.name,
+            "imageUrl" to accountBook.imageUrl.joinToString(separator = ","),
+            "registerDateTime" to (accountBook.registerDateTime ?: ""),
+            "year" to (accountBook.year?.toString() ?: ""),
+            "month" to (accountBook.month?.toString() ?: ""),
+            "day" to (accountBook.day?.toString() ?: ""),
+            "dayName" to (accountBook.dayName ?: ""),
+            "revenue" to (accountBook.revenue?.toString() ?: ""),
+            "expense" to (accountBook.expense?.toString() ?: ""),
+            "totalRevenue" to (accountBook.totalRevenue?.toString() ?: ""),
+            "totalExpense" to (accountBook.totalExpense?.toString() ?: ""),
+            "totalCost" to (accountBook.totalCost?.toString() ?: "")
         )
 
         val apiResult = networkApi.sendRequest<AccountBookEntity>(
             url = "update_url",
-            queryMap = queryMap
+            method = RequestType.PUT,
+            body = body
         )
         return when (val response = apiResult.response) {
             is ApiResponse.Success -> response.data
@@ -126,14 +125,16 @@ internal class AccountBookRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteAccountBook(id: String) {
-        queryMap.clear()
-        queryMap.putAll(mapOf("id" to id))
+        val body = mapOf("id" to id)
 
-        networkApi.sendRequest<Unit>(
+        val apiResult = networkApi.sendRequest<Unit>(
             url = "delete_url",
-            queryMap = queryMap
+            method = RequestType.DELETE,
+            body = body
         )
+        if (apiResult.response is ApiResponse.Fail) {
+            throw IllegalStateException("Delete account book failed: ${apiResult.response.error.message}")
+        }
     }
-
 
 }
