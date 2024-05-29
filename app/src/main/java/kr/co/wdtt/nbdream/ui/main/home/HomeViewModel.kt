@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.home
+package kr.co.wdtt.nbdream.ui.main.home
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,9 +17,7 @@ class HomeViewModel @Inject constructor(
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(listOf(""))
     val state = _state.asStateFlow()
-    override suspend fun onError(errorType: CustomErrorType) {
-        TODO("Not yet implemented")
-    }
+
 
     init {
         viewModelScopeEH.launch {
