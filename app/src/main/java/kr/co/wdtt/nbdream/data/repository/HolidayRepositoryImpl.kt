@@ -35,17 +35,14 @@ internal class HolidayRepositoryImpl @Inject constructor(
         "numOfRows" to "100"
     )
 
-    override suspend fun getHolidays(year: Int, month: Int): Flow<List<EntityWrapper<List<HolidayEntity>>>>{
-        val holFlow = sendHolidayRequest(HOLIDAY, year, month)
-        val annivFlow = sendHolidayRequest(ANNIVERSARY, year, month)
-        val solarFlow = sendHolidayRequest(SOLAR_TERM, year, month)
-        val etcFlow = sendHolidayRequest(ETC, year, month)
-
-        return combine(holFlow, annivFlow, solarFlow, etcFlow){
-            hol,anniv, solar, etc ->
-            listOf(hol, anniv, solar, etc)
-        }
-    }
+    override suspend fun getHoliday(year: Int, month: Int): Flow<EntityWrapper<List<HolidayEntity>>> =
+       sendHolidayRequest(HOLIDAY, year, month)
+    override suspend fun getAnniversary(year: Int, month: Int): Flow<EntityWrapper<List<HolidayEntity>>> =
+        sendHolidayRequest(ANNIVERSARY, year, month)
+    override suspend fun getSolarTerm(year: Int, month: Int): Flow<EntityWrapper<List<HolidayEntity>>> =
+        sendHolidayRequest(SOLAR_TERM, year, month)
+    override suspend fun getEtc(year: Int, month: Int): Flow<EntityWrapper<List<HolidayEntity>>> =
+        sendHolidayRequest(ETC, year, month)
 
     private suspend fun sendHolidayRequest(endPoint:String, year: Int, month: Int) = mapper.mapFromResult(
         networkApi.sendRequest<HolidayResponse>(
