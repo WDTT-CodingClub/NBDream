@@ -1,8 +1,9 @@
 package kr.co.wdtt.nbdream.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import kr.co.wdtt.nbdream.data.mapper.EntityWrapper
+import kr.co.wdtt.nbdream.data.remote.model.ApiResponse
 import kr.co.wdtt.nbdream.domain.entity.AccountBookEntity
-import kr.co.wdtt.nbdream.domain.entity.Category
 
 interface AccountBookRepository {
     suspend fun getAccountBooks(
@@ -11,12 +12,12 @@ interface AccountBookRepository {
         endDate: String,
         type: String, // "all", "revenue", "expense"
         sortOrder: String, // "newest", "oldest"
-        category: Category
-    ): Flow<List<AccountBookEntity>>
+        category: AccountBookEntity.Category
+    ): Flow<EntityWrapper<List<AccountBookEntity>>>
 
-    suspend fun createAccountBook(accountBook: AccountBookEntity): AccountBookEntity
+    suspend fun createAccountBook(accountBook: AccountBookEntity): ApiResponse<AccountBookEntity>
 
-    suspend fun updateAccountBook(id: String, accountBook: AccountBookEntity): AccountBookEntity
+    suspend fun updateAccountBook(id: String, accountBook: AccountBookEntity): ApiResponse<AccountBookEntity>
 
-    suspend fun deleteAccountBook(id: String)
+    suspend fun deleteAccountBook(id: String): ApiResponse<Unit>
 }

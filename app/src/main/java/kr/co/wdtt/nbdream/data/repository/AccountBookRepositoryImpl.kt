@@ -1,15 +1,14 @@
 package kr.co.wdtt.nbdream.data.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kr.co.wdtt.nbdream.data.mapper.AccountBookMapper
 import kr.co.wdtt.nbdream.data.mapper.EntityWrapper
+import kr.co.wdtt.nbdream.data.remote.dto.AccountBookRequest
 import kr.co.wdtt.nbdream.data.remote.dto.AccountBookResponse
 import kr.co.wdtt.nbdream.data.remote.model.ApiResponse
 import kr.co.wdtt.nbdream.data.remote.model.RequestType
 import kr.co.wdtt.nbdream.data.remote.retrofit.NetworkFactoryManager
 import kr.co.wdtt.nbdream.domain.entity.AccountBookEntity
-import kr.co.wdtt.nbdream.domain.entity.Category
 import kr.co.wdtt.nbdream.domain.repository.AccountBookRepository
 import javax.inject.Inject
 
@@ -38,103 +37,83 @@ internal class AccountBookRepositoryImpl @Inject constructor(
         endDate: String,
         type: String,
         sortOrder: String,
-        category: Category
-    ): Flow<List<AccountBookEntity>> {
-        queryMap.clear()
-        queryMap.putAll(
-            mapOf(
-                "userId" to userId,
-                "startDate" to startDate,
-                "endDate" to endDate,
-                "type" to type,
-                "sortOrder" to sortOrder,
-                "category" to category.name
+        category: AccountBookEntity.Category
+    ): Flow<EntityWrapper<List<AccountBookEntity>>> =
+        mapper.mapFromResult(
+            networkApi.sendRequest<AccountBookResponse>(
+                url = "get_url",
+                method = RequestType.GET,
+                queryMap = queryMap.apply {
+                    clear()
+                    put("userId", userId)
+                    put("startDate", startDate)
+                    put("endDate", endDate)
+                    put("type", type)
+                    put("sortOrder", sortOrder)
+                    put("category", category.name)
+                }
             )
         )
-        val apiResult = networkApi.sendRequest<AccountBookResponse>(
-            url = "get_url",
-            method = RequestType.GET,
-            queryMap = queryMap
-        )
-        return mapper.mapFromResult(apiResult).map {
-            when (it) {
-                is EntityWrapper.Success -> it.data
-                is EntityWrapper.Fail -> throw IllegalStateException("Get account book failed: ${it.throwable?.message}")
-            }
-        }
-    }
 
-    override suspend fun createAccountBook(accountBook: AccountBookEntity): AccountBookEntity {
-        val body = mapOf(
-            "title" to accountBook.title,
-            "category" to accountBook.category.name,
-            "imageUrl" to accountBook.imageUrl.joinToString(separator = ","),
-            "registerDateTime" to (accountBook.registerDateTime ?: ""),
-            "year" to (accountBook.year?.toString() ?: ""),
-            "month" to (accountBook.month?.toString() ?: ""),
-            "day" to (accountBook.day?.toString() ?: ""),
-            "dayName" to (accountBook.dayName ?: ""),
-            "revenue" to (accountBook.revenue?.toString() ?: ""),
-            "expense" to (accountBook.expense?.toString() ?: ""),
-            "totalRevenue" to (accountBook.totalRevenue?.toString() ?: ""),
-            "totalExpense" to (accountBook.totalExpense?.toString() ?: ""),
-            "totalCost" to (accountBook.totalCost?.toString() ?: "")
+    override suspend fun createAccountBook(accountBook: AccountBookEntity): ApiResponse<AccountBookEntity> {
+        val body = AccountBookRequest(
+            title = accountBook.title,
+            category = accountBook.category.name,
+            imageUrl = accountBook.imageUrl,
+            registerDateTime = accountBook.registerDateTime,
+            year = accountBook.year,
+            month = accountBook.month,
+            day = accountBook.day,
+            dayName = accountBook.dayName,
+            revenue = accountBook.revenue,
+            expense = accountBook.expense,
+            totalRevenue = accountBook.totalRevenue,
+            totalExpense = accountBook.totalExpense,
+            totalCost = accountBook.totalCost
         )
 
-        val apiResult = networkApi.sendRequest<AccountBookEntity>(
+        return networkApi.sendRequest<AccountBookEntity>(
             url = "create_url",
             method = RequestType.POST,
             body = body
-        )
-        return when (val response = apiResult.response) {
-            is ApiResponse.Success -> response.data
-            is ApiResponse.Fail -> throw IllegalStateException("Create account book failed: ${response.error.message}")
-        }
+        ).response
     }
+
 
     override suspend fun updateAccountBook(
         id: String,
         accountBook: AccountBookEntity
-    ): AccountBookEntity {
-        val body = mapOf(
-            "id" to id,
-            "title" to accountBook.title,
-            "category" to accountBook.category.name,
-            "imageUrl" to accountBook.imageUrl.joinToString(separator = ","),
-            "registerDateTime" to (accountBook.registerDateTime ?: ""),
-            "year" to (accountBook.year?.toString() ?: ""),
-            "month" to (accountBook.month?.toString() ?: ""),
-            "day" to (accountBook.day?.toString() ?: ""),
-            "dayName" to (accountBook.dayName ?: ""),
-            "revenue" to (accountBook.revenue?.toString() ?: ""),
-            "expense" to (accountBook.expense?.toString() ?: ""),
-            "totalRevenue" to (accountBook.totalRevenue?.toString() ?: ""),
-            "totalExpense" to (accountBook.totalExpense?.toString() ?: ""),
-            "totalCost" to (accountBook.totalCost?.toString() ?: "")
+    ): ApiResponse<AccountBookEntity> {
+        val body = AccountBookRequest(
+            id = id,
+            title = accountBook.title,
+            category = accountBook.category.name,
+            imageUrl = accountBook.imageUrl,
+            registerDateTime = accountBook.registerDateTime,
+            year = accountBook.year,
+            month = accountBook.month,
+            day = accountBook.day,
+            dayName = accountBook.dayName,
+            revenue = accountBook.revenue,
+            expense = accountBook.expense,
+            totalRevenue = accountBook.totalRevenue,
+            totalExpense = accountBook.totalExpense,
+            totalCost = accountBook.totalCost
         )
 
-        val apiResult = networkApi.sendRequest<AccountBookEntity>(
+        return networkApi.sendRequest<AccountBookEntity>(
             url = "update_url",
             method = RequestType.PUT,
             body = body
-        )
-        return when (val response = apiResult.response) {
-            is ApiResponse.Success -> response.data
-            is ApiResponse.Fail -> throw IllegalStateException("Update account book failed: ${response.error.message}")
-        }
+        ).response
     }
 
-    override suspend fun deleteAccountBook(id: String) {
-        val body = mapOf("id" to id)
-
-        val apiResult = networkApi.sendRequest<Unit>(
-            url = "delete_url",
-            method = RequestType.DELETE,
-            body = body
-        )
-        if (apiResult.response is ApiResponse.Fail) {
-            throw IllegalStateException("Delete account book failed: ${apiResult.response.error.message}")
-        }
+    override suspend fun deleteAccountBook(id: String): ApiResponse<Unit> {
+        return networkApi.sendRequest<Unit>(
+            url = "delete_url/$id",
+            method = RequestType.DELETE
+        ).response
     }
 
 }
+
