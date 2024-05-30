@@ -1,0 +1,54 @@
+package kr.co.wdtt.nbdream.ui.community
+
+import android.icu.text.DecimalFormat
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kr.co.wdtt.core.ui.base.BaseViewModel
+import kr.co.wdtt.core.ui.base.CustomErrorType
+import kr.co.wdtt.nbdream.domain.entity.BulletinEntity
+import javax.inject.Inject
+
+@HiltViewModel
+class CommunityViewModel @Inject constructor(
+//    private val getDayWeatherForecast: GetDayWeatherForecast,
+) : BaseViewModel() {
+    private val _currentBoard = MutableStateFlow("")
+    val currentBoard = _currentBoard.asStateFlow()
+
+    private val _currentCategory = MutableStateFlow("")
+    val currentCategory = _currentCategory.asStateFlow()
+
+    private val _searchInput = MutableStateFlow("")
+    val searchInput = _searchInput.asStateFlow()
+    fun onSearchInputChanged(input: String) {
+        _searchInput.value = input
+    }
+
+
+    private val _bulletinWritingInput = MutableStateFlow("")
+    val bulletinWritingInput = _bulletinWritingInput.asStateFlow()
+    fun onBulletinWritingInputChanged(input: String) {
+        _bulletinWritingInput.value = input
+    }
+
+
+    private val _bulletinEntities = MutableStateFlow(listOf<BulletinEntity>())
+    val bulletinEntities = _bulletinEntities.asStateFlow()
+
+    override suspend fun onError(errorType: CustomErrorType) {
+        TODO("Not yet implemented")
+    }
+
+    init {
+        _bulletinEntities.value = List(10) { i ->
+            BulletinEntity(
+                id = "bulletinId$i",  // 게시글 id가 필요할지 안할지? 필요하다면 어떤 식으로 만들지?
+                userId = "userId$i",
+                content = "게시글 내용 $i",
+                createdTime = "2000.00.00 00:00:${DecimalFormat("00").format(i)}",
+            )
+        }
+    }
+
+}
