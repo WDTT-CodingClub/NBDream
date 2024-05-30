@@ -17,6 +17,7 @@ import kr.co.wdtt.nbdream.ui.main.community.CommunityScreen
 import kr.co.wdtt.nbdream.ui.main.navigation.MAIN_ROUTE
 import kr.co.wdtt.nbdream.ui.main.navigation.mainNavGraph
 import kr.co.wdtt.nbdream.ui.onboarding.navigation.ONBOARD_ROUTE
+import kr.co.wdtt.nbdream.ui.onboarding.navigation.onboardNavGraph
 
 private enum class DreamNavRoute(
     val route: String,
@@ -63,6 +64,6 @@ private fun DreamAppScreen(
 
         mainNavGraph(navController)
 
-        OnBoardNavGraph(navController)
+        onboardNavGraph(navController)
     }
 }
