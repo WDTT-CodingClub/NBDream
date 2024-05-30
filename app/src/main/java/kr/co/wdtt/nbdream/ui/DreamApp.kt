@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.flow.collectLatest
 import kr.co.wdtt.nbdream.ui.main.community.CommunityScreen
 import kr.co.wdtt.nbdream.ui.main.navigation.MAIN_ROUTE
 import kr.co.wdtt.nbdream.ui.main.navigation.mainNavGraph
@@ -36,7 +37,9 @@ fun DreamApp(
     var navRoute by remember { mutableStateOf(DreamNavRoute.SPLASH) }
 
     LaunchedEffect(Unit) {
-        //TODO 스플래시후, 로컬 세션(데이터스토어)에서 저장된 사용자 체크, navRoute설정 ONBOARDING or MAIN
+        viewModel.isAuthorized.collectLatest {
+            navRoute = if (it) DreamNavRoute.MAIN else DreamNavRoute.ONBOARDING
+        }
     }
 
     DreamAppScreen(
