@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.calendar
+package kr.co.wdtt.nbdream.ui.main.calendar
 
 import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.calendar
+package kr.co.wdtt.nbdream.ui.main.calendar
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
