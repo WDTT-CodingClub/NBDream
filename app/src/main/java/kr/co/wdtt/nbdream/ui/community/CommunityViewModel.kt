@@ -5,8 +5,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kr.co.wdtt.core.ui.base.BaseViewModel
-import kr.co.wdtt.core.ui.base.CustomErrorType
 import kr.co.wdtt.nbdream.domain.entity.BulletinEntity
+import kr.co.wdtt.nbdream.domain.entity.DreamCrop
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,16 +36,13 @@ class CommunityViewModel @Inject constructor(
     private val _bulletinEntities = MutableStateFlow(listOf<BulletinEntity>())
     val bulletinEntities = _bulletinEntities.asStateFlow()
 
-    override suspend fun onError(errorType: CustomErrorType) {
-        TODO("Not yet implemented")
-    }
-
     init {
         _bulletinEntities.value = List(10) { i ->
             BulletinEntity(
                 id = "bulletinId$i",  // 게시글 id가 필요할지 안할지? 필요하다면 어떤 식으로 만들지?
                 userId = "userId$i",
                 content = "게시글 내용 $i",
+                dreamCrop = DreamCrop.PEPPER,
                 createdTime = "2000.00.00 00:00:${DecimalFormat("00").format(i)}",
             )
         }
