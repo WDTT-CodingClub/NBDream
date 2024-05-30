@@ -11,10 +11,13 @@ class AccountBookMapper : BaseMapper<AccountBookResponse, List<AccountBookEntity
         return flow {
             data?.let { response ->
                 val accountBooks = response.response.body.items.map { item ->
+                    val category = AccountBookEntity.Category.entries.find { it.value == item.category }
+                        ?: AccountBookEntity.Category.OTHER
+
                     AccountBookEntity(
                         id = item.id,
                         title = item.title,
-                        category = item.category,
+                        category = category,
                         imageUrl = item.imageUrl,
                         registerDateTime = item.registerDateTime,
                         year = item.year,

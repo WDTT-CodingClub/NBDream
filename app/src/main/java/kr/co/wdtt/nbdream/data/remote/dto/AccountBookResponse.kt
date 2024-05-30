@@ -41,3 +41,21 @@ data class AccountBookResponse(
         }
     }
 }
+
+@Serializable
+data class AccountBookRequest(
+    val id: String? = null,
+    val title: String,
+    val category: String,
+    val imageUrl: List<String>,
+    val registerDateTime: String? = null,
+    val year: Int? = null,
+    val month: Int? = null,
+    val day: Int? = null,
+    val dayName: String? = null,
+    val revenue: Long? = null,
+    val expense: Long? = null,
+    val totalRevenue: Long? = null,
+    val totalExpense: Long? = null,
+    val totalCost: Long? = null
+)
