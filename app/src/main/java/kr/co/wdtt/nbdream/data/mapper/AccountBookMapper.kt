@@ -5,15 +5,14 @@ import kotlinx.coroutines.flow.flow
 import kr.co.wdtt.core.domain.base.BaseMapper
 import kr.co.wdtt.nbdream.data.remote.dto.AccountBookResponse
 import kr.co.wdtt.nbdream.domain.entity.AccountBookEntity
-import kr.co.wdtt.nbdream.domain.entity.Category
 
 class AccountBookMapper : BaseMapper<AccountBookResponse, List<AccountBookEntity>>() {
     override fun getSuccess(data: AccountBookResponse?, extra: Any?): Flow<EntityWrapper.Success<List<AccountBookEntity>>> {
         return flow {
             data?.let { response ->
                 val accountBooks = response.response.body.items.map { item ->
-                    val category = Category.entries.find { it.name == item.category }
-                        ?: throw IllegalArgumentException("Unknown category: ${item.category}")
+                    val category = AccountBookEntity.Category.entries.find { it.value == item.category }
+                        ?: AccountBookEntity.Category.OTHER
 
                     AccountBookEntity(
                         id = item.id,
