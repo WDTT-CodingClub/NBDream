@@ -1,5 +1,6 @@
 [versions]
 agp = "8.4.1"
+datastorePreferences = "1.1.1"
 kotlin = "1.9.23"
 ksp = "1.9.23-1.0.20"
 hilt = "2.51.1"
@@ -30,12 +31,14 @@ serialization = "1.6.3"
 serialization-converter = "1.0.0"
 
 playServicesAuth = "21.2.0"
+datastoreCoreAndroid = "1.1.1"
 
 #v2All = "2.20.1"
 #v2Cert = "2.20.1"
 #v2User = "2.20.1"
 
 [libraries]
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleLivedataKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
@@ -73,6 +76,7 @@ kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-
 kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "serialization-converter" }
 
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 
 #v2-all = { module = "com.kakao.sdk:v2-all", version.ref = "v2All" }
 #v2-cert = { module = "com.kakao.sdk:v2-cert", version.ref = "v2Cert" }
