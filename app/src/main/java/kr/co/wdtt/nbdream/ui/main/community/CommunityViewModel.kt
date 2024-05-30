@@ -25,13 +25,17 @@ class CommunityViewModel @Inject constructor(
         _searchInput.value = input
     }
 
-
     private val _bulletinWritingInput = MutableStateFlow("")
     val bulletinWritingInput = _bulletinWritingInput.asStateFlow()
     fun onBulletinWritingInputChanged(input: String) {
         _bulletinWritingInput.value = input
     }
 
+    private val _commentWritingInput = MutableStateFlow("")
+    val commentWritingInput = _commentWritingInput.asStateFlow()
+    fun onCommentWritingInput(input: String) {
+        _commentWritingInput.value = input
+    }
 
     private val _bulletinEntities = MutableStateFlow(listOf<BulletinEntity>())
     val bulletinEntities = _bulletinEntities.asStateFlow()
