@@ -5,6 +5,7 @@ kotlin = "1.9.23"
 ksp = "1.9.23-1.0.20"
 hilt = "2.51.1"
 
+ktorClientCio = "2.3.7"
 lifecycleLivedataKtx = "2.8.0"
 coreKtx = "1.13.1"
 
@@ -33,11 +34,23 @@ serialization-converter = "1.0.0"
 playServicesAuth = "21.2.0"
 datastoreCoreAndroid = "1.1.1"
 
+ktor = "2.3.11"
+timber = "5.0.1"
+
 #v2All = "2.20.1"
 #v2Cert = "2.20.1"
 #v2User = "2.20.1"
 
 [libraries]
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientCio" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktorClientCio" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientCio" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorClientCio" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleLivedataKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -68,6 +81,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientCio" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
@@ -77,6 +91,7 @@ kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2
 
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 #v2-all = { module = "com.kakao.sdk:v2-all", version.ref = "v2All" }
 #v2-cert = { module = "com.kakao.sdk:v2-cert", version.ref = "v2Cert" }
