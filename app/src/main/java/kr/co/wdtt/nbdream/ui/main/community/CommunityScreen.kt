@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.community
+package kr.co.wdtt.nbdream.ui.main.community
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

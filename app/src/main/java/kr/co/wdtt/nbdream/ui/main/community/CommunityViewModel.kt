@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.community
+package kr.co.wdtt.nbdream.ui.main.community
 
 import android.icu.text.DecimalFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
