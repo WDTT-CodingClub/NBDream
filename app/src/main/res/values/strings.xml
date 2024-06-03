@@ -8,6 +8,10 @@
     <string name="login_naver_login">네이버 로그인</string>
     <string name="login_google_login">구글 로그인</string>
 
+    //앱 전체 - 드롭다운 메뉴
+    <string name="dropdown_menu_edit">수정하기</string>
+    <string name="dropdown_menu_delete">삭제하기</string>
+
     //앱 전체 - 작물 이름
     <string name="dream_crop_name_pepper">고추</string>
     <string name="dream_crop_name_rice">벼</string>
@@ -19,6 +23,11 @@
     <string name="dream_crop_name_lettuce">상추</string>
     <string name="dream_crop_name_nappa_cabbage">배추</string>
     <string name="dream_crop_name_tomato">토마토</string>
+
+    //캘린더 화면 - 영농일지 하늘
+    <string name="calendar_sky_sunny">맑음</string>
+    <string name="calendar_sky_partly_cloudy">구름 많음</string>
+    <string name="calendar_sky_mostly_cloudy">흐림</string>
 
     //캘린더 화면 - 영농일지 작업 분류
     <string name="calendar_work_type_seed_prep">종자 예조 및 소독</string>
