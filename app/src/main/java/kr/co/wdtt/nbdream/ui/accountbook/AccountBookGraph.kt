@@ -16,11 +16,18 @@ import kotlin.random.Random
 
 fun getColorList(size: Int): List<Color> {
     return List(size) {
-        Color(
+        val baseColor = Color(
             red = Random.nextFloat(),
             green = Random.nextFloat(),
             blue = Random.nextFloat(),
             alpha = 1.0f
+        )
+
+        val factor = 0.4f
+        baseColor.copy(
+            red = baseColor.red * factor + (1 - factor),
+            green = baseColor.green * factor + (1 - factor),
+            blue = baseColor.blue * factor + (1 - factor)
         )
     }
 }
@@ -33,7 +40,7 @@ fun GraphView(
     modifier: Modifier = Modifier
 ) {
     val total = data.sum().toInt()
-    val angleInterval = 1f
+    val angleInterval = if (data.size > 1) 1f else 0f
     val angles = data.map { it / total * (360f - data.size * angleInterval) }
     val colors = getColorList(data.size)
 
@@ -99,7 +106,9 @@ fun DrawScope.drawCategoryText(categories: List<String>, colors: List<Color>) {
         Paint().apply { textSize = 20f }.measureText(it)
     } ?: 0f
     val textX = size.width + maxTextWidth / 2 + 50
-    val textStartY = size.height / 2 - (categories.size * 20f) / 2
+
+    val graphTopY = size.height / 2 - size.minDimension / 2
+    val textStartY = graphTopY + 20.dp.toPx() / 2
     val verticalInterval = 4.dp.toPx()
 
     categories.forEachIndexed { index, category ->
