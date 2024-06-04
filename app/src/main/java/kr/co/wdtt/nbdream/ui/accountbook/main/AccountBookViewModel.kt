@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.accountbook
+package kr.co.wdtt.nbdream.ui.accountbook.main
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.wdtt.core.ui.base.BaseViewModel

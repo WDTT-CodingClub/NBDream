@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.accountbook
+package kr.co.wdtt.nbdream.ui.accountbook.main
 
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
@@ -23,7 +23,7 @@ fun getColorList(size: Int): List<Color> {
             alpha = 1.0f
         )
 
-        val factor = 0.4f
+        val factor = 0.5f
         baseColor.copy(
             red = baseColor.red * factor + (1 - factor),
             green = baseColor.green * factor + (1 - factor),

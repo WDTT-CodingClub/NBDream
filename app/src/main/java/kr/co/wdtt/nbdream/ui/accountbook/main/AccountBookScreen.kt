@@ -1,5 +1,7 @@
-package kr.co.wdtt.nbdream.ui.accountbook
+package kr.co.wdtt.nbdream.ui.accountbook.main
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,7 +10,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,14 +31,19 @@ import kr.co.wdtt.nbdream.domain.entity.AccountBookEntity
 import kr.co.wdtt.nbdream.domain.entity.SortOrder
 import kr.co.wdtt.nbdream.ui.theme.colors
 import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun PreviewAccountBookScreen() {
     AccountBookScreen()
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AccountBookScreen() {
     var sortOrder by remember { mutableStateOf(SortOrder.RECENCY) }
@@ -69,6 +78,7 @@ fun AccountBookScreen() {
                 .fillMaxSize()
         ) {
             Column {
+                CalendarSection()
                 GraphSection(
                     showTotalExpenses,
                     showTotalRevenue,
@@ -84,6 +94,36 @@ fun AccountBookScreen() {
                 AccountBooksList(sortedList)
             }
         }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun CalendarSection() {
+    val currentDate = LocalDate.now()
+    val currentYearMonth = YearMonth.from(currentDate)
+    val firstDayOfMonth = currentYearMonth.atDay(1)
+    val lastDayOfMonth = currentYearMonth.atEndOfMonth()
+
+    val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+    val startDate = firstDayOfMonth.format(formatter)
+    val endDate = lastDayOfMonth.format(formatter)
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(16.dp)
+            .clickable {  }
+    ) {
+        Text(
+            text = "$startDate - $endDate",
+            modifier = Modifier.padding(start = 8.dp, end = 4.dp)
+        )
+        Icon(
+            imageVector = Icons.Default.DateRange,
+            contentDescription = null,
+            tint = Color.Black
+        )
     }
 }
 
@@ -148,23 +188,57 @@ private fun GraphSection(
 
 @Composable
 private fun SortingSection(sortOrder: SortOrder, onSortOrderChange: (SortOrder) -> Unit) {
+    var bottomSheetState by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ClickableText(
-            text = "최신순",
-            onClick = { onSortOrderChange(SortOrder.RECENCY) },
-            isSelected = sortOrder == SortOrder.RECENCY
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        ClickableText(
-            text = "과거순",
-            onClick = { onSortOrderChange(SortOrder.OLDEST) },
-            isSelected = sortOrder == SortOrder.OLDEST
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .weight(1f)
+                .clickable { bottomSheetState = true }
+        ) {
+            Text(
+                text = "카테고리",
+                modifier = Modifier.padding(start = 8.dp, end = 4.dp)
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                tint = Color.Black
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
+        ) {
+            ClickableText(
+                text = "최신순",
+                onClick = { onSortOrderChange(SortOrder.RECENCY) },
+                isSelected = sortOrder == SortOrder.RECENCY
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            ClickableText(
+                text = "과거순",
+                onClick = { onSortOrderChange(SortOrder.OLDEST) },
+                isSelected = sortOrder == SortOrder.OLDEST
+            )
+        }
+    }
+
+    if (bottomSheetState) {
+        BottomSheetScreen(
+            onSelectedListener = { selectedCategory ->
+                // TODO 선택된 카테고리 처리
+                bottomSheetState = false
+            },
+            categories = listOf("농약", "종자/종묘", "비료", "농산물 판매","농약", "종자/종묘", "비료", "농산물 판매", "농약", "종자/종묘", "비료", "농산물 판매"),
+            dismissBottomSheet = { bottomSheetState = false }
         )
     }
 }
