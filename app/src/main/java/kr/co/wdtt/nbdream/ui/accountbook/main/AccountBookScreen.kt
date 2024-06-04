@@ -41,7 +41,7 @@ import java.time.temporal.ChronoUnit
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
-fun PreviewAccountBookScreen() {
+private fun PreviewAccountBookScreen() {
     AccountBookScreen()
 }
 
@@ -211,20 +211,20 @@ private fun FilterSelector() {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            FilterButtonOption(
+            AccountBookOptionButton(
                 option = "전체",
                 isSelected = selectedOption == "전체",
                 onSelected = { selectedOption = it }
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            FilterButtonOption(
+            AccountBookOptionButton(
                 option = "지출",
                 isSelected = selectedOption == "지출",
                 onSelected = { selectedOption = it }
             )
             Spacer(modifier = Modifier.width(8.dp))
-            FilterButtonOption(
+            AccountBookOptionButton(
                 option = "수입",
                 isSelected = selectedOption == "수입",
                 onSelected = { selectedOption = it }
@@ -234,7 +234,7 @@ private fun FilterSelector() {
 }
 
 @Composable
-fun FilterButtonOption(option: String, isSelected: Boolean, onSelected: (String) -> Unit) {
+private fun AccountBookOptionButton(option: String, isSelected: Boolean, onSelected: (String) -> Unit) {
     Box(
         modifier = Modifier
             .width(75.dp)
@@ -298,7 +298,7 @@ private fun CategorySelector() {
     }
 
     if (bottomSheetState) {
-        BottomSheetScreen(
+        AccountBookBottomSheet(
             onSelectedListener = { selectedCategory ->
                 // TODO 선택된 카테고리 처리
                 bottomSheetState = false
