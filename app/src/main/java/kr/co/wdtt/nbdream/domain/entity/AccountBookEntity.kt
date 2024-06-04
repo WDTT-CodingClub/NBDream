@@ -1,12 +1,14 @@
 package kr.co.wdtt.nbdream.domain.entity
 
+import java.io.File
+
 data class AccountBookEntity(
     val id: String,
     val userId: String? = null, // 응답 시 불필요
     val title: String,
     val category: Category = Category.OTHER,
     val imageUrl: List<String> = emptyList(), // 응답
-    // add 요청 이미지
+    val imageFile: List<File> = emptyList(),
     val registerDateTime: String? = null, // 날짜 + 시각
     val year: Int? = null, // 응답
     val month: Int? = null, // 응답
@@ -33,4 +35,8 @@ data class AccountBookEntity(
         FARM_EQUIPMENT__RENTAL("농기구 대여"),
         OTHER("기타"),
     }
+}
+
+enum class SortOrder {
+    RECENCY, OLDEST
 }
