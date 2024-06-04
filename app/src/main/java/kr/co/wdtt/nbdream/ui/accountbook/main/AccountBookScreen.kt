@@ -34,6 +34,7 @@ import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -52,6 +53,8 @@ fun AccountBookScreen() {
     val totalExpenses = accountBookList.sumOf { it.expense ?: 0L }
     val totalRevenue = accountBookList.sumOf { it.revenue ?: 0L }
     val totalCost = accountBookList[0].totalCost
+
+    var daysInRange by remember { mutableStateOf(0L) }
 
     val sortedList = remember(accountBookList, sortOrder) {
         when (sortOrder) {
@@ -78,13 +81,14 @@ fun AccountBookScreen() {
                 .fillMaxSize()
         ) {
             Column {
-                CalendarSection()
+                CalendarSection(onDaysInRangeChange = { daysInRange = it })
                 GraphSection(
                     showTotalExpenses,
                     showTotalRevenue,
                     totalExpenses,
                     totalRevenue,
                     totalCost,
+                    daysInRange,
                     { showTotalExpenses = true; showTotalRevenue = false },
                     { showTotalExpenses = false; showTotalRevenue = true }
                 )
@@ -99,7 +103,7 @@ fun AccountBookScreen() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarSection() {
+fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
     val currentDate = LocalDate.now()
     val currentYearMonth = YearMonth.from(currentDate)
     val firstDayOfMonth = currentYearMonth.atDay(1)
@@ -108,6 +112,9 @@ fun CalendarSection() {
     val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
     val startDate = firstDayOfMonth.format(formatter)
     val endDate = lastDayOfMonth.format(formatter)
+
+    val daysInRange = ChronoUnit.DAYS.between(firstDayOfMonth, lastDayOfMonth) + 1
+    onDaysInRangeChange(daysInRange)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -134,6 +141,7 @@ private fun GraphSection(
     totalExpenses: Long,
     totalRevenue: Long,
     totalCost: Long?,
+    daysInRange: Long,
     onShowExpensesClick: () -> Unit,
     onShowRevenueClick: () -> Unit
 ) {
@@ -156,8 +164,7 @@ private fun GraphSection(
             GraphView(
                 data = if (showTotalExpenses) expensesMap.values.toList() else revenuesMap.values.toList(),
                 categories = getCategoryNames(if (showTotalExpenses) expensesMap.keys.toList() else revenuesMap.keys.toList()),
-                label = if (showTotalExpenses) "-${formatNumber(totalExpenses)}원"
-                else "+${formatNumber(totalRevenue)}원",
+                label = "${daysInRange}일",
                 modifier = Modifier.size(100.dp)
             )
         }
@@ -235,6 +242,7 @@ private fun SortingSection(sortOrder: SortOrder, onSortOrderChange: (SortOrder) 
         BottomSheetScreen(
             onSelectedListener = { selectedCategory ->
                 // TODO 선택된 카테고리 처리
+                //  API 호출
                 bottomSheetState = false
             },
             categories = listOf("농약", "종자/종묘", "비료", "농산물 판매","농약", "종자/종묘", "비료", "농산물 판매", "농약", "종자/종묘", "비료", "농산물 판매"),
