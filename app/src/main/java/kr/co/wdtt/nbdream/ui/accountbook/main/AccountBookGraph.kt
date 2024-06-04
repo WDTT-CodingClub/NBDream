@@ -14,26 +14,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import kotlin.random.Random
 
-fun getColorList(size: Int): List<Color> {
-    return List(size) {
-        val baseColor = Color(
-            red = Random.nextFloat(),
-            green = Random.nextFloat(),
-            blue = Random.nextFloat(),
-            alpha = 1.0f
-        )
-
-        val factor = 0.5f
-        baseColor.copy(
-            red = baseColor.red * factor + (1 - factor),
-            green = baseColor.green * factor + (1 - factor),
-            blue = baseColor.blue * factor + (1 - factor)
-        )
-    }
-}
-
 @Composable
-fun GraphView(
+fun AccountBookGraph(
     data: List<Float>,
     categories: List<String>,
     label: String,
@@ -51,7 +33,25 @@ fun GraphView(
     }
 }
 
-fun DrawScope.drawGraph(
+private fun getColorList(size: Int): List<Color> {
+    return List(size) {
+        val baseColor = Color(
+            red = Random.nextFloat(),
+            green = Random.nextFloat(),
+            blue = Random.nextFloat(),
+            alpha = 1.0f
+        )
+
+        val factor = 0.5f
+        baseColor.copy(
+            red = baseColor.red * factor + (1 - factor),
+            green = baseColor.green * factor + (1 - factor),
+            blue = baseColor.blue * factor + (1 - factor)
+        )
+    }
+}
+
+private fun DrawScope.drawGraph(
     angles: List<Float>,
     colors: List<Color>,
     data: List<Float>,
@@ -76,7 +76,7 @@ fun DrawScope.drawGraph(
     }
 }
 
-fun DrawScope.drawPercentageText(
+private fun DrawScope.drawPercentageText(
     value: Float,
     total: Int,
     startAngle: Float,
@@ -101,7 +101,7 @@ fun DrawScope.drawPercentageText(
     }
 }
 
-fun DrawScope.drawCategoryText(categories: List<String>, colors: List<Color>) {
+private fun DrawScope.drawCategoryText(categories: List<String>, colors: List<Color>) {
     val maxTextWidth = categories.maxByOrNull { it.length }?.let {
         Paint().apply { textSize = 20f }.measureText(it)
     } ?: 0f
@@ -135,7 +135,7 @@ fun DrawScope.drawCategoryText(categories: List<String>, colors: List<Color>) {
     }
 }
 
-fun DrawScope.drawCenterText(label: String) {
+private fun DrawScope.drawCenterText(label: String) {
     drawIntoCanvas {
         it.nativeCanvas.drawText(
             label,
