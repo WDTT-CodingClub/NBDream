@@ -1,12 +1,14 @@
 package kr.co.wdtt.nbdream.ui.main.community
 
 import android.icu.text.DecimalFormat
+import android.net.Uri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kr.co.wdtt.core.ui.base.BaseViewModel
 import kr.co.wdtt.nbdream.domain.entity.BulletinEntity
 import kr.co.wdtt.nbdream.domain.entity.DreamCrop
+import kr.co.wdtt.nbdream.ui.main.community.temp.WritingSelectedImageModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +37,19 @@ class CommunityViewModel @Inject constructor(
     val commentWritingInput = _commentWritingInput.asStateFlow()
     fun onCommentWritingInput(input: String) {
         _commentWritingInput.value = input
+    }
+
+    private val _writingImages = MutableStateFlow(listOf<WritingSelectedImageModel>())
+    val writingImages = _writingImages.asStateFlow()
+    fun addImages(images: List<Uri>) {
+        _writingImages.value =
+            writingImages.value + images.map { WritingSelectedImageModel(uri = it) }
+    }
+
+    fun removeImage(image: Uri) {
+        val index = writingImages.value.indexOfFirst { it.uri == image }
+        if (index < 0) return
+        _writingImages.value = writingImages.value.toMutableList().apply { removeAt(index) }
     }
 
     private val _bulletinEntities = MutableStateFlow(listOf<BulletinEntity>())
