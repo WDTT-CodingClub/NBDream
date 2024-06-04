@@ -104,7 +104,7 @@ fun AccountBookScreen() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
+private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
     val currentDate = LocalDate.now()
     val currentYearMonth = YearMonth.from(currentDate)
     val firstDayOfMonth = currentYearMonth.atDay(1)
@@ -163,7 +163,7 @@ private fun GraphSection(
         Box(
             modifier = Modifier.size(100.dp)
         ) {
-            GraphView(
+            AccountBookGraph(
                 data = if (showTotalExpenses) expensesMap.values.toList() else revenuesMap.values.toList(),
                 categories = getCategoryNames(if (showTotalExpenses) expensesMap.keys.toList() else revenuesMap.keys.toList()),
                 label = "${daysInRange}일",
@@ -349,7 +349,7 @@ private fun AccountBooksList(sortedList: List<AccountBookEntity>) {
 }
 
 @Composable
-fun AccountBookItem(accountBook: AccountBookEntity) {
+private fun AccountBookItem(accountBook: AccountBookEntity) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -390,7 +390,7 @@ fun AccountBookItem(accountBook: AccountBookEntity) {
 }
 
 @Composable
-fun ClickableText(
+private fun ClickableText(
     text: String,
     onClick: () -> Unit,
     isSelected: Boolean
@@ -415,7 +415,7 @@ fun ClickableText(
 }
 
 @Composable
-fun ClickableTotalText(
+private fun ClickableTotalText(
     text: String,
     onClick: () -> Unit,
     isSelected: Boolean
@@ -442,12 +442,12 @@ fun ClickableTotalText(
     }
 }
 
-fun formatNumber(number: Long): String {
+private fun formatNumber(number: Long): String {
     val formatter = NumberFormat.getNumberInstance()
     return formatter.format(number)
 }
 
-fun getCategoryNames(categories: List<AccountBookEntity.Category>): List<String> {
+private fun getCategoryNames(categories: List<AccountBookEntity.Category>): List<String> {
     return categories.map { it.value }
 }
 
@@ -462,7 +462,7 @@ private fun groupByCategory(
         }
 }
 
-val accountBookList = listOf(
+private val accountBookList = listOf(
     AccountBookEntity(
         id = "1",
         title = "옥수수 판매",
