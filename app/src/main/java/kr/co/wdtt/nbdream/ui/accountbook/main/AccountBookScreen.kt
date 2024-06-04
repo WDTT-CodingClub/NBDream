@@ -30,6 +30,7 @@ import coil.compose.rememberAsyncImagePainter
 import kr.co.wdtt.nbdream.domain.entity.AccountBookEntity
 import kr.co.wdtt.nbdream.domain.entity.SortOrder
 import kr.co.wdtt.nbdream.ui.theme.colors
+import kr.co.wdtt.nbdream.ui.theme.typo
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.YearMonth
@@ -120,11 +121,12 @@ fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(16.dp)
-            .clickable {  }
+            .clickable { }
     ) {
         Text(
             text = "$startDate - $endDate",
-            modifier = Modifier.padding(start = 8.dp, end = 4.dp)
+            modifier = Modifier.padding(start = 8.dp, end = 4.dp),
+            style = MaterialTheme.typo.header2M
         )
         Icon(
             imageVector = Icons.Default.DateRange,
@@ -184,9 +186,15 @@ private fun GraphSection(
                 isSelected = showTotalRevenue
             )
             if (showTotalExpenses) {
-                Text(text = "-${formatNumber(totalExpenses)}원")
+                Text(
+                    text = "-${formatNumber(totalExpenses)}원",
+                    style = MaterialTheme.typo.bodyM
+                )
             } else {
-                Text(text = "+${formatNumber(totalRevenue)}원")
+                Text(
+                    text = "+${formatNumber(totalRevenue)}원",
+                    style = MaterialTheme.typo.bodyM
+                )
             }
             Text(text = "합계: ${totalCost?.let { formatNumber(it) }}원")
         }
@@ -194,59 +202,137 @@ private fun GraphSection(
 }
 
 @Composable
-private fun SortingSection(sortOrder: SortOrder, onSortOrderChange: (SortOrder) -> Unit) {
-    var bottomSheetState by remember { mutableStateOf(false) }
+private fun FilterSection() {
+    var selectedOption by remember { mutableStateOf("전체") }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            OptionButton(
+                option = "전체",
+                isSelected = selectedOption == "전체",
+                onSelected = { selectedOption = it }
+            )
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            OptionButton(
+                option = "지출",
+                isSelected = selectedOption == "지출",
+                onSelected = { selectedOption = it }
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            OptionButton(
+                option = "수입",
+                isSelected = selectedOption == "수입",
+                onSelected = { selectedOption = it }
+            )
+        }
+    }
+}
 
+@Composable
+fun OptionButton(option: String, isSelected: Boolean, onSelected: (String) -> Unit) {
+    Box(
+        modifier = Modifier
+            .width(75.dp)
+            .height(32.dp)
+            .background(
+                color = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.grey1,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .clickable { onSelected(option) },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = option,
+            color = if (isSelected) Color.White else MaterialTheme.colors.grey6,
+            style = MaterialTheme.typo.bodyM
+        )
+    }
+}
+
+@Composable
+private fun SortingSection(sortOrder: SortOrder, onSortOrderChange: (SortOrder) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(start = 16.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .weight(1f)
-                .clickable { bottomSheetState = true }
-        ) {
-            Text(
-                text = "카테고리",
-                modifier = Modifier.padding(start = 8.dp, end = 4.dp)
-            )
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                tint = Color.Black
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
-        ) {
-            ClickableText(
-                text = "최신순",
-                onClick = { onSortOrderChange(SortOrder.RECENCY) },
-                isSelected = sortOrder == SortOrder.RECENCY
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            ClickableText(
-                text = "과거순",
-                onClick = { onSortOrderChange(SortOrder.OLDEST) },
-                isSelected = sortOrder == SortOrder.OLDEST
-            )
-        }
+        FilterSection()
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        CategorySelector()
+        SortOrderSelector(sortOrder, onSortOrderChange)
+    }
+}
+
+@Composable
+private fun CategorySelector() {
+    var bottomSheetState by remember { mutableStateOf(false) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clickable { bottomSheetState = true }
+    ) {
+        Text(
+            text = "카테고리",
+            modifier = Modifier.padding(end = 4.dp),
+            style = MaterialTheme.typo.bodyM
+        )
+        Icon(
+            imageVector = Icons.Default.ArrowDropDown,
+            contentDescription = null,
+            tint = Color.Black
+        )
     }
 
     if (bottomSheetState) {
         BottomSheetScreen(
             onSelectedListener = { selectedCategory ->
                 // TODO 선택된 카테고리 처리
-                //  API 호출
                 bottomSheetState = false
             },
-            categories = listOf("농약", "종자/종묘", "비료", "농산물 판매","농약", "종자/종묘", "비료", "농산물 판매", "농약", "종자/종묘", "비료", "농산물 판매"),
+            categories = listOf(
+                "농약",
+                "종자/종묘",
+                "비료",
+                "농산물 판매"
+            ),
             dismissBottomSheet = { bottomSheetState = false }
+        )
+    }
+}
+
+@Composable
+private fun SortOrderSelector(sortOrder: SortOrder, onSortOrderChange: (SortOrder) -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp, bottom = 16.dp)
+    ) {
+        ClickableText(
+            text = "최신순",
+            isSelected = sortOrder == SortOrder.RECENCY,
+            onClick = { onSortOrderChange(SortOrder.RECENCY) }
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        ClickableText(
+            text = "과거순",
+            isSelected = sortOrder == SortOrder.OLDEST,
+            onClick = { onSortOrderChange(SortOrder.OLDEST) }
         )
     }
 }
@@ -303,7 +389,6 @@ fun AccountBookItem(accountBook: AccountBookEntity) {
     }
 }
 
-
 @Composable
 fun ClickableText(
     text: String,
@@ -324,7 +409,7 @@ fun ClickableText(
         }
         Text(
             text = text,
-            color = if (isSelected) MaterialTheme.colors.primary else Color.Black
+            color = if (isSelected) MaterialTheme.colors.primary else Color.Black,
         )
     }
 }
