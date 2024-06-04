@@ -24,6 +24,15 @@
     <string name="dream_crop_name_nappa_cabbage">배추</string>
     <string name="dream_crop_name_tomato">토마토</string>
 
+    //캘린더 화면 - 농작업일정
+    <string name="calendar_farm_work_era_early">상순</string>
+    <string name="calendar_farm_work_era_mid">중순</string>
+    <string name="calendar_farm_work_era_late">하순</string>
+
+    <string name="calendar_farm_work_growth">주요 농작업 일정</string>
+    <string name="calendar_farm_work_climate">기상재해 및 문제점</string>
+    <string name="calendar_farm_work_pest">병해충 방제</string>
+
     //캘린더 화면 - 영농일지 하늘
     <string name="calendar_sky_sunny">맑음</string>
     <string name="calendar_sky_partly_cloudy">구름 많음</string>
