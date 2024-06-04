@@ -93,7 +93,7 @@ fun AccountBookScreen() {
                     { showTotalExpenses = true; showTotalRevenue = false },
                     { showTotalExpenses = false; showTotalRevenue = true }
                 )
-                SortingSection(sortOrder) {
+                SelectorSection(sortOrder) {
                     sortOrder = it
                 }
                 AccountBooksList(sortedList)
@@ -175,12 +175,12 @@ private fun GraphSection(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.End
         ) {
-            ClickableTextWithTotal(
+            ClickableTotalText(
                 text = "지출",
                 onClick = onShowExpensesClick,
                 isSelected = showTotalExpenses
             )
-            ClickableTextWithTotal(
+            ClickableTotalText(
                 text = "수입",
                 onClick = onShowRevenueClick,
                 isSelected = showTotalRevenue
@@ -202,7 +202,7 @@ private fun GraphSection(
 }
 
 @Composable
-private fun FilterSection() {
+private fun FilterSelector() {
     var selectedOption by remember { mutableStateOf("전체") }
     Row(
         modifier = Modifier
@@ -211,20 +211,20 @@ private fun FilterSection() {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            OptionButton(
+            FilterButtonOption(
                 option = "전체",
                 isSelected = selectedOption == "전체",
                 onSelected = { selectedOption = it }
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            OptionButton(
+            FilterButtonOption(
                 option = "지출",
                 isSelected = selectedOption == "지출",
                 onSelected = { selectedOption = it }
             )
             Spacer(modifier = Modifier.width(8.dp))
-            OptionButton(
+            FilterButtonOption(
                 option = "수입",
                 isSelected = selectedOption == "수입",
                 onSelected = { selectedOption = it }
@@ -234,7 +234,7 @@ private fun FilterSection() {
 }
 
 @Composable
-fun OptionButton(option: String, isSelected: Boolean, onSelected: (String) -> Unit) {
+fun FilterButtonOption(option: String, isSelected: Boolean, onSelected: (String) -> Unit) {
     Box(
         modifier = Modifier
             .width(75.dp)
@@ -255,14 +255,14 @@ fun OptionButton(option: String, isSelected: Boolean, onSelected: (String) -> Un
 }
 
 @Composable
-private fun SortingSection(sortOrder: SortOrder, onSortOrderChange: (SortOrder) -> Unit) {
+private fun SelectorSection(sortOrder: SortOrder, onSortOrderChange: (SortOrder) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FilterSection()
+        FilterSelector()
     }
     Row(
         modifier = Modifier
@@ -415,7 +415,7 @@ fun ClickableText(
 }
 
 @Composable
-fun ClickableTextWithTotal(
+fun ClickableTotalText(
     text: String,
     onClick: () -> Unit,
     isSelected: Boolean
