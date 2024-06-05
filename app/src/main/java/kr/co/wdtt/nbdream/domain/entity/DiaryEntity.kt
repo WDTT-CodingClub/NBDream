@@ -4,18 +4,18 @@ import androidx.annotation.StringRes
 import kr.co.wdtt.nbdream.R
 import java.time.LocalDate
 
-data class WorkDiaryEntity(
-    val id:String? = null,
-    val userId: String? = null,
+data class DiaryEntity(
+    val id:String,
     val dreamCrop: DreamCrop,
     val registerDate: LocalDate,
+    val holidays:List<HolidayEntity> = emptyList(),
     val weatherForecast: WeatherForecastEntity,
     val workLaborer: Int = 0,
     val workHours: Int = 0,
     val workArea: Int = 0,
     val workDescriptions: List<WorkDescription> = emptyList(),
-    val images: List<DreamImage> = emptyList(),
-    val memo: String
+    val images: List<String> = emptyList(),
+    val memo: String=""
 )
 
 
