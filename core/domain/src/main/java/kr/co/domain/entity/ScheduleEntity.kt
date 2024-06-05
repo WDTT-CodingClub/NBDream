@@ -1,22 +1,21 @@
 package kr.co.domain.entity
 
-import kr.co.domain.entity.DreamCrop
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class ScheduleEntity(
     val id: String? = null,
-    val userId: String? = null,
-    val dreamCrop: DreamCrop?= null,
+    val category: ScheduleCategory,
     val title: String,
     val startDate: LocalDate,
-    val endDate: LocalDate,
+    val endDate: LocalDate = startDate,
     val memo:String,
     val isAlarmOn: Boolean = false,
-    val alarmDateTime: String? = null
-) {
+    val alarmDateTime: LocalDateTime? = null
+)
 
-    sealed class ScheduleType {
-        data object ALL_CROP : ScheduleType()
-        data class CROP(val dreamCrop: DreamCrop) : ScheduleType()
-    }
+sealed class ScheduleCategory{
+    data object All : ScheduleCategory()
+    data class Crop(val dreamCrop: DreamCrop): ScheduleCategory()
 }
+

@@ -1,10 +1,14 @@
 package kr.co.domain.entity
 
+import java.io.File
+
 data class AccountBookEntity(
     val id: String,
     val title: String,
     val category: Category = Category.OTHER,
-    val imageUrl: List<String> = emptyList(),
+    val imageUrl: List<String> = emptyList(), // 응답
+    val imageFile: List<File> = emptyList(),
+    val registerDateTime: String? = null, // 날짜 + 시각
     val year: Int? = null, // 응답
     val month: Int? = null, // 응답
     val day: Int? = null, // 응답
@@ -28,4 +32,8 @@ data class AccountBookEntity(
         OTHER("기타"),
         ;
     }
+}
+
+enum class SortOrder {
+    RECENCY, OLDEST
 }

@@ -1,5 +1,9 @@
 package kr.co.main.calendar
 
+import android.os.Build
+import androidx.annotation.ColorInt
+import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,14 +31,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.domain.entity.DiaryEntity
+import kr.co.main.R
+import kr.co.main.calendar.content.CalendarContent
+import kr.co.main.calendar.content.CalendarContentWrapper
 import kr.co.main.calendar.providers.FakeDiaryEntityProvider
-import kr.co.ui.DreamCrop
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Alarm
 import kr.co.ui.icon.dreamicon.ArrowLeft
@@ -43,14 +50,75 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.wdtt.nbdream.ui.main.calendar.FarmWorkCalendar
-import kr.co.wdtt.nbdream.ui.main.calendar.content.CalendarContent
-import kr.co.wdtt.nbdream.ui.main.calendar.content.CalendarContentWrapper
 
+enum class DreamCrop(
+    val cropCode: String,
+    @StringRes val cropNameId: Int,
+    @ColorInt val cropColor: Int = 0,
+    val ranking: Int // 인기순위, 작물 정렬에 사용
+) {
+    PEPPER(
+        cropCode = "",
+        cropNameId = R.string.feature_main_dream_crop_name_pepper,
+        ranking = 1
+    ),
+    RICE(
+        cropCode = "",
+        cropNameId = R.string.feature_main_dream_crop_name_rice,
+        ranking = 2
+    ),
+    POTATO(
+        cropCode = "",
+        cropNameId = R.string.feature_main_dream_crop_name_potato,
+        ranking = 3
+    ),
+    SWEET_POTATO(
+        cropCode = "",
+        cropNameId = R.string.feature_main_dream_crop_name_sweet_potato,
+        ranking = 4
+    ),
+    APPLE(
+        cropCode = "",
+        cropNameId = R.string.feature_main_dream_crop_name_apple,
+        ranking = 5
+    ),
+    STRAW_BERRY(
+        cropCode = "",
+        cropNameId = R.string.feature_main_dream_crop_name_strawberry,
+        ranking = 6
+    ),
+    GARLIC(
+        cropCode = "",
+        cropNameId = R.string.feature_main_dream_crop_name_garlic,
+        ranking = 7
+    ),
+    LETTUCE(
+        cropCode = "",
+        cropNameId = R.string.feature_main_dream_crop_name_lettuce,
+        ranking = 8
+    ),
+    NAPPA_CABBAGE(
+        cropCode = "",
+        cropNameId = R.string.feature_main_dream_crop_name_nappa_cabbage,
+        ranking = 9
+    ),
+    TOMATO(
+        cropCode = "",
+        cropNameId = R.string.feature_main_dream_crop_name_tomato,
+        ranking = 10
+    )
+    ;
+
+    companion object {
+        fun getCropByCode(cropCode: String): DreamCrop =
+            entries.first { it.cropCode == cropCode }
+    }
+}
 
 // TODO 재배 작물 목록 비어있을 때 처리
 
 @Composable
-fun CalendarScreen(
+internal fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel()
 ) {
     val calendarScreenState by viewModel.state.collectAsState()
@@ -60,8 +128,8 @@ fun CalendarScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             CalendarTopBar(
-                userCrops = emptyList(),//calendarScreenState.userCrops,
-                selectedCrop = null//calendarScreenState.selectedCrop
+                userCrops = calendarScreenState.userCrops,
+                selectedCrop = calendarScreenState.selectedCrop
             )
         }
     ) { innerPadding ->
@@ -133,15 +201,15 @@ private fun CalendarDropDownTitle(
         if (selectedCrop == null) {
             Text(
                 modifier = Modifier,
-                text = "stringResource(id = R.string.calendar_no_title)",
+                text = stringResource(id = R.string.feature_main_calendar_no_title),
                 style = MaterialTheme.typo.headerB
             )
         } else {
             Text(
                 modifier = Modifier,
-                text = "stringResource(id = selectedCrop.cropNameId)" +
+                text = stringResource(id = selectedCrop.cropNameId) +
                         " " +
-                        "stringResource(id = R.string.calendar_title)",
+                        stringResource(id = R.string.feature_main_calendar_title),
                 style = MaterialTheme.typo.headerB
             )
             Image(
@@ -230,6 +298,7 @@ private fun DiaryList(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DiaryItem(
     diary: DiaryEntity,

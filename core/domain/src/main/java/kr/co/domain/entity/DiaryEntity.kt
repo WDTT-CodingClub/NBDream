@@ -1,6 +1,7 @@
 package kr.co.domain.entity
 
 import androidx.annotation.StringRes
+import kr.co.domain.entity.plzLookThisPakage.DreamCrop
 import java.time.LocalDate
 
 data class DiaryEntity(
@@ -15,15 +16,15 @@ data class DiaryEntity(
     val workDescriptions: List<WorkDescription> = emptyList(),
     val images: List<String> = emptyList(),
     val memo: String=""
-)
+) {
 
 
-data class WorkDescription(
-    val type: WorkType,
-    val description: String,
-)
+    data class WorkDescription(
+        val type: WorkType,
+        val description: String,
+    )
 
-enum class WorkType(@StringRes val labelId: Int){
+    enum class WorkType(@StringRes val labelId: Int) {
 //    SEED_PREP(R.string.calendar_work_type_seed_prep),
 //    SEEDBED_PREP(R.string.calendar_work_type_seedbed_prep),
 //    SOW(R.string.calendar_work_type_sow),
@@ -46,5 +47,5 @@ enum class WorkType(@StringRes val labelId: Int){
 //    PACK(R.string.calendar_work_type_pack),
 //    SHIP(R.string.calendar_work_type_ship),
 //    ETC(R.string.calendar_work_type_etc)
+    }
 }
-

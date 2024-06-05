@@ -6,7 +6,3 @@ plugins {
 android {
     namespace = "kr.co.main"
 }
-
-dependencies {
-    implementation(projects.core.common)
-}

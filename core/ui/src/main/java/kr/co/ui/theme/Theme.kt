@@ -6,6 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
+import kr.co.wdtt.nbdream.ui.theme.DreamTypography
+import kr.co.wdtt.nbdream.ui.theme.LocalTypography
+import kr.co.wdtt.nbdream.ui.theme.Typography
 
 private val LocalColors = staticCompositionLocalOf { ColorSet.Dream.lightColors }
 

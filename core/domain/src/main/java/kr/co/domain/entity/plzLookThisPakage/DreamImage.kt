@@ -1,4 +1,4 @@
-package kr.co.domain.entity
+package kr.co.domain.entity.plzLookThisPakage
 
 import java.io.File
 
@@ -12,10 +12,10 @@ sealed class DreamImage{
     }
     abstract fun getImage(): Any
 
-    private data class RequestImage(private val image: File):DreamImage(){
+    private data class RequestImage(private val image: File): DreamImage(){
         override fun getImage(): File= image
     }
-    private data class ResponseImage(private val image:String):DreamImage(){
+    private data class ResponseImage(private val image:String): DreamImage(){
         override fun getImage(): String = image
     }
 }

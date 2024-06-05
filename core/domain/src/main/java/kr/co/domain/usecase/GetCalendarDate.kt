@@ -3,8 +3,7 @@ package kr.co.domain.usecase
 import android.os.Build
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.flow.Flow
-import kr.co.domain.entity.CalendarDateEntity
-import kr.co.domain.entity.DreamCrop
+import kr.co.domain.entity.plzLookThisPakage.DreamCrop
 
 interface GetCalendarDate {
     @RequiresApi(Build.VERSION_CODES.O)

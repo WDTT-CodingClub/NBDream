@@ -1,12 +1,14 @@
 package kr.co.main.community
 
 import android.icu.text.DecimalFormat
+import android.net.Uri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kr.co.domain.entity.BulletinEntity
+import kr.co.domain.entity.plzLookThisPakage.DreamCrop
+import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.base.BaseViewModel
-import kr.co.domain.entity.DreamCrop
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,6 +39,19 @@ class CommunityViewModel @Inject constructor(
         _commentWritingInput.value = input
     }
 
+    private val _writingImages = MutableStateFlow(listOf<WritingSelectedImageModel>())
+    val writingImages = _writingImages.asStateFlow()
+    fun addImages(images: List<Uri>) {
+        _writingImages.value =
+            writingImages.value + images.map { WritingSelectedImageModel(uri = it) }
+    }
+
+    fun removeImage(image: Uri) {
+        val index = writingImages.value.indexOfFirst { it.uri == image }
+        if (index < 0) return
+        _writingImages.value = writingImages.value.toMutableList().apply { removeAt(index) }
+    }
+
     private val _bulletinEntities = MutableStateFlow(listOf<BulletinEntity>())
     val bulletinEntities = _bulletinEntities.asStateFlow()
 
@@ -46,7 +61,7 @@ class CommunityViewModel @Inject constructor(
                 id = "bulletinId$i",  // 게시글 id가 필요할지 안할지? 필요하다면 어떤 식으로 만들지?
                 userId = "userId$i",
                 content = "게시글 내용 $i",
-                dreamCrop = DreamCrop.entries.first(),
+                dreamCrop = DreamCrop.PEPPER,
                 createdTime = "2000.00.00 00:00:${DecimalFormat("00").format(i)}",
             )
         }

@@ -4,13 +4,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import kr.co.domain.entity.DiaryEntity
-import kr.co.domain.entity.WorkDescription
-import kr.co.domain.entity.WorkType
-import java.time.LocalDate
 
-internal class FakeDiaryEntityProvider: PreviewParameterProvider<DiaryEntity?> {
+internal class FakeDiaryEntityProvider: PreviewParameterProvider<DiaryEntity> {
     @RequiresApi(Build.VERSION_CODES.O)
-    override val values = sequenceOf( null
+    override val values = sequenceOf<DiaryEntity>(
 //        DiaryEntity(
 //            id = "1",
 //            dreamCrop = DreamCrop.POTATO,

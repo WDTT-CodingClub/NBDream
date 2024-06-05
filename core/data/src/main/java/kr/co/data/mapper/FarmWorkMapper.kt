@@ -1,16 +1,15 @@
-//package kr.co.data.mapper
-//
-//import kotlinx.coroutines.flow.Flow
-//import kotlinx.coroutines.flow.flow
-//import kr.co.common.mapper.BaseMapper
-//import kr.co.common.mapper.Mapper
-//import kr.co.domain.entity.CropScheduleEra
-//import kr.co.domain.entity.FarmWorkEntity
-//import kr.co.remote.model.response.FarmWorkResponse
-//import javax.inject.Inject
-//
+package kr.co.data.mapper
+
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kr.co.domain.entity.FarmWorkCategory
+import kr.co.domain.entity.FarmWorkEntity
+import kr.co.domain.entity.FarmWorkEra
+import javax.inject.Inject
+
+
 //internal class FarmWorkMapper @Inject constructor() :
-//    Mapper<FarmWorkResponse, List<FarmWorkEntity>>() {
+//    BaseMapper<FarmWorkResponse, List<FarmWorkEntity>>() {
 //
 //    override fun getSuccess(
 //        data: FarmWorkResponse?,
@@ -32,18 +31,27 @@
 //
 //    private fun FarmWorkResponse.Response.Body.Item.convert() =
 //        FarmWorkEntity(
-//            dreamCrop = kr.co.domain.entity.DreamCrop.getCropByCode(cropCode),
-//            startMonth = beginMon,
-//            startEra = CropScheduleEra.getEraByString(beginEra),
-//            endMonth = endMon,
-//            endEra = CropScheduleEra.getEraByString(endEra),
-//            farmWorkTypeCode = farmWorkTypeCode,
-//            farmWorkTypeName = farmWorkTypeName,
+//            id = "0",
+//            dreamCrop = DreamCrop.getCropByCode(cropCode),
+//            startEra = beginEra.toFarmWorkEra(),
+//            endEra = endEra.toFarmWorkEra(),
+//            category = farmWorkTypeName.toFarmWorkCategory(),
 //            farmWork = farmWork,
 //            videoUrl = vodUrl
 //        )
 //
-//    override fun convert(param: FarmWorkResponse): List<FarmWorkEntity> {
-//        TODO("Not yet implemented")
+//    private fun String.toFarmWorkEra(): FarmWorkEra = when(this){
+//        "상" -> FarmWorkEra.EARLY
+//        "중" -> FarmWorkEra.MID
+//        "하" -> FarmWorkEra.LATE
+//        else -> throw IllegalArgumentException("Unknown era")
+//    }
+//
+//    // TODO 응답으로 받아와지는 정확한 string 값 확인
+//    private fun String.toFarmWorkCategory(): FarmWorkCategory = when(this) {
+//        "생육과정(주요농작업)" -> FarmWorkCategory.GROWTH
+//        "병해충방제" -> FarmWorkCategory.PEST
+//        "기상재해" -> FarmWorkCategory.CLIMATE
+//        else -> throw IllegalArgumentException("unknown category")
 //    }
 //}

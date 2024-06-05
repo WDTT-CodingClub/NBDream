@@ -1,9 +1,8 @@
 package kr.co.domain.entity
 
 import androidx.annotation.StringRes
-import kr.co.domain.entity.DreamCrop
-import kr.co.domain.entity.DreamImage
-import kr.co.domain.entity.WeatherForecastEntity
+import kr.co.domain.entity.plzLookThisPakage.DreamCrop
+import kr.co.domain.entity.plzLookThisPakage.DreamImage
 import java.time.LocalDate
 
 data class WorkDiaryEntity(
