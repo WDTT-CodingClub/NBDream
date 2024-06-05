@@ -37,18 +37,51 @@ fun DreamApp(
     viewModel: MainViewModel = hiltViewModel(),
     navController: NavHostController = rememberNavController()
 ) {
-    var navRoute by remember { mutableStateOf(DreamNavRoute.SPLASH) }
+//    var navRoute by remember { mutableStateOf(DreamNavRoute.SPLASH) }
+//
+//    LaunchedEffect(Unit) {
+//        viewModel.isAuthorized.collectLatest {
+//            navRoute = if (it) DreamNavRoute.MAIN else DreamNavRoute.ONBOARDING
+//        }
+//    }
+//
+//    DreamAppScreen(
+//        startDestination = navRoute,
+//        navController = navController,
+//    )
 
-    LaunchedEffect(Unit) {
-        viewModel.isAuthorized.collectLatest {
-            navRoute = if (it) DreamNavRoute.MAIN else DreamNavRoute.ONBOARDING
+    val navController = rememberNavController()
+    var fullRoadAddr by remember { mutableStateOf("") }
+    var jibunAddr by remember { mutableStateOf("") }
+
+    NavHost(navController, startDestination = "location_search") {
+        composable("location_search") {
+            LocationSearchScreen(
+                navController = navController,
+                initialFullRoadAddr = fullRoadAddr,
+                initialJibunAddr = jibunAddr,
+                onAddressSelected = { roadAddr, jibun ->
+                    fullRoadAddr = roadAddr
+                    jibunAddr = jibun
+                }
+            )
+        }
+        composable("webview") {
+            LocationSearchWebViewScreen(navController = navController, addressSelectionListener = object : AddressSelectionListener {
+                override fun onAddressSelected(fullRoadAddr: String, jibunAddr: String) {
+                    navController.previousBackStackEntry?.savedStateHandle?.set("fullRoadAddr", fullRoadAddr)
+                    navController.previousBackStackEntry?.savedStateHandle?.set("jibunAddr", jibunAddr)
+                    navController.popBackStack()
+                }
+            })
         }
     }
 
-    DreamAppScreen(
-        startDestination = navRoute,
-        navController = navController,
-    )
+//    SelectCropScreen()
+//    LocationSearchScreen()
+//    Login()
+//    HomeRoute()
+
 }
 
 @Composable
@@ -73,35 +106,4 @@ private fun DreamAppScreen(
         onboardNavGraph(navController)
     }
 
-//    val navController = rememberNavController()
-//    var fullRoadAddr by remember { mutableStateOf("") }
-//    var jibunAddr by remember { mutableStateOf("") }
-//
-//    NavHost(navController, startDestination = "location_search") {
-//        composable("location_search") {
-//            LocationSearchScreen(
-//                navController = navController,
-//                initialFullRoadAddr = fullRoadAddr,
-//                initialJibunAddr = jibunAddr,
-//                onAddressSelected = { roadAddr, jibun ->
-//                    fullRoadAddr = roadAddr
-//                    jibunAddr = jibun
-//                }
-//            )
-//        }
-//        composable("webview") {
-//            LocationSearchWebViewScreen(navController = navController, addressSelectionListener = object : AddressSelectionListener {
-//                override fun onAddressSelected(fullRoadAddr: String, jibunAddr: String) {
-//                    navController.previousBackStackEntry?.savedStateHandle?.set("fullRoadAddr", fullRoadAddr)
-//                    navController.previousBackStackEntry?.savedStateHandle?.set("jibunAddr", jibunAddr)
-//                    navController.popBackStack()
-//                }
-//            })
-//        }
-//    }
-//
-////    SelectCropScreen()
-////    LocationSearchScreen()
-////    Login()
-////    HomeRoute()
 }
