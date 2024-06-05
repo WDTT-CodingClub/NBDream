@@ -4,8 +4,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kr.co.wdtt.core.domain.base.BaseMapper
 import kr.co.wdtt.nbdream.data.remote.dto.FarmWorkResponse
-import kr.co.wdtt.nbdream.domain.entity.CropScheduleEra
+import kr.co.wdtt.nbdream.domain.entity.FarmWorkEra
 import kr.co.wdtt.nbdream.domain.entity.DreamCrop
+import kr.co.wdtt.nbdream.domain.entity.FarmWorkCategory
 import kr.co.wdtt.nbdream.domain.entity.FarmWorkEntity
 import javax.inject.Inject
 
@@ -32,14 +33,27 @@ internal class FarmWorkMapper @Inject constructor() :
 
     private fun FarmWorkResponse.Response.Body.Item.convert() =
         FarmWorkEntity(
+            id = "0",
             dreamCrop = DreamCrop.getCropByCode(cropCode),
-            startMonth = beginMon,
-            startEra = CropScheduleEra.getEraByString(beginEra),
-            endMonth = endMon,
-            endEra = CropScheduleEra.getEraByString(endEra),
-            farmWorkTypeCode = farmWorkTypeCode,
-            farmWorkTypeName = farmWorkTypeName,
+            startEra = beginEra.toFarmWorkEra(),
+            endEra = endEra.toFarmWorkEra(),
+            category = farmWorkTypeName.toFarmWorkCategory(),
             farmWork = farmWork,
             videoUrl = vodUrl
         )
+
+    private fun String.toFarmWorkEra(): FarmWorkEra = when(this){
+        "상" -> FarmWorkEra.EARLY
+        "중" -> FarmWorkEra.MID
+        "하" -> FarmWorkEra.LATE
+        else -> throw IllegalArgumentException("Unknown era")
+    }
+
+    // TODO 응답으로 받아와지는 정확한 string 값 확인
+    private fun String.toFarmWorkCategory(): FarmWorkCategory = when(this) {
+        "생육과정(주요농작업)" -> FarmWorkCategory.GROWTH
+        "병해충방제" -> FarmWorkCategory.PEST
+        "기상재해" -> FarmWorkCategory.CLIMATE
+        else -> throw IllegalArgumentException("unknown category")
+    }
 }

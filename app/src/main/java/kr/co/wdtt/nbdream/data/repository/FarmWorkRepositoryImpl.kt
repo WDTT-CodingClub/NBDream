@@ -29,13 +29,11 @@ internal class FarmWorkRepositoryImpl @Inject constructor(
         PARAM_AUTH to PARAM_KEY
     )
 
-    override suspend fun getFarmWorkByCrop(cropCode: String): Flow<EntityWrapper<List<FarmWorkEntity>>> =
-        mapper.mapFromResult(
-            networkApi.sendRequest<FarmWorkResponse>(
-                url = FARM_WORK,
-                queryMap = queryMap.apply {
-                    put("cntntsNo", cropCode)
-                }
-            )
-        )
+    override suspend fun getFarmWorks(
+        crop: String,
+        year: Int,
+        month: Int
+    ): Flow<List<FarmWorkEntity>> {
+        TODO("Not yet implemented")
+    }
 }
