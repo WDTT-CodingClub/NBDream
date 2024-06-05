@@ -3,7 +3,6 @@ package kr.co.wdtt.nbdream.ui
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -13,13 +12,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.flow.collectLatest
-import kr.co.wdtt.nbdream.ui.main.community.CommunityScreen
 import kr.co.wdtt.nbdream.ui.main.navigation.MAIN_ROUTE
 import kr.co.wdtt.nbdream.ui.main.navigation.mainNavGraph
-import kr.co.wdtt.nbdream.ui.onboarding.login.AddressSelectionListener
-import kr.co.wdtt.nbdream.ui.onboarding.login.LocationSearchScreen
-import kr.co.wdtt.nbdream.ui.onboarding.login.LocationSearchWebViewScreen
+import kr.co.onboard.login.AddressSelectionListener
+import kr.co.onboard.login.LocationSearchScreen
+import kr.co.onboard.login.LocationSearchWebViewScreen
 import kr.co.wdtt.nbdream.ui.onboarding.navigation.ONBOARD_ROUTE
 import kr.co.wdtt.nbdream.ui.onboarding.navigation.onboardNavGraph
 

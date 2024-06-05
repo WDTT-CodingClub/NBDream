@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.onboarding.login
+package kr.co.onboard.login
 
 import android.os.Handler
 import android.os.Looper
@@ -44,9 +44,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import kr.co.wdtt.nbdream.ui.theme.ColorSet.Dream.lightColors
-import kr.co.wdtt.nbdream.ui.theme.NBDreamTheme
-import kr.co.wdtt.nbdream.ui.theme.typo
+import kr.co.ui.theme.ColorSet.Dream.lightColors
+import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.typo
 
 
 @Composable

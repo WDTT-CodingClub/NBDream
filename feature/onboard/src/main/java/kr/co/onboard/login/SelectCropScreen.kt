@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.onboarding.login
+package kr.co.onboard.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -26,24 +26,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kr.co.wdtt.nbdream.R
-import kr.co.wdtt.nbdream.ui.theme.ColorSet
-import kr.co.wdtt.nbdream.ui.theme.NBDreamTheme
-import kr.co.wdtt.nbdream.ui.theme.typo
+import kr.co.ui.theme.ColorSet
+import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.typo
 
 @Composable
 fun SelectCropScreen() {
     val crops = listOf(
-        CropItem("고추", R.drawable.img_logo),
-        CropItem("벼", R.drawable.img_logo),
-        CropItem("감자", R.drawable.img_logo),
-        CropItem("고구마", R.drawable.img_logo),
-        CropItem("사과", R.drawable.img_logo),
-        CropItem("딸기", R.drawable.img_logo),
-        CropItem("마늘", R.drawable.img_logo),
-        CropItem("상추", R.drawable.img_logo),
-        CropItem("배추", R.drawable.img_logo),
-        CropItem("토마토", R.drawable.img_logo)
+        CropItem("고추", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("벼", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("감자", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("고구마", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("사과", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("딸기", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("마늘", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("상추", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("배추", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("토마토", kr.co.nbdream.core.ui.R.drawable.img_logo)
     )
     Column(
         modifier = Modifier
@@ -167,16 +166,16 @@ data class CropItem(
 @Preview(showSystemUi = true)
 private fun LazyVerticalGridDemoPreview() {
     val crops = listOf(
-        CropItem("고추", R.drawable.img_logo),
-        CropItem("벼", R.drawable.img_logo),
-        CropItem("감자", R.drawable.img_logo),
-        CropItem("고구마", R.drawable.img_logo),
-        CropItem("사과", R.drawable.img_logo),
-        CropItem("딸기", R.drawable.img_logo),
-        CropItem("마늘", R.drawable.img_logo),
-        CropItem("상추", R.drawable.img_logo),
-        CropItem("배추", R.drawable.img_logo),
-        CropItem("토마토", R.drawable.img_logo)
+        CropItem("고추", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("벼", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("감자", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("고구마", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("사과", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("딸기", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("마늘", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("상추", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("배추", kr.co.nbdream.core.ui.R.drawable.img_logo),
+        CropItem("토마토", kr.co.nbdream.core.ui.R.drawable.img_logo)
     )
     NBDreamTheme {
         CropsList(crops, modifier = Modifier)
