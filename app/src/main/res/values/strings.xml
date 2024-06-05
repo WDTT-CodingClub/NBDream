@@ -25,10 +25,11 @@
     <string name="dream_crop_name_tomato">토마토</string>
 
     <!--    캘린더 화면 - 캘린더 제목    -->
-    <string name="calendar_title">캘린더</string>
+    <string name="calendar_title">%s 캘린더</string>
     <string name="calendar_no_title">재배 작물을 추가해 주세요</string>
+    <string name="calendar_year_month">%d년 %d월</string>
 
-    <!--    캘린더 화면 - 농작업일정    -->
+    <!--    캘린더 화면 - 농작업일정 캘린더   -->
     <string name="calendar_farm_work_era_early">상순</string>
     <string name="calendar_farm_work_era_mid">중순</string>
     <string name="calendar_farm_work_era_late">하순</string>
@@ -36,6 +37,16 @@
     <string name="calendar_farm_work_growth">주요 농작업 일정</string>
     <string name="calendar_farm_work_climate">기상재해 및 문제점</string>
     <string name="calendar_farm_work_pest">병해충 방제</string>
+
+    <!--    캘린더 화면 - 일정 캘린더  -->
+    <string name="calendar_category_all">전체</string>
+    <string name="calendar_day_of_week_sun">일</string>
+    <string name="calendar_day_of_week_mon">월</string>
+    <string name="calendar_day_of_week_tue">화</string>
+    <string name="calendar_day_of_week_wed">수</string>
+    <string name="calendar_day_of_week_thu">목</string>
+    <string name="calendar_day_of_week_fri">금</string>
+    <string name="calendar_day_of_week_sat">토</string>
 
     <!--    캘린더 화면 - 영농일지 하늘    -->
     <string name="calendar_sky_sunny">맑음</string>

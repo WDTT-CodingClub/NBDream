@@ -105,7 +105,7 @@ private fun ScheduleTitle(
 }
 
 @Composable
-private fun CategoryIndicator(
+fun CategoryIndicator(
     @ColorInt categoryColor: Int,
     modifier: Modifier = Modifier
 ) {
