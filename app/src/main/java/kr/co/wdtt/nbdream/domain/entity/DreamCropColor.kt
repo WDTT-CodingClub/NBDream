@@ -6,7 +6,7 @@ import androidx.annotation.ColorInt
 // TODO 작물별 색상 정하기
 private val pepper = Color.parseColor("#FFFFFF")
 private val rice = Color.parseColor("#FFFFFF")
-private val potato = Color.parseColor("#FFFFFF")
+private val potato = Color.parseColor("#C49C6B")
 private val sweetPotato = Color.parseColor("#FFFFFF")
 private val apple = Color.parseColor("#FFFFFF")
 private val strawberry = Color.parseColor("#FFFFFF")

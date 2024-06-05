@@ -53,7 +53,9 @@ fun FarmWorkCalendar(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        FarmWorkEraHeader()
+        FarmWorkEraHeader(
+            modifier = Modifier.padding(bottom = Paddings.medium)
+        )
         graphCategories.forEach { graphCategory ->
                 Text(
                     text = stringResource(id = graphCategory.first),
@@ -82,7 +84,7 @@ private fun FarmWorkEraHeader(
                 modifier = Modifier.weight(1f),
                 text = stringResource(id = it),
                 style = MaterialTheme.typo.labelM,
-                color = MaterialTheme.colors.text1,
+                color = MaterialTheme.colors.text2,
                 textAlign = TextAlign.Center
             )
         }
@@ -119,9 +121,7 @@ private fun FarmWorkRow(
         content = content,
         measurePolicy = { measurables, constraints ->
             val placeables = measurables.mapIndexed{ index, measurable ->
-                val eraLength = with(farmWorks[index]){
-                    endEra.value - startEra.value + 1
-                }
+                val eraLength = with(farmWorks[index]){ endEra.value - startEra.value + 1 }
                 measurable.measure(
                     constraints.copy(
                         minWidth =  (constraints.maxWidth/3) * eraLength
