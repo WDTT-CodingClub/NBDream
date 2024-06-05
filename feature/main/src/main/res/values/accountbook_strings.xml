@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_main_expense">지출</string>
+    <string name="feature_main_revenue">수입</string>
+    <string name="feature_main_farm_product_sales">농산물 판매</string>
+    <string name="feature_main_fertilizer">비료</string>
+    <string name="feature_main_seeds_and_seedlings">농자/종묘</string>
+    <string name="feature_main_pesticides">농약</string>
+    <string name="feature_main_farm_machinery">농기계</string>
+    <string name="feature_main_distribution_expense">유통비</string>
+    <string name="feature_main_rent">임차료</string>
+    <string name="feature_main_seed_sales">종자 판매</string>
+    <string name="feature_main_farm_equipment_usage_fee">농기구 사용료</string>
+    <string name="feature_main_farm_equipment_rental">농기구 대여</string>
+    <string name="feature_main_other">기타</string>
+</resources>

@@ -1,46 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    //앱 이름
     <string name="app_name">농부의 꿈</string>
-
-    //로그인
-    <string name="login_kakao_login">카카오 로그인</string>
-    <string name="login_naver_login">네이버 로그인</string>
-    <string name="login_google_login">구글 로그인</string>
-
-    //앱 전체 - 작물 이름
-    <string name="dream_crop_name_pepper">고추</string>
-    <string name="dream_crop_name_rice">벼</string>
-    <string name="dream_crop_name_potato">감자</string>
-    <string name="dream_crop_name_sweet_potato">고구마</string>
-    <string name="dream_crop_name_apple">사과</string>
-    <string name="dream_crop_name_strawberry">딸기</string>
-    <string name="dream_crop_name_garlic">마늘</string>
-    <string name="dream_crop_name_lettuce">상추</string>
-    <string name="dream_crop_name_nappa_cabbage">배추</string>
-    <string name="dream_crop_name_tomato">토마토</string>
-
-    //캘린더 화면 - 영농일지 작업 분류
-    <string name="calendar_work_type_seed_prep">종자 예조 및 소독</string>
-    <string name="calendar_work_type_seedbed_prep">묘상 준비 및 설치</string>
-    <string name="calendar_work_type_sow">파종</string>
-    <string name="calendar_work_type_graft">접목</string>
-    <string name="calendar_work_type_bury_seedling">가식</string>
-    <string name="calendar_work_type_seedbed_manage">묘판 관리</string>
-    <string name="calendar_work_type_stop_tillage">경운 정지</string>
-    <string name="calendar_work_type_initial_fertil">퇴비/기비 살포</string>
-    <string name="calendar_work_type_plant_seedling">정식</string>
-    <string name="calendar_work_type_stilts_nets">지주, 네트 세우기</string>
-    <string name="calendar_work_type_additional_fertil">추비 살포</string>
-    <string name="calendar_work_type_pest_control">병충해 방제</string>
-    <string name="calendar_work_type_weed">제초</string>
-    <string name="calendar_work_type_soil_cover">비닐 및 흙 덮기</string>
-    <string name="calendar_work_type_trimming">적심 적아</string>
-    <string name="calendar_work_type_water_manage">물 관리</string>
-    <string name="calendar_work_type_house_manage">하우스 설치 및 관리</string>
-    <string name="calendar_work_type_temp_manage">온도 관리</string>
-    <string name="calendar_work_type_harvest">수확</string>
-    <string name="calendar_work_type_pack">선별 및 포장</string>
-    <string name="calendar_work_type_ship">운반 및 저장</string>
-    <string name="calendar_work_type_etc">기타</string>
 </resources>
