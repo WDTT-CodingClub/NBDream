@@ -1,4 +1,4 @@
-package kr.co.wdtt.core.data.source.local
+package kr.co.data.source.local
 
 import kotlinx.coroutines.flow.Flow
 
