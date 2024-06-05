@@ -1,0 +1,44 @@
+<resources>
+
+    <!--    캘린더 화면 - 캘린더 제목    -->
+    <string name="feature_main_calendar_title">캘린더</string>
+    <string name="feature_main_calendar_no_title">재배 작물을 추가해 주세요</string>
+
+    <!--    캘린더 화면 - 농작업일정    -->
+    <string name="feature_main_calendar_farm_work_era_early">상순</string>
+    <string name="feature_main_calendar_farm_work_era_mid">중순</string>
+    <string name="feature_main_calendar_farm_work_era_late">하순</string>
+
+    <string name="feature_main_calendar_farm_work_growth">주요 농작업 일정</string>
+    <string name="feature_main_calendar_farm_work_climate">기상재해 및 문제점</string>
+    <string name="feature_main_calendar_farm_work_pest">병해충 방제</string>
+
+    <!--    캘린더 화면 - 영농일지 하늘    -->
+    <string name="feature_main_calendar_sky_sunny">맑음</string>
+    <string name="feature_main_calendar_sky_partly_cloudy">구름 많음</string>
+    <string name="feature_main_calendar_sky_mostly_cloudy">흐림</string>
+
+    <!--    캘린더 화면 - 영농일지 작업 분류    -->
+    <string name="feature_main_calendar_work_type_seed_prep">종자 예조 및 소독</string>
+    <string name="feature_main_calendar_work_type_seedbed_prep">묘상 준비 및 설치</string>
+    <string name="feature_main_calendar_work_type_sow">파종</string>
+    <string name="feature_main_calendar_work_type_graft">접목</string>
+    <string name="feature_main_calendar_work_type_bury_seedling">가식</string>
+    <string name="feature_main_calendar_work_type_seedbed_manage">묘판 관리</string>
+    <string name="feature_main_calendar_work_type_stop_tillage">경운 정지</string>
+    <string name="feature_main_calendar_work_type_initial_fertil">퇴비/기비 살포</string>
+    <string name="feature_main_calendar_work_type_plant_seedling">정식</string>
+    <string name="feature_main_calendar_work_type_stilts_nets">지주, 네트 세우기</string>
+    <string name="feature_main_calendar_work_type_additional_fertil">추비 살포</string>
+    <string name="feature_main_calendar_work_type_pest_control">병충해 방제</string>
+    <string name="feature_main_calendar_work_type_weed">제초</string>
+    <string name="feature_main_calendar_work_type_soil_cover">비닐 및 흙 덮기</string>
+    <string name="feature_main_calendar_work_type_trimming">적심 적아</string>
+    <string name="feature_main_calendar_work_type_water_manage">물 관리</string>
+    <string name="feature_main_calendar_work_type_house_manage">하우스 설치 및 관리</string>
+    <string name="feature_main_calendar_work_type_temp_manage">온도 관리</string>
+    <string name="feature_main_calendar_work_type_harvest">수확</string>
+    <string name="feature_main_calendar_work_type_pack">선별 및 포장</string>
+    <string name="feature_main_calendar_work_type_ship">운반 및 저장</string>
+    <string name="feature_main_calendar_work_type_etc">기타</string>
+</resources>
