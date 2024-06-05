@@ -1,0 +1,19 @@
+사용하는 Entitiy 내부에 선언해서 다른 곳에서 접근 막아주세요
+
+ex.)
+data class A (
+    val b: B
+) {
+    data class B(
+        val k: Int
+    )
+}
+
+
+만약 여러 Entity에서 사용한다면 domain의 type 패키지를 생성하고 각 모듈별로 타입을 컨버트 해주세요
+
+ex.)
+class 타입매퍼 : Mapper
+DomainType -> DataType
+
+DataType -> SourceType

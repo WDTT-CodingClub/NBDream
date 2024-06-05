@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-src")
     repositories {
         google {
             content {
@@ -20,5 +21,18 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "NBDream"
+
 include(":app")
- 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+include(":core:domain")
+include(":core:data")
+include(":core:common")
+include(":core:impl")
+include(":core:ui")
+
+include(":source:local")
+include(":source:remote")
+include(":source:provider")
+
+include(":feature:onboard")
+include(":feature:main")
