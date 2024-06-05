@@ -1,5 +1,7 @@
 package kr.co.wdtt.nbdream.ui.main.calendar
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +44,7 @@ import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
 import kr.co.wdtt.nbdream.ui.icon.dreamicon.Spinner
 import kr.co.wdtt.nbdream.ui.main.calendar.content.CalendarContent
 import kr.co.wdtt.nbdream.ui.main.calendar.content.CalendarContentWrapper
+import kr.co.wdtt.nbdream.ui.main.calendar.maincalendar.MainCalendar
 import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeDiaryEntityProvider
 import kr.co.wdtt.nbdream.ui.theme.Paddings
 import kr.co.wdtt.nbdream.ui.theme.colors
@@ -50,6 +53,7 @@ import kr.co.wdtt.nbdream.ui.theme.typo
 
 // TODO 재배 작물 목록 비어있을 때 처리
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel()
@@ -88,8 +92,14 @@ fun CalendarScreen(
                     )
                     HorizontalDivider()
 
-                    //TODO 일정 캘린더 UI
-                    //ScheduleCalendar(year = , month = , holidays = , schedules = , diaries = )
+                    MainCalendar(
+                        year = calendarScreenState.year,
+                        month = calendarScreenState.month,
+                        crop = calendarScreenState.selectedCrop!!,
+                        holidays = calendarScreenState.holidays,
+                        schedules = calendarScreenState.schedules,
+                        diaries = calendarScreenState.diaries
+                    )
 
                     DiaryList(diaries = calendarScreenState.diaries)
                 }
@@ -140,9 +150,10 @@ private fun CalendarDropDownTitle(
         } else {
             Text(
                 modifier = Modifier,
-                text = stringResource(id = selectedCrop.cropNameId) +
-                        " " +
-                        stringResource(id = R.string.calendar_title),
+                text = stringResource(
+                    id = R.string.calendar_title,
+                    stringResource(id = selectedCrop.cropNameId)
+                ),
                 style = MaterialTheme.typo.headerB
             )
             Image(
@@ -195,7 +206,7 @@ private fun CalendarYearMonth(
         )
         Text(
             modifier = Modifier.align(Alignment.Center),
-            text = "${year}년 ${month}월",
+            text = stringResource(id = R.string.calendar_year_month, year, month),
             style = MaterialTheme.typo.header2M,
             color = MaterialTheme.colors.text1
         )
@@ -209,6 +220,7 @@ private fun CalendarYearMonth(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DiaryList(
     diaries: List<DiaryEntity>,
@@ -231,6 +243,7 @@ private fun DiaryList(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DiaryItem(
     diary: DiaryEntity,
@@ -273,6 +286,7 @@ private fun CalendarYearMonthPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 private fun DiaryListPreview(

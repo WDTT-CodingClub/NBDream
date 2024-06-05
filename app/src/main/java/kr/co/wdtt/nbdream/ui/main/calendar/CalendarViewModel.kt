@@ -1,5 +1,7 @@
 package kr.co.wdtt.nbdream.ui.main.calendar
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,8 +16,8 @@ import kr.co.wdtt.nbdream.domain.entity.ScheduleEntity
 import kr.co.wdtt.nbdream.ui.combine
 import java.time.LocalDate
 import javax.inject.Inject
-
-data class CalendarScreenState(
+@RequiresApi(Build.VERSION_CODES.O)
+data class CalendarScreenState (
     val userCrops: List<DreamCrop> = emptyList(),
     val selectedCrop: DreamCrop? = null,
 
@@ -32,7 +34,7 @@ interface CalendarScreenInput {
     fun onSelectCrop(crop: DreamCrop)
     fun onSelectMonth(month: Int)
 }
-
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
 
