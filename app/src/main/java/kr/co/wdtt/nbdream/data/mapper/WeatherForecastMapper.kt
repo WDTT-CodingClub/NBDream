@@ -33,7 +33,7 @@ internal class WeatherForecastMapper @Inject constructor()
                 temperature = items.find { it.category == "TMP" }?.fcstValue ?: "",
                 minTemperature = items.find { it.category == "TMN" }?.fcstValue ?: "",
                 maxTemperature = items.find { it.category == "TMX" }?.fcstValue ?: "",
-                precipitation = items.find { it.category == "POP" }?.fcstValue ?: "",
+                precipitation = items.find { it.category == "PCP" }?.fcstValue ?: "",
                 windSpeed = items.find { it.category == "WSD" }?.fcstValue ?: ""
             )
         }

@@ -1,25 +1,21 @@
 package kr.co.wdtt.nbdream.domain.entity
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 data class ScheduleEntity(
     val id: String? = null,
-    val userId: String? = null,
-    val dreamCrop: DreamCrop?= null,
+    val category: ScheduleCategory,
     val title: String,
-    val startDate: String,
-    val startYear: Int,
-    val startMonth: Int,
-    val startDay: Int,
-    val endDate: String,
-    val endYear:Int,
-    val endMonth: Int,
-    val endDay: Int,
+    val startDate: LocalDate,
+    val endDate: LocalDate = startDate,
     val memo:String,
     val isAlarmOn: Boolean = false,
-    val alarmDateTime: String? = null
+    val alarmDateTime: LocalDateTime? = null
 )
 
-sealed class ScheduleType{
-    data object ALL_CROP : ScheduleType()
-    data class CROP(val dreamCrop: DreamCrop): ScheduleType()
+sealed class ScheduleCategory{
+    data object All : ScheduleCategory()
+    data class Crop(val dreamCrop: DreamCrop): ScheduleCategory()
 }
 

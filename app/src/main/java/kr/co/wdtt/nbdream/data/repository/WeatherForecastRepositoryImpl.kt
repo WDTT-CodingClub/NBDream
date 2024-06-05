@@ -16,22 +16,19 @@ internal class WeatherForecastRepositoryImpl @Inject constructor(
 ) : WeatherForecastRepository {
 
     companion object {
-        const val BASE_URL = "https://apis.data.go.kr/1360000/"
-        const val SHORT = "VilageFcstInfoService_2.0/getVilageFcst"
-        const val MID = "MidFcstInfoService/getMidFcst"
-        const val HEAD_AUTH = "serviceKey"
-        const val HEAD_KEY = BuildConfig.WEATHER_SHORT_KEY
+        private const val BASE_URL = "https://apis.data.go.kr/1360000/"
+        private const val SHORT = "VilageFcstInfoService_2.0/getVilageFcst"
+        private const val MID = "MidFcstInfoService/getMidFcst"
+
+        private const val PARAM_AUTH = "serviceKey"
+        private const val PARAM_KEY = BuildConfig.WEATHER_SHORT_KEY
     }
 
     private val queryMap = mutableMapOf(
+        PARAM_AUTH to PARAM_KEY,
         "dataType" to "JSON",
     )
-
-    private val networkApi = network.create(
-        BASE_URL,
-        HEAD_AUTH,
-        HEAD_KEY
-    )
+    private val networkApi = network.create( BASE_URL)
 
     override suspend fun getDayWeatherForecast(
         baseDate: String,

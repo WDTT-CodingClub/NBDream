@@ -1,5 +1,6 @@
 package kr.co.wdtt.nbdream.data.remote.retrofit
 
+import android.util.Log
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
@@ -39,18 +40,15 @@ class StringConverterFactory : Converter.Factory() {
             super.responseBodyConverter(type, annotations, retrofit)
         }
 
-    inner class ResponseBodyConverter : Converter<ResponseBody, String> {
-        override fun convert(p0: ResponseBody) =
-            p0.string()
-
-    }
-
     inner class RequestBodyConverter<T>(private val serializer: KSerializer<T>) :
         Converter<T, RequestBody> {
         override fun convert(p0: T): RequestBody {
             val jsonString = json.encodeToString(serializer, p0)
             return jsonString.toRequestBody(MEDIA_TYPE)
         }
+    }
 
+    inner class ResponseBodyConverter : Converter<ResponseBody, String> {
+        override fun convert(p0: ResponseBody) = p0.string()
     }
 }

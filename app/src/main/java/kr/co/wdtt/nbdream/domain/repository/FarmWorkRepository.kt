@@ -5,9 +5,9 @@ import kr.co.wdtt.nbdream.data.mapper.EntityWrapper
 import kr.co.wdtt.nbdream.domain.entity.FarmWorkEntity
 
 interface FarmWorkRepository {
-    /*
-    suspend fun getCropCategoriesXml(): Flow<ApiResponse<NsrCropCategoriesResponse>>
-    suspend fun getCropsByCategoryXml(categoryCode: String): Flow<ApiResponse<NsrCropsByCategoryResponse>>
-    */
-    suspend fun getFarmWorkByCrop(cropCode: String): Flow<EntityWrapper<List<FarmWorkEntity>>>
+    suspend fun getFarmWorks(
+        crop: String,
+        year:Int,
+        month:Int
+    ): Flow<List<FarmWorkEntity>>
 }
