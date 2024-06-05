@@ -10,9 +10,6 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
 
 ): BaseViewModel() {
-    override suspend fun onError(errorType: CustomErrorType) {
-        TODO("에러 이벤트")
-    }
 
     init {
 
