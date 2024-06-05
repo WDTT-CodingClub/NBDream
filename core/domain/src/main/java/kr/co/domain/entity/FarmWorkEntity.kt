@@ -1,5 +1,7 @@
 package kr.co.domain.entity
 
+import kr.co.domain.entity.plzLookThisPakage.DreamCrop
+
 data class FarmWorkEntity(
     val id:String,
     val dreamCrop: DreamCrop,

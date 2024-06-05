@@ -6,21 +6,19 @@ enum class DreamCrop(
 //    @StringRes val cropNameId: Int,
 //    @ColorInt val cropColor: Int,
     val ranking: Int, // 인기순위, 작물 정렬에 사용
-    cropNameId: Int
+//    cropNameId: Int
 ) {
     PEPPER(
         cropCode = "",
 //        cropNameId = R.string.dream_crop_name_pepper,
 //        cropColor = CropColorSet.localColors.pepper,
         ranking = 1,
-        kr.co.main.R.string.feature_main_dream_crop_name_pepper
     ),
     RICE(
         cropCode = "",
 //        cropNameId = R.string.dream_crop_name_rice,
 //        cropColor = CropColorSet.localColors.rice,
         ranking = 2,
-        kr.co.main.R.string.feature_main_dream_crop_name_pepper
     ),
 //    POTATO(
 //        cropCode = "",
