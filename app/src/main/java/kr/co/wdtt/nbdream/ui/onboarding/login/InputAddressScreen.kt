@@ -136,7 +136,7 @@ private fun Address(
                 fullRoadAddr,
                 onFullRoadAddrChange,
                 modifier = Modifier
-                    .weight(3f),// Ensure the height matches the Button
+                    .weight(3f),
                 placeholder = "주소를 입력해주세요"
             )
             Button(
