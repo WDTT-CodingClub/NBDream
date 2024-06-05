@@ -63,6 +63,47 @@ fun Title(
 }
 
 @Composable
+private fun StepProgressBar(
+    modifier: Modifier = Modifier,
+    color: Color
+) {
+    Box(
+        modifier = modifier
+            .height(10.dp)
+            .background(
+                color = color,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .then(
+                if (color == Color.Transparent)
+                    Modifier.border(0.5.dp, Color.Gray, RoundedCornerShape(4.dp))
+                else
+                    Modifier
+            )
+
+    )
+}
+
+@Composable
+fun DynamicStepProgressBars(
+    colors: List<Color>
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        colors.forEach { color ->
+            StepProgressBar(
+                color = color,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
 fun DescriptionText(
     text: String
 ){
@@ -95,8 +136,7 @@ private fun Address(
                 fullRoadAddr,
                 onFullRoadAddrChange,
                 modifier = Modifier
-                    .weight(3f)
-                    .height(35.dp), // Ensure the height matches the Button
+                    .weight(3f),// Ensure the height matches the Button
                 placeholder = "주소를 입력해주세요"
             )
             Button(
@@ -119,43 +159,84 @@ private fun Address(
         NextButton()
     }
 }
+@Composable
+fun NextButton(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ){
+        Column(
+            modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = lightColors.secondary
+                ),
+            ) {
+                Text("나중에 입력할게요")
+            }
+            Button(
+                onClick = {},
+                modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = lightColors.primary,
+                    contentColor = Color.White
+                ),
+            ) {
+                Text(
+                    "다음으로",
+                    style = MaterialTheme.typo.titleSB,
+                )
+            }
+        }
 
+    }
+}
 @Composable
 fun LocationSearchScreen(
     navController: NavController,
-    initiaFfullRoadAddr: String,
+    initialFullRoadAddr: String,
     initialJibunAddr: String,
     onAddressSelected: (String, String) -> Unit
 ) {
-    var fullRoadAddr by remember { mutableStateOf(initiaFfullRoadAddr) }
+    var fullRoadAddr by remember { mutableStateOf(initialFullRoadAddr) }
     var jibunAddr by remember { mutableStateOf(initialJibunAddr) }
 
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
 
-    savedStateHandle?.keys()?.forEach { key ->
-        val value = savedStateHandle.get<Any>(key)
-        fullRoadAddr = value.toString()
-        Log.d("SavedStateHandle", "Key: $key, Value: $value")
-    }
-
+    // savedStateHandle을 관찰하고 변화에 반응하기 위해 DisposableEffect 사용
     DisposableEffect(savedStateHandle) {
-        val observer1 = Observer<String> { roadAddr ->
-            if (roadAddr != null) {
-                onAddressSelected(roadAddr, jibunAddr)
-            }
-        }
-        val observer2 = Observer<String> { jibun ->
-            if (jibun != null) {
-                onAddressSelected(fullRoadAddr, jibun)
+        // 옵저버 설정
+        val observer = Observer<String> { newValue ->
+            if (newValue != null) {
+                val currentRoadAddr = savedStateHandle?.get<String>("fullRoadAddr")
+                val currentJibunAddr = savedStateHandle?.get<String>("jibunAddr")
+
+                if (currentRoadAddr != null && currentRoadAddr != fullRoadAddr) {
+                    fullRoadAddr = currentRoadAddr
+                    onAddressSelected(currentRoadAddr, jibunAddr)
+                }
+
+                if (currentJibunAddr != null && currentJibunAddr != jibunAddr) {
+                    jibunAddr = currentJibunAddr
+                    onAddressSelected(fullRoadAddr, currentJibunAddr)
+                }
             }
         }
 
-        savedStateHandle?.getLiveData<String>("fullRoadAddr")?.observe(navController.currentBackStackEntry!!, observer1)
-        savedStateHandle?.getLiveData<String>("jibunAddr")?.observe(navController.currentBackStackEntry!!, observer2)
+        savedStateHandle?.getLiveData<String>("fullRoadAddr")?.observe(navController.currentBackStackEntry!!, observer)
+        savedStateHandle?.getLiveData<String>("jibunAddr")?.observe(navController.currentBackStackEntry!!, observer)
 
         onDispose {
-            savedStateHandle?.getLiveData<String>("fullRoadAddr")?.removeObserver(observer1)
-            savedStateHandle?.getLiveData<String>("jibunAddr")?.removeObserver(observer2)
+            savedStateHandle?.getLiveData<String>("fullRoadAddr")?.removeObserver(observer)
+            savedStateHandle?.getLiveData<String>("jibunAddr")?.removeObserver(observer)
         }
     }
 
@@ -222,47 +303,6 @@ class WebAppInterface(private val listener: AddressSelectionListener) {
 }
 
 @Composable
-private fun StepProgressBar(
-    modifier: Modifier = Modifier,
-    color: Color
-) {
-    Box(
-        modifier = modifier
-            .height(10.dp)
-            .background(
-                color = color,
-                shape = RoundedCornerShape(4.dp)
-            )
-            .then(
-                if (color == Color.Transparent)
-                    Modifier.border(0.5.dp, Color.Gray, RoundedCornerShape(4.dp))
-                else
-                    Modifier
-            )
-
-    )
-}
-
-@Composable
-fun DynamicStepProgressBars(
-    colors: List<Color>
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        colors.forEach { color ->
-            StepProgressBar(
-                color = color,
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }
-}
-
-@Composable
 private fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
@@ -298,44 +338,6 @@ private fun CustomTextField(
             }
         }
     )
-}
-
-@Composable
-fun NextButton(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
-    ){
-        Column(
-            modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = lightColors.secondary
-                ),
-            ) {
-                Text("나중에 입력할게요")
-            }
-            Button(
-                onClick = {},
-                modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = lightColors.primary,
-                    contentColor = Color.White
-                ),
-            ) {
-                Text("다음으로")
-            }
-        }
-
-    }
 }
 
 @Preview(showBackground = true)
