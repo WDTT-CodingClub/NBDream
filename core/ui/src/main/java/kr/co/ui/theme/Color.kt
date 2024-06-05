@@ -29,10 +29,9 @@ private val black = Color(0xFF000000)
 private val white = Color(0xFFFFFFFF)
 
 private val red1 = Color(0xFFF45262)
-
 private val blue1 = Color(0xFFABC5F8)
-
 private val orange1 = Color(0xFFDE9E63)
+private val yellow1 = Color(0xFFFEC600)
 
 val kakaoYellow = Color(0xFFFEE500)
 val naverGreen = Color(0xFF03C75A)
@@ -70,6 +69,7 @@ sealed class ColorSet {
             red1 = red1,
             blue1 = blue1,
             orange1 = orange1,
+            yellow1 = yellow1
         )
         override var darkColors = DreamColor(
             material = darkColorScheme(),
@@ -101,4 +101,5 @@ data class DreamColor(
     val red1: Color = Color.Red,
     val blue1: Color = Color.Blue,
     val orange1: Color = Color.Yellow,
+    val yellow1: Color = Color.Yellow
 )
