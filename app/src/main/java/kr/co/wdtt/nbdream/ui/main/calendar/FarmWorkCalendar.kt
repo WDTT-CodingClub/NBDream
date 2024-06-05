@@ -18,12 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kr.co.wdtt.nbdream.R
 import kr.co.wdtt.nbdream.domain.entity.FarmWorkCategory
@@ -33,7 +31,6 @@ import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeFarmWorkEntityListProvi
 import kr.co.wdtt.nbdream.ui.theme.Paddings
 import kr.co.wdtt.nbdream.ui.theme.colors
 import kr.co.wdtt.nbdream.ui.theme.typo
-import kotlin.math.abs
 
 private const val FARM_WORK_ITEM_HEIGHT = 20
 
@@ -57,16 +54,16 @@ fun FarmWorkCalendar(
             modifier = Modifier.padding(bottom = Paddings.medium)
         )
         graphCategories.forEach { graphCategory ->
-                Text(
-                    text = stringResource(id = graphCategory.first),
-                    style = MaterialTheme.typo.bodyM,
-                    color = MaterialTheme.colors.text1
-                )
-                FarmWorkGraph(
-                    modifier = Modifier.fillMaxWidth(),
-                    farmWorks = farmWorks.filter { it.category == graphCategory.second }
-                )
-            }
+            Text(
+                text = stringResource(id = graphCategory.first),
+                style = MaterialTheme.typo.bodyM,
+                color = MaterialTheme.colors.text1
+            )
+            FarmWorkCalendarContent(
+                modifier = Modifier.fillMaxWidth(),
+                farmWorks = farmWorks.filter { it.category == graphCategory.second }
+            )
+        }
     }
 }
 
@@ -92,11 +89,11 @@ private fun FarmWorkEraHeader(
 }
 
 @Composable
-private fun FarmWorkGraph(
+private fun FarmWorkCalendarContent(
     farmWorks: List<FarmWorkEntity>,
     modifier: Modifier = Modifier
 ) {
-    FarmWorkRow(
+    FarmWorkCalendarRow(
         modifier = modifier,
         farmWorks = farmWorks,
         content = {
@@ -111,7 +108,28 @@ private fun FarmWorkGraph(
 }
 
 @Composable
-private fun FarmWorkRow(
+private fun FarmWorkItem(
+    farmWork: FarmWorkEntity,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .height(FARM_WORK_ITEM_HEIGHT.dp)
+            .clip(shape = RoundedCornerShape(5.dp))
+            .background(color = Color(farmWork.dreamCrop.cropColor)),
+    ) {
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = farmWork.farmWork,
+            style = MaterialTheme.typo.labelR,
+            color = MaterialTheme.colors.text1,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun FarmWorkCalendarRow(
     farmWorks: List<FarmWorkEntity>,
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier
@@ -120,11 +138,11 @@ private fun FarmWorkRow(
         modifier = modifier,
         content = content,
         measurePolicy = { measurables, constraints ->
-            val placeables = measurables.mapIndexed{ index, measurable ->
-                val eraLength = with(farmWorks[index]){ endEra.value - startEra.value + 1 }
+            val placeables = measurables.mapIndexed { index, measurable ->
+                val eraLength = with(farmWorks[index]) { endEra.value - startEra.value + 1 }
                 measurable.measure(
                     constraints.copy(
-                        minWidth =  (constraints.maxWidth/3) * eraLength
+                        minWidth = (constraints.maxWidth / 3) * eraLength
                     )
                 )
             }
@@ -150,32 +168,12 @@ private fun FarmWorkRow(
     )
 }
 
-@Composable
-private fun FarmWorkItem(
-    farmWork: FarmWorkEntity,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(FARM_WORK_ITEM_HEIGHT.dp)
-            .clip(shape = RoundedCornerShape(5.dp))
-            .background(color = Color(farmWork.dreamCrop.cropColor)),
-    ) {
-        Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = farmWork.farmWork,
-            style = MaterialTheme.typo.labelR,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
 @Preview
 @Composable
 private fun FarmWorkCalendarPreview(
     @PreviewParameter(FakeFarmWorkEntityListProvider::class) farmWorks: List<FarmWorkEntity>
 ) {
-    Surface{
+    Surface {
         FarmWorkCalendar(farmWorks = farmWorks)
     }
 }
