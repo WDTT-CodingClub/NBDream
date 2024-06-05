@@ -8,11 +8,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -99,6 +102,26 @@ fun AccountBookScreen() {
                 AccountBooksList(sortedList)
             }
         }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            FloatingActionButton(
+                onClick = { /* TODO */ },
+                shape = CircleShape,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                containerColor = MaterialTheme.colors.green1
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Create,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        }
     }
 }
 
@@ -111,20 +134,22 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
     val lastDayOfMonth = currentYearMonth.atEndOfMonth()
 
     val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-    val startDate = firstDayOfMonth.format(formatter)
-    val endDate = lastDayOfMonth.format(formatter)
+    val startDate = remember { mutableStateOf(firstDayOfMonth) }
+    val endDate = remember { mutableStateOf(lastDayOfMonth) }
 
     val daysInRange = ChronoUnit.DAYS.between(firstDayOfMonth, lastDayOfMonth) + 1
     onDaysInRangeChange(daysInRange)
+
+    var bottomSheetState by remember { mutableStateOf(false) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(16.dp)
-            .clickable { }
+            .clickable { bottomSheetState = true }
     ) {
         Text(
-            text = "$startDate - $endDate",
+            text = "${startDate.value.format(formatter)} - ${endDate.value.format(formatter)}", // LocalDate를 문자열로 변환하여 표시
             modifier = Modifier.padding(start = 8.dp, end = 4.dp),
             style = MaterialTheme.typo.header2M
         )
@@ -132,6 +157,18 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
             imageVector = Icons.Default.DateRange,
             contentDescription = null,
             tint = Color.Black
+        )
+    }
+
+    if (bottomSheetState) {
+        AccountBookCalendarBottomSheet(
+            onSelectedListener = { selectedPeriod ->
+                // TODO 선택된 기간에 대한 처리
+                bottomSheetState = false
+            },
+            startDate = startDate,
+            endDate = endDate,
+            dismissBottomSheet = { bottomSheetState = false }
         )
     }
 }
@@ -298,7 +335,7 @@ private fun CategorySelector() {
     }
 
     if (bottomSheetState) {
-        AccountBookBottomSheet(
+        AccountBookCategoryBottomSheet(
             onSelectedListener = { selectedCategory ->
                 // TODO 선택된 카테고리 처리
                 bottomSheetState = false
@@ -509,5 +546,5 @@ private val accountBookList = listOf(
         totalExpense = 45000,
         totalRevenue = 80000,
         totalCost = 35000,
-    ),
+    )
 )
