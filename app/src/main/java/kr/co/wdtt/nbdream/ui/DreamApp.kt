@@ -3,6 +3,7 @@ package kr.co.wdtt.nbdream.ui
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -12,13 +13,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import kr.co.wdtt.nbdream.ui.main.navigation.MAIN_ROUTE
-import kr.co.wdtt.nbdream.ui.main.navigation.mainNavGraph
+import kotlinx.coroutines.flow.collectLatest
+import kr.co.main.navigation.MAIN_ROUTE
+import kr.co.main.navigation.mainNavGraph
 import kr.co.onboard.login.AddressSelectionListener
 import kr.co.onboard.login.LocationSearchScreen
 import kr.co.onboard.login.LocationSearchWebViewScreen
-import kr.co.wdtt.nbdream.ui.onboarding.navigation.ONBOARD_ROUTE
-import kr.co.wdtt.nbdream.ui.onboarding.navigation.onboardNavGraph
+import kr.co.onboard.navigation.ONBOARD_ROUTE
+import kr.co.onboard.navigation.onboardNavGraph
+import kr.co.wdtt.nbdream.MainViewModel
 
 private enum class DreamNavRoute(
     val route: String,
@@ -34,51 +37,18 @@ internal fun DreamApp(
     viewModel: MainViewModel = hiltViewModel(),
     navController: NavHostController = rememberNavController()
 ) {
-//    var navRoute by remember { mutableStateOf(DreamNavRoute.SPLASH) }
-//
-//    LaunchedEffect(Unit) {
-//        viewModel.isAuthorized.collectLatest {
-//            navRoute = if (it) DreamNavRoute.MAIN else DreamNavRoute.ONBOARDING
-//        }
-//    }
-//
-//    DreamAppScreen(
-//        startDestination = navRoute,
-//        navController = navController,
-//    )
+    var navRoute by remember { mutableStateOf(DreamNavRoute.SPLASH) }
 
-    val navController = rememberNavController()
-    var fullRoadAddr by remember { mutableStateOf("") }
-    var jibunAddr by remember { mutableStateOf("") }
-
-    NavHost(navController, startDestination = "location_search") {
-        composable("location_search") {
-            LocationSearchScreen(
-                navController = navController,
-                initialFullRoadAddr = fullRoadAddr,
-                initialJibunAddr = jibunAddr,
-                onAddressSelected = { roadAddr, jibun ->
-                    fullRoadAddr = roadAddr
-                    jibunAddr = jibun
-                }
-            )
-        }
-        composable("webview") {
-            LocationSearchWebViewScreen(navController = navController, addressSelectionListener = object : AddressSelectionListener {
-                override fun onAddressSelected(fullRoadAddr: String, jibunAddr: String) {
-                    navController.previousBackStackEntry?.savedStateHandle?.set("fullRoadAddr", fullRoadAddr)
-                    navController.previousBackStackEntry?.savedStateHandle?.set("jibunAddr", jibunAddr)
-                    navController.popBackStack()
-                }
-            })
+    LaunchedEffect(Unit) {
+        viewModel.isAuthorized.collectLatest {
+            navRoute = if (it) DreamNavRoute.MAIN else DreamNavRoute.ONBOARDING
         }
     }
 
-//    SelectCropScreen()
-//    LocationSearchScreen()
-//    Login()
-//    HomeRoute()
-
+    DreamAppScreen(
+        startDestination = navRoute,
+        navController = navController,
+    )
 }
 
 @Composable
