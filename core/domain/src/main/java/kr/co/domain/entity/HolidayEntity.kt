@@ -8,7 +8,6 @@ data class HolidayEntity (
     val type: HolidayType,
     val name: String
 ) {
-
     enum class HolidayType {
         NATIONAL_HOLIDAY, //국경일, 공휴일 (달력 빨간 날)
         CONSTITUTION_DAY, //제헌절

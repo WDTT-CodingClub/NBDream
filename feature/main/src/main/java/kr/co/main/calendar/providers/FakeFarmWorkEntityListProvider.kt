@@ -4,13 +4,14 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import kr.co.domain.entity.FarmWorkCategory
 import kr.co.domain.entity.FarmWorkEntity
 import kr.co.domain.entity.FarmWorkEra
+import kr.co.domain.entity.plzLookThisPakage.DreamCrop
 
-//TODO sequence라 listOf로 안묶어줘도 될거 같은대요,
-class FakeFarmWorkEntityListProvider : PreviewParameterProvider<FarmWorkEntity>{
+//TODO sequence라 listOf로 안묶어줘도 될거 같아요,
+internal class FakeFarmWorkEntityListProvider : PreviewParameterProvider<FarmWorkEntity>{
     override val values = sequenceOf(
             FarmWorkEntity(
                 id = "1",
-                dreamCrop = kr.co.ui.DreamCrop.POTATO,
+                dreamCrop = DreamCrop.POTATO,
                 startEra = FarmWorkEra.EARLY,
                 endEra = FarmWorkEra.EARLY,
                 category = FarmWorkCategory.GROWTH,
@@ -19,7 +20,7 @@ class FakeFarmWorkEntityListProvider : PreviewParameterProvider<FarmWorkEntity>{
             ),
             FarmWorkEntity(
                 id = "2",
-                dreamCrop = kr.co.ui.DreamCrop.POTATO,
+                dreamCrop = DreamCrop.POTATO,
                 startEra = FarmWorkEra.MID,
                 endEra = FarmWorkEra.LATE,
                 category = FarmWorkCategory.GROWTH,
@@ -28,7 +29,7 @@ class FakeFarmWorkEntityListProvider : PreviewParameterProvider<FarmWorkEntity>{
             ),
             FarmWorkEntity(
                 id = "3",
-                dreamCrop = kr.co.ui.DreamCrop.POTATO,
+                dreamCrop = DreamCrop.POTATO,
                 startEra = FarmWorkEra.LATE,
                 endEra = FarmWorkEra.LATE,
                 category = FarmWorkCategory.GROWTH,
@@ -37,7 +38,7 @@ class FakeFarmWorkEntityListProvider : PreviewParameterProvider<FarmWorkEntity>{
             ),
             FarmWorkEntity(
                 id = "4",
-                dreamCrop = kr.co.ui.DreamCrop.POTATO,
+                dreamCrop = DreamCrop.POTATO,
                 startEra = FarmWorkEra.EARLY,
                 endEra = FarmWorkEra.LATE,
                 category = FarmWorkCategory.CLIMATE,
@@ -46,7 +47,7 @@ class FakeFarmWorkEntityListProvider : PreviewParameterProvider<FarmWorkEntity>{
             ),
             FarmWorkEntity(
                 id = "5",
-                dreamCrop = kr.co.ui.DreamCrop.POTATO,
+                dreamCrop = DreamCrop.POTATO,
                 startEra = FarmWorkEra.EARLY,
                 endEra = FarmWorkEra.LATE,
                 category = FarmWorkCategory.CLIMATE,
@@ -55,7 +56,7 @@ class FakeFarmWorkEntityListProvider : PreviewParameterProvider<FarmWorkEntity>{
             ),
             FarmWorkEntity(
                 id = "6",
-                dreamCrop = kr.co.ui.DreamCrop.POTATO,
+                dreamCrop = DreamCrop.POTATO,
                 startEra = FarmWorkEra.EARLY,
                 endEra = FarmWorkEra.LATE,
                 category = FarmWorkCategory.PEST,

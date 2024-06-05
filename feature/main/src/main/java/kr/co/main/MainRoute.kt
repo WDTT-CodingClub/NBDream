@@ -31,7 +31,7 @@ internal enum class MainBottomRoute(
 }
 
 @Composable
-fun MainRoute(
+internal fun MainRoute(
     mainBuilder: NavGraphBuilder.() -> Unit,
 ) {
     val mainNavController = rememberNavController()

@@ -41,7 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommunityScreen(
+internal fun CommunityScreen(
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {
     var tempTextFieldValue by remember {

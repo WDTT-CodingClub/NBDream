@@ -49,9 +49,8 @@ import kr.co.ui.icon.dreamicon.Spinner
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import kr.co.wdtt.nbdream.ui.main.calendar.FarmWorkCalendar
 
-enum class DreamCrop(
+internal enum class DreamCrop(
     val cropCode: String,
     @StringRes val cropNameId: Int,
     @ColorInt val cropColor: Int = 0,

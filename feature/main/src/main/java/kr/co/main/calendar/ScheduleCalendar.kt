@@ -7,7 +7,7 @@ import kr.co.domain.entity.HolidayEntity
 import kr.co.domain.entity.ScheduleEntity
 
 @Composable
-fun ScheduleCalendar(
+internal fun ScheduleCalendar(
     year:Int,
     month:Int,
     holidays:List<HolidayEntity>,

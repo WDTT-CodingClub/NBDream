@@ -34,14 +34,14 @@ import kr.co.ui.icon.dreamicon.Alarm
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeScheduleEntityProvider
+import kr.co.main.calendar.providers.FakeScheduleEntityProvider
 
 private const val CROP_COLOR_CIRCLE_SIZE = 8
 private const val ALARM_ICON_SIZE = 16
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleContent(
+internal fun ScheduleContent(
     schedule: ScheduleEntity,
     modifier: Modifier = Modifier
 ) {
@@ -83,7 +83,7 @@ private fun ScheduleTitle(
 ) {
     val categoryColor = remember(category) {
         when (category) {
-            is ScheduleCategory.Crop -> category.dreamCrop.cropColor
+            is ScheduleCategory.Crop -> Color.Green.toArgb()
             is ScheduleCategory.All -> Color.LightGray.toArgb()
         }
     }

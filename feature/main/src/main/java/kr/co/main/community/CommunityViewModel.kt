@@ -12,7 +12,7 @@ import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class CommunityViewModel @Inject constructor(
+internal class CommunityViewModel @Inject constructor(
 //    private val getDayWeatherForecast: GetDayWeatherForecast,
 ) : BaseViewModel() {
     private val _currentBoard = MutableStateFlow("")

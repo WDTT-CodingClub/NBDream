@@ -5,7 +5,7 @@ import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class AccountBookViewModel @Inject constructor(
+internal class AccountBookViewModel @Inject constructor(
 
 ) : BaseViewModel() {
 }

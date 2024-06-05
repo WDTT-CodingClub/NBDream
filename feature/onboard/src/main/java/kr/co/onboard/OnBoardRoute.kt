@@ -3,7 +3,7 @@ package kr.co.onboard
 import androidx.compose.runtime.Composable
 
 @Composable
-fun OnBoardRoute(
+internal fun OnBoardRoute(
     onKakaoClick: () -> Unit,
     onNaverClick: () -> Unit,
     onGoogleClick: () -> Unit,

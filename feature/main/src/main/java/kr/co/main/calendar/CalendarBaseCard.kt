@@ -37,11 +37,11 @@ import kr.co.ui.icon.dreamicon.Dropdown
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.typo
-import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeScheduleEntityProvider
+import kr.co.main.calendar.providers.FakeScheduleEntityProvider
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarBaseCard(
+internal fun CalendarBaseCard(
     calendarContent: CalendarContent,
     modifier: Modifier = Modifier
 ) {

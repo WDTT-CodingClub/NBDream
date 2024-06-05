@@ -1,5 +1,6 @@
 package kr.co.domain.entity
 
+import kr.co.domain.entity.plzLookThisPakage.DreamCrop
 import java.time.LocalDate
 import java.time.LocalDateTime
 

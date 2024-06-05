@@ -47,7 +47,7 @@ private fun PreviewAccountBookScreen() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AccountBookScreen() {
+internal fun AccountBookScreen() {
     var sortOrder by remember { mutableStateOf(SortOrder.RECENCY) }
     var showTotalExpenses by remember { mutableStateOf(true) }
     var showTotalRevenue by remember { mutableStateOf(false) }

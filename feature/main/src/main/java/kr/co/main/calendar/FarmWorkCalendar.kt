@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar
+package kr.co.main.calendar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -35,7 +35,7 @@ import kr.co.ui.theme.typo
 private const val FARM_WORK_ITEM_HEIGHT = 20
 
 @Composable
-fun FarmWorkCalendar(
+internal fun FarmWorkCalendar(
     farmWorks: List<FarmWorkEntity>,
     modifier: Modifier = Modifier
 ) {
@@ -156,7 +156,7 @@ private fun FarmWorkItem(
         modifier = modifier
             .height(FARM_WORK_ITEM_HEIGHT.dp)
             .clip(shape = RoundedCornerShape(5.dp))
-            .background(color = Color(farmWork.dreamCrop.cropColor)),
+            .background(color = Color.White),
     ) {
         Text(
             modifier = Modifier.align(Alignment.Center),

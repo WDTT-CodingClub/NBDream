@@ -8,7 +8,7 @@ import kr.co.domain.entity.DiaryEntity
 import kr.co.domain.entity.ScheduleEntity
 
 
-sealed class CalendarContent {
+internal sealed class CalendarContent {
     data class ScheduleContent (val schedule: ScheduleEntity) : CalendarContent()
     data class DiaryContent (val diary: DiaryEntity) : CalendarContent()
 
@@ -20,7 +20,7 @@ sealed class CalendarContent {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarContentWrapper(
+internal fun CalendarContentWrapper(
     calendarContent: CalendarContent,
     modifier: Modifier = Modifier
 ) =

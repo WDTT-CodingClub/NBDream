@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class FarmWorkResponse(
+internal data class FarmWorkResponse(
     val response: Response
 ) {
     @Serializable

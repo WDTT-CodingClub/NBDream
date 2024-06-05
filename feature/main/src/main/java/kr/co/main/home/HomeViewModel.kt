@@ -10,7 +10,7 @@ import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+internal class HomeViewModel @Inject constructor(
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(listOf(""))
     val state = _state.asStateFlow()

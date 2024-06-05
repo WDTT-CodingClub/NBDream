@@ -28,7 +28,7 @@ private enum class DreamNavRoute(
     ONBOARDING(ONBOARD_ROUTE),
 }
 
-const val SPLASH_ROUTE = "splash"
+private const val SPLASH_ROUTE = "splash"
 @Composable
 internal fun DreamApp(
     viewModel: MainViewModel = hiltViewModel(),

@@ -14,7 +14,7 @@ import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import javax.inject.Inject
 
-data class CalendarScreenState(
+internal data class CalendarScreenState(
     val userCrops: List<DreamCrop> = emptyList(),
     val selectedCrop: DreamCrop? = null,
 
@@ -27,13 +27,13 @@ data class CalendarScreenState(
     val diaries: List<DiaryEntity> = emptyList()
 )
 
-interface CalendarScreenInput {
+internal interface CalendarScreenInput {
     fun onSelectCrop(crop: DreamCrop)
     fun onSelectMonth(month: Int)
 }
 
 @HiltViewModel
-class CalendarViewModel @Inject constructor(
+internal class CalendarViewModel @Inject constructor(
 
 ) : BaseViewModel(), CalendarScreenInput {
     private val TAG = this@CalendarViewModel::class.java.simpleName
