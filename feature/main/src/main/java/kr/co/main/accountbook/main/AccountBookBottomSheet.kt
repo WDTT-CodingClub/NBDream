@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.accountbook.main
+package kr.co.main.accountbook.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kr.co.wdtt.nbdream.ui.theme.colors
+import kr.co.ui.theme.colors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

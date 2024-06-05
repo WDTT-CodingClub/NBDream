@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.community.temp
+package kr.co.main.community.temp
 
 import android.net.Uri
 

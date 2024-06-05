@@ -1,11 +1,22 @@
-package kr.co.wdtt.nbdream.ui.accountbook.main
+package kr.co.main.accountbook.main
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,7 +29,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,10 +42,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import kr.co.wdtt.nbdream.domain.entity.AccountBookEntity
-import kr.co.wdtt.nbdream.domain.entity.SortOrder
-import kr.co.wdtt.nbdream.ui.theme.colors
-import kr.co.wdtt.nbdream.ui.theme.typo
+import kr.co.domain.entity.AccountBookEntity
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.YearMonth
@@ -45,6 +59,9 @@ private fun PreviewAccountBookScreen() {
     AccountBookScreen()
 }
 
+private enum class SortOrder{ // 임시
+    RECENCY, OLDEST;
+}
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AccountBookScreen() {
@@ -53,7 +70,7 @@ fun AccountBookScreen() {
     var showTotalRevenue by remember { mutableStateOf(false) }
     val totalExpenses = accountBookList.sumOf { it.expense ?: 0L }
     val totalRevenue = accountBookList.sumOf { it.revenue ?: 0L }
-    val totalCost = accountBookList[0].totalCost
+    val totalCost = 80000L
 
     var daysInRange by remember { mutableStateOf(0L) }
 
@@ -470,9 +487,6 @@ private val accountBookList = listOf(
         day = 12,
         dayName = "월요일",
         revenue = 50000,
-        totalExpense = 45000,
-        totalRevenue = 80000,
-        totalCost = 35000,
         imageUrl = listOf("https://cdn.mkhealth.co.kr/news/photo/202206/58096_61221_124.jpg")
     ),
     AccountBookEntity(
@@ -482,9 +496,6 @@ private val accountBookList = listOf(
         day = 14,
         dayName = "수요일",
         expense = 20000,
-        totalExpense = 45000,
-        totalRevenue = 80000,
-        totalCost = 35000,
         imageUrl = listOf("https://godomall.speedycdn.net/6686a1fdb6f0fed93d4f44074b951d13/goods/1000000025/image/main/1000000025_main_032.jpg")
     ),
     AccountBookEntity(
@@ -494,9 +505,6 @@ private val accountBookList = listOf(
         day = 16,
         dayName = "금요일",
         expense = 15000,
-        totalExpense = 45000,
-        totalRevenue = 80000,
-        totalCost = 35000,
         imageUrl = listOf("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnN4P5HnBeFFnpRoF3rUPmGt8lb9YEkqB2YA&s")
     ),
     AccountBookEntity(
@@ -506,8 +514,5 @@ private val accountBookList = listOf(
         day = 18,
         dayName = "일요일",
         expense = 10000,
-        totalExpense = 45000,
-        totalRevenue = 80000,
-        totalCost = 35000,
     ),
 )

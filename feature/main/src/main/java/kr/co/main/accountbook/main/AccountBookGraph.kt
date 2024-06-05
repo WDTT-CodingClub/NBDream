@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.accountbook.main
+package kr.co.main.accountbook.main
 
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas

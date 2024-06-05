@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.util
+package kr.co.common.util
 
 import android.os.Build
 import androidx.annotation.RequiresApi

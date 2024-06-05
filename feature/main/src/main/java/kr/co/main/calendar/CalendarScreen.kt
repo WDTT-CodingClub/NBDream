@@ -27,25 +27,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import kr.co.wdtt.nbdream.R
-import kr.co.wdtt.nbdream.domain.entity.DiaryEntity
-import kr.co.wdtt.nbdream.domain.entity.DreamCrop
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Alarm
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.ArrowLeft
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Spinner
+import kr.co.domain.entity.DiaryEntity
+import kr.co.main.calendar.providers.FakeDiaryEntityProvider
+import kr.co.ui.DreamCrop
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Alarm
+import kr.co.ui.icon.dreamicon.ArrowLeft
+import kr.co.ui.icon.dreamicon.Spinner
+import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
+import kr.co.wdtt.nbdream.ui.main.calendar.FarmWorkCalendar
 import kr.co.wdtt.nbdream.ui.main.calendar.content.CalendarContent
 import kr.co.wdtt.nbdream.ui.main.calendar.content.CalendarContentWrapper
-import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeDiaryEntityProvider
-import kr.co.wdtt.nbdream.ui.theme.Paddings
-import kr.co.wdtt.nbdream.ui.theme.colors
-import kr.co.wdtt.nbdream.ui.theme.typo
 
 
 // TODO 재배 작물 목록 비어있을 때 처리
@@ -61,8 +60,8 @@ fun CalendarScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             CalendarTopBar(
-                userCrops = calendarScreenState.userCrops,
-                selectedCrop = calendarScreenState.selectedCrop
+                userCrops = emptyList(),//calendarScreenState.userCrops,
+                selectedCrop = null//calendarScreenState.selectedCrop
             )
         }
     ) { innerPadding ->
@@ -134,15 +133,15 @@ private fun CalendarDropDownTitle(
         if (selectedCrop == null) {
             Text(
                 modifier = Modifier,
-                text = stringResource(id = R.string.calendar_no_title),
+                text = "stringResource(id = R.string.calendar_no_title)",
                 style = MaterialTheme.typo.headerB
             )
         } else {
             Text(
                 modifier = Modifier,
-                text = stringResource(id = selectedCrop.cropNameId) +
+                text = "stringResource(id = selectedCrop.cropNameId)" +
                         " " +
-                        stringResource(id = R.string.calendar_title),
+                        "stringResource(id = R.string.calendar_title)",
                 style = MaterialTheme.typo.headerB
             )
             Image(

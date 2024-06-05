@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui
+package kr.co.common.util
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

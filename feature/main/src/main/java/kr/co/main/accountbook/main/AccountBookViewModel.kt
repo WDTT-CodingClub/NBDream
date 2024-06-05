@@ -1,7 +1,7 @@
-package kr.co.wdtt.nbdream.ui.accountbook.main
+package kr.co.main.accountbook.main
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kr.co.wdtt.core.ui.base.BaseViewModel
+import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel

@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.icon.dreamicon
+package kr.co.ui.icon.dreamicon
 
 import androidx.compose.ui.graphics.PathFillType.Companion.NonZero
 import androidx.compose.ui.graphics.StrokeCap.Companion.Butt
@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.ImageVector.Builder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
+import kr.co.ui.icon.DreamIcon
 
 public val DreamIcon.ArrowLeft: ImageVector
     get() {
