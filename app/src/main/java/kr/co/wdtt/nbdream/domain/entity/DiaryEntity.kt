@@ -5,7 +5,7 @@ import kr.co.wdtt.nbdream.R
 import java.time.LocalDate
 
 data class DiaryEntity(
-    val id:String? = null,
+    val id:String,
     val dreamCrop: DreamCrop,
     val registerDate: LocalDate,
     val holidays:List<HolidayEntity> = emptyList(),

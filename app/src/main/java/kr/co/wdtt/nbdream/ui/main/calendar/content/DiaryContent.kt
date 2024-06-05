@@ -199,6 +199,7 @@ private fun DiaryMemo(
     memo: String,
     modifier: Modifier = Modifier
 ) {
+    //TODO 메모 2줄 이상인 경우, 더보기로 접었다 폈다 할 수 있도록
     if (!memo.isNullOrBlank()) {
         Surface(
             modifier = modifier.padding(top = Paddings.medium),

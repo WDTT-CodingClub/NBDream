@@ -16,6 +16,7 @@ internal class FakeDiaryEntityProvider: PreviewParameterProvider<DiaryEntity> {
     @RequiresApi(Build.VERSION_CODES.O)
     override val values = sequenceOf(
         DiaryEntity(
+            id = "1",
             dreamCrop = DreamCrop.POTATO,
             registerDate = LocalDate.of(2024,5,6),
             holidays = listOf(
