@@ -12,11 +12,14 @@ import javax.inject.Inject
 @HiltViewModel
 internal class HomeViewModel @Inject constructor(
 ) : BaseViewModel() {
-    private val _state = MutableStateFlow(listOf(""))
-    val state = _state.asStateFlow()
 
 
     init {
     }
 
+    data class State(
+        val state: Any? = null
+    ): BaseViewModel.State
+
+    override fun createInitialState(): BaseViewModel.State = State()
 }

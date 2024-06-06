@@ -9,8 +9,11 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kr.co.common.model.CustomErrorType
@@ -25,6 +28,11 @@ abstract class BaseViewModel : ViewModel() {
         onError(errorType)
         setLoading(false)
     }
+
+    private val initialState: State by lazy { createInitialState() }
+
+    private val _state: MutableStateFlow<State> = MutableStateFlow(initialState)
+    val state = _state.asStateFlow()
 
     protected val viewModelScopeEH = viewModelScope + exceptionHandler
 
@@ -58,5 +66,24 @@ abstract class BaseViewModel : ViewModel() {
     protected fun <T : Any> Flow<T>.bindShared(to: MutableSharedFlow<T>) {
         onEach(to::emit).launchIn(viewModelScopeEH)
     }
+
+    protected fun updateState(action: State.() -> State) {
+        try {
+            _state.updateAndGet(action)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    protected inline fun <reified T: State, K : Any?> Flow<T>.select(
+        crossinline selector: (state:T) -> K,
+    ): Flow<K> {
+        return this.distinctUntilChangedBy { state: T -> selector(state) }
+            .map { state: T -> selector(state) }
+    }
+
+    protected abstract fun createInitialState(): State
+
+    interface State
 }
 

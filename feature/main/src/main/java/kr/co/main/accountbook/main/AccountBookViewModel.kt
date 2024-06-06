@@ -8,4 +8,9 @@ import javax.inject.Inject
 internal class AccountBookViewModel @Inject constructor(
 
 ) : BaseViewModel() {
+    override fun createInitialState(): State = State()
+
+    data class State(
+        val state: Any? = null
+    ): BaseViewModel.State
 }

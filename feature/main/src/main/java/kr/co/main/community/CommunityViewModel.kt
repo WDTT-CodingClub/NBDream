@@ -67,4 +67,12 @@ internal class CommunityViewModel @Inject constructor(
         }
     }
 
+    override fun createInitialState(): State {
+        return State()
+    }
+
+    data class State(
+        val state: Any? = null
+    ): BaseViewModel.State
+
 }

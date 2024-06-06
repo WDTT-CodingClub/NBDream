@@ -31,4 +31,8 @@ internal class MainViewModel @Inject constructor(
     companion object {
         private const val SPLASH_DURATION = 2_000L
     }
+
+    override fun createInitialState(): State = State
+
+    data object State: BaseViewModel.State
 }
