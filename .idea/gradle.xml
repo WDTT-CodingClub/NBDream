@@ -35,7 +35,7 @@
             <option value="$PROJECT_DIR$/feature/onboard" />
             <option value="$PROJECT_DIR$/source" />
             <option value="$PROJECT_DIR$/source/local" />
-            <option value="$PROJECT_DIR$/source/provider" />
+            <option value="$PROJECT_DIR$/source/oauth" />
             <option value="$PROJECT_DIR$/source/remote" />
           </set>
         </option>

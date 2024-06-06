@@ -97,7 +97,7 @@ dependencies {
 
     implementation(projects.source.local)
     implementation(projects.source.remote)
-    implementation(projects.source.provider)
+    implementation(projects.source.oauth)
 
     implementation(libs.androidx.core.ktx)
 

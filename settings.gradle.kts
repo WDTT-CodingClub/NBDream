@@ -32,7 +32,7 @@ include(":core:ui")
 
 include(":source:local")
 include(":source:remote")
-include(":source:provider")
+include(":source:oauth")
 
 include(":feature:onboard")
 include(":feature:main")
