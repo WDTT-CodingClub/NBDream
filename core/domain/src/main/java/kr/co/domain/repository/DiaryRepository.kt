@@ -1,7 +1,6 @@
-package kr.co.wdtt.nbdream.domain.repository
+package kr.co.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.descriptors.PrimitiveKind
 import kr.co.domain.entity.DiaryEntity
 
 interface DiaryRepository {

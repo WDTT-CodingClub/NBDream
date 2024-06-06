@@ -27,6 +27,7 @@ fun NavGraphBuilder.onboardNavGraph(
         OnBoardRoute(onKakaoClick = { /*TODO*/ }, onNaverClick = { /*TODO*/ }) {
 
         }
+        navController.navigate("location_search")
     }
 
     composable(

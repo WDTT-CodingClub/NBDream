@@ -58,52 +58,52 @@ internal enum class DreamCrop(
 ) {
     PEPPER(
         cropCode = "",
-        cropNameId = R.string.feature_main_dream_crop_name_pepper,
+        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_pepper,
         ranking = 1
     ),
     RICE(
         cropCode = "",
-        cropNameId = R.string.feature_main_dream_crop_name_rice,
+        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_rice,
         ranking = 2
     ),
     POTATO(
         cropCode = "",
-        cropNameId = R.string.feature_main_dream_crop_name_potato,
+        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_potato,
         ranking = 3
     ),
     SWEET_POTATO(
         cropCode = "",
-        cropNameId = R.string.feature_main_dream_crop_name_sweet_potato,
+        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_sweet_potato,
         ranking = 4
     ),
     APPLE(
         cropCode = "",
-        cropNameId = R.string.feature_main_dream_crop_name_apple,
+        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_apple,
         ranking = 5
     ),
     STRAW_BERRY(
         cropCode = "",
-        cropNameId = R.string.feature_main_dream_crop_name_strawberry,
+        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_strawberry,
         ranking = 6
     ),
     GARLIC(
         cropCode = "",
-        cropNameId = R.string.feature_main_dream_crop_name_garlic,
+        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_garlic,
         ranking = 7
     ),
     LETTUCE(
         cropCode = "",
-        cropNameId = R.string.feature_main_dream_crop_name_lettuce,
+        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_lettuce,
         ranking = 8
     ),
     NAPPA_CABBAGE(
         cropCode = "",
-        cropNameId = R.string.feature_main_dream_crop_name_nappa_cabbage,
+        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_nappa_cabbage,
         ranking = 9
     ),
     TOMATO(
         cropCode = "",
-        cropNameId = R.string.feature_main_dream_crop_name_tomato,
+        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_tomato,
         ranking = 10
     )
     ;

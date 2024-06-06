@@ -89,13 +89,13 @@ private fun CardDropDownMenu(
             CardDropDownMenuItem(
                 modifier = Modifier.zIndex(1f),
                 menuIcon = DreamIcon.Edit,
-                menuNameId = R.string.feature_main_dropdown_menu_edit,
+                menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_edit,
                 onClick = onEdit
             )
             CardDropDownMenuItem(
                 modifier = Modifier.zIndex(1f),
                 menuIcon = DreamIcon.Delete,
-                menuNameId = R.string.feature_main_dropdown_menu_delete,
+                menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_delete,
                 onClick = onDelete
             )
         }
@@ -130,7 +130,7 @@ private fun CardDropDownMenuItem(
 private fun CardDropDownMenuItemPreview() {
     CardDropDownMenuItem(
         menuIcon = DreamIcon.Delete,
-        menuNameId = R.string.feature_main_dropdown_menu_delete,
+        menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_delete,
         onClick = { /*TODO*/ }
     )
 }
