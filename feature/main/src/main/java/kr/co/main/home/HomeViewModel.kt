@@ -1,5 +1,7 @@
 package kr.co.main.home
 
+import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class HomeViewModel @Inject constructor(
-) : BaseViewModel() {
+    savedStateHandle: SavedStateHandle,
+) : BaseViewModel<HomeViewModel.State>(savedStateHandle) {
 
 
     init {
@@ -21,5 +24,5 @@ internal class HomeViewModel @Inject constructor(
         val state: Any? = null
     ): BaseViewModel.State
 
-    override fun createInitialState(): BaseViewModel.State = State()
+    override fun createInitialState(savedState: Parcelable?) = State()
 }

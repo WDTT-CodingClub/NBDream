@@ -1,8 +1,9 @@
 package kr.co.main.calendar
 
+import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kr.co.common.util.combine
@@ -34,8 +35,8 @@ internal interface CalendarScreenInput {
 
 @HiltViewModel
 internal class CalendarViewModel @Inject constructor(
-
-) : BaseViewModel(), CalendarScreenInput {
+    savedStateHandle: SavedStateHandle
+) : BaseViewModel<CalendarScreenState>(savedStateHandle), CalendarScreenInput {
     private val TAG = this@CalendarViewModel::class.java.simpleName
 
     private val _userCrops = MutableStateFlow<List<DreamCrop>>(emptyList())
@@ -89,5 +90,5 @@ internal class CalendarViewModel @Inject constructor(
         // TODO 캘린더 년도 & 월 변경
     }
 
-    override fun createInitialState(): State = CalendarScreenState()
+    override fun createInitialState(savedState: Parcelable?) = CalendarScreenState()
 }

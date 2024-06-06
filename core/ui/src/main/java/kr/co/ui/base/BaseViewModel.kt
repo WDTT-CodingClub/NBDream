@@ -1,5 +1,7 @@
 package kr.co.ui.base
 
+import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -19,7 +21,9 @@ import kotlinx.coroutines.plus
 import kr.co.common.model.CustomErrorType
 import kr.co.common.model.CustomException
 
-abstract class BaseViewModel : ViewModel() {
+abstract class BaseViewModel<STATE: BaseViewModel.State>(
+    private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         val errorType =
             if (throwable is CustomException) throwable.customError
@@ -29,9 +33,22 @@ abstract class BaseViewModel : ViewModel() {
         setLoading(false)
     }
 
-    private val initialState: State by lazy { createInitialState() }
+    private val initialState: STATE by lazy {
+        createInitialState(savedStateHandle[KEY_STATE])
+    }
 
-    private val _state: MutableStateFlow<State> = MutableStateFlow(initialState)
+    private var _currentState: STATE? = null
+        set(value) {
+            field = value
+            savedStateHandle[KEY_STATE] = value?.toParcelable()
+        }
+
+    val currentState: STATE
+        get() {
+            return _currentState ?: initialState
+        }
+
+    private val _state: MutableStateFlow<STATE> = MutableStateFlow(initialState)
     val state = _state.asStateFlow()
 
     protected val viewModelScopeEH = viewModelScope + exceptionHandler
@@ -67,23 +84,32 @@ abstract class BaseViewModel : ViewModel() {
         onEach(to::emit).launchIn(viewModelScopeEH)
     }
 
-    protected fun updateState(action: State.() -> State) {
+    protected fun updateState(action: STATE.() -> STATE) {
         try {
             _state.updateAndGet(action)
+                .also {
+                    _currentState = it
+                }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    protected inline fun <reified T: State, K : Any?> Flow<T>.select(
+    protected inline fun <reified T: STATE, K : Any?> Flow<T>.select(
         crossinline selector: (state:T) -> K,
     ): Flow<K> {
         return this.distinctUntilChangedBy { state: T -> selector(state) }
             .map { state: T -> selector(state) }
     }
 
-    protected abstract fun createInitialState(): State
+    protected abstract fun createInitialState(savedState: Parcelable?): STATE
 
-    interface State
+    interface State {
+        fun toParcelable(): Parcelable? = null
+    }
+
+    companion object {
+        private const val KEY_STATE = "state"
+    }
 }
 

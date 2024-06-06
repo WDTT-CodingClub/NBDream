@@ -27,17 +27,16 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.zIndex
 import kr.co.domain.entity.DiaryEntity
 import kr.co.domain.entity.ScheduleEntity
-import kr.co.main.R
 import kr.co.main.calendar.content.CalendarContent
 import kr.co.main.calendar.content.CalendarContentWrapper
 import kr.co.main.calendar.providers.FakeDiaryEntityProvider
+import kr.co.main.calendar.providers.FakeScheduleEntityProvider
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Delete
 import kr.co.ui.icon.dreamicon.Dropdown
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.typo
-import kr.co.main.calendar.providers.FakeScheduleEntityProvider
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
