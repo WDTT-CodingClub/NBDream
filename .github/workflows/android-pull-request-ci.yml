@@ -2,7 +2,7 @@ name: Android PR CI
 
 on:
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "android/feature/ci" ]
     paths:
       - 'android/**'
 
