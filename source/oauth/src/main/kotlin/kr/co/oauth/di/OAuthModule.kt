@@ -5,9 +5,12 @@ import com.kakao.sdk.user.UserApiClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kr.co.domain.model.AuthType
 import kr.co.domain.proivder.SocialLoginProvider
 import kr.co.oauth.KakaoLoginProviderImpl
+import kr.co.oauth.annotation.SocialLoginKey
 import javax.inject.Singleton
 
 @Module
@@ -15,6 +18,7 @@ import javax.inject.Singleton
 internal class OAuthModule {
     @Singleton
     @Provides
-    fun providesKakaoLoginService(context: Context): SocialLoginProvider
+    @SocialLoginKey(type = AuthType.KAKAO)
+    fun providesKakaoLoginService(@ApplicationContext context: Context): SocialLoginProvider
     = KakaoLoginProviderImpl(UserApiClient.instance, context)
 }

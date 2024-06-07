@@ -16,7 +16,6 @@ import kotlin.coroutines.resumeWithException
 
 internal class KakaoLoginProviderImpl @Inject constructor(
     private val client: UserApiClient,
-    @ApplicationContext
     private val context: Context,
 ) : SocialLoginProvider {
 
