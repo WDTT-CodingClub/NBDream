@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kr.co.onboard.type.AuthType
+import kr.co.domain.model.AuthType
 import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 

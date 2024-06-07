@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.co.onboard.R
-import kr.co.onboard.type.AuthType
+import kr.co.domain.model.AuthType
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.kakaoYellow
 import kr.co.ui.theme.naverGreen
