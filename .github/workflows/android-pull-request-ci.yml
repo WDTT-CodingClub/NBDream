@@ -6,6 +6,10 @@ on:
   push:
     branches: [ "android/feature/ci" ]
 
+defaults:
+  run:
+    working-directory: ./android
+
 jobs:
   unit_test:
     runs-on: ubuntu-latest
@@ -22,6 +26,11 @@ jobs:
 
       - name: set up Android SDK
         uses: android-actions/setup-android@v2
+
+      - name: Create local.properties
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > ./android/local.properties
+          echo "HOLIDAY_API_KEY=${{ secrets.HOLIDAY_API_KEY }}" >> ./android/local.properties
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -50,5 +59,5 @@ jobs:
             fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-            WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+            WORKFLOW_API: ${{ secrets.WORKFLOW_API }}
           if: always() 
