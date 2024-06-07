@@ -43,28 +43,28 @@ val Typography = DreamTypography(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 18.sp,
-        lineHeight = TextUnit.Unspecified * 1.4,
+        lineHeight = 18.sp * 1.4,
         letterSpacing = (-0.01).em
     ),
     body1 = TextStyle(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        lineHeight = TextUnit.Unspecified * 1.6,
+        lineHeight = 16.sp * 1.6,
         letterSpacing = (-0.01).em
     ),
     body2 = TextStyle(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = TextUnit.Unspecified * 1.6,
+        lineHeight = 14.sp * 1.6,
         letterSpacing = (-0.01).em
     ),
     label = TextStyle(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 12.sp,
-        lineHeight = TextUnit.Unspecified * 1.6,
+        lineHeight = 12.sp * 1.6,
         letterSpacing = (-0.01).em
     ),
     displayB = TextStyle(
