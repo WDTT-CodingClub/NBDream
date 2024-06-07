@@ -9,25 +9,45 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import kr.co.ui.ext.shadow
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Account
+import kr.co.ui.icon.dreamicon.Calendar
+import kr.co.ui.icon.dreamicon.Chat
+import kr.co.ui.icon.dreamicon.Community
+import kr.co.ui.icon.dreamicon.Mypage
+import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.colors
 
 internal enum class MainBottomRoute(
     val route: String,
     val label: String,
     val icon: ImageVector
 ) {
-    HOME("home", "Home", Icons.Filled.Home),
-    CALENDAR("calendar", "Calendar", Icons.Filled.DateRange),
-    ACCOUNT("account", "Account", Icons.Filled.Warning),
-    COMMUNITY("community", "Community", Icons.Filled.Person),
-    MY_PAGE("myPage", "MyPage", Icons.Filled.Person)
+    ACCOUNT("account", "Account", DreamIcon.Account),
+    CALENDAR("calendar", "Calendar", DreamIcon.Calendar),
+    HOME("home", "Home", DreamIcon.Chat),
+    COMMUNITY("community", "Community", DreamIcon.Community),
+    MY_PAGE("myPage", "MyPage", DreamIcon.Mypage)
 }
 
 @Composable
@@ -43,7 +63,7 @@ internal fun MainRoute(
     ) {
         Scaffold(
             containerColor = Color.Unspecified,
-            bottomBar =  {}
+            bottomBar = {}
         ) { scaffoldPadding ->
             NavHost(
                 modifier = Modifier
@@ -54,5 +74,57 @@ internal fun MainRoute(
                 builder = mainBuilder
             )
         }
+    }
+}
+
+@Composable
+private fun MainBottomBar(
+    mainNavController: NavController
+) {
+    val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    NavigationBar(
+        modifier = Modifier
+            .shadow(
+                color = MaterialTheme.colors.black.copy(alpha = 0.08f),
+                blurRadius = 12.dp,
+                offsetY = 2.dp,
+                offsetX = 2.dp
+            ),
+        containerColor = MaterialTheme.colors.white
+    ) {
+        MainBottomRoute.entries.forEach { screen ->
+            NavigationBarItem(
+                selected = currentRoute == screen.route,
+                onClick = {
+                    mainNavController.navigate(screen.route) {
+                        popUpTo(mainNavController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                icon = {
+                    Icon(
+                        imageVector = screen.icon,
+                        contentDescription = screen.label
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colors.primary4,
+                    unselectedIconColor = MaterialTheme.colors.grey4
+                )
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun MainBottomScreenPreview() {
+    NBDreamTheme {
+        MainBottomBar(mainNavController = rememberNavController())
     }
 }
