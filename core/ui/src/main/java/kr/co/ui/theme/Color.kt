@@ -5,8 +5,33 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-private val primary = Color(0xFF5ABE20)
+private val primary = Color(0xFF234D20)
+private val primary2 = Color(0xFF346A30)
+private val primary3 = Color(0xFF478741)
+private val primary4 = Color(0xFF5BA455)
+private val primary5 = Color(0xFF71C16B)
+private val primary6 = Color(0xFF89DE82)
+private val primary7 = Color(0xFFA3FB9C)
+private val primary8 = Color(0xFFC0FFBB)
+private val primary9 = Color(0xFFDBFFD8)
+private val primary10 = Color(0xFFF6FFF5)
+
+private val gray1 = Color(0xFF212121)
+private val gray2 = Color(0xFF424142)
+private val gray3 = Color(0xFF606160)
+private val gray4 = Color(0xFF747575)
+private val gray5 = Color(0xFF9E9E9E)
+private val gray6 = Color(0xFFBDBCBD)
+private val gray7 = Color(0xFFDFE0E0)
+private val gray8 = Color(0xFFEEEEEE)
+private val gray9 = Color(0xFFF5F4F5)
+
+
+private val error = Color(0xFFFE4E39)
+private val success = Color(0xFF05AC4B)
+private val notification = Color(0xFFFFEB03)
 private val secondary = Color(0xFF5C4740)
+private val potato = Color(0xFFDE9E63)
 
 private val green1 = Color(0xFFCEE997)
 private val green2 = Color(0xFF00B451)
@@ -49,6 +74,28 @@ sealed class ColorSet {
                 onPrimaryContainer = white,
             ),
             primary = primary,
+            primary2 = primary2,
+            primary3 = primary3,
+            primary4 = primary4,
+            primary5 = primary5,
+            primary6 = primary6,
+            primary7 = primary7,
+            primary8 = primary8,
+            primary9 = primary9,
+            primary10 = primary10,
+            gray1 = gray1,
+            gray2 = gray2,
+            gray3 = gray3,
+            gray4 = gray4,
+            gray5 = gray5,
+            gray6 = gray6,
+            gray7 = gray7,
+            gray8 = gray8,
+            gray9 = gray9,
+            error = error,
+            success = success,
+            notification = notification,
+            potato = potato,
             secondary = secondary,
             green1 = green1,
             green2 = green2,
@@ -81,6 +128,29 @@ sealed class ColorSet {
 data class DreamColor(
     val material: ColorScheme,
     val primary: Color = material.primary,
+    val primary2: Color = primary,
+    val primary3: Color = primary,
+    val primary4: Color = primary,
+    val primary5: Color = primary,
+    val primary6: Color = primary,
+    val primary7: Color = primary,
+    val primary8: Color = primary,
+    val primary9: Color = primary,
+    val primary10: Color = primary,
+    val gray1: Color = primary,
+    val gray2: Color = primary,
+    val gray3: Color = primary,
+    val gray4: Color = primary,
+    val gray5: Color = primary,
+    val gray6: Color = primary,
+    val gray7: Color = primary,
+    val gray8: Color = primary,
+    val gray9: Color = primary,
+    val gray10: Color = primary,
+    val error: Color = primary,
+    val success: Color = primary,
+    val notification: Color = primary,
+    val potato: Color = primary,
     val secondary: Color = material.secondary,
     val green1: Color = Color.Green,
     val green2: Color = Color.Green,
