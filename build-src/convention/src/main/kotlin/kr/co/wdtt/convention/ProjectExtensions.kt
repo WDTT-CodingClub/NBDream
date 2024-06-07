@@ -53,7 +53,14 @@ fun Project.Local() {
             libs.datastore.preferences
         )
 
-        ksp(libs.room.compiler)
+//        ksp(libs.room.compiler)
+
+        testImplementations(
+            libs.junit,
+            libs.mockito,
+            libs.mockk,
+            libs.kotlinx.coroutines.test,
+        )
     }
 }
 
@@ -61,6 +68,13 @@ fun Project.Remote() {
     project.dependencies {
         implementations(
             libs.bundles.ktors
+        )
+
+        testImplementations(
+            libs.junit,
+            libs.mockito,
+            libs.mockk,
+            libs.kotlinx.coroutines.test,
         )
     }
 }
