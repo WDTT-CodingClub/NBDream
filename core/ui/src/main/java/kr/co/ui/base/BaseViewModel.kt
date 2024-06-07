@@ -71,8 +71,8 @@ abstract class BaseViewModel<STATE: BaseViewModel.State>(
         setLoading(false)
     }
 
-    private fun onError(errorType: CustomErrorType) = viewModelScope.launch{
-        _error.emit(errorType)
+    private fun onError(errorType: CustomErrorType?) = viewModelScope.launch{
+        errorType?.let { _error.emit(it) }
     }
 
 
