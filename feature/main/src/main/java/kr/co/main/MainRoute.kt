@@ -4,11 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -28,11 +23,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dreamicon.Account
+import dreamicon.Calendar
+import dreamicon.Chat
 import kr.co.ui.ext.shadow
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Account
-import kr.co.ui.icon.dreamicon.Calendar
-import kr.co.ui.icon.dreamicon.Chat
 import kr.co.ui.icon.dreamicon.Community
 import kr.co.ui.icon.dreamicon.Mypage
 import kr.co.ui.theme.NBDreamTheme
