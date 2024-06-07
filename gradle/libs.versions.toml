@@ -1,19 +1,11 @@
 [versions]
 agp = "8.4.1"
 datastorePreferences = "1.1.1"
-kotlin = "1.9.23"
-ksp = "1.9.23-1.0.20"
+kotlin = "2.0.0"
+ksp = "2.0.0-1.0.21"
 hilt = "2.51.1"
-
-ktorClientCio = "2.3.7"
-lifecycleLivedataKtx = "2.8.0"
-coreKtx = "1.13.1"
-
-navigationUiKtx = "2.7.7"
-fragment = "1.7.1"
-hiltNavigationCompose = "1.2.0"
-
-hiltAndroid = "2.51.1"
+sgp = "2.0.1"
+androidTools = "31.4.1"
 
 coil = "2.6.0"
 
@@ -23,7 +15,6 @@ espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.8.0"
 activityCompose = "1.9.0"
 composeBom = "2024.05.00"
-foundation="1.4.3"
 
 retrofit = "2.11.0"
 loggingInterceptor = "4.12.0"
@@ -37,70 +28,161 @@ datastoreCoreAndroid = "1.1.1"
 
 ktor = "2.3.11"
 timber = "5.0.1"
+appcompat = "1.6.1"
+material = "1.12.0"
 
-#v2All = "2.20.1"
-#v2Cert = "2.20.1"
-#v2User = "2.20.1"
+kakao = "2.20.1"
+google-auth = "21.2.0"
+naver-auth = "5.9.1"
+
+androidDesugarJdkLibs = "2.0.4"
+kotlinxCoroutines = "1.8.0"
+kotlinxSerializationJson = "1.6.3"
+
+gmsPlugin = "4.4.1"
+room = "2.6.1"
+dataStore = "1.1.1"
+paging = "3.3.0"
+
+composeLifecycle = "2.7.0"
+composeActivity = "1.9.0"
+composeNavigation = "2.7.7"
+composeHiltNavigation = "1.2.0"
+composeLottie = "6.4.0"
+coreKtxVersion = "1.13.1"
+appcompatVersion = "1.6.1"
+materialVersion = "1.12.0"
+compose-plugin = "1.6.10"
 
 [libraries]
-ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientCio" }
-ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktorClientCio" }
-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientCio" }
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorClientCio" }
-ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
-
-androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleLivedataKtx" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationUiKtx" }
-androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
-
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
-
-jetbrains-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-
-coil = { module = "io.coil-kt:coil", version.ref = "coil" }
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
-
+android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
-ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientCio" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
+
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+
+paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+paging-common = { group = "androidx.paging", name = "paging-common-ktx", version.ref = "paging" }
+
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
+
+ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
+ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization = { group = "io.ktor", name = "ktor-client-serialization", version.ref = "ktor" }
+ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-logging = { group = "io.ktor", name = "ktor-client-logging-jvm", version.ref = "ktor" }
+ktor-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
+ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-serialization-jvm = { group = "io.ktor", name = "ktor-client-serialization-jvm", version.ref = "ktor" }
+
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
+compose-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "composeLifecycle" }
+compose-activity = { group = "androidx.activity", name = "activity-compose", version.ref = "composeActivity" }
+compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
+compose-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "composeHiltNavigation" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-ui-util = { group = "androidx.compose.ui", name = "ui-util" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "composeLottie" }
+
+coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil" }
+coil-video = { group = "io.coil-kt", name = "coil-video", version.ref = "coil" }
+
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+retrofit-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "serialization-converter" }
 
-kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "serialization-converter" }
+kakao-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakao"}
+kakao-cert = { group = "com.kakao.sdk", name = "v2-cert", version.ref = "kakao"}
 
-play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
-androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
-timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+google-auth = { group = "com.google.android.gms", name = "play-services-location", version.ref = "google-auth"}
 
-#v2-all = { module = "com.kakao.sdk:v2-all", version.ref = "v2All" }
-#v2-cert = { module = "com.kakao.sdk:v2-cert", version.ref = "v2Cert" }
-#v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "v2User" }
+naver-auth = { group = "com.navercorp.nid", name = "oauth", version.ref = "naver-auth"}
+
+# Dependencies of the included build-logic
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion" }
+material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
+
+[bundles]
+hilt = [
+    "hilt-android",
+    "hilt-compiler"
+]
+paging = [
+    "paging-common",
+    "paging-runtime",
+    "paging-compose"
+]
+composes = [
+    "compose-runtime",
+    "compose-foundation",
+    "compose-foundation-layout",
+    "compose-lifecycle-runtime",
+    "compose-navigation",
+    "compose-hilt-navigation",
+    "compose-material3",
+    "compose-ui",
+    "compose-ui-util",
+    "compose-lottie"
+]
+ktors = [
+    "ktor-core",
+    "ktor-content-negotiation",
+    "ktor-cio", "ktor-android",
+    "ktor-auth", "ktor-okhttp", "ktor-logging",
+    "ktor-serialization",
+    "ktor-serialization-json",
+    "ktor-serialization-jvm"
+]
+social = [
+    "kakao-user",
+    "kakao-cert",
+    "google-auth",
+    "naver-auth"
+]
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-google-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+sgp = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "sgp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 
+nbdream-android-hilt = { id = "nbdream.android.hilt", version = "unspecified" }
+nbdream-android-application-compose = { id = "nbdream.android.application.compose", version = "unspecified" }
+nbdream-android-feature = { id = "nbdream.android.feature", version = "unspecified"}
+nbdream-android-application = { id = "nbdream.android.application", version = "unspecified" }
+nbdream-android-library = { id = "nbdream.android.library", version = "unspecified" }
+nbdream-android-library-compose = { id = "nbdream.android.library.compose", version = "unspecified" }

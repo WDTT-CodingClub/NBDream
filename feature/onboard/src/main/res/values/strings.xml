@@ -1,0 +1,7 @@
+<resources>
+
+    //로그인
+    <string name="feature_onboard_login_kakao_login">카카오 로그인</string>
+    <string name="feature_onboard_login_naver_login">네이버 로그인</string>
+    <string name="feature_onboard_login_google_login">구글 로그인</string>
+</resources>

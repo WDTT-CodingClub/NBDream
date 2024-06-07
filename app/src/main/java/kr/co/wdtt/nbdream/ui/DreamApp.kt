@@ -14,11 +14,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.collectLatest
-import kr.co.wdtt.nbdream.ui.main.community.CommunityScreen
-import kr.co.wdtt.nbdream.ui.main.navigation.MAIN_ROUTE
-import kr.co.wdtt.nbdream.ui.main.navigation.mainNavGraph
-import kr.co.wdtt.nbdream.ui.onboarding.navigation.ONBOARD_ROUTE
-import kr.co.wdtt.nbdream.ui.onboarding.navigation.onboardNavGraph
+import kr.co.main.navigation.MAIN_ROUTE
+import kr.co.main.navigation.mainNavGraph
+import kr.co.onboard.login.AddressSelectionListener
+import kr.co.onboard.login.LocationSearchScreen
+import kr.co.onboard.login.LocationSearchWebViewScreen
+import kr.co.onboard.navigation.ONBOARD_ROUTE
+import kr.co.onboard.navigation.onboardNavGraph
+import kr.co.wdtt.nbdream.MainViewModel
 
 private enum class DreamNavRoute(
     val route: String,
@@ -28,9 +31,9 @@ private enum class DreamNavRoute(
     ONBOARDING(ONBOARD_ROUTE),
 }
 
-const val SPLASH_ROUTE = "splash"
+private const val SPLASH_ROUTE = "splash"
 @Composable
-fun DreamApp(
+internal fun DreamApp(
     viewModel: MainViewModel = hiltViewModel(),
     navController: NavHostController = rememberNavController()
 ) {
