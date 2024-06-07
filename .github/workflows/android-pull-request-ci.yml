@@ -5,7 +5,12 @@ on:
     branches: [ "dev" ]
   push:
     branches: [ "android/feature/ci" ]
-
+    
+permissions:
+  checks: write
+  contents: write
+  actions: write
+  
 jobs:
   unit_test:
     runs-on: ubuntu-latest
