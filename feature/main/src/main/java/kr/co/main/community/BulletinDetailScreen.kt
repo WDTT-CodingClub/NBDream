@@ -31,7 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 
 @Composable
-fun BulletinDetailScreen(
+internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {

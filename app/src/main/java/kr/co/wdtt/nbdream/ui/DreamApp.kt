@@ -16,6 +16,9 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.collectLatest
 import kr.co.main.navigation.MAIN_ROUTE
 import kr.co.main.navigation.mainNavGraph
+import kr.co.onboard.login.AddressSelectionListener
+import kr.co.onboard.login.LocationSearchScreen
+import kr.co.onboard.login.LocationSearchWebViewScreen
 import kr.co.onboard.navigation.ONBOARD_ROUTE
 import kr.co.onboard.navigation.onboardNavGraph
 import kr.co.wdtt.nbdream.MainViewModel
@@ -28,7 +31,7 @@ private enum class DreamNavRoute(
     ONBOARDING(ONBOARD_ROUTE),
 }
 
-const val SPLASH_ROUTE = "splash"
+private const val SPLASH_ROUTE = "splash"
 @Composable
 internal fun DreamApp(
     viewModel: MainViewModel = hiltViewModel(),

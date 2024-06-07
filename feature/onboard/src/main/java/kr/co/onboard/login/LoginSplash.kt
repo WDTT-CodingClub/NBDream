@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import kr.co.ui.theme.NBDreamTheme
 
 @Composable
-fun Splash() {
+internal fun Splash() {
     Column {
         Logo()
     }
@@ -15,7 +15,7 @@ fun Splash() {
 
 @Composable
 @Preview(showSystemUi = true)
-fun SplashPreview() {
+private fun SplashPreview() {
     NBDreamTheme {
         Splash()
     }

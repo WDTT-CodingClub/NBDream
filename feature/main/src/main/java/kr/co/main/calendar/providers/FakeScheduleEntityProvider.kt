@@ -1,10 +1,11 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.providers
+package kr.co.main.calendar.providers
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import kr.co.domain.entity.ScheduleCategory
 import kr.co.domain.entity.ScheduleEntity
+import kr.co.domain.entity.plzLookThisPakage.DreamCrop
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -12,7 +13,7 @@ internal class FakeScheduleEntityProvider : PreviewParameterProvider<ScheduleEnt
     @RequiresApi(Build.VERSION_CODES.O)
     override val values = sequenceOf(
         ScheduleEntity(
-            category = ScheduleCategory.Crop(kr.co.ui.DreamCrop.POTATO),
+            category = ScheduleCategory.Crop(DreamCrop.POTATO),
             title = "감자 수확일",
             startDate = LocalDate.of(2024, 5, 21),
             endDate = LocalDate.of(2024, 5, 25),

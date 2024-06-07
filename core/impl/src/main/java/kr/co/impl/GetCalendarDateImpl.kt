@@ -13,7 +13,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import javax.inject.Inject
 
-class GetCalendarDateImpl @Inject constructor(
+internal class GetCalendarDateImpl @Inject constructor(
     private val getHoliday: GetHoliday
     // private val getSchedule: GetHoliday
     // private val getDiary: GetHoliday

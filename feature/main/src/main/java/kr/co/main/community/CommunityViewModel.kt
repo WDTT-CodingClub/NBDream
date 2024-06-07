@@ -2,6 +2,8 @@ package kr.co.main.community
 
 import android.icu.text.DecimalFormat
 import android.net.Uri
+import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,9 +14,10 @@ import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class CommunityViewModel @Inject constructor(
+internal class CommunityViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
 //    private val getDayWeatherForecast: GetDayWeatherForecast,
-) : BaseViewModel() {
+) : BaseViewModel<CommunityViewModel.State>(savedStateHandle) {
     private val _currentBoard = MutableStateFlow("")
     val currentBoard = _currentBoard.asStateFlow()
 
@@ -66,5 +69,13 @@ class CommunityViewModel @Inject constructor(
             )
         }
     }
+
+    override fun createInitialState(savedState: Parcelable?): State {
+        return State()
+    }
+
+    data class State(
+        val state: Any? = null
+    ): BaseViewModel.State
 
 }

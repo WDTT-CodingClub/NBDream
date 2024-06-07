@@ -6,7 +6,3 @@ plugins {
 android {
     namespace = "kr.co.onboard"
 }
-
-dependencies {
-
-}

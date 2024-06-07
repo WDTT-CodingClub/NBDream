@@ -1,11 +1,10 @@
-package kr.co.wdtt.nbdream.domain.repository
+package kr.co.domain.repository
 
-import io.ktor.http.ContentType
 
 interface UploadImageRepository {
     suspend fun uploadImage(
         id: String,
-        image: ContentType.MultiPart,
+        image: Any,
     ): String
 
     suspend fun deleteImage(

@@ -41,7 +41,7 @@ private const val IMAGE_SCALE = 120
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DiaryContent(
+internal fun DiaryContent(
     diary: DiaryEntity,
     modifier: Modifier = Modifier
 ) {
@@ -102,7 +102,7 @@ private fun DiaryTitle(
 }
 
 @Composable
-fun DiaryWeather(
+internal fun DiaryWeather(
     weatherForecast: WeatherForecastEntity,
     modifier: Modifier = Modifier
 ) {

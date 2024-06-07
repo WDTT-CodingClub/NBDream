@@ -1,11 +1,23 @@
 package kr.co.main.accountbook.main
 
+import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class AccountBookViewModel @Inject constructor(
+internal class AccountBookViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle
+) : BaseViewModel<AccountBookViewModel.State>(savedStateHandle) {
 
-) : BaseViewModel() {
+    init {
+
+    }
+
+    override fun createInitialState(savedState: Parcelable?): State = State()
+
+    data class State(
+        val state: Any? = null
+    ): BaseViewModel.State
 }

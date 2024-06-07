@@ -1,8 +1,9 @@
 package kr.co.main.calendar
 
+import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kr.co.common.util.combine
@@ -14,7 +15,7 @@ import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import javax.inject.Inject
 
-data class CalendarScreenState(
+internal data class CalendarScreenState(
     val userCrops: List<DreamCrop> = emptyList(),
     val selectedCrop: DreamCrop? = null,
 
@@ -25,17 +26,17 @@ data class CalendarScreenState(
     val holidays: List<HolidayEntity> = emptyList(),
     val schedules: List<ScheduleEntity> = emptyList(),
     val diaries: List<DiaryEntity> = emptyList()
-)
+): BaseViewModel.State
 
-interface CalendarScreenInput {
+internal interface CalendarScreenInput {
     fun onSelectCrop(crop: DreamCrop)
     fun onSelectMonth(month: Int)
 }
 
 @HiltViewModel
-class CalendarViewModel @Inject constructor(
-
-) : BaseViewModel(), CalendarScreenInput {
+internal class CalendarViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle
+) : BaseViewModel<CalendarScreenState>(savedStateHandle), CalendarScreenInput {
     private val TAG = this@CalendarViewModel::class.java.simpleName
 
     private val _userCrops = MutableStateFlow<List<DreamCrop>>(emptyList())
@@ -50,7 +51,6 @@ class CalendarViewModel @Inject constructor(
     private val _diaries = MutableStateFlow<List<DiaryEntity>>(emptyList())
 
     private val _state = MutableStateFlow(CalendarScreenState())
-    val state = _state.asStateFlow()
 
     val input = this@CalendarViewModel
 
@@ -89,4 +89,6 @@ class CalendarViewModel @Inject constructor(
     override fun onSelectMonth(month: Int) {
         // TODO 캘린더 년도 & 월 변경
     }
+
+    override fun createInitialState(savedState: Parcelable?) = CalendarScreenState()
 }

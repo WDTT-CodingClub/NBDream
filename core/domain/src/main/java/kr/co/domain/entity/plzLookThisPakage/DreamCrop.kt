@@ -20,12 +20,12 @@ enum class DreamCrop(
 //        cropColor = CropColorSet.localColors.rice,
         ranking = 2,
     ),
-//    POTATO(
-//        cropCode = "",
+    POTATO(
+        cropCode = "",
 //        cropNameId = R.string.dream_crop_name_potato,
 //        cropColor = CropColorSet.localColors.potato,
-//        ranking = 3
-//    ),
+        ranking = 3
+    ),
 //    SWEET_POTATO(
 //        cropCode = "",
 //        cropNameId = R.string.dream_crop_name_sweet_potato,

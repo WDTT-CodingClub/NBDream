@@ -32,7 +32,7 @@ import kr.co.ui.theme.colors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountBookBottomSheet(
+internal fun AccountBookBottomSheet(
     onSelectedListener: (String) -> Unit,
     categories: List<String>,
     dismissBottomSheet: () -> Unit,

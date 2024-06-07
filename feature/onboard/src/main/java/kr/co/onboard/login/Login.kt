@@ -25,7 +25,7 @@ import kr.co.ui.theme.naverGreen
 import kr.co.ui.theme.typo
 
 @Composable
-fun Login() {
+internal fun Login() {
     Box(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -36,7 +36,7 @@ fun Login() {
 
 
 @Composable
-fun Logo() {
+internal fun Logo() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -54,7 +54,7 @@ fun Logo() {
 }
 
 @Composable
-fun LoginBtn() {
+private fun LoginBtn() {
     Box(
         modifier = Modifier
             .fillMaxSize(),
@@ -91,7 +91,7 @@ fun LoginBtn() {
 }
 
 @Composable
-fun LoginButton(
+private fun LoginButton(
     image: Painter,
     text: String,
     backgroundColor: Color,
@@ -139,7 +139,7 @@ fun LoginButton(
 
 @Composable
 @Preview(showSystemUi = true)
-fun loginPreview() {
+private fun loginPreview() {
     NBDreamTheme {
         Login()
     }

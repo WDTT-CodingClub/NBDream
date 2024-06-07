@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.random.Random
 
 @Composable
-fun AccountBookGraph(
+internal fun AccountBookGraph(
     data: List<Float>,
     categories: List<String>,
     label: String,

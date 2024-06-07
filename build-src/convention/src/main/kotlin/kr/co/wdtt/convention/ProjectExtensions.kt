@@ -64,3 +64,11 @@ fun Project.Remote() {
         )
     }
 }
+
+fun Project.Social() {
+    project.dependencies {
+        implementations(
+            libs.bundles.social
+        )
+    }
+}
