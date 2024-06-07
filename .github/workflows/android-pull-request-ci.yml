@@ -39,6 +39,9 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           files: "**/test-results/**/*.xml"
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+          
   notification:
       name: Notification
       runs-on: ubuntu-latest
@@ -55,5 +58,4 @@ jobs:
             fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-            WORKFLOW_API: ${{ secrets.WORKFLOW_API }}
           if: always() 
