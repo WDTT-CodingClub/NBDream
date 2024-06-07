@@ -3,8 +3,6 @@ name: Android PR CI
 on:
   pull_request:
     branches: [ "dev" ]
-    paths:
-      - 'android/**'
   push:
     branches: [ "android/feature/ci" ]
 
