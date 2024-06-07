@@ -4,20 +4,26 @@ import android.content.Context
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.user.UserApiClient
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kr.co.common.ContextManager
 import kr.co.common.model.CustomException
 import kr.co.domain.model.AuthType
 import kr.co.domain.model.LoginResult
 import kr.co.domain.proivder.SocialLoginProvider
-import kr.co.nbdream.source.oauth.BuildConfig.*
+import kr.co.nbdream.source.oauth.BuildConfig.KAKAO_NATIVE_APP_KEY
 import javax.inject.Inject
 import kotlin.coroutines.resumeWithException
 
 internal class KakaoLoginProviderImpl @Inject constructor(
-    private val client: UserApiClient,
-    private val context: Context,
 ) : SocialLoginProvider {
+
+    private val client: UserApiClient by lazy {
+        UserApiClient.instance
+    }
+
+    private val context get() = ContextManager.getContext()
 
     init {
         KakaoSdk.init(
@@ -44,6 +50,7 @@ internal class KakaoLoginProviderImpl @Inject constructor(
             client.loginWithKakaoTalk(context) { token, error ->
                 error?.let {
                     if (it.message == USER_CANCELLED) return@loginWithKakaoTalk
+                    throw it
                     continuation.resumeWithException(CustomException(cause = it))
                     return@loginWithKakaoTalk
                 }

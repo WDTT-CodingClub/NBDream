@@ -25,11 +25,11 @@ abstract class BaseViewModel<STATE: BaseViewModel.State>(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        val errorType =
-            if (throwable is CustomException) throwable.customError
-            else CustomErrorType.UNKNOWN
+        val error =
+            if (throwable is CustomException) throwable
+            else CustomException(cause = throwable, customError = CustomErrorType.UNKNOWN)
 
-        onError(errorType)
+        onError(error)
         setLoading(false)
     }
 
@@ -53,7 +53,7 @@ abstract class BaseViewModel<STATE: BaseViewModel.State>(
 
     protected val viewModelScopeEH = viewModelScope + exceptionHandler
 
-    private val _error: MutableSharedFlow<CustomErrorType> = MutableSharedFlow()
+    private val _error: MutableSharedFlow<CustomException> = MutableSharedFlow()
     val error = _error.asSharedFlow()
 
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -71,7 +71,7 @@ abstract class BaseViewModel<STATE: BaseViewModel.State>(
         setLoading(false)
     }
 
-    private fun onError(errorType: CustomErrorType?) = viewModelScope.launch{
+    private fun onError(errorType: CustomException?) = viewModelScope.launch{
         errorType?.let { _error.emit(it) }
     }
 

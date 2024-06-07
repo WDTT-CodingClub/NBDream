@@ -2,7 +2,9 @@ package kr.co.onboard.ui
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kr.co.domain.model.AuthType
 import kr.co.domain.proivder.SocialLoginProvider
@@ -21,7 +23,11 @@ internal class OnBoardViewModel @Inject constructor(
         }
     }
     init {
-
+        viewModelScope.launch {
+            error.collectLatest {
+                Timber.d(it.cause?.message)
+            }
+        }
     }
     override fun createInitialState(savedState: Parcelable?) = State
 
