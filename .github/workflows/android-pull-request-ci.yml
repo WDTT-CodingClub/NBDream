@@ -6,10 +6,6 @@ on:
   push:
     branches: [ "android/feature/ci" ]
 
-defaults:
-  run:
-    working-directory: ./android
-
 jobs:
   unit_test:
     runs-on: ubuntu-latest
