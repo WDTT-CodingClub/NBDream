@@ -1,7 +1,6 @@
 package kr.co.main.accountbook.main
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,7 +46,6 @@ private fun PreviewAccountBookScreen() {
     AccountBookScreen()
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AccountBookScreen() {
     var sortOrder by remember { mutableStateOf(SortOrder.RECENCY) }

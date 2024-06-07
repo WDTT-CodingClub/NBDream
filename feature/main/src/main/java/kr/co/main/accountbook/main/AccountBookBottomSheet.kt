@@ -1,7 +1,6 @@
 package kr.co.main.accountbook.main
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,18 +44,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import kr.co.ui.theme.colors
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +67,6 @@ internal fun AccountBookCategoryBottomSheet(
     dismissBottomSheet: () -> Unit,
 ) {
     var selectedCategory by remember { mutableStateOf<String?>(null) }
-
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
@@ -127,7 +128,6 @@ fun AccountBookCalendarBottomSheet(
 
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickerType by remember { mutableStateOf("start") }
-    val datePickerState = remember { mutableStateOf<CustomDatePickerDialogState?>(null) }
 
     ModalBottomSheet(
         onDismissRequest = dismissBottomSheet,
@@ -173,13 +173,12 @@ fun AccountBookCalendarBottomSheet(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                RowUnderline(
+                UnderlineRow(
                     date = startDate.value.format(DateTimeFormatter.ISO_DATE),
                     onDateClicked = {
                         datePickerType = "start"
                         showDatePicker = true
                     },
-                    selectedDate = startDate.value.format(DateTimeFormatter.ISO_DATE)
                 )
                 Text(
                     text = "ㅡ",
@@ -187,13 +186,12 @@ fun AccountBookCalendarBottomSheet(
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Black
                 )
-                RowUnderline(
+                UnderlineRow(
                     date = endDate.value.format(DateTimeFormatter.ISO_DATE),
                     onDateClicked = {
                         datePickerType = "end"
                         showDatePicker = true
                     },
-                    selectedDate = endDate.value.format(DateTimeFormatter.ISO_DATE)
                 )
             }
             Button(
@@ -223,6 +221,9 @@ fun AccountBookCalendarBottomSheet(
         CustomDatePickerDialog(
             selectedDate = if (datePickerType == "start") startDate.value.format(DateTimeFormatter.BASIC_ISO_DATE) else endDate.value.format(
                 DateTimeFormatter.BASIC_ISO_DATE),
+            startDate = startDate,
+            endDate = endDate,
+            datePickerType = datePickerType,
             onClickCancel = {
                 showDatePicker = false
             },
@@ -256,10 +257,9 @@ private fun updateDatesForOption(
 }
 
 @Composable
-fun RowUnderline(
+private fun UnderlineRow(
     date: String,
-    onDateClicked: () -> Unit,
-    selectedDate: String
+    onDateClicked: () -> Unit
 ) {
     val underlineColor = MaterialTheme.colors.grey6
     Row(
@@ -320,70 +320,84 @@ private fun OptionBox(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomDatePickerDialog(
+private fun CustomDatePickerDialog(
     selectedDate: String?,
+    startDate: MutableState<LocalDate>,
+    endDate: MutableState<LocalDate>,
+    datePickerType: String,
     onClickCancel: () -> Unit,
     onClickConfirm: (yyyyMMdd: String) -> Unit
 ) {
+    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+    val yearRange = currentYear - 10..currentYear + 10
+    val datePickerState = rememberDatePickerState(
+        yearRange = yearRange,
+        initialDisplayMode = DisplayMode.Picker,
+        initialSelectedDateMillis = selectedDate?.let {
+            val formatter = SimpleDateFormat("yyyyMMdd", Locale.KOREA)
+            val date = formatter.parse(it)
+            date?.time
+        } ?: System.currentTimeMillis(),
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return true
+            }
+        }
+    )
+
+    val initialSelectedDate = remember { datePickerState.selectedDateMillis }
+    val context = LocalContext.current
+
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        if (initialSelectedDate != datePickerState.selectedDateMillis) {
+            datePickerState.selectedDateMillis?.let { selectedDateMillis ->
+                val date = Date(selectedDateMillis)
+                val formatter = SimpleDateFormat("yyyyMMdd", Locale.KOREA)
+                val formattedDate = formatter.format(date)
+
+                if (datePickerType == "start") {
+                    val selectedStartDate = LocalDate.parse(formattedDate, DateTimeFormatter.BASIC_ISO_DATE)
+                    if (selectedStartDate.isAfter(endDate.value) || selectedStartDate == endDate.value) {
+                        Toast.makeText(
+                            context,
+                            "시작일이 종료일보다 이후입니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        onClickCancel()
+                        return@LaunchedEffect
+                    }
+                } else {
+                    val selectedEndDate = LocalDate.parse(formattedDate, DateTimeFormatter.BASIC_ISO_DATE)
+                    if (selectedEndDate.isBefore(startDate.value) || selectedEndDate == startDate.value) {
+                        Toast.makeText(
+                            context,
+                            "종료일이 시작일보다 이전입니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        onClickCancel()
+                        return@LaunchedEffect
+                    }
+                }
+
+                onClickConfirm(formattedDate)
+            }
+        }
+    }
+
     DatePickerDialog(
         onDismissRequest = { onClickCancel() },
         confirmButton = {},
         colors = DatePickerDefaults.colors(
             containerColor = Color.White,
+            selectedDayContentColor = MaterialTheme.colors.primary,
+            selectedDayContainerColor = MaterialTheme.colors.primary,
+            dayInSelectionRangeContentColor = MaterialTheme.colors.primary,
         ),
-        shape = RoundedCornerShape(6.dp)
+        shape = RoundedCornerShape(6.dp),
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        val datePickerState = rememberDatePickerState(
-            yearRange = 2014..2024,
-            initialDisplayMode = DisplayMode.Picker,
-            initialSelectedDateMillis = selectedDate?.let {
-                val formatter = SimpleDateFormat("yyyyMMdd", Locale.KOREA).apply {
-                    timeZone = TimeZone.getTimeZone("UTC")
-                }
-                formatter.parse(it)?.time
-                    ?: System.currentTimeMillis()
-            } ?: System.currentTimeMillis(),
-            selectableDates = object : SelectableDates {
-                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                    return true
-                }
-            })
-
         DatePicker(
             state = datePickerState,
         )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Button(onClick = {
-                onClickCancel()
-            }) {
-                Text(text = "취소")
-            }
-
-            Spacer(modifier = Modifier.width(5.dp))
-
-            Button(onClick = {
-                datePickerState.selectedDateMillis?.let { selectedDateMillis ->
-                    val yyyyMMdd = SimpleDateFormat(
-                        "yyyyMMdd",
-                        Locale.KOREA
-                    ).format(Date(selectedDateMillis))
-
-                    onClickConfirm(yyyyMMdd)
-                }
-            }) {
-                Text(text = "확인")
-            }
-        }
     }
 }
-
-data class CustomDatePickerDialogState(
-    var selectedDate: String? = null,
-    var isShowDialog: Boolean = false,
-    val onClickConfirm: (yyyyMMdd: String) -> Unit = {},
-    val onClickCancel: () -> Unit = {}
-)
