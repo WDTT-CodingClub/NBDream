@@ -1,4 +1,4 @@
-package kr.co.onboard.login
+package kr.co.onboard.ui.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.co.onboard.R
+import kr.co.domain.model.AuthType
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.kakaoYellow
 import kr.co.ui.theme.naverGreen
@@ -30,7 +31,7 @@ internal fun Login() {
         modifier = Modifier.padding(16.dp)
     ) {
         Logo()
-        LoginBtn()
+        LoginBtn {}
     }
 }
 
@@ -54,7 +55,9 @@ internal fun Logo() {
 }
 
 @Composable
-private fun LoginBtn() {
+internal fun LoginBtn(
+    onSocialLoginClick: (AuthType) -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxSize(),
@@ -68,7 +71,7 @@ private fun LoginBtn() {
                 text = stringResource(R.string.feature_onboard_login_kakao_login),
                 backgroundColor = kakaoYellow,
                 textColor = Color.Black,
-                onClick = { /* TODO: 카카오 로그인 클릭 시 동작 */ }
+                onClick = { onSocialLoginClick(AuthType.KAKAO) }
             )
             Spacer(modifier = Modifier.height(8.dp))
             LoginButton(
@@ -76,7 +79,7 @@ private fun LoginBtn() {
                 text = stringResource(R.string.feature_onboard_login_naver_login),
                 backgroundColor = naverGreen,
                 textColor = Color.White,
-                onClick = { /* TODO: 네이버 로그인 클릭 시 동작 */ }
+                onClick = { onSocialLoginClick(AuthType.NAVER) }
             )
             Spacer(modifier = Modifier.height(8.dp))
             LoginButton(
@@ -84,7 +87,7 @@ private fun LoginBtn() {
                 text = stringResource(R.string.feature_onboard_login_google_login),
                 backgroundColor = Color.White,
                 textColor = Color.Black,
-                onClick = { /* TODO: 구글 로그인 클릭 시 동작 */ }
+                onClick = { onSocialLoginClick(AuthType.GOOGLE) }
             )
         }
     }
