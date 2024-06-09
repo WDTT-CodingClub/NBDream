@@ -5,7 +5,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-private val primary = Color(0xFF234D20)
+private val primary = Color(0xFF5BA455)
 private val primary2 = Color(0xFF346A30)
 private val primary3 = Color(0xFF478741)
 private val primary4 = Color(0xFF5BA455)
@@ -25,6 +25,7 @@ private val gray6 = Color(0xFFBDBCBD)
 private val gray7 = Color(0xFFDFE0E0)
 private val gray8 = Color(0xFFEEEEEE)
 private val gray9 = Color(0xFFF5F4F5)
+private val gray10 = Color(0xFFFAFAFA)
 
 
 private val error = Color(0xFFFE4E39)
@@ -32,13 +33,16 @@ private val success = Color(0xFF05AC4B)
 private val notification = Color(0xFFFFEB03)
 private val secondary = Color(0xFF5C4740)
 private val potato = Color(0xFFDE9E63)
+private val red = Color(0xFFFF6666)
 
-private val green1 = Color(0xFFCEE997)
-private val green2 = Color(0xFF00B451)
-private val green3 = Color(0xFF00AC5B)
-private val green4 = Color(0xFF00A679)
-private val green5 = Color(0xFF00957A)
-private val green6 = Color(0xFF007C83)
+private val green1 = Color(0xFF234D20)
+private val green2 = Color(0xFF346A30)
+private val green3 = Color(0xFF478741)
+private val green4 = Color(0xFF71C16B)
+private val green5 = Color(0xFF89DE82)
+private val green6 = Color(0xFFA3FB9C)
+private val green7 = Color(0xFFC0FFBB)
+private val green8 = Color(0xFFDBFFD8)
 
 private val grey1 = Color(0xFFF1F1F1)
 private val grey2 = Color(0xFFE7E7E7)
@@ -60,6 +64,8 @@ private val yellow1 = Color(0xFFFEC600)
 
 val kakaoYellow = Color(0xFFFEE500)
 val naverGreen = Color(0xFF03C75A)
+
+val background = Color(0xFFF5F5F5)
 
 sealed class ColorSet {
     open lateinit var lightColors: DreamColor
@@ -92,11 +98,13 @@ sealed class ColorSet {
             gray7 = gray7,
             gray8 = gray8,
             gray9 = gray9,
+            gray10 = gray10,
             error = error,
             success = success,
             notification = notification,
             potato = potato,
             secondary = secondary,
+            red = red,
             green1 = green1,
             green2 = green2,
             green3 = green3,
@@ -109,6 +117,8 @@ sealed class ColorSet {
             grey4 = grey4,
             grey5 = grey5,
             grey6 = grey6,
+            green7 = green7,
+            green8 = green8,
             text1 = text1,
             text2 = text2,
             black = black,
@@ -116,10 +126,12 @@ sealed class ColorSet {
             red1 = red1,
             blue1 = blue1,
             orange1 = orange1,
-            yellow1 = yellow1
+            yellow1 = yellow1,
+            background = background
         )
         override var darkColors = DreamColor(
             material = darkColorScheme(),
+            background = background,
 
         )
     }
@@ -128,36 +140,39 @@ sealed class ColorSet {
 data class DreamColor(
     val material: ColorScheme,
     val primary: Color = material.primary,
-    val primary2: Color = primary,
-    val primary3: Color = primary,
-    val primary4: Color = primary,
-    val primary5: Color = primary,
-    val primary6: Color = primary,
-    val primary7: Color = primary,
-    val primary8: Color = primary,
-    val primary9: Color = primary,
-    val primary10: Color = primary,
-    val gray1: Color = primary,
-    val gray2: Color = primary,
-    val gray3: Color = primary,
-    val gray4: Color = primary,
-    val gray5: Color = primary,
-    val gray6: Color = primary,
-    val gray7: Color = primary,
-    val gray8: Color = primary,
-    val gray9: Color = primary,
-    val gray10: Color = primary,
-    val error: Color = primary,
-    val success: Color = primary,
-    val notification: Color = primary,
-    val potato: Color = primary,
+    val primary2: Color = kr.co.ui.theme.primary,
+    val primary3: Color = kr.co.ui.theme.primary,
+    val primary4: Color = kr.co.ui.theme.primary,
+    val primary5: Color = kr.co.ui.theme.primary,
+    val primary6: Color = kr.co.ui.theme.primary,
+    val primary7: Color = kr.co.ui.theme.primary,
+    val primary8: Color = kr.co.ui.theme.primary,
+    val primary9: Color = kr.co.ui.theme.primary,
+    val primary10: Color = kr.co.ui.theme.primary,
+    val gray1: Color = kr.co.ui.theme.primary,
+    val gray2: Color = kr.co.ui.theme.primary,
+    val gray3: Color = kr.co.ui.theme.primary,
+    val gray4: Color = kr.co.ui.theme.primary,
+    val gray5: Color = kr.co.ui.theme.primary,
+    val gray6: Color = kr.co.ui.theme.primary,
+    val gray7: Color = kr.co.ui.theme.primary,
+    val gray8: Color = kr.co.ui.theme.primary,
+    val gray9: Color = kr.co.ui.theme.primary,
+    val gray10: Color = kr.co.ui.theme.primary,
+    val error: Color = kr.co.ui.theme.primary,
+    val success: Color = kr.co.ui.theme.primary,
+    val notification: Color = kr.co.ui.theme.primary,
+    val potato: Color = kr.co.ui.theme.primary,
     val secondary: Color = material.secondary,
+    val red: Color = Color.Red,
     val green1: Color = Color.Green,
     val green2: Color = Color.Green,
     val green3: Color = Color.Green,
     val green4: Color = Color.Green,
     val green5: Color = Color.Green,
     val green6: Color = Color.Green,
+    val green7: Color = Color.Green,
+    val green8: Color = Color.Green,
     val grey1: Color = Color.Gray,
     val grey2: Color = Color.Gray,
     val grey3: Color = Color.Gray,
@@ -171,5 +186,6 @@ data class DreamColor(
     val red1: Color = Color.Red,
     val blue1: Color = Color.Blue,
     val orange1: Color = Color.Yellow,
-    val yellow1: Color = Color.Yellow
+    val yellow1: Color = Color.Yellow,
+    val background: Color = Color.Unspecified
 )
