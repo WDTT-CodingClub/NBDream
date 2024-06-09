@@ -21,7 +21,8 @@ internal class HomeViewModel @Inject constructor(
     }
 
     data class State(
-        val state: Any? = null
+        val address: String? = null,
+        val todayWeather: String? = null,
     ): BaseViewModel.State
 
     override fun createInitialState(savedState: Parcelable?) = State()

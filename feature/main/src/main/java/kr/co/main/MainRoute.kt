@@ -1,6 +1,7 @@
 package kr.co.main
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import dreamicon.Account
 import dreamicon.Calendar
 import dreamicon.Chat
+import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.ext.shadow
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Community
@@ -70,7 +72,10 @@ internal fun MainRoute(
             NavHost(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(scaffoldPadding),
+                    .scaffoldBackground(
+                        scaffoldPadding = scaffoldPadding,
+                        padding = PaddingValues(0.dp)
+                    ),
                 navController = mainNavController,
                 startDestination = MainBottomRoute.HOME.route,
                 builder = mainBuilder
