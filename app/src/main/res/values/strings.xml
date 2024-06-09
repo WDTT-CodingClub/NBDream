@@ -76,4 +76,28 @@
     <string name="calendar_work_type_pack">선별 및 포장</string>
     <string name="calendar_work_type_ship">운반 및 저장</string>
     <string name="calendar_work_type_etc">기타</string>
+
+    <!--    영농일지 추가 화면    -->
+    <string name="calendar_add_diary_title">영농일지 작성</string>
+    <string name="calendar_add_diary_post">등록</string>
+
+    <string name="calendar_add_diary_header_date">일자</string>
+    <string name="calendar_add_diary_header_work">작업</string>
+    <string name="calendar_add_diary_header_image">사진</string>
+    <string name="calendar_add_diary_header_memo">메모</string>
+
+    <string name="calendar_add_diary_work_laborer">작업 인원</string>
+    <string name="calendar_add_diary_work_hour">작업 시간</string>
+    <string name="calendar_add_diary_work_area">작업 면접</string>
+
+    <string name="calendar_add_diary_work_laborer_digit">명</string>
+    <string name="calendar_add_diary_work_hour_digit">시간</string>
+    <string name="calendar_add_diary_work_area_digit">평</string>
+
+    <string name="calendar_add_diary_input_work_category">분류 선택</string>
+    <string name="calendar_add_diary_input_work_description">작업 내용을 입력해주세요.</string>
+    <string name="calendar_add_diary_add">추가</string>
+    <string name="calendar_add_diary_input_image">사진 추가</string>
+    <string name="calendar_add_diary_input_memo">메모를 입력해주세요.</string>
+
 </resources>
