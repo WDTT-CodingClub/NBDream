@@ -4,9 +4,9 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import kr.co.domain.entity.HolidayEntity
-import kr.co.domain.entity.WeatherForecastEntity
 import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.WeatherForecastModel
 import java.time.LocalDate
 
 internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {
@@ -30,30 +30,24 @@ internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {
                     isHoliday = false
                 )
             ),
-            weatherForecast = WeatherForecastEntity(
-                probability = 10,
-                precipitation = "1mm 미만",
-                humidity = "10%",
-                temperature = 27.0f,
-                windSpeed = 5,
-                weather = listOf(
-                    WeatherForecastEntity.Weather(
-                        weather = "맑음",
-                        minTemp = 25.0f,
-                        maxTemp = 28.0f,
-                        day = "20240522"
-                    )
-                )
+            weatherForecast = WeatherForecastModel(
+                date = LocalDate.of(2024, 5, 6),
+                sky = WeatherForecastModel.Sky.SUNNY,
+                minTemp = "25°C",
+                maxTemp = "28°C",
+                precipitation = "1mm 미만"
             ),
             workLaborer = 4,
             workHours = 6,
             workArea = 80,
             workDescriptions = listOf(
                 DiaryModel.WorkDescriptionModel(
+                    id = "0",
                     DiaryModel.WorkDescriptionModel.TypeId.WEED.id,
                     "감자밭 제초 작업"
                 ),
                 DiaryModel.WorkDescriptionModel(
+                    id = "1",
                     DiaryModel.WorkDescriptionModel.TypeId.HARVEST.id,
                     "봄 감자 수확"
                 )
