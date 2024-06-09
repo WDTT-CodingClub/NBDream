@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar
+package kr.co.wdtt.nbdream.ui.main.calendar.calendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -33,6 +33,9 @@ data class CalendarScreenState (
 interface CalendarScreenInput {
     fun onSelectCrop(crop: DreamCrop)
     fun onSelectMonth(month: Int)
+
+    fun onAddScheduleClick()
+    fun onAddDiaryClick()
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
@@ -91,5 +94,13 @@ class CalendarViewModel @Inject constructor(
 
     override fun onSelectMonth(month: Int) {
         // TODO 캘린더 년도 & 월 변경
+    }
+
+    override fun onAddScheduleClick() {
+        // TODO 일정 추가화면으로 이동
+    }
+
+    override fun onAddDiaryClick() {
+        // 영농일지 추가화면으로 이동
     }
 }

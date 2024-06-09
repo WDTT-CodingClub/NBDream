@@ -1,8 +1,7 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.content
+package kr.co.wdtt.nbdream.ui.main.calendar.common
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kr.co.wdtt.nbdream.domain.entity.ScheduleEntity

@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.maincalendar
+package kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -32,7 +32,7 @@ import kr.co.wdtt.nbdream.domain.entity.ScheduleCategory
 import kr.co.wdtt.nbdream.domain.entity.ScheduleEntity
 import kr.co.wdtt.nbdream.ui.icon.dreamicon.Alarm
 import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
-import kr.co.wdtt.nbdream.ui.main.calendar.maincalendar.ScheduleItemScope.scheduleItem
+import kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar.ScheduleItemScope.scheduleItem
 import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeScheduleEntityProvider
 import kr.co.wdtt.nbdream.ui.theme.Paddings
 import kr.co.wdtt.nbdream.ui.theme.colors
@@ -63,7 +63,7 @@ internal fun MainCalendarScheduleRow(
             ScheduleItemScope.MainCalendarScheduleItem(
                 schedule = schedule,
                 modifier = Modifier.scheduleItem(
-                    startDate = if (weekStartDate >= schedule.startDate) weekStartDate else schedule.startDate,
+                    startDate = if (schedule.startDate <= weekStartDate) weekStartDate else schedule.startDate,
                     endDate = if (weekEndDate <= schedule.endDate) weekEndDate else schedule.endDate
                 )
             )
@@ -216,12 +216,12 @@ private fun getYPosition(
     endValue: Int,
     placeableHeight: Int
 ): Int {
-    val maxSlot = scheduleSlots.values.first().size
+    val maxSlot = scheduleSlots.values.first().size-1
     var availableSlot = maxSlot
-    for(slot in 0 until maxSlot) {
+    for(slot in 0 .. maxSlot) {
         var isAvailable = true
         for (i in startValue..endValue) {
-            if(scheduleSlots[i]!![slot] == SLOT_FULL){
+            if(scheduleSlots[i]!![slot] != SLOT_EMPTY){
                 isAvailable = false
                 break
             }

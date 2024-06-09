@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.maincalendar
+package kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi

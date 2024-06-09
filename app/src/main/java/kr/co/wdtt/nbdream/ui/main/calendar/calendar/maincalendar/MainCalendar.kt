@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.maincalendar
+package kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar
 
 import android.os.Build
 import androidx.annotation.ColorInt
@@ -28,7 +28,7 @@ import kr.co.wdtt.nbdream.domain.entity.DiaryEntity
 import kr.co.wdtt.nbdream.domain.entity.DreamCrop
 import kr.co.wdtt.nbdream.domain.entity.HolidayEntity
 import kr.co.wdtt.nbdream.domain.entity.ScheduleEntity
-import kr.co.wdtt.nbdream.ui.main.calendar.content.CategoryIndicator
+import kr.co.wdtt.nbdream.ui.main.calendar.common.CalendarCategoryIndicator
 import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeMainCalendarDataProvider
 import kr.co.wdtt.nbdream.ui.theme.Paddings
 import kr.co.wdtt.nbdream.ui.theme.colors
@@ -114,7 +114,7 @@ private fun CategoryIndicatorListItem(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CategoryIndicator(
+        CalendarCategoryIndicator(
             modifier = Modifier.padding(end = Paddings.small),
             categoryColor = cropColor
         )

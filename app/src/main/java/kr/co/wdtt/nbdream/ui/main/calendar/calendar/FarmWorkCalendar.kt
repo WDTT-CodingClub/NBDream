@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar
+package kr.co.wdtt.nbdream.ui.main.calendar.calendar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

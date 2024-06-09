@@ -1,25 +1,20 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.content
+package kr.co.wdtt.nbdream.ui.main.calendar.common
 
 import android.os.Build
-import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +31,6 @@ import kr.co.wdtt.nbdream.ui.theme.typo
 import kr.co.wdtt.nbdream.ui.util.toDateString
 import kr.co.wdtt.nbdream.ui.util.toDateTimeString
 
-private const val CROP_COLOR_CIRCLE_SIZE = 8
 private const val ALARM_ICON_SIZE = 16
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -89,7 +83,7 @@ private fun ScheduleTitle(
     }
 
     Row(modifier = modifier) {
-        CategoryIndicator(
+        CalendarCategoryIndicator(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .padding(end = Paddings.small),
@@ -102,19 +96,6 @@ private fun ScheduleTitle(
             color = MaterialTheme.colors.text1
         )
     }
-}
-
-@Composable
-fun CategoryIndicator(
-    @ColorInt categoryColor: Int,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .size(CROP_COLOR_CIRCLE_SIZE.dp)
-            .clip(CircleShape)
-            .background(Color(categoryColor)),
-    )
 }
 
 @Composable
@@ -139,7 +120,7 @@ private fun ScheduleAlarm(
 ) {
     Row(modifier = modifier) {
         alarmDateTime?.let {
-            Image(
+            Icon(
                 modifier = Modifier.size(ALARM_ICON_SIZE.dp),
                 imageVector = DreamIcon.Alarm, contentDescription = ""
             )

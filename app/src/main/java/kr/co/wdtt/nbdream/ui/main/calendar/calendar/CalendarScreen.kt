@@ -1,8 +1,7 @@
-package kr.co.wdtt.nbdream.ui.main.calendar
+package kr.co.wdtt.nbdream.ui.main.calendar.calendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,9 +44,10 @@ import kr.co.wdtt.nbdream.ui.icon.dreamicon.Alarm
 import kr.co.wdtt.nbdream.ui.icon.dreamicon.ArrowLeft
 import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
 import kr.co.wdtt.nbdream.ui.icon.dreamicon.Spinner
-import kr.co.wdtt.nbdream.ui.main.calendar.content.CalendarContent
-import kr.co.wdtt.nbdream.ui.main.calendar.content.CalendarContentWrapper
-import kr.co.wdtt.nbdream.ui.main.calendar.maincalendar.MainCalendar
+import kr.co.wdtt.nbdream.ui.main.calendar.common.CalendarContent
+import kr.co.wdtt.nbdream.ui.main.calendar.common.CalendarContentWrapper
+import kr.co.wdtt.nbdream.ui.main.calendar.common.CalendarHorizontalDivider
+import kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar.MainCalendar
 import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeDiaryEntityProvider
 import kr.co.wdtt.nbdream.ui.theme.Paddings
 import kr.co.wdtt.nbdream.ui.theme.colors
@@ -68,6 +71,12 @@ fun CalendarScreen(
                 userCrops = calendarScreenState.userCrops,
                 selectedCrop = calendarScreenState.selectedCrop
             )
+        },
+        floatingActionButton = {
+            CalendarFab(
+                onAddScheduleClick = calendarScreenInput::onAddScheduleClick,
+                onAddDiaryClick = calendarScreenInput::onAddDiaryClick
+            )
         }
     ) { innerPadding ->
         Surface(
@@ -81,7 +90,7 @@ fun CalendarScreen(
                         calendarScreenInput.onSelectMonth(month)
                     }
                 )
-                HorizontalDivider()
+                CalendarHorizontalDivider()
 
                 calendarScreenState.selectedCrop?.let {
                     FarmWorkCalendar(
@@ -90,7 +99,7 @@ fun CalendarScreen(
                             .padding(horizontal = Paddings.xlarge),
                         farmWorks = calendarScreenState.farmWorks
                     )
-                    HorizontalDivider()
+                    CalendarHorizontalDivider()
 
                     MainCalendar(
                         year = calendarScreenState.year,
@@ -156,7 +165,7 @@ private fun CalendarDropDownTitle(
                 ),
                 style = MaterialTheme.typo.headerB
             )
-            Image(
+            Icon(
                 modifier = Modifier.padding(start = Paddings.medium),
                 imageVector = DreamIcon.Spinner,
                 contentDescription = ""
@@ -181,11 +190,49 @@ private fun CalendarAlarm(
                     .zIndex(1f)
             )
         }
-        Image(
+        Icon(
             modifier = Modifier.align(Alignment.Center),
             imageVector = DreamIcon.Alarm,
             contentDescription = ""
         )
+    }
+}
+
+//TODO 캘린더 항목 추가 플로팅 액션 버튼
+@Composable
+private fun CalendarFab(
+    onAddScheduleClick: () -> Unit,
+    onAddDiaryClick: () -> Unit,
+    modifier: Modifier = Modifier
+){
+    var showChildFab = remember{ mutableStateOf(false) }
+    Column(modifier = modifier){
+        AddDiaryFab(onAddDiaryClick = onAddDiaryClick)
+        AddScheduleFab(onAddScheduleClick = onAddScheduleClick)
+    }
+}
+
+@Composable
+private fun AddScheduleFab(
+    onAddScheduleClick: ()->Unit,
+    modifier:Modifier = Modifier
+){
+    FloatingActionButton(
+        onClick = onAddScheduleClick
+    ) {
+
+    }
+}
+
+@Composable
+private fun AddDiaryFab(
+    onAddDiaryClick: ()->Unit,
+    modifier:Modifier = Modifier
+){
+    FloatingActionButton(
+        onClick = onAddDiaryClick
+    ) {
+
     }
 }
 
@@ -197,7 +244,7 @@ private fun CalendarYearMonth(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
-        Image(
+        Icon(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .clickable { onMonthSelect(month - 1) },
@@ -210,7 +257,7 @@ private fun CalendarYearMonth(
             style = MaterialTheme.typo.header2M,
             color = MaterialTheme.colors.text1
         )
-        Image(
+        Icon(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .clickable { onMonthSelect(month + 1) },

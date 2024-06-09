@@ -1,9 +1,8 @@
-package kr.co.wdtt.nbdream.ui.main.calendar
+package kr.co.wdtt.nbdream.ui.main.calendar.common
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,8 +32,6 @@ import kr.co.wdtt.nbdream.ui.icon.dreamicon.Delete
 import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
 import kr.co.wdtt.nbdream.ui.icon.dreamicon.Dropdown
 import kr.co.wdtt.nbdream.ui.icon.dreamicon.Edit
-import kr.co.wdtt.nbdream.ui.main.calendar.content.CalendarContent
-import kr.co.wdtt.nbdream.ui.main.calendar.content.CalendarContentWrapper
 import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeDiaryEntityProvider
 import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeScheduleEntityProvider
 import kr.co.wdtt.nbdream.ui.theme.Paddings
@@ -74,7 +72,7 @@ private fun CardDropDownMenu(
     var expandDropDown by remember { mutableStateOf(false) }
 
     Row(modifier = modifier) {
-        Image(
+        Icon(
             modifier = Modifier.clickable { expandDropDown = true },
             imageVector = DreamIcon.Dropdown,
             contentDescription = ""
@@ -118,7 +116,7 @@ private fun CardDropDownMenuItem(
             text = stringResource(id = menuNameId),
             style = MaterialTheme.typo.bodyM
         )
-        Image(
+        Icon(
             imageVector = menuIcon,
             contentDescription = "",
         )
