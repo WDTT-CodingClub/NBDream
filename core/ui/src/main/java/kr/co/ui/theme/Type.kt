@@ -29,43 +29,68 @@ val Typography = DreamTypography(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
-        lineHeight = TextUnit.Unspecified,
+        lineHeight = 32.sp * 1.6,
         letterSpacing = TextUnit.Unspecified
     ),
     h2 = TextStyle(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
-        lineHeight = TextUnit.Unspecified,
+        lineHeight = 24.sp * 1.6,
         letterSpacing = TextUnit.Unspecified
     ),
     h3 = TextStyle(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 18.sp,
-        lineHeight = 18.sp * 1.4,
-        letterSpacing = (-0.01).em
+        lineHeight = 18.sp * 1.6,
+        letterSpacing = TextUnit.Unspecified
     ),
     body1 = TextStyle(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 16.sp * 1.6,
-        letterSpacing = (-0.01).em
+        letterSpacing = TextUnit.Unspecified
     ),
     body2 = TextStyle(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 14.sp * 1.6,
-        letterSpacing = (-0.01).em
+        letterSpacing = TextUnit.Unspecified
     ),
     label = TextStyle(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 12.sp,
         lineHeight = 12.sp * 1.6,
-        letterSpacing = (-0.01).em
+        letterSpacing = TextUnit.Unspecified
+    ),
+    button = TextStyle(
+        fontFamily = DreamFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 14.sp * 1.6,
+        letterSpacing = TextUnit.Unspecified
+    ),
+    name = TextStyle(
+        fontFamily = DreamFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+        lineHeight = 14.sp * 1.6,
+    ),
+    weather = TextStyle(
+        fontFamily = DreamFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 40.sp,
+        lineHeight = 40.sp * 1.6,
+    ),
+    pageName = TextStyle(
+        fontFamily = DreamFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp,
+        lineHeight = TextUnit.Unspecified,
     ),
     displayB = TextStyle(
         fontFamily = FontFamily.Default,
@@ -203,6 +228,10 @@ data class DreamTypography(
     val body1: TextStyle = TextStyle.Default,
     val body2: TextStyle = TextStyle.Default,
     val label: TextStyle = TextStyle.Default,
+    val button: TextStyle = TextStyle.Default,
+    val name: TextStyle = TextStyle.Default,
+    val weather: TextStyle = TextStyle.Default,
+    val pageName: TextStyle = TextStyle.Default,
     val displayB: TextStyle = TextStyle.Default,
     val displaySB: TextStyle = TextStyle.Default,
     val headerB: TextStyle = TextStyle.Default,
