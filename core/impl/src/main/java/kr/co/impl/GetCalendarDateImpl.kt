@@ -5,7 +5,7 @@ import androidx.annotation.RequiresApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transform
-import kr.co.domain.entity.plzLookThisPakage.DreamCrop
+import kr.co.domain.entity.CropEntity
 import kr.co.domain.usecase.GetCalendarDate
 import kr.co.domain.usecase.GetHoliday
 import java.time.DayOfWeek
@@ -19,7 +19,7 @@ internal class GetCalendarDateImpl @Inject constructor(
     // private val getDiary: GetHoliday
 ): GetCalendarDate {
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend operator fun invoke(crop: DreamCrop, year: Int, month: Int): Flow<List<kr.co.domain.entity.CalendarDateEntity>> {
+    override suspend operator fun invoke(crop: CropEntity, year: Int, month: Int): Flow<List<kr.co.domain.entity.CalendarDateEntity>> {
         if (year !in 2020..2024 || month !in 1..12) return flowOf(emptyList())
 
         val daysInMonth = YearMonth.of(year, month).lengthOfMonth()
