@@ -13,13 +13,13 @@ data class DiaryEntity(
     val workLaborer: Int = 0,
     val workHours: Int = 0,
     val workArea: Int = 0,
-    val workDescriptions: List<WorkDescription> = emptyList(),
+    val workDescriptionEntities: List<WorkDescriptionEntity> = emptyList(),
     val images: List<String> = emptyList(),
     val memo: String=""
 )
 
 
-data class WorkDescription(
+data class WorkDescriptionEntity(
     val type: WorkType,
     val description: String,
 )
