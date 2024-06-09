@@ -66,7 +66,6 @@ internal fun HomeRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
     state: HomeViewModel.State = HomeViewModel.State()
@@ -77,7 +76,6 @@ private fun HomeScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colors.gray9,
-        topBar = {}
     ) { scaffoldPadding ->
         LazyColumn(
             modifier = Modifier
@@ -88,8 +86,7 @@ private fun HomeScreen(
             item {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 32.dp),
+                        .fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Row(

@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -29,6 +31,7 @@ import dreamicon.Chat
 import kr.co.ui.ext.shadow
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Community
+import kr.co.ui.icon.dreamicon.Home
 import kr.co.ui.icon.dreamicon.Mypage
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -38,10 +41,10 @@ internal enum class MainBottomRoute(
     val label: String,
     val icon: ImageVector
 ) {
-    ACCOUNT("account", "Account", DreamIcon.Account),
+    HOME("home", "Home", DreamIcon.Home),
     CALENDAR("calendar", "Calendar", DreamIcon.Calendar),
-    HOME("home", "Home", DreamIcon.Chat),
     COMMUNITY("community", "Community", DreamIcon.Community),
+    ACCOUNT("account", "Account", DreamIcon.Account),
     MY_PAGE("myPage", "MyPage", DreamIcon.Mypage)
 }
 
@@ -57,8 +60,12 @@ internal fun MainRoute(
             .navigationBarsPadding()
     ) {
         Scaffold(
-            containerColor = Color.Unspecified,
-            bottomBar = {}
+            containerColor = MaterialTheme.colors.gray9,
+            bottomBar = {
+                MainBottomBar(
+                    mainNavController = mainNavController
+                )
+            }
         ) { scaffoldPadding ->
             NavHost(
                 modifier = Modifier
@@ -109,7 +116,10 @@ private fun MainBottomBar(
                 },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colors.primary4,
-                    unselectedIconColor = MaterialTheme.colors.grey4
+                    unselectedIconColor = MaterialTheme.colors.grey4,
+                    indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                        LocalAbsoluteTonalElevation.current
+                    )
                 )
             )
         }
