@@ -34,7 +34,7 @@ private const val FARM_WORK_ITEM_HEIGHT = 20
 
 @Composable
 internal fun FarmWorkCalendar(
-    farmWorks: List<FarmWorkEntity>,
+    farmWorks: List<FarmWorkModel>,
     modifier: Modifier = Modifier
 ) {
     val graphCategories = remember {

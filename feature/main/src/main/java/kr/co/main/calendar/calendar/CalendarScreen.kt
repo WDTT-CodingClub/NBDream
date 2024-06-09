@@ -1,4 +1,3 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.calendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -37,28 +36,28 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import kr.co.wdtt.nbdream.R
-import kr.co.wdtt.nbdream.domain.entity.DiaryEntity
-import kr.co.wdtt.nbdream.domain.entity.DreamCrop
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Alarm
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.ArrowLeft
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Spinner
-import kr.co.wdtt.nbdream.ui.main.calendar.common.CalendarContent
-import kr.co.wdtt.nbdream.ui.main.calendar.common.CalendarContentWrapper
-import kr.co.wdtt.nbdream.ui.main.calendar.common.CalendarHorizontalDivider
-import kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar.MainCalendar
-import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeDiaryEntityProvider
-import kr.co.wdtt.nbdream.ui.theme.Paddings
-import kr.co.wdtt.nbdream.ui.theme.colors
-import kr.co.wdtt.nbdream.ui.theme.typo
-
+import kr.co.main.R
+import kr.co.main.calendar.calendar.CalendarViewModel
+import kr.co.main.calendar.calendar.maincalendar.MainCalendar
+import kr.co.main.calendar.common.CalendarContent
+import kr.co.main.calendar.common.CalendarContentWrapper
+import kr.co.main.calendar.common.CalendarHorizontalDivider
+import kr.co.main.calendar.model.CropModel
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.providers.FakeDiaryModelProvider
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Alarm
+import kr.co.ui.icon.dreamicon.ArrowLeft
+import kr.co.ui.icon.dreamicon.Spinner
+import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 
 // TODO 재배 작물 목록 비어있을 때 처리
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarScreen(
+internal fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel()
 ) {
     val calendarScreenState by viewModel.state.collectAsState()
@@ -119,8 +118,8 @@ fun CalendarScreen(
 
 @Composable
 private fun CalendarTopBar(
-    userCrops: List<DreamCrop>,
-    selectedCrop: DreamCrop?,
+    userCrops: List<CropModel>,
+    selectedCrop: CropModel?,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.padding(vertical = Paddings.medium)) {
@@ -141,8 +140,8 @@ private fun CalendarTopBar(
 
 @Composable
 private fun CalendarDropDownTitle(
-    userCrops: List<DreamCrop>,
-    selectedCrop: DreamCrop?,
+    userCrops: List<CropModel>,
+    selectedCrop: CropModel?,
     modifier: Modifier = Modifier
 ) {
     // TODO 작물 선택 스피너
@@ -153,17 +152,17 @@ private fun CalendarDropDownTitle(
         if (selectedCrop == null) {
             Text(
                 modifier = Modifier,
-                text = stringResource(id = R.string.calendar_no_title),
+                text = stringResource(id = R.string.feature_main_calendar_no_title),
                 style = MaterialTheme.typo.headerB
             )
         } else {
             Text(
                 modifier = Modifier,
                 text = stringResource(
-                    id = R.string.calendar_title,
-                    stringResource(id = selectedCrop.cropNameId)
-                ),
-                style = MaterialTheme.typo.headerB
+                id = R.string.feature_main_calendar_title,
+                stringResource(id = selectedCrop.nameId)
+            ),
+            style = MaterialTheme.typo.headerB
             )
             Icon(
                 modifier = Modifier.padding(start = Paddings.medium),
@@ -253,7 +252,7 @@ private fun CalendarYearMonth(
         )
         Text(
             modifier = Modifier.align(Alignment.Center),
-            text = stringResource(id = R.string.calendar_year_month, year, month),
+            text = stringResource(id = R.string.feature_main_calendar_year_month, year, month),
             style = MaterialTheme.typo.header2M,
             color = MaterialTheme.colors.text1
         )
@@ -270,7 +269,7 @@ private fun CalendarYearMonth(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DiaryList(
-    diaries: List<DiaryEntity>,
+    diaries: List<DiaryModel>,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -293,7 +292,7 @@ private fun DiaryList(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DiaryItem(
-    diary: DiaryEntity,
+    diary: DiaryModel,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -312,11 +311,11 @@ private fun CalendarTopBarPreview() {
     Surface(modifier = Modifier.fillMaxWidth()) {
         CalendarTopBar(
             userCrops = listOf(
-                DreamCrop.POTATO,
-                DreamCrop.SWEET_POTATO,
-                DreamCrop.TOMATO
+                CropModel.POTATO,
+                CropModel.SWEET_POTATO,
+                CropModel.TOMATO
             ).sortedBy { it.ranking },
-            selectedCrop = DreamCrop.POTATO
+            selectedCrop = CropModel.POTATO
         )
     }
 }
@@ -337,7 +336,7 @@ private fun CalendarYearMonthPreview() {
 @Preview
 @Composable
 private fun DiaryListPreview(
-    @PreviewParameter(FakeDiaryEntityProvider::class) diary: DiaryEntity
+    @PreviewParameter(FakeDiaryModelProvider::class) diary: DiaryModel
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
         DiaryList(
