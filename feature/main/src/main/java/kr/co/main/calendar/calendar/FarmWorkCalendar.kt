@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -88,7 +87,7 @@ private fun FarmWorkEraHeader(
 
 @Composable
 private fun FarmWorkCalendarContent(
-    farmWorks: List<FarmWorkEntity>,
+    farmWorks: List<FarmWorkModel>,
     modifier: Modifier = Modifier
 ) {
     FarmWorkCalendarRow(
@@ -128,7 +127,7 @@ private fun FarmWorkItem(
 
 @Composable
 private fun FarmWorkCalendarRow(
-    farmWorks: List<FarmWorkEntity>,
+    farmWorks: List<FarmWorkModel>,
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -166,30 +165,11 @@ private fun FarmWorkCalendarRow(
     )
 }
 
-@Composable
-private fun FarmWorkItem(
-    farmWork: FarmWorkEntity,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(FARM_WORK_ITEM_HEIGHT.dp)
-            .clip(shape = RoundedCornerShape(5.dp))
-            .background(color = Color.White),
-    ) {
-        Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = farmWork.farmWork,
-            style = MaterialTheme.typo.labelR,
-            textAlign = TextAlign.Center
-        )
-    }
-}
 
 @Preview
 @Composable
 private fun FarmWorkCalendarPreview(
-    @PreviewParameter(FakeFarmWorkModelListProvider::class) farmWorks: List<FarmWorkEntity>
+    @PreviewParameter(FakeFarmWorkModelListProvider::class) farmWorks: List<FarmWorkModel>
 ) {
     Surface {
         FarmWorkCalendar(farmWorks = farmWorks)
