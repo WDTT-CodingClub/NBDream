@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,10 +27,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,6 +65,13 @@ internal fun HomeRoute(
 private fun HomeScreen(
     state: HomeViewModel.State = HomeViewModel.State()
 ) {
+    var maxWidth by remember {
+        mutableIntStateOf(0)
+    }
+    var weatherColumnHeight by remember {
+        mutableIntStateOf(0)
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colors.gray9,
         topBar = {}
@@ -204,20 +220,28 @@ private fun HomeScreen(
                             }
                         }
                         Row(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .align(Alignment.CenterHorizontally),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
                             listOf("강수확률", "강수량", "습도", "풍속").forEachIndexed { index, value ->
                                 WeatherState(
+                                    modfier = Modifier.onGloballyPositioned {
+                                        weatherColumnHeight = it.size.height - 48
+                                    },
                                     title = value
                                 )
 
-                                if (index < 3) VerticalDivider(
-                                    modifier = Modifier.padding(vertical = 7.dp),
-                                    thickness = 1.dp,
-                                    color = MaterialTheme.colors.gray8
-                                )
+                                if (index < 3)
+                                    VerticalDivider(
+                                        modifier = Modifier
+                                            .height(weatherColumnHeight.dp)
+                                            .padding(vertical = 7.dp),
+                                        thickness = 1.dp,
+                                        color = MaterialTheme.colors.gray8
+                                    )
                             }
                         }
                     }
@@ -243,17 +267,136 @@ private fun HomeScreen(
                     }
                 }
             }
+
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colors.white,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(24.dp),
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = MaterialTheme.typo.h4.copy(
+                                    color = MaterialTheme.colors.gray1
+                                ).toSpanStyle()
+                            ) {
+                                append("5월 24일 일 ")
+                            }
+                            withStyle(
+                                style = MaterialTheme.typo.body1.copy(
+                                    color = MaterialTheme.colors.gray2
+                                ).toSpanStyle()
+                            ) {
+                                append(" 소만 ")
+                            }
+                            append(" 오늘")
+                        },
+                        style = MaterialTheme.typo.body1,
+                        color = MaterialTheme.colors.primary
+                    )
+                    Spacer(modifier = Modifier.height(36.dp))
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onGloballyPositioned {
+                                maxWidth = it.size.width
+                            },
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        val dummy = listOf(
+                            Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
+                            Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
+                            Triple("감자 물 관리 작업 감자 물 관리 작업", "2024.05.16", "2024.05.21"),
+                        )
+                            dummy.forEachIndexed { index, value ->
+                            ScheduleText(
+                                parentWidth = maxWidth,
+                                title = value.first,
+                                startDate = value.second,
+                                endDate = value.third
+                            )
+                            if (index != dummy.lastIndex)
+                                HorizontalDivider(
+                                    thickness = 1.dp,
+                                    color = MaterialTheme.colors.gray8
+                                )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(48.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "펼쳐보기",
+                            style = MaterialTheme.typo.label,
+                            color = MaterialTheme.colors.gray3
+                            )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Icon(
+                            modifier = Modifier.size(20.dp),
+                            imageVector = Icons.Filled.KeyboardArrowDown,
+                            contentDescription = "expand"
+                        )
+                    }
+                }
+            }
         }
     }
 
 }
 
 @Composable
+private fun ScheduleText(
+    parentWidth: Int,
+    title: String,
+    startDate: String,
+    endDate: String
+) {
+    val textMeasurer = rememberTextMeasurer()
+
+    val measuredWidth = textMeasurer.measure(
+        text = title,
+        style = MaterialTheme.typo.body1
+    ).size.width + textMeasurer.measure(
+        text = "$startDate ~ $endDate",
+        style = MaterialTheme.typo.body2
+    ).size.width
+
+    val shouldWrap = measuredWidth < parentWidth
+
+    Text(
+        modifier = Modifier,
+        text = buildAnnotatedString {
+            withStyle(
+                style = MaterialTheme.typo.body1.copy(
+                    color = MaterialTheme.colors.gray1
+                ).toSpanStyle()
+            ) {
+                append(title)
+            }
+            append(if (shouldWrap) "  " else "\n")
+            append("$startDate ~ $endDate")
+        },
+        style = MaterialTheme.typo.body2,
+        color = MaterialTheme.colors.gray5
+    )
+}
+
+@Composable
 private fun WeatherState(
+    modfier: Modifier = Modifier,
     title: String
 ) {
     Column(
-        modifier = Modifier,
+        modifier = modfier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {

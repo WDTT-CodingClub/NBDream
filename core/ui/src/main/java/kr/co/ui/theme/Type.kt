@@ -46,6 +46,13 @@ val Typography = DreamTypography(
         lineHeight = 18.sp * 1.6,
         letterSpacing = TextUnit.Unspecified
     ),
+    h4 = TextStyle(
+        fontFamily = DreamFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        lineHeight = 16.sp * 1.6,
+        letterSpacing = TextUnit.Unspecified
+    ),
     body1 = TextStyle(
         fontFamily = DreamFontFamily,
         fontWeight = FontWeight.Normal,
@@ -225,6 +232,7 @@ data class DreamTypography(
     val h1: TextStyle = TextStyle.Default,
     val h2: TextStyle = TextStyle.Default,
     val h3: TextStyle = TextStyle.Default,
+    val h4: TextStyle = TextStyle.Default,
     val body1: TextStyle = TextStyle.Default,
     val body2: TextStyle = TextStyle.Default,
     val label: TextStyle = TextStyle.Default,
