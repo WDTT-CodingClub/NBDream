@@ -10,7 +10,7 @@ internal object WeatherForecastMapper
     override fun convert(param: WeatherForecastResult): WeatherForecastEntity {
         return with(param) {
             WeatherForecastEntity(
-                precipitation = precipitation,
+                precipitation = precipitation.toString(),
                 probability = precipitationProbability,
                 temperature = temp,
                 humidity = humidity,
