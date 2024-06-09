@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.common
+package kr.co.main.calendar.common
 
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
@@ -21,12 +21,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kr.co.wdtt.nbdream.R
-import kr.co.wdtt.nbdream.domain.entity.WeatherForecastEntity
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.ArrowLeft
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
-import kr.co.wdtt.nbdream.ui.theme.colors
-import kr.co.wdtt.nbdream.ui.theme.typo
+import kr.co.domain.entity.WeatherForecastEntity
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.ArrowLeft
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 import java.time.LocalDate
 
 
@@ -82,7 +81,7 @@ fun CalendarDatePicker(
     date: LocalDate,
     onDatePick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
-){
+) {
     //TODO Date Picker
 }
 
@@ -94,7 +93,7 @@ fun CalendarWeather(
 ) {
     val weatherForcastStr = remember {
         with(weatherForecast) {
-            "${maxTemperature}/${minTemperature} ${precipitation} ${weather}"
+            "${weather.first().maxTemp}/${weather.first().minTemp} ${precipitation} ${weather.first().weather}}"
         }
     }
 

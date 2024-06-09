@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar
+package kr.co.main.calendar.calendar.maincalendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -28,16 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import kr.co.wdtt.nbdream.domain.entity.ScheduleCategory
-import kr.co.wdtt.nbdream.domain.entity.ScheduleEntity
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Alarm
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
-import kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar.ScheduleItemScope.scheduleItem
-import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeScheduleEntityProvider
-import kr.co.wdtt.nbdream.ui.theme.Paddings
-import kr.co.wdtt.nbdream.ui.theme.colors
-import kr.co.wdtt.nbdream.ui.theme.typo
-import kr.co.wdtt.nbdream.ui.util.iterator
+import kr.co.common.util.iterator
+import kr.co.main.calendar.calendar.maincalendar.ScheduleItemScope.scheduleItem
+import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.calendar.providers.FakeScheduleModelProvider
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Alarm
+import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Period
@@ -52,7 +51,7 @@ private const val SLOT_FULL = 1
 internal fun MainCalendarScheduleRow(
     weekStartDate: LocalDate,
     weekEndDate: LocalDate,
-    schedules: List<ScheduleEntity>,
+    schedules: List<ScheduleModel>,
     modifier: Modifier = Modifier
 ) {
     val content = @Composable {
@@ -125,7 +124,7 @@ internal fun MainCalendarScheduleRow(
 
 @Composable
 private fun ScheduleItemScope.MainCalendarScheduleItem(
-    schedule: ScheduleEntity,
+    schedule: ScheduleModel,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -135,8 +134,8 @@ private fun ScheduleItemScope.MainCalendarScheduleItem(
             .clip(shape = RoundedCornerShape(5.dp))
             .background(
                 color = when (schedule.category) {
-                    is ScheduleCategory.All -> Color.LightGray
-                    is ScheduleCategory.Crop -> Color(schedule.category.dreamCrop.cropColor)
+                    is ScheduleModel.Category.All -> Color.LightGray
+                    is ScheduleModel.Category.Crop -> Color(schedule.category.crop.color)
                 }
             ),
         horizontalArrangement = Arrangement.Center,
@@ -162,7 +161,7 @@ private fun ScheduleItemScope.MainCalendarScheduleItem(
 @Preview
 @Composable
 private fun MainCalendarScheduleItemPreview(
-    @PreviewParameter(FakeScheduleEntityProvider::class) schedule: ScheduleEntity
+    @PreviewParameter(FakeScheduleModelProvider::class) schedule: ScheduleModel
 ) {
     ScheduleItemScope.MainCalendarScheduleItem(schedule = schedule)
 }

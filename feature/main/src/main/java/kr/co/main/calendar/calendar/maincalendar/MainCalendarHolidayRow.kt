@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar
+package kr.co.main.calendar.calendar.maincalendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -10,10 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.style.TextAlign
-import kr.co.wdtt.nbdream.domain.entity.HolidayEntity
-import kr.co.wdtt.nbdream.ui.theme.colors
-import kr.co.wdtt.nbdream.ui.theme.typo
-import kr.co.wdtt.nbdream.ui.util.iterator
+import kr.co.common.util.iterator
+import kr.co.domain.entity.HolidayEntity
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 import java.time.LocalDate
 import kotlin.math.max
 

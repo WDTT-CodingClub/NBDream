@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar
+package kr.co.main.calendar.calendar.maincalendar
 
 import android.os.Build
 import androidx.annotation.ColorInt
@@ -23,27 +23,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Constraints
-import kr.co.wdtt.nbdream.R
-import kr.co.wdtt.nbdream.domain.entity.DiaryEntity
-import kr.co.wdtt.nbdream.domain.entity.DreamCrop
-import kr.co.wdtt.nbdream.domain.entity.HolidayEntity
-import kr.co.wdtt.nbdream.domain.entity.ScheduleEntity
-import kr.co.wdtt.nbdream.ui.main.calendar.common.CalendarCategoryIndicator
+import kr.co.common.util.iterator
+import kr.co.domain.entity.HolidayEntity
+import kr.co.main.R
+import kr.co.main.calendar.common.CalendarCategoryIndicator
+import kr.co.main.calendar.model.CropModel
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.ScheduleModel
+import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeMainCalendarDataProvider
-import kr.co.wdtt.nbdream.ui.theme.Paddings
-import kr.co.wdtt.nbdream.ui.theme.colors
-import kr.co.wdtt.nbdream.ui.theme.typo
-import kr.co.wdtt.nbdream.ui.util.iterator
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-data class MainCalendarData(
+internal data class MainCalendarData(
     val year: Int,
     val month: Int,
-    val crop: DreamCrop,
+    val crop: CropModel,
     val holidays: List<HolidayEntity>,
-    val schedules: List<ScheduleEntity>,
-    val diaries: List<DiaryEntity>
+    val schedules: List<ScheduleModel>,
+    val diaries: List<DiaryModel>
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -51,10 +51,10 @@ data class MainCalendarData(
 fun MainCalendar(
     year: Int,
     month: Int,
-    crop: DreamCrop,
+    crop: CropModel,
     holidays: List<HolidayEntity>,
-    schedules: List<ScheduleEntity>,
-    diaries: List<DiaryEntity>,
+    schedules: List<ScheduleModel>,
+    diaries: List<DiaryModel>,
     modifier: Modifier = Modifier
 ) {
     val scheduleCalendarStateHolder = rememberScheduleCalendarStateHolder(year, month)
@@ -85,7 +85,7 @@ private fun rememberScheduleCalendarStateHolder(year: Int, month: Int) = remembe
 
 @Composable
 private fun CategoryIndicatorList(
-    crop: DreamCrop,
+    crop: CropModel,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -94,11 +94,11 @@ private fun CategoryIndicatorList(
         verticalAlignment = Alignment.CenterVertically
     ) {
         CategoryIndicatorListItem(
-            cropNameId = crop.cropNameId,
-            cropColor = crop.cropColor
+            cropNameId = crop.nameId,
+            cropColor = crop.color
         )
         CategoryIndicatorListItem(
-            cropNameId = R.string.calendar_category_all,
+            cropNameId = R.string.feature_main_calendar_category_all,
             cropColor = Color.Gray.toArgb()
         )
     }
@@ -132,13 +132,13 @@ private fun DayOfWeekHeader(
 ) {
     val dayOfWeekIds = remember {
         listOf(
-            R.string.calendar_day_of_week_sun,
-            R.string.calendar_day_of_week_mon,
-            R.string.calendar_day_of_week_tue,
-            R.string.calendar_day_of_week_wed,
-            R.string.calendar_day_of_week_thu,
-            R.string.calendar_day_of_week_fri,
-            R.string.calendar_day_of_week_sat,
+            R.string.feature_main_calendar_day_of_week_sun,
+            R.string.feature_main_calendar_day_of_week_mon,
+            R.string.feature_main_calendar_day_of_week_tue,
+            R.string.feature_main_calendar_day_of_week_wed,
+            R.string.feature_main_calendar_day_of_week_thu,
+            R.string.feature_main_calendar_day_of_week_fri,
+            R.string.feature_main_calendar_day_of_week_sat,
         )
     }
     Row(modifier = modifier.fillMaxWidth()) {
@@ -175,8 +175,8 @@ private fun MainCalendarContent(
     endWeekNum: Int,
     getWeekRange: (Int, Int) -> Pair<LocalDate, LocalDate>,
     holidays: List<HolidayEntity>,
-    schedules: List<ScheduleEntity>,
-    diaries: List<DiaryEntity>,
+    schedules: List<ScheduleModel>,
+    diaries: List<DiaryModel>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {

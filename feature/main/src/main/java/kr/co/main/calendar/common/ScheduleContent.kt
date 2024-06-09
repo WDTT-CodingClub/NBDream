@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.common
+package kr.co.main.calendar.common
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -20,23 +20,22 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import kr.co.wdtt.nbdream.domain.entity.ScheduleCategory
-import kr.co.wdtt.nbdream.domain.entity.ScheduleEntity
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Alarm
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
-import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeScheduleEntityProvider
-import kr.co.wdtt.nbdream.ui.theme.Paddings
-import kr.co.wdtt.nbdream.ui.theme.colors
-import kr.co.wdtt.nbdream.ui.theme.typo
-import kr.co.wdtt.nbdream.ui.util.toDateString
-import kr.co.wdtt.nbdream.ui.util.toDateTimeString
+import kr.co.common.util.toDateString
+import kr.co.common.util.toDateTimeString
+import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.calendar.providers.FakeScheduleModelProvider
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Alarm
+import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 
 private const val ALARM_ICON_SIZE = 16
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleContent(
-    schedule: ScheduleEntity,
+internal fun ScheduleContent(
+    schedule: ScheduleModel,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxWidth()) {
@@ -71,14 +70,14 @@ fun ScheduleContent(
 
 @Composable
 private fun ScheduleTitle(
-    category: ScheduleCategory,
+    category: ScheduleModel.Category,
     title: String,
     modifier: Modifier = Modifier
 ) {
     val categoryColor = remember(category) {
         when (category) {
-            is ScheduleCategory.Crop -> category.dreamCrop.cropColor
-            is ScheduleCategory.All -> Color.LightGray.toArgb()
+            is ScheduleModel.Category.Crop -> Color.Green.toArgb()
+            is ScheduleModel.Category.All -> Color.LightGray.toArgb()
         }
     }
 
@@ -151,7 +150,7 @@ private fun ScheduleMemo(
 @Preview
 @Composable
 private fun ScheduleContentPreview(
-    @PreviewParameter(FakeScheduleEntityProvider::class) schedule: ScheduleEntity
+    @PreviewParameter(FakeScheduleModelProvider::class) schedule: ScheduleModel
 ) {
     ScheduleContent(schedule = schedule)
 }

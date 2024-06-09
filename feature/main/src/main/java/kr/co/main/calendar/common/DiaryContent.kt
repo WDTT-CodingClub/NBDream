@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.common
+package kr.co.main.calendar.common
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -22,16 +22,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import kr.co.wdtt.nbdream.domain.entity.DiaryEntity
-import kr.co.wdtt.nbdream.domain.entity.HolidayEntity
-import kr.co.wdtt.nbdream.domain.entity.WorkDescriptionEntity
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Sprout
-import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeDiaryEntityProvider
-import kr.co.wdtt.nbdream.ui.theme.Paddings
-import kr.co.wdtt.nbdream.ui.theme.colors
-import kr.co.wdtt.nbdream.ui.theme.typo
-import kr.co.wdtt.nbdream.ui.util.toTitleDateString
+import kr.co.common.util.toTitleDateString
+import kr.co.domain.entity.HolidayEntity
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.providers.FakeDiaryModelProvider
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Sprout
+import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 import java.time.LocalDate
 
 private const val HORIZONTAL_DIVIDER_HEIGHT = 0.5
@@ -39,8 +38,8 @@ private const val IMAGE_SCALE = 120
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DiaryContent(
-    diary: DiaryEntity,
+internal fun DiaryContent(
+    diary: DiaryModel,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -62,7 +61,7 @@ fun DiaryContent(
             workLaborer = diary.workLaborer,
             workHours = diary.workHours,
             workArea = diary.workArea,
-            workDescriptionEntities = diary.workDescriptionEntities
+            workDescriptions = diary.workDescriptions
         )
         DiaryImages(
             images = diary.images
@@ -104,7 +103,7 @@ private fun DiaryBody(
     workLaborer: Int,
     workHours: Int,
     workArea: Int,
-    workDescriptionEntities: List<WorkDescriptionEntity>,
+    workDescriptions: List<DiaryModel.WorkDescriptionModel>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -114,7 +113,7 @@ private fun DiaryBody(
             style = MaterialTheme.typo.labelM,
             color = MaterialTheme.colors.text1
         )
-        workDescriptionEntities.forEach {
+        workDescriptions.forEach {
             DiaryWorkDescription(it)
         }
     }
@@ -122,7 +121,7 @@ private fun DiaryBody(
 
 @Composable
 private fun DiaryWorkDescription(
-    workDescriptionEntity: WorkDescriptionEntity,
+    workDescription: DiaryModel.WorkDescriptionModel,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -139,12 +138,12 @@ private fun DiaryWorkDescription(
         ) {
             Text(
                 modifier = Modifier.padding(end = Paddings.medium),
-                text = workDescriptionEntity.description,
+                text = workDescription.description,
                 style = MaterialTheme.typo.bodyM,
                 color = MaterialTheme.colors.text1
             )
             Text(
-                text = stringResource(id = workDescriptionEntity.type.labelId),
+                text = stringResource(id = workDescription.typeId),
                 style = MaterialTheme.typo.labelM,
                 color = MaterialTheme.colors.text2
             )
@@ -196,7 +195,7 @@ private fun DiaryMemo(
 @Preview
 @Composable
 private fun DiaryContentPreview(
-    @PreviewParameter(FakeDiaryEntityProvider::class) diary: DiaryEntity
+    @PreviewParameter(FakeDiaryModelProvider::class) diary: DiaryModel
 ) {
     DiaryContent(diary = diary)
 }

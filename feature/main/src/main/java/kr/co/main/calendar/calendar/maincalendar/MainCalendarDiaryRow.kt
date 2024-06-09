@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.calendar.maincalendar
+package kr.co.main.calendar.calendar.maincalendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -15,11 +15,10 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import kr.co.wdtt.nbdream.domain.entity.DiaryEntity
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Edit
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Sprout
-import kr.co.wdtt.nbdream.ui.util.iterator
+import kr.co.common.util.iterator
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Edit
 import java.time.LocalDate
 import kotlin.math.max
 
@@ -30,7 +29,7 @@ private val DIARY_ITEM_IMAGE_SIZE = 24
 internal fun MainCalendarDiaryRow(
     weekStartDate: LocalDate,
     weekEndDate: LocalDate,
-    diaries: List<DiaryEntity>,
+    diaries: List<DiaryModel>,
     modifier: Modifier = Modifier
 ) {
     val content = @Composable {
@@ -77,7 +76,7 @@ internal fun MainCalendarDiaryRow(
 
 @Composable
 private fun DiaryItemScope.MainCalendarDiaryItem(
-    diary: DiaryEntity,
+    diary: DiaryModel,
     onDiaryClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {

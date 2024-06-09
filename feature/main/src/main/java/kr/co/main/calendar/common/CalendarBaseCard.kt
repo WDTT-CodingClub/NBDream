@@ -1,4 +1,4 @@
-package kr.co.wdtt.nbdream.ui.main.calendar.common
+package kr.co.main.calendar.common
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -25,21 +25,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.zIndex
-import kr.co.wdtt.nbdream.R
-import kr.co.wdtt.nbdream.domain.entity.DiaryEntity
-import kr.co.wdtt.nbdream.domain.entity.ScheduleEntity
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Delete
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.DreamIcon
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Dropdown
-import kr.co.wdtt.nbdream.ui.icon.dreamicon.Edit
-import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeDiaryEntityProvider
-import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeScheduleEntityProvider
-import kr.co.wdtt.nbdream.ui.theme.Paddings
-import kr.co.wdtt.nbdream.ui.theme.typo
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.calendar.providers.FakeDiaryModelProvider
+import kr.co.main.calendar.providers.FakeScheduleModelProvider
+import kr.co.nbdream.core.ui.R
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Delete
+import kr.co.ui.icon.dreamicon.Dropdown
+import kr.co.ui.icon.dreamicon.Edit
+import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.typo
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarBaseCard(
+internal fun CalendarBaseCard(
     calendarContent: CalendarContent,
     modifier: Modifier = Modifier
 ) {
@@ -87,13 +87,13 @@ private fun CardDropDownMenu(
             CardDropDownMenuItem(
                 modifier = Modifier.zIndex(1f),
                 menuIcon = DreamIcon.Edit,
-                menuNameId = R.string.dropdown_menu_edit,
+                menuNameId = R.string.core_ui_dropdown_menu_edit,
                 onClick = onEdit
             )
             CardDropDownMenuItem(
                 modifier = Modifier.zIndex(1f),
                 menuIcon = DreamIcon.Delete,
-                menuNameId = R.string.dropdown_menu_delete,
+                menuNameId = R.string.core_ui_dropdown_menu_delete,
                 onClick = onDelete
             )
         }
@@ -128,7 +128,7 @@ private fun CardDropDownMenuItem(
 private fun CardDropDownMenuItemPreview() {
     CardDropDownMenuItem(
         menuIcon = DreamIcon.Delete,
-        menuNameId = R.string.dropdown_menu_delete,
+        menuNameId = R.string.core_ui_dropdown_menu_delete,
         onClick = { /*TODO*/ }
     )
 }
@@ -137,7 +137,7 @@ private fun CardDropDownMenuItemPreview() {
 @Preview
 @Composable
 private fun ScheduleCardPreview(
-    @PreviewParameter(FakeScheduleEntityProvider::class) schedule: ScheduleEntity
+    @PreviewParameter(FakeScheduleModelProvider::class) schedule: ScheduleModel
 ) {
     CalendarBaseCard(calendarContent = CalendarContent.create(schedule))
 }
@@ -146,7 +146,7 @@ private fun ScheduleCardPreview(
 @Preview
 @Composable
 private fun DiaryCardPreview(
-    @PreviewParameter(FakeDiaryEntityProvider::class) diary: DiaryEntity
+    @PreviewParameter(FakeDiaryModelProvider::class) diary: DiaryModel
 ) {
     CalendarBaseCard(calendarContent = CalendarContent.create(diary))
 }

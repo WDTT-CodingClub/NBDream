@@ -1,5 +1,7 @@
-package kr.co.wdtt.nbdream.domain.entity
+package kr.co.domain.entity
 
+import kr.co.domain.entity.HolidayEntity
+import kr.co.domain.entity.ScheduleEntity
 import java.time.DayOfWeek
 
 data class CalendarDateEntity (
