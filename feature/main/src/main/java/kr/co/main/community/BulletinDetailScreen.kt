@@ -34,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
+    onBackClick: () -> Unit,
 ) {
     Column {
         LazyColumn(
@@ -41,12 +42,14 @@ internal fun BulletinDetailScreen(
         ) {
             item {
                 Row {
-                    Image(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
-                        contentDescription = "뒤로가기 아이콘",
-                    )
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
+                            contentDescription = "뒤로가기 아이콘",
+                        )
+                    }
                     Text("무슨무슨 게시판")
-                    Image(
+                    Icon(
                         painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_share_24),
                         contentDescription = "공유 아이콘",
                     )
@@ -88,7 +91,7 @@ internal fun BulletinDetailScreen(
                     Text("댓글 ${3}")
                     Card {
                         Row {
-                            Image(
+                            Icon(
                                 painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_border_24),
                                 contentDescription = "북마크 빈 아이콘",
                             )
@@ -116,7 +119,7 @@ internal fun BulletinDetailScreen(
                     )
                     Text("댓글닉네임$it")
                     Text("2000.00.00 00:00:${DecimalFormat("00").format(it)}")
-                    Image(
+                    Icon(
                         painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_more_vert_24),
                         contentDescription = "더보기",
                     )
@@ -154,7 +157,7 @@ internal fun BulletinDetailScreen(
 private fun BulletinDetailScreenPreview() {
     MaterialTheme {
         Surface {
-            BulletinDetailScreen()
+            BulletinDetailScreen(onBackClick = {})
         }
     }
 }
