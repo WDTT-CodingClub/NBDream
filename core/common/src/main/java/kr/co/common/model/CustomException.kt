@@ -2,7 +2,11 @@ package kr.co.common.model
 
 import java.io.IOException
 
-class CustomException(message: String?, val customError: CustomErrorType) : IOException(message)
+class CustomException(
+    message: String? = null,
+    val customError: CustomErrorType? = null,
+    cause: Throwable? = null
+) : IOException(message)
 
 enum class CustomErrorType(val errorCode: Int) {
     BAD_REQUEST(400),

@@ -1,4 +1,4 @@
-package kr.co.onboard.login
+package kr.co.onboard.ui.login
 
 import android.os.Handler
 import android.os.Looper

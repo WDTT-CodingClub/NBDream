@@ -12,14 +12,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kr.co.nbdream.source.local.BuildConfig
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 internal class LocalServiceModule {
-    @Singleton
-    @Provides
-    fun provideContext(application: Application): Context = application.applicationContext
     @Singleton
     @Provides
     fun providePreferencesDataStore(@ApplicationContext context: Context) =

@@ -1,4 +1,4 @@
-package kr.co.onboard.login
+package kr.co.onboard.ui.login
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
