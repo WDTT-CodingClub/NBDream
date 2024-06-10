@@ -1,7 +1,9 @@
 package kr.co.common
 
+import android.annotation.SuppressLint
 import android.content.Context
 
+@SuppressLint("StaticFieldLeak")
 object ContextManager {
 
     private var context: Context? = null
