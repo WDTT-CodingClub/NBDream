@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.entity.SortOrder
@@ -39,6 +42,16 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+@Composable
+internal fun AccountBookRoute(
+    viewModel: AccountBookViewModel = hiltViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    AccountBookScreen(
+        state = state
+    )
+}
 
 @Preview
 @Composable
@@ -47,7 +60,9 @@ private fun PreviewAccountBookScreen() {
 }
 
 @Composable
-fun AccountBookScreen() {
+private fun AccountBookScreen(
+    state: AccountBookViewModel.State = AccountBookViewModel.State()
+) {
     var sortOrder by remember { mutableStateOf(SortOrder.RECENCY) }
     var showTotalExpenses by remember { mutableStateOf(true) }
     var showTotalRevenue by remember { mutableStateOf(false) }
@@ -73,7 +88,21 @@ fun AccountBookScreen() {
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { /* TODO */ },
+                shape = CircleShape,
+                containerColor = MaterialTheme.colors.green1
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Create,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
         Surface(
             modifier = Modifier
@@ -96,26 +125,6 @@ fun AccountBookScreen() {
                     sortOrder = it
                 }
                 AccountBooksList(sortedList)
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            FloatingActionButton(
-                onClick = { /* TODO */ },
-                shape = CircleShape,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                containerColor = MaterialTheme.colors.green1
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Create,
-                    contentDescription = null,
-                    tint = Color.White
-                )
             }
         }
     }
@@ -162,8 +171,6 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
                 endDate.value = LocalDate.parse(selectedEndDate)
                 bottomSheetState = false
             },
-            startDate = startDate,
-            endDate = endDate,
             dismissBottomSheet = { bottomSheetState = false }
         )
     }

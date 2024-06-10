@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
+import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.home.HomeRoute
 
 const val MAIN_ROUTE = "mainRoute"
@@ -32,7 +33,7 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.ACCOUNT.route
                 ) {
-
+                    AccountBookRoute()
                 }
 
                 composable(

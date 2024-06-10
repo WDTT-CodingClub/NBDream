@@ -116,15 +116,16 @@ internal fun AccountBookCategoryBottomSheet(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountBookCalendarBottomSheet(
+internal fun AccountBookCalendarBottomSheet(
     onSelectedListener: (String, String) -> Unit,
-    startDate: MutableState<LocalDate>,
-    endDate: MutableState<LocalDate>,
     dismissBottomSheet: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState()
     val options = listOf("당일", "1주일", "1개월", "3개월", "6개월")
     var selectedOption by remember { mutableStateOf("1개월") }
+
+    val startDate = remember { mutableStateOf(LocalDate.now().withDayOfMonth(1)) }
+    val endDate = remember { mutableStateOf(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth())) }
 
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickerType by remember { mutableStateOf("start") }
