@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.toDateString
 import kr.co.main.calendar.model.WeatherForecastModel
@@ -33,6 +38,8 @@ import kr.co.ui.theme.typo
 import java.time.LocalDate
 
 private const val SKY_ICON_SIZE = 20
+
+private const val ROUNDED_CORNER_RADIUS = 12
 
 private const val CROP_COLOR_SHAPE_SIZE = 8
 
@@ -84,7 +91,7 @@ internal fun CalendarHorizontalDivider(
 @Composable
 internal fun CalendarDatePicker(
     date: LocalDate,
-    onDatePick: (LocalDate) -> Unit,
+    onDateInput: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -135,6 +142,71 @@ internal fun CalendarWeather(
             style = MaterialTheme.typo.bodyM,
             color = MaterialTheme.colors.text1
         )
+    }
+}
+
+@Composable
+internal fun CalendarUnderLineTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeHolder: @Composable () -> Unit = {},
+    maxLines: Int = 1,
+    textAlign: TextAlign = TextAlign.Start,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+) {
+    BasicTextField(
+        modifier = modifier,
+        value = value,
+        onValueChange = onValueChange,
+        maxLines = maxLines,
+        textStyle = TextStyle.Default.copy(
+            textAlign = textAlign
+        ),
+        keyboardOptions = keyboardOptions
+    ) { innerTextField ->
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (value.isEmpty()) placeHolder()
+            innerTextField()
+            HorizontalDivider()
+        }
+    }
+}
+
+@Composable
+internal fun CalendarContainerTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeHolder: @Composable () -> Unit = {},
+    maxLines: Int = 1,
+    textAlign: TextAlign = TextAlign.Start,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+) {
+    BasicTextField(
+        modifier = modifier,
+        value = value,
+        onValueChange = onValueChange,
+        maxLines = maxLines,
+        textStyle = TextStyle.Default.copy(
+            textAlign = textAlign
+        ),
+        keyboardOptions = keyboardOptions
+    ) { innerTextField ->
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(ROUNDED_CORNER_RADIUS.dp))
+                .background(Color.LightGray),
+        ) {
+            Box(modifier = Modifier.padding(Paddings.medium)) {
+                if (value.isEmpty()) placeHolder()
+                innerTextField()
+            }
+        }
     }
 }
 

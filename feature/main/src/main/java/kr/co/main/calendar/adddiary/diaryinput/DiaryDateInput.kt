@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import kr.co.main.R
 import kr.co.main.calendar.common.CalendarDatePicker
 import kr.co.main.calendar.common.CalendarWeather
 import kr.co.main.calendar.model.WeatherForecastModel
@@ -23,7 +22,7 @@ internal fun DiaryDateInput(
     Column(modifier = modifier) {
         CalendarDatePicker(
             date = registerDate,
-            onDatePick = onRegisterDateInput
+            onDateInput = onRegisterDateInput
         )
         CalendarWeather(weatherForecast = weatherForecast)
     }

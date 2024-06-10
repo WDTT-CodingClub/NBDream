@@ -1,11 +1,9 @@
 package kr.co.main.calendar.adddiary.diaryinput
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,11 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import kr.co.main.R
+import kr.co.main.calendar.common.CalendarUnderLineTextField
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.typo
 
@@ -99,45 +97,46 @@ private fun OverviewItem(
 ) {
     Row(modifier = modifier) {
         Text(
-            modifier = Modifier.padding(end = Paddings.medium),
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = Paddings.medium),
             text = stringResource(id = overviewName),
-            style = MaterialTheme.typo.labelSB
+            style = MaterialTheme.typo.labelSB,
+            textAlign = TextAlign.End
         )
         OverviewTextField(
-            modifier = Modifier.padding(end = Paddings.medium),
-            value = overviewValue.toString(),
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = Paddings.medium),
+            value = overviewValue,
             onValueChange = onOverviewValueChange
         )
         Text(
+            modifier = Modifier.weight(1f),
             text = stringResource(id = overviewDigit),
-            style = MaterialTheme.typo.labelSB
+            style = MaterialTheme.typo.labelSB,
+            textAlign = TextAlign.Start
         )
     }
 }
 
 @Composable
 private fun OverviewTextField(
-    value: String,
+    value: Int,
     onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BasicTextField(
-        value = value,
-        onValueChange = { input: String -> onValueChange(input.toInt()) },
-        textStyle = TextStyle.Default.copy(
-            fontStyle = MaterialTheme.typo.bodyM.fontStyle,
-            textAlign = TextAlign.Center
-        ),
-        singleLine = true,
-        maxLines = 1,
-        keyboardOptions = KeyboardOptions.Default.copy(
+    CalendarUnderLineTextField(
+        modifier = modifier,
+        value = value.toString(),
+        onValueChange = {input ->
+            onValueChange(input.toIntOrNull() ?: 0)
+        },
+        textAlign = TextAlign.Center,
+        keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number
         )
-    ) { innerTextField ->
-        Box(modifier = modifier) {
-            innerTextField()
-        }
-    }
+    )
 }
 
 @Preview
