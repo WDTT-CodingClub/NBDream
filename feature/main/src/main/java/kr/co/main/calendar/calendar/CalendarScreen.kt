@@ -1,10 +1,6 @@
-package kr.co.main.calendar
 
 import android.os.Build
-import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
-import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -27,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,11 +36,15 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import kr.co.domain.entity.DiaryEntity
 import kr.co.main.R
-import kr.co.main.calendar.content.CalendarContent
-import kr.co.main.calendar.content.CalendarContentWrapper
-import kr.co.main.calendar.providers.FakeDiaryEntityProvider
+import kr.co.main.calendar.calendar.CalendarViewModel
+import kr.co.main.calendar.calendar.maincalendar.MainCalendar
+import kr.co.main.calendar.common.CalendarContent
+import kr.co.main.calendar.common.CalendarContentWrapper
+import kr.co.main.calendar.common.CalendarHorizontalDivider
+import kr.co.main.calendar.model.CropModel
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Alarm
 import kr.co.ui.icon.dreamicon.ArrowLeft
@@ -50,72 +53,9 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 
-internal enum class DreamCrop(
-    val cropCode: String,
-    @StringRes val cropNameId: Int,
-    @ColorInt val cropColor: Int = 0,
-    val ranking: Int // 인기순위, 작물 정렬에 사용
-) {
-    PEPPER(
-        cropCode = "",
-        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_pepper,
-        ranking = 1
-    ),
-    RICE(
-        cropCode = "",
-        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_rice,
-        ranking = 2
-    ),
-    POTATO(
-        cropCode = "",
-        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_potato,
-        ranking = 3
-    ),
-    SWEET_POTATO(
-        cropCode = "",
-        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_sweet_potato,
-        ranking = 4
-    ),
-    APPLE(
-        cropCode = "",
-        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_apple,
-        ranking = 5
-    ),
-    STRAW_BERRY(
-        cropCode = "",
-        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_strawberry,
-        ranking = 6
-    ),
-    GARLIC(
-        cropCode = "",
-        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_garlic,
-        ranking = 7
-    ),
-    LETTUCE(
-        cropCode = "",
-        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_lettuce,
-        ranking = 8
-    ),
-    NAPPA_CABBAGE(
-        cropCode = "",
-        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_nappa_cabbage,
-        ranking = 9
-    ),
-    TOMATO(
-        cropCode = "",
-        cropNameId = kr.co.nbdream.core.ui.R.string.core_ui_dream_crop_name_tomato,
-        ranking = 10
-    )
-    ;
-
-    companion object {
-        fun getCropByCode(cropCode: String): DreamCrop =
-            entries.first { it.cropCode == cropCode }
-    }
-}
-
 // TODO 재배 작물 목록 비어있을 때 처리
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel()
@@ -130,6 +70,12 @@ internal fun CalendarScreen(
                 userCrops = calendarScreenState.userCrops,
                 selectedCrop = calendarScreenState.selectedCrop
             )
+        },
+        floatingActionButton = {
+            CalendarFab(
+                onAddScheduleClick = calendarScreenInput::onAddScheduleClick,
+                onAddDiaryClick = calendarScreenInput::onAddDiaryClick
+            )
         }
     ) { innerPadding ->
         Surface(
@@ -143,7 +89,7 @@ internal fun CalendarScreen(
                         calendarScreenInput.onSelectMonth(month)
                     }
                 )
-                HorizontalDivider()
+                CalendarHorizontalDivider()
 
                 calendarScreenState.selectedCrop?.let {
                     FarmWorkCalendar(
@@ -152,10 +98,16 @@ internal fun CalendarScreen(
                             .padding(horizontal = Paddings.xlarge),
                         farmWorks = calendarScreenState.farmWorks
                     )
-                    HorizontalDivider()
+                    CalendarHorizontalDivider()
 
-                    //TODO 일정 캘린더 UI
-                    //ScheduleCalendar(year = , month = , holidays = , schedules = , diaries = )
+                    MainCalendar(
+                        year = calendarScreenState.year,
+                        month = calendarScreenState.month,
+                        crop = calendarScreenState.selectedCrop!!,
+                        holidays = calendarScreenState.holidays,
+                        schedules = calendarScreenState.schedules,
+                        diaries = calendarScreenState.diaries
+                    )
 
                     DiaryList(diaries = calendarScreenState.diaries)
                 }
@@ -166,8 +118,8 @@ internal fun CalendarScreen(
 
 @Composable
 private fun CalendarTopBar(
-    userCrops: List<DreamCrop>,
-    selectedCrop: DreamCrop?,
+    userCrops: List<CropModel>,
+    selectedCrop: CropModel?,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.padding(vertical = Paddings.medium)) {
@@ -188,8 +140,8 @@ private fun CalendarTopBar(
 
 @Composable
 private fun CalendarDropDownTitle(
-    userCrops: List<DreamCrop>,
-    selectedCrop: DreamCrop?,
+    userCrops: List<CropModel>,
+    selectedCrop: CropModel?,
     modifier: Modifier = Modifier
 ) {
     // TODO 작물 선택 스피너
@@ -206,12 +158,13 @@ private fun CalendarDropDownTitle(
         } else {
             Text(
                 modifier = Modifier,
-                text = stringResource(id = selectedCrop.cropNameId) +
-                        " " +
-                        stringResource(id = R.string.feature_main_calendar_title),
-                style = MaterialTheme.typo.headerB
+                text = stringResource(
+                id = R.string.feature_main_calendar_title,
+                stringResource(id = selectedCrop.nameId)
+            ),
+            style = MaterialTheme.typo.headerB
             )
-            Image(
+            Icon(
                 modifier = Modifier.padding(start = Paddings.medium),
                 imageVector = DreamIcon.Spinner,
                 contentDescription = ""
@@ -236,11 +189,49 @@ private fun CalendarAlarm(
                     .zIndex(1f)
             )
         }
-        Image(
+        Icon(
             modifier = Modifier.align(Alignment.Center),
             imageVector = DreamIcon.Alarm,
             contentDescription = ""
         )
+    }
+}
+
+//TODO 캘린더 항목 추가 플로팅 액션 버튼
+@Composable
+private fun CalendarFab(
+    onAddScheduleClick: () -> Unit,
+    onAddDiaryClick: () -> Unit,
+    modifier: Modifier = Modifier
+){
+    var showChildFab = remember{ mutableStateOf(false) }
+    Column(modifier = modifier){
+        AddDiaryFab(onAddDiaryClick = onAddDiaryClick)
+        AddScheduleFab(onAddScheduleClick = onAddScheduleClick)
+    }
+}
+
+@Composable
+private fun AddScheduleFab(
+    onAddScheduleClick: ()->Unit,
+    modifier:Modifier = Modifier
+){
+    FloatingActionButton(
+        onClick = onAddScheduleClick
+    ) {
+
+    }
+}
+
+@Composable
+private fun AddDiaryFab(
+    onAddDiaryClick: ()->Unit,
+    modifier:Modifier = Modifier
+){
+    FloatingActionButton(
+        onClick = onAddDiaryClick
+    ) {
+
     }
 }
 
@@ -252,7 +243,7 @@ private fun CalendarYearMonth(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
-        Image(
+        Icon(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .clickable { onMonthSelect(month - 1) },
@@ -261,11 +252,11 @@ private fun CalendarYearMonth(
         )
         Text(
             modifier = Modifier.align(Alignment.Center),
-            text = "${year}년 ${month}월",
+            text = stringResource(id = R.string.feature_main_calendar_year_month, year, month),
             style = MaterialTheme.typo.header2M,
             color = MaterialTheme.colors.text1
         )
-        Image(
+        Icon(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .clickable { onMonthSelect(month + 1) },
@@ -275,9 +266,10 @@ private fun CalendarYearMonth(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DiaryList(
-    diaries: List<DiaryEntity>,
+    diaries: List<DiaryModel>,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -300,7 +292,7 @@ private fun DiaryList(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DiaryItem(
-    diary: DiaryEntity,
+    diary: DiaryModel,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -319,11 +311,11 @@ private fun CalendarTopBarPreview() {
     Surface(modifier = Modifier.fillMaxWidth()) {
         CalendarTopBar(
             userCrops = listOf(
-                DreamCrop.POTATO,
-                DreamCrop.SWEET_POTATO,
-                DreamCrop.TOMATO
+                CropModel.POTATO,
+                CropModel.SWEET_POTATO,
+                CropModel.TOMATO
             ).sortedBy { it.ranking },
-            selectedCrop = DreamCrop.POTATO
+            selectedCrop = CropModel.POTATO
         )
     }
 }
@@ -340,10 +332,11 @@ private fun CalendarYearMonthPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 private fun DiaryListPreview(
-    @PreviewParameter(FakeDiaryEntityProvider::class) diary: DiaryEntity
+    @PreviewParameter(FakeDiaryModelProvider::class) diary: DiaryModel
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
         DiaryList(

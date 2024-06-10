@@ -50,7 +50,6 @@ internal class KakaoLoginProviderImpl @Inject constructor(
             client.loginWithKakaoTalk(context) { token, error ->
                 error?.let {
                     if (it.message == USER_CANCELLED) return@loginWithKakaoTalk
-                    throw it
                     continuation.resumeWithException(CustomException(cause = it))
                     return@loginWithKakaoTalk
                 }

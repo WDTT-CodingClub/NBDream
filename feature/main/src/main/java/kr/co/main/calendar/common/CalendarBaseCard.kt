@@ -1,9 +1,8 @@
-package kr.co.main.calendar
+package kr.co.main.calendar.common
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,12 +25,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.zIndex
-import kr.co.domain.entity.DiaryEntity
-import kr.co.domain.entity.ScheduleEntity
-import kr.co.main.calendar.content.CalendarContent
-import kr.co.main.calendar.content.CalendarContentWrapper
-import kr.co.main.calendar.providers.FakeDiaryEntityProvider
-import kr.co.main.calendar.providers.FakeScheduleEntityProvider
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.calendar.providers.FakeDiaryModelProvider
+import kr.co.main.calendar.providers.FakeScheduleModelProvider
+import kr.co.nbdream.core.ui.R
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Delete
 import kr.co.ui.icon.dreamicon.Dropdown
@@ -73,7 +72,7 @@ private fun CardDropDownMenu(
     var expandDropDown by remember { mutableStateOf(false) }
 
     Row(modifier = modifier) {
-        Image(
+        Icon(
             modifier = Modifier.clickable { expandDropDown = true },
             imageVector = DreamIcon.Dropdown,
             contentDescription = ""
@@ -88,13 +87,13 @@ private fun CardDropDownMenu(
             CardDropDownMenuItem(
                 modifier = Modifier.zIndex(1f),
                 menuIcon = DreamIcon.Edit,
-                menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_edit,
+                menuNameId = R.string.core_ui_dropdown_menu_edit,
                 onClick = onEdit
             )
             CardDropDownMenuItem(
                 modifier = Modifier.zIndex(1f),
                 menuIcon = DreamIcon.Delete,
-                menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_delete,
+                menuNameId = R.string.core_ui_dropdown_menu_delete,
                 onClick = onDelete
             )
         }
@@ -117,7 +116,7 @@ private fun CardDropDownMenuItem(
             text = stringResource(id = menuNameId),
             style = MaterialTheme.typo.bodyM
         )
-        Image(
+        Icon(
             imageVector = menuIcon,
             contentDescription = "",
         )
@@ -129,7 +128,7 @@ private fun CardDropDownMenuItem(
 private fun CardDropDownMenuItemPreview() {
     CardDropDownMenuItem(
         menuIcon = DreamIcon.Delete,
-        menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_delete,
+        menuNameId = R.string.core_ui_dropdown_menu_delete,
         onClick = { /*TODO*/ }
     )
 }
@@ -138,7 +137,7 @@ private fun CardDropDownMenuItemPreview() {
 @Preview
 @Composable
 private fun ScheduleCardPreview(
-    @PreviewParameter(FakeScheduleEntityProvider::class) schedule: ScheduleEntity
+    @PreviewParameter(FakeScheduleModelProvider::class) schedule: ScheduleModel
 ) {
     CalendarBaseCard(calendarContent = CalendarContent.create(schedule))
 }
@@ -147,7 +146,7 @@ private fun ScheduleCardPreview(
 @Preview
 @Composable
 private fun DiaryCardPreview(
-    @PreviewParameter(FakeDiaryEntityProvider::class) diary: DiaryEntity
+    @PreviewParameter(FakeDiaryModelProvider::class) diary: DiaryModel
 ) {
     CalendarBaseCard(calendarContent = CalendarContent.create(diary))
 }
