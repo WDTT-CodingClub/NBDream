@@ -3,7 +3,6 @@ package kr.co.main.community
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,6 +47,7 @@ import coil.compose.AsyncImage
 
 @Composable
 internal fun BulletinWritingScreen(
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {
@@ -69,8 +69,8 @@ internal fun BulletinWritingScreen(
     ) {
         item {
             Row {
-                IconButton(onClick = { /*TODO*/ }) {
-                    Image(
+                IconButton(onClick = onBackClick) {
+                    Icon(
                         painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
                         contentDescription = "뒤로가기 아이콘",
                     )
@@ -166,7 +166,7 @@ internal fun BulletinWritingScreen(
                         contentAlignment = Alignment.Center,
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Image(
+                            Icon(
                                 painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.outline_photo_camera_24),
                                 contentDescription = "카메라 아이콘",
                             )
@@ -215,7 +215,7 @@ internal fun BulletinWritingScreen(
 private fun BulletinWritingScreenPreview() {
     MaterialTheme {
         Surface {
-            BulletinWritingScreen()
+            BulletinWritingScreen(onBackClick = {})
         }
     }
 }
