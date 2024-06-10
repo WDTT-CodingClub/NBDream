@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -53,6 +54,7 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
 import kr.co.nbdream.core.ui.R
 import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -77,6 +79,7 @@ fun AccountBookRegister() {
     var amount by remember { mutableStateOf(TextFieldValue("")) }
     var writingImages by remember { mutableStateOf(listOf<Uri>()) }
     var description by remember { mutableStateOf("") }
+
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -115,10 +118,14 @@ fun AccountBookRegister() {
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.White)
-                    .padding(16.dp),
+                    .padding(padding)
+                    .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("금액")
+                Text(
+                    text = "금액",
+                    style = MaterialTheme.typo.header2M
+                )
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -141,13 +148,16 @@ fun AccountBookRegister() {
                             focusedContainerColor = Color.Transparent,
                         )
                     )
-                    Text("원")
+                    Text(text = "원",
+                        style = MaterialTheme.typo.header2B)
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = null,
                         tint = Color.Black
                     )
                 }
+
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -156,14 +166,15 @@ fun AccountBookRegister() {
                 ) {
                     Text(
                         text = "분류",
-                        modifier = Modifier.width(80.dp)
+                        modifier = Modifier.width(80.dp),
+                        style = MaterialTheme.typo.titleM
                     )
 
                     Button(
                         onClick = { selectedCategory = "지출" },
                         modifier = Modifier
-                            .width(75.dp)
-                            .height(32.dp),
+                            .width(85.dp)
+                            .height(42.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (selectedCategory == "지출") MaterialTheme.colors.primary else MaterialTheme.colors.white,
                             contentColor = if (selectedCategory == "지출") MaterialTheme.colors.white else MaterialTheme.colors.primary,
@@ -172,24 +183,28 @@ fun AccountBookRegister() {
                     ) {
                         Text(
                             text = "지출",
+                            style = MaterialTheme.typo.bodyM
                         )
                     }
                     Button(
                         onClick = { selectedCategory = "수입" },
                         modifier = Modifier
-                            .width(75.dp)
-                            .height(32.dp),
+                            .width(85.dp)
+                            .height(42.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (selectedCategory == "수입") MaterialTheme.colors.primary else MaterialTheme.colors.white,
-                            contentColor = if (selectedCategory == "수입") MaterialTheme.colors.primary else MaterialTheme.colors.primary,
+                            contentColor = if (selectedCategory == "수입") MaterialTheme.colors.white else MaterialTheme.colors.primary,
                         ),
                         border = BorderStroke(1.dp, MaterialTheme.colors.primary)
                     ) {
                         Text(
                             text = "수입",
+                            style = MaterialTheme.typo.bodyM
                         )
                     }
                 }
+
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -197,7 +212,8 @@ fun AccountBookRegister() {
                 ) {
                     Text(
                         text = "카테고리",
-                        modifier = Modifier.width(80.dp)
+                        modifier = Modifier.width(80.dp),
+                        style = MaterialTheme.typo.titleM
                     )
 
                     Button(
@@ -206,10 +222,14 @@ fun AccountBookRegister() {
                     ) {
                         Text(
                             text = selectedCategoryText,
-                            color = MaterialTheme.colors.black
+                            color = MaterialTheme.colors.black,
+                            style = MaterialTheme.typo.bodyM
                         )
                     }
                 }
+
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
+
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -218,7 +238,8 @@ fun AccountBookRegister() {
                 ) {
                     Text(
                         text = "내역",
-                        modifier = Modifier.width(80.dp)
+                        modifier = Modifier.width(80.dp),
+                        style = MaterialTheme.typo.titleM
                     )
 
                     TextField(
@@ -226,16 +247,22 @@ fun AccountBookRegister() {
                         onValueChange = { newValue ->
                             description = newValue
                         },
-                        placeholder = { Text("입력하세요") },
+                        placeholder = {
+                            Text("입력하세요",
+                            color = MaterialTheme.colors.grey6) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
                             focusedContainerColor = Color.Transparent,
-                        )
+                        ),
+                        textStyle = MaterialTheme.typo.titleM
                     )
                 }
+
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
+
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -243,7 +270,8 @@ fun AccountBookRegister() {
                 ) {
                     Text(
                         text = "날짜",
-                        modifier = Modifier.width(80.dp)
+                        modifier = Modifier.width(80.dp),
+                        style = MaterialTheme.typo.titleM
                     )
 
                     Button(
@@ -252,10 +280,14 @@ fun AccountBookRegister() {
                     ) {
                         Text(
                             text = currentDateTime,
-                            color = MaterialTheme.colors.black
+                            color = MaterialTheme.colors.black,
+                            style = MaterialTheme.typo.titleM
                         )
                     }
                 }
+
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
+
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -263,7 +295,8 @@ fun AccountBookRegister() {
                 ) {
                     Text(
                         text = "사진",
-                        modifier = Modifier.width(80.dp)
+                        modifier = Modifier.width(80.dp),
+                        style = MaterialTheme.typo.titleM
                     )
                 }
 
@@ -317,7 +350,8 @@ fun AccountBookRegister() {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "사진 올리기",
-                        color = MaterialTheme.colors.black
+                        color = MaterialTheme.colors.black,
+                        style = MaterialTheme.typo.titleM
                     )
                 }
             }
