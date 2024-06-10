@@ -10,7 +10,7 @@ interface BulletinRepository {
     suspend fun postBulletin(
         bulletinId: String,
         content: String,
-        dreamCrop: String,
+        crop: String,
         bulletinCategory: String,
     ): String
 
@@ -18,7 +18,7 @@ interface BulletinRepository {
     suspend fun updateBulletin(
         bulletinId: String,
         content: String,
-        dreamCrop: String,
+        crop: String,
         bulletinCategory: String,
     ): String
 

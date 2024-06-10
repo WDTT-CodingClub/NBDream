@@ -1,51 +1,51 @@
 package kr.co.domain.entity
 
-import androidx.annotation.StringRes
-import kr.co.domain.entity.plzLookThisPakage.DreamCrop
 import java.time.LocalDate
 
 data class DiaryEntity(
-    val id:String,
-    val dreamCrop: DreamCrop,
+    val id: String,
+    val crop: CropEntity,
     val registerDate: LocalDate,
-    val holidays:List<HolidayEntity> = emptyList(),
+    val holidays: List<HolidayEntity> = emptyList(),
     val weatherForecast: WeatherForecastEntity,
     val workLaborer: Int = 0,
     val workHours: Int = 0,
     val workArea: Int = 0,
-    val workDescriptions: List<WorkDescription> = emptyList(),
+    val workDescriptions: List<WorkDescriptionEntity> = emptyList(),
     val images: List<String> = emptyList(),
-    val memo: String=""
+    val memo: String = ""
 ) {
-
-
-    data class WorkDescription(
-        val type: WorkType,
+    data class WorkDescriptionEntity(
+        val type: Type,
         val description: String,
-    )
-
-    enum class WorkType(@StringRes val labelId: Int) {
-//    SEED_PREP(R.string.calendar_work_type_seed_prep),
-//    SEEDBED_PREP(R.string.calendar_work_type_seedbed_prep),
-//    SOW(R.string.calendar_work_type_sow),
-//    GRIFT(R.string.calendar_work_type_graft),
-//    BURY_SEEDLING(R.string.calendar_work_type_bury_seedling),
-//    SEEDBED_MANAGE(R.string.calendar_work_type_seedbed_manage),
-//    STOP_TILLAGE(R.string.calendar_work_type_stop_tillage),
-//    INITIAL_FERTIL(R.string.calendar_work_type_initial_fertil),
-//    PLANT_SEEDLING(R.string.calendar_work_type_plant_seedling),
-//    STILTS_NETS(R.string.calendar_work_type_stilts_nets),
-//    ADDITIONAL_FERTIL(R.string.calendar_work_type_additional_fertil),
-//    PEST_CONTROL(R.string.calendar_work_type_pest_control),
-//    WEED(R.string.calendar_work_type_weed),
-//    SOIL_COVER(R.string.calendar_work_type_soil_cover),
-//    TRIMMING(R.string.calendar_work_type_trimming),
-//    WATER_MANAGE(R.string.calendar_work_type_water_manage),
-//    HOUSE_MANAGE(R.string.calendar_work_type_house_manage),
-//    TEMP_MANAGE(R.string.calendar_work_type_temp_manage),
-//    HARVEST(R.string.calendar_work_type_harvest),
-//    PACK(R.string.calendar_work_type_pack),
-//    SHIP(R.string.calendar_work_type_ship),
-//    ETC(R.string.calendar_work_type_etc)
+    ) {
+        enum class Type {
+            SEED_PREP,
+            SEEDBED_PREP,
+            SOW,
+            GRAFT,
+            BURY_SEEDLING,
+            SEEDBED_MANAGE,
+            STOP_TILLAGE,
+            INITIAL_FERTIL,
+            PLANT_SEEDLING,
+            STILTS_NETS,
+            ADDITIONAL_FERTIL,
+            PEST_CONTROL,
+            WEED,
+            SOIL_COVER,
+            TRIMMING,
+            WATER_MANAGE,
+            HOUSE_MANAGE,
+            TEMP_MANAGE,
+            HARVEST,
+            PACK,
+            SHIP,
+            ETC
+        }
     }
 }
+
+
+
+

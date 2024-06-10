@@ -1,8 +1,7 @@
-package kr.co.main.calendar.content
+package kr.co.main.calendar.common
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,11 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,16 +23,14 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kr.co.common.util.toTitleDateString
-import kr.co.domain.entity.DiaryEntity
-import kr.co.domain.entity.DiaryEntity.WorkDescription
 import kr.co.domain.entity.HolidayEntity
-import kr.co.domain.entity.WeatherForecastEntity
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Sprout
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import kr.co.main.calendar.providers.FakeDiaryEntityProvider
 import java.time.LocalDate
 
 private const val HORIZONTAL_DIVIDER_HEIGHT = 0.5
@@ -42,7 +39,7 @@ private const val IMAGE_SCALE = 120
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun DiaryContent(
-    diary: DiaryEntity,
+    diary: DiaryModel,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -52,7 +49,7 @@ internal fun DiaryContent(
             date = diary.registerDate,
             holidays = diary.holidays
         )
-        DiaryWeather(
+        CalendarWeather(
             weatherForecast = diary.weatherForecast
         )
         HorizontalDivider(
@@ -102,33 +99,11 @@ private fun DiaryTitle(
 }
 
 @Composable
-internal fun DiaryWeather(
-    weatherForecast: WeatherForecastEntity,
-    modifier: Modifier = Modifier
-) {
-    val weatherForcastStr = remember {
-        with(weatherForecast.weather.first()) {
-            "${maxTemp}/${minTemp} ${day} ${weather}"
-        }
-    }
-
-    Row(modifier = modifier) {
-        // TODO 하늘 별 아이콘 표시
-        Text(
-            modifier = Modifier,
-            text = weatherForcastStr,
-            style = MaterialTheme.typo.bodyM,
-            color = MaterialTheme.colors.text1
-        )
-    }
-}
-
-@Composable
 private fun DiaryBody(
     workLaborer: Int,
     workHours: Int,
     workArea: Int,
-    workDescriptions: List<WorkDescription>,
+    workDescriptions: List<DiaryModel.WorkDescriptionModel>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -146,14 +121,14 @@ private fun DiaryBody(
 
 @Composable
 private fun DiaryWorkDescription(
-    workDescription: WorkDescription,
+    workDescription: DiaryModel.WorkDescriptionModel,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
+        Icon(
             imageVector = DreamIcon.Sprout,
             contentDescription = ""
         )
@@ -168,7 +143,7 @@ private fun DiaryWorkDescription(
                 color = MaterialTheme.colors.text1
             )
             Text(
-                text = stringResource(id = workDescription.type.labelId),
+                text = stringResource(id = workDescription.typeId),
                 style = MaterialTheme.typo.labelM,
                 color = MaterialTheme.colors.text2
             )
@@ -220,7 +195,7 @@ private fun DiaryMemo(
 @Preview
 @Composable
 private fun DiaryContentPreview(
-    @PreviewParameter(FakeDiaryEntityProvider::class) diary: DiaryEntity
+    @PreviewParameter(FakeDiaryModelProvider::class) diary: DiaryModel
 ) {
     DiaryContent(diary = diary)
 }

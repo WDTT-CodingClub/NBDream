@@ -1,4 +1,4 @@
-package kr.co.domain.entity.plzLookThisPakage
+package kr.co.main.calendar.model
 
 import android.graphics.Color
 import androidx.annotation.ColorInt
@@ -16,8 +16,8 @@ private val nappaCabbage = Color.parseColor("#FFFFFF")
 private val tomato = Color.parseColor("#FFFFFF")
 
 // TODO 다크모드 색상 정하기
-data object CropColorSet {
-    private val lightColors = DreamCropColor(
+internal data object CropColorModel {
+    private val lightColors = CropColorSet(
         pepper = pepper,
         rice = rice,
         potato = potato,
@@ -29,12 +29,12 @@ data object CropColorSet {
         nappaCabbage = nappaCabbage,
         tomato = tomato
     )
-    private val darkColors = DreamCropColor()
+    private val darkColors = CropColorSet()
 
     val localColors get()= lightColors
 }
 
-data class DreamCropColor(
+internal data class CropColorSet(
     @ColorInt val pepper: Int = Color.WHITE,
     @ColorInt val rice: Int = Color.WHITE,
     @ColorInt val potato: Int = Color.WHITE,

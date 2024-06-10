@@ -1,25 +1,20 @@
-package kr.co.main.calendar.content
+package kr.co.main.calendar.common
 
 import android.os.Build
-import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,22 +22,20 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.toDateString
 import kr.co.common.util.toDateTimeString
-import kr.co.domain.entity.ScheduleCategory
-import kr.co.domain.entity.ScheduleEntity
+import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.calendar.providers.FakeScheduleModelProvider
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Alarm
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import kr.co.main.calendar.providers.FakeScheduleEntityProvider
 
-private const val CROP_COLOR_CIRCLE_SIZE = 8
 private const val ALARM_ICON_SIZE = 16
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun ScheduleContent(
-    schedule: ScheduleEntity,
+    schedule: ScheduleModel,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxWidth()) {
@@ -77,19 +70,19 @@ internal fun ScheduleContent(
 
 @Composable
 private fun ScheduleTitle(
-    category: ScheduleCategory,
+    category: ScheduleModel.Category,
     title: String,
     modifier: Modifier = Modifier
 ) {
     val categoryColor = remember(category) {
         when (category) {
-            is ScheduleCategory.Crop -> Color.Green.toArgb()
-            is ScheduleCategory.All -> Color.LightGray.toArgb()
+            is ScheduleModel.Category.Crop -> Color.Green.toArgb()
+            is ScheduleModel.Category.All -> Color.LightGray.toArgb()
         }
     }
 
     Row(modifier = modifier) {
-        CategoryIndicator(
+        CalendarCategoryIndicator(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .padding(end = Paddings.small),
@@ -102,19 +95,6 @@ private fun ScheduleTitle(
             color = MaterialTheme.colors.text1
         )
     }
-}
-
-@Composable
-private fun CategoryIndicator(
-    @ColorInt categoryColor: Int,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .size(CROP_COLOR_CIRCLE_SIZE.dp)
-            .clip(CircleShape)
-            .background(Color(categoryColor)),
-    )
 }
 
 @Composable
@@ -139,7 +119,7 @@ private fun ScheduleAlarm(
 ) {
     Row(modifier = modifier) {
         alarmDateTime?.let {
-            Image(
+            Icon(
                 modifier = Modifier.size(ALARM_ICON_SIZE.dp),
                 imageVector = DreamIcon.Alarm, contentDescription = ""
             )
@@ -170,7 +150,7 @@ private fun ScheduleMemo(
 @Preview
 @Composable
 private fun ScheduleContentPreview(
-    @PreviewParameter(FakeScheduleEntityProvider::class) schedule: ScheduleEntity
+    @PreviewParameter(FakeScheduleModelProvider::class) schedule: ScheduleModel
 ) {
     ScheduleContent(schedule = schedule)
 }

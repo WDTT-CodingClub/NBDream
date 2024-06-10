@@ -1,5 +1,3 @@
-package kr.co.main.calendar
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,11 +21,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import kr.co.domain.entity.FarmWorkCategory
 import kr.co.domain.entity.FarmWorkEntity
-import kr.co.domain.entity.FarmWorkEra
 import kr.co.main.R
-import kr.co.main.calendar.providers.FakeFarmWorkEntityListProvider
+import kr.co.main.calendar.model.FarmWorkModel
+import kr.co.main.calendar.providers.FakeFarmWorkModelListProvider
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -36,14 +33,14 @@ private const val FARM_WORK_ITEM_HEIGHT = 20
 
 @Composable
 internal fun FarmWorkCalendar(
-    farmWorks: List<FarmWorkEntity>,
+    farmWorks: List<FarmWorkModel>,
     modifier: Modifier = Modifier
 ) {
     val graphCategories = remember {
         listOf(
-            Pair(R.string.feature_main_calendar_farm_work_growth, FarmWorkCategory.GROWTH),
-            Pair(R.string.feature_main_calendar_farm_work_climate, FarmWorkCategory.CLIMATE),
-            Pair(R.string.feature_main_calendar_farm_work_pest, FarmWorkCategory.PEST)
+            Pair(R.string.feature_main_calendar_farm_work_growth, FarmWorkEntity.Category.GROWTH),
+            Pair(R.string.feature_main_calendar_farm_work_climate, FarmWorkEntity.Category.CLIMATE),
+            Pair(R.string.feature_main_calendar_farm_work_pest, FarmWorkEntity.Category.PEST)
         )
     }
 
@@ -54,16 +51,16 @@ internal fun FarmWorkCalendar(
             modifier = Modifier.padding(bottom = Paddings.medium)
         )
         graphCategories.forEach { graphCategory ->
-                Text(
-                    text = stringResource(id = graphCategory.first),
-                    style = MaterialTheme.typo.bodyM,
-                    color = MaterialTheme.colors.text1
-                )
-                FarmWorkGraph(
-                    modifier = Modifier.fillMaxWidth(),
-                    farmWorks = farmWorks.filter { it.category == graphCategory.second }
-                )
-            }
+            Text(
+                text = stringResource(id = graphCategory.first),
+                style = MaterialTheme.typo.bodyM,
+                color = MaterialTheme.colors.text1
+            )
+            FarmWorkCalendarContent(
+                modifier = Modifier.fillMaxWidth(),
+                farmWorks = farmWorks.filter { it.category == graphCategory.second }
+            )
+        }
     }
 }
 
@@ -89,11 +86,11 @@ private fun FarmWorkEraHeader(
 }
 
 @Composable
-private fun FarmWorkGraph(
-    farmWorks: List<FarmWorkEntity>,
+private fun FarmWorkCalendarContent(
+    farmWorks: List<FarmWorkModel>,
     modifier: Modifier = Modifier
 ) {
-    FarmWorkRow(
+    FarmWorkCalendarRow(
         modifier = modifier,
         farmWorks = farmWorks,
         content = {
@@ -108,8 +105,29 @@ private fun FarmWorkGraph(
 }
 
 @Composable
-private fun FarmWorkRow(
-    farmWorks: List<FarmWorkEntity>,
+private fun FarmWorkItem(
+    farmWork: FarmWorkModel,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .height(FARM_WORK_ITEM_HEIGHT.dp)
+            .clip(shape = RoundedCornerShape(5.dp))
+            .background(color = Color(farmWork.crop.color)),
+    ) {
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = farmWork.farmWork,
+            style = MaterialTheme.typo.labelR,
+            color = MaterialTheme.colors.text1,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun FarmWorkCalendarRow(
+    farmWorks: List<FarmWorkModel>,
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -117,11 +135,11 @@ private fun FarmWorkRow(
         modifier = modifier,
         content = content,
         measurePolicy = { measurables, constraints ->
-            val placeables = measurables.mapIndexed{ index, measurable ->
-                val eraLength = with(farmWorks[index]){ endEra.value - startEra.value + 1 }
+            val placeables = measurables.mapIndexed { index, measurable ->
+                val eraLength = with(farmWorks[index]) { endEra.value - startEra.value + 1 }
                 measurable.measure(
                     constraints.copy(
-                        minWidth =  (constraints.maxWidth/3) * eraLength
+                        minWidth = (constraints.maxWidth / 3) * eraLength
                     )
                 )
             }
@@ -134,9 +152,9 @@ private fun FarmWorkRow(
                 placeables.forEachIndexed { index, placeable ->
                     placeable.place(
                         x = when (farmWorks[index].startEra) {
-                            FarmWorkEra.EARLY -> 0
-                            FarmWorkEra.MID -> constraints.maxWidth / 3
-                            FarmWorkEra.LATE -> constraints.maxWidth / 3 * 2
+                            FarmWorkEntity.Era.EARLY -> 0
+                            FarmWorkEntity.Era.MID -> constraints.maxWidth / 3
+                            FarmWorkEntity.Era.LATE -> constraints.maxWidth / 3 * 2
                         },
                         y = yPosition
                     )
@@ -147,32 +165,13 @@ private fun FarmWorkRow(
     )
 }
 
-@Composable
-private fun FarmWorkItem(
-    farmWork: FarmWorkEntity,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(FARM_WORK_ITEM_HEIGHT.dp)
-            .clip(shape = RoundedCornerShape(5.dp))
-            .background(color = Color.White),
-    ) {
-        Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = farmWork.farmWork,
-            style = MaterialTheme.typo.labelR,
-            textAlign = TextAlign.Center
-        )
-    }
-}
 
 @Preview
 @Composable
 private fun FarmWorkCalendarPreview(
-    @PreviewParameter(FakeFarmWorkEntityListProvider::class) farmWorks: List<FarmWorkEntity>
+    @PreviewParameter(FakeFarmWorkModelListProvider::class) farmWorks: List<FarmWorkModel>
 ) {
-    Surface{
+    Surface {
         FarmWorkCalendar(farmWorks = farmWorks)
     }
 }

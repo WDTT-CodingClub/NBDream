@@ -5,10 +5,10 @@ import java.time.LocalDate
 data class HolidayEntity (
     val date: LocalDate,
     val isHoliday: Boolean,
-    val type: HolidayType,
+    val type: Type,
     val name: String
 ) {
-    enum class HolidayType {
+    enum class Type {
         NATIONAL_HOLIDAY, //국경일, 공휴일 (달력 빨간 날)
         CONSTITUTION_DAY, //제헌절
         ANNIVERSARY, //기념일

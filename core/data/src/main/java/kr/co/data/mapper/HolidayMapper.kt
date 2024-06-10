@@ -3,7 +3,7 @@ package kr.co.data.mapper
 import kr.co.common.mapper.Mapper
 import kr.co.data.model.data.HolidayResult
 import kr.co.domain.entity.HolidayEntity
-import kr.co.domain.entity.HolidayEntity.HolidayType
+import kr.co.domain.entity.HolidayEntity.Type
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -19,11 +19,11 @@ internal object HolidayMapper :
             )
         }
 
-    private fun mapHolidayType(dateType: String, isHoliday: Boolean): HolidayType =
+    private fun mapHolidayType(dateType: String, isHoliday: Boolean): Type =
         when (dateType) {
-            "01" -> if (isHoliday) HolidayType.NATIONAL_HOLIDAY else HolidayType.CONSTITUTION_DAY
-            "02" -> HolidayType.ANNIVERSARY
-            "03" -> HolidayType.SOLAR_TERM
-            else -> HolidayType.ETC
+            "01" -> if (isHoliday) Type.NATIONAL_HOLIDAY else Type.CONSTITUTION_DAY
+            "02" -> Type.ANNIVERSARY
+            "03" -> Type.SOLAR_TERM
+            else -> Type.ETC
         }
 }

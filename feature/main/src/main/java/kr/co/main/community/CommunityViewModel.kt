@@ -8,7 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kr.co.domain.entity.BulletinEntity
-import kr.co.domain.entity.plzLookThisPakage.DreamCrop
+import kr.co.domain.entity.CropEntity
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
@@ -64,7 +64,7 @@ internal class CommunityViewModel @Inject constructor(
                 id = "bulletinId$i",  // 게시글 id가 필요할지 안할지? 필요하다면 어떤 식으로 만들지?
                 userId = "userId$i",
                 content = "게시글 내용 $i",
-                dreamCrop = DreamCrop.PEPPER,
+                crop = CropEntity(name = CropEntity.Name.PEPPER),
                 createdTime = "2000.00.00 00:00:${DecimalFormat("00").format(i)}",
             )
         }
@@ -76,6 +76,5 @@ internal class CommunityViewModel @Inject constructor(
 
     data class State(
         val state: Any? = null
-    ): BaseViewModel.State
-
+    ) : BaseViewModel.State
 }
