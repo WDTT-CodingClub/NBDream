@@ -23,7 +23,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Constraints
-import kr.co.common.util.iterator
 import kr.co.domain.entity.HolidayEntity
 import kr.co.main.R
 import kr.co.main.calendar.common.CalendarCategoryIndicator
@@ -183,55 +182,39 @@ private fun MainCalendarContent(
         for (weekNum in startWeekNum..endWeekNum) {
             val (weekStartDate, weekEndDate) = getWeekRange(year, weekNum)
 
-            MainCalendarDateRow(
-                weekStartDate = weekStartDate,
-                weekEndDate = weekEndDate,
-                holidays = holidays
+            MainCalendarRowWrapper(
+                mainCalendarRowContent = MainCalendarRowContent.DateRowContent(
+                    weekStartDate = weekStartDate,
+                    weekEndDate = weekEndDate,
+                    holidays = holidays
+                )
             )
-            MainCalendarHolidayRow(
-                weekStartDate = weekStartDate,
-                weekEndDate = weekEndDate,
-                holidays = holidays.sortedBy { it.date }
+            MainCalendarRowWrapper(
+                mainCalendarRowContent = MainCalendarRowContent.HolidayRowContent(
+                    weekStartDate = weekStartDate,
+                    weekEndDate = weekEndDate,
+                    holidays = holidays
+                )
             )
-            MainCalendarScheduleRow(
-                weekStartDate = weekStartDate,
-                weekEndDate = weekEndDate,
-                schedules = schedules.sortedWith(compareBy({ it.startDate }, { it.endDate }))
+            MainCalendarRowWrapper(
+                mainCalendarRowContent = MainCalendarRowContent.ScheduleRowContent(
+                    weekStartDate = weekStartDate,
+                    weekEndDate = weekEndDate,
+                    schedules = schedules.sortedWith(compareBy({ it.startDate }, { it.endDate }))
+                )
             )
-            MainCalendarDiaryRow(
-                weekStartDate = weekStartDate,
-                weekEndDate = weekEndDate,
-                diaries = diaries.sortedBy { it.registerDate }
+
+            MainCalendarRowWrapper(
+                mainCalendarRowContent = MainCalendarRowContent.DiaryRowContent(
+                    weekStartDate = weekStartDate,
+                    weekEndDate = weekEndDate,
+                    diaries = diaries.sortedBy { it.registerDate }
+                )
             )
         }
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-private fun MainCalendarDateRow(
-    weekStartDate: LocalDate,
-    weekEndDate: LocalDate,
-    holidays: List<HolidayEntity>,
-    modifier: Modifier = Modifier
-) {
-    Row(modifier = modifier.fillMaxWidth()) {
-        for (date in weekStartDate..weekEndDate) {
-            val isHoliday = (
-                    holidays.any { (it.date == date) && (it.isHoliday) } or
-                            (date.dayOfWeek == DayOfWeek.SUNDAY)
-                    )
-
-            Text(
-                modifier = Modifier.weight(1f),
-                text = date.dayOfMonth.toString(),
-                style = MaterialTheme.typo.labelSB,
-                color = if (isHoliday) MaterialTheme.colors.red1 else MaterialTheme.colors.text1,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
@@ -250,16 +233,4 @@ private fun MainCalendarPreview(
         )
     }
 }
-
-@RequiresApi(Build.VERSION_CODES.O)
-internal fun getXPosition(dayOfWeek: DayOfWeek, constraints: Constraints) =
-    when (dayOfWeek) {
-        DayOfWeek.SUNDAY -> 0
-        DayOfWeek.MONDAY -> constraints.maxWidth / 7
-        DayOfWeek.TUESDAY -> constraints.maxWidth / 7 * 2
-        DayOfWeek.WEDNESDAY -> constraints.maxWidth / 7 * 3
-        DayOfWeek.THURSDAY -> constraints.maxWidth / 7 * 4
-        DayOfWeek.FRIDAY -> constraints.maxWidth / 7 * 5
-        DayOfWeek.SATURDAY -> constraints.maxWidth / 7 * 6
-    }
 
