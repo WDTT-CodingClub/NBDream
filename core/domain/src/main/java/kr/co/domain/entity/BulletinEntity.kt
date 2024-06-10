@@ -1,12 +1,10 @@
 package kr.co.domain.entity
 
-import kr.co.domain.entity.plzLookThisPakage.DreamCrop
-
 data class BulletinEntity(
     val id: String,  // 게시글 id가 필요할지 안할지? 필요하다면 어떤 식으로 만들지?
     val userId: String,
     val content: String,
-    val dreamCrop: DreamCrop,
+    val crop:CropEntity,
     val pictures: List<String> = emptyList(),
     val bulletinCategory: BulletinCategory = BulletinCategory.Free,
     val createdTime: String,

@@ -2,7 +2,7 @@ package kr.co.domain.entity
 
 data class WeatherForecastEntity(
     val probability: Int,
-    val precipitation: Int,
+    val precipitation: String,
     val humidity: String,
     val temperature: Float,
     val windSpeed: Int,

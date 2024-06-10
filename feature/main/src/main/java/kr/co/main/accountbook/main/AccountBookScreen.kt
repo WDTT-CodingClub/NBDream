@@ -1,18 +1,21 @@
 package kr.co.main.accountbook.main
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -26,6 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.entity.SortOrder
@@ -37,23 +42,32 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+@Composable
+internal fun AccountBookRoute(
+    viewModel: AccountBookViewModel = hiltViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-@RequiresApi(Build.VERSION_CODES.O)
+    AccountBookScreen(
+        state = state
+    )
+}
+
 @Preview
 @Composable
 private fun PreviewAccountBookScreen() {
     AccountBookScreen()
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-internal fun AccountBookScreen() {
+private fun AccountBookScreen(
+    state: AccountBookViewModel.State = AccountBookViewModel.State()
+) {
     var sortOrder by remember { mutableStateOf(SortOrder.RECENCY) }
     var showTotalExpenses by remember { mutableStateOf(true) }
     var showTotalRevenue by remember { mutableStateOf(false) }
     val totalExpenses = accountBookList.sumOf { it.expense ?: 0L }
     val totalRevenue = accountBookList.sumOf { it.revenue ?: 0L }
-    val totalCost = 80000L
 
     var daysInRange by remember { mutableStateOf(0L) }
 
@@ -74,7 +88,21 @@ internal fun AccountBookScreen() {
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { /* TODO */ },
+                shape = CircleShape,
+                containerColor = MaterialTheme.colors.green1
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Create,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
         Surface(
             modifier = Modifier
@@ -88,7 +116,7 @@ internal fun AccountBookScreen() {
                     showTotalRevenue,
                     totalExpenses,
                     totalRevenue,
-                    totalCost,
+                    0,
                     daysInRange,
                     { showTotalExpenses = true; showTotalRevenue = false },
                     { showTotalExpenses = false; showTotalRevenue = true }
@@ -102,7 +130,6 @@ internal fun AccountBookScreen() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
     val currentDate = LocalDate.now()
@@ -111,20 +138,22 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
     val lastDayOfMonth = currentYearMonth.atEndOfMonth()
 
     val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-    val startDate = firstDayOfMonth.format(formatter)
-    val endDate = lastDayOfMonth.format(formatter)
+    val startDate = remember { mutableStateOf(firstDayOfMonth) }
+    val endDate = remember { mutableStateOf(lastDayOfMonth) }
 
     val daysInRange = ChronoUnit.DAYS.between(firstDayOfMonth, lastDayOfMonth) + 1
     onDaysInRangeChange(daysInRange)
+
+    var bottomSheetState by remember { mutableStateOf(false) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(16.dp)
-            .clickable { }
+            .clickable { bottomSheetState = true }
     ) {
         Text(
-            text = "$startDate - $endDate",
+            text = "${startDate.value.format(formatter)} - ${endDate.value.format(formatter)}", // LocalDate를 문자열로 변환하여 표시
             modifier = Modifier.padding(start = 8.dp, end = 4.dp),
             style = MaterialTheme.typo.header2M
         )
@@ -132,6 +161,17 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
             imageVector = Icons.Default.DateRange,
             contentDescription = null,
             tint = Color.Black
+        )
+    }
+
+    if (bottomSheetState) {
+        AccountBookCalendarBottomSheet(
+            onSelectedListener = { selectedStartDate, selectedEndDate ->
+                startDate.value = LocalDate.parse(selectedStartDate)
+                endDate.value = LocalDate.parse(selectedEndDate)
+                bottomSheetState = false
+            },
+            dismissBottomSheet = { bottomSheetState = false }
         )
     }
 }
@@ -298,7 +338,7 @@ private fun CategorySelector() {
     }
 
     if (bottomSheetState) {
-        AccountBookBottomSheet(
+        AccountBookCategoryBottomSheet(
             onSelectedListener = { selectedCategory ->
                 // TODO 선택된 카테고리 처리
                 bottomSheetState = false
