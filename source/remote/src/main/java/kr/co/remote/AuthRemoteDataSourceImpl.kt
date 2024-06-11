@@ -7,9 +7,12 @@ import io.ktor.client.request.setBody
 import kr.co.data.model.type.AuthTypeData
 import kr.co.data.source.remote.AuthRemoteDataSource
 import kr.co.remote.mapper.PostAuthMapper
+import kr.co.remote.mapper.PostAuthTokenMapper
 import kr.co.remote.mapper.type.AuthTypeRemoteMapper
 import kr.co.remote.model.request.auth.PostAuthRequest
+import kr.co.remote.model.request.auth.PostAuthTokenRequest
 import kr.co.remote.model.response.auth.PostAuthResponse
+import kr.co.remote.model.response.auth.PostAuthTokenResponse
 import javax.inject.Inject
 
 internal class AuthRemoteDataSourceImpl @Inject constructor(
@@ -42,7 +45,13 @@ internal class AuthRemoteDataSourceImpl @Inject constructor(
         token: String
     ) {
         client.post(REGISTER_URL) {
+            setBody(
+                PostAuthTokenRequest(
+                    type = type.let(AuthTypeRemoteMapper::toLeft),
+                    token = token
+                )
+            )
+        }.body<PostAuthTokenResponse>()
 
-        }
     }
 }

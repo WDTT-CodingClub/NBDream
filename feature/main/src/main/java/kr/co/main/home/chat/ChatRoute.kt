@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -79,14 +82,18 @@ private fun ChatScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             item {
-                ChatTalk()
+                AiTalk()
+            }
+
+            item {
+                UserTalk()
             }
         }
     }
 }
 
 @Composable
-private fun ChatTalk(
+private fun AiTalk(
 
 ) {
     Column(
@@ -130,6 +137,46 @@ private fun ChatTalk(
             )
         }
     }
+}
+
+@Composable
+private fun UserTalk(
+
+){
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
+    ) {
+        Spacer(
+            modifier = Modifier
+            .defaultMinSize(10.dp)
+            .weight(1f)
+        )
+        Column(
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colors.gray9,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(24.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "1. 내 토지는 작물 재배에 적합 할까?",
+                style = MaterialTheme.typo.body1,
+                color = MaterialTheme.colors.gray1
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChatSelector(
+
+) {
+
 }
 
 @Preview
