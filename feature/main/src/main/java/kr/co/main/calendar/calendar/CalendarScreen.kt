@@ -57,7 +57,7 @@ import kr.co.ui.theme.typo
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-internal fun CalendarScreen(
+fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel()
 ) {
     val calendarScreenState by viewModel.state.collectAsState()
