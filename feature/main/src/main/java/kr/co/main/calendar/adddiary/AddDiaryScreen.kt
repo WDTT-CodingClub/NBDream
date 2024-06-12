@@ -101,17 +101,3 @@ private fun AddDiaryTopBar(
         onRightLabelClick = onPostClick
     )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

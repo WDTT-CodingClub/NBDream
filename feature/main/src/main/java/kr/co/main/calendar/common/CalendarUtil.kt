@@ -250,4 +250,3 @@ internal fun CalendarBaseFab(
         )
     }
 }
-

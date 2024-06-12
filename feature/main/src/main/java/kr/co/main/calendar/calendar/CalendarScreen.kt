@@ -434,5 +434,3 @@ private fun CalendarFabPreview() {
         onAddDiaryClick = {}
     )
 }
-
-
