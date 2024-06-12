@@ -172,8 +172,10 @@ internal fun CalendarUnderLineTextField(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (value.isEmpty()) placeHolder()
-            innerTextField()
+            Box(modifier = Modifier){
+                if (value.isEmpty()) placeHolder()
+                innerTextField()
+            }
             HorizontalDivider()
         }
     }
