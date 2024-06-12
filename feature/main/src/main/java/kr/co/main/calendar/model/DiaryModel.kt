@@ -25,6 +25,7 @@ data class DiaryModel(
         val description: String
     ) {
         enum class TypeId(@StringRes val id: Int) {
+            NOT_SET(R.string.feature_main_calendar_add_diary_input_work_category),
             SEED_PREP(R.string.feature_main_calendar_work_type_seed_prep),
             SEEDBED_PREP(R.string.feature_main_calendar_work_type_seedbed_prep),
             SOW(R.string.feature_main_calendar_work_type_sow),
