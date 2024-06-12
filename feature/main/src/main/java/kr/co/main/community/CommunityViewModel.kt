@@ -1,22 +1,29 @@
 package kr.co.main.community
 
+import android.content.Context
 import android.icu.text.DecimalFormat
 import android.net.Uri
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.CropEntity
+import kr.co.domain.entity.ServerImageEntity
+import kr.co.domain.repository.ServerImageRepository
+import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.base.BaseViewModel
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 internal class CommunityViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-//    private val getDayWeatherForecast: GetDayWeatherForecast,
+    private val serverImageRepository: ServerImageRepository,
 ) : BaseViewModel<CommunityViewModel.State>(savedStateHandle) {
     private val _currentBoard = MutableStateFlow("")
     val currentBoard = _currentBoard.asStateFlow()
@@ -44,15 +51,41 @@ internal class CommunityViewModel @Inject constructor(
 
     private val _writingImages = MutableStateFlow(listOf<WritingSelectedImageModel>())
     val writingImages = _writingImages.asStateFlow()
-    fun addImages(images: List<Uri>) {
+    fun addImages(context: Context, images: List<Uri>) {
         _writingImages.value =
             writingImages.value + images.map { WritingSelectedImageModel(uri = it) }
+
+        // TODO: 테스트용으로 첫번째 이미지 업로드
+        if (images.isNotEmpty()) {
+            val image = images[0]
+            try {
+                viewModelScope.launch {
+                    Timber.d("uploadImage 코루틴 시작")
+                    val url = uploadImage(context, "bulletin", image)
+                    Timber.d("uploadImage 코루틴 끝, url: $url")
+                }
+            } catch (e: Throwable) {
+                Timber.e("addImages", e)
+            }
+
+//            viewModelScopeEH.launch {
+//                val url = uploadImage(context, "bulletin", image)
+//                Timber.d("uploadImage 코루틴 끝, url: $url")
+//            }
+        }
+
+        Timber.d("addImages 끝")
     }
 
     fun removeImage(image: Uri) {
         val index = writingImages.value.indexOfFirst { it.uri == image }
         if (index < 0) return
         _writingImages.value = writingImages.value.toMutableList().apply { removeAt(index) }
+    }
+
+    private suspend fun uploadImage(context: Context, domain: String, uri: Uri): ServerImageEntity {
+        val file = UriUtil.toPngFile(context, uri)
+        return serverImageRepository.upload(domain, file)
     }
 
     private val _bulletinEntities = MutableStateFlow(listOf<BulletinEntity>())

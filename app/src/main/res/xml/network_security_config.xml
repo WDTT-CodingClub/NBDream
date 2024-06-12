@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">api.nongsaro.go.kr</domain>
         <domain includeSubdomains="true">apis.data.go.kr</domain>
+        <domain includeSubdomains="true">34.47.73.18</domain>
     </domain-config>
 </network-security-config>
