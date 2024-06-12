@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.iterator
 import kr.co.main.calendar.calendar.maincalendar.ScheduleItemScope.scheduleItem
+import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.model.ScheduleModel
 import kr.co.main.calendar.providers.FakeScheduleModelProvider
 import kr.co.ui.icon.DreamIcon
@@ -40,8 +41,6 @@ import kr.co.ui.theme.typo
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Period
-
-private const val SCHEDULE_ITEM_HEIGHT = 20
 
 private const val SLOT_EMPTY = 0
 private const val SLOT_FULL = 1
@@ -130,7 +129,7 @@ private fun ScheduleItemScope.MainCalendarScheduleItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(SCHEDULE_ITEM_HEIGHT.dp)
+            .height(CalendarDesignToken.SCHEDULE_ITEM_HEIGHT.dp)
             .clip(shape = RoundedCornerShape(5.dp))
             .background(
                 color = when (schedule.category) {

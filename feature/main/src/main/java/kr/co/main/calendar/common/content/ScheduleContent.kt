@@ -1,4 +1,4 @@
-package kr.co.main.calendar.common
+package kr.co.main.calendar.common.content
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.toDateString
 import kr.co.common.util.toDateTimeString
+import kr.co.main.calendar.common.CalendarCategoryIndicator
 import kr.co.main.calendar.model.ScheduleModel
 import kr.co.main.calendar.providers.FakeScheduleModelProvider
 import kr.co.ui.icon.DreamIcon

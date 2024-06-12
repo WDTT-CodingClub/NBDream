@@ -1,4 +1,4 @@
-package kr.co.main.calendar.common
+package kr.co.main.calendar.common.content
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kr.co.common.util.toTitleDateString
 import kr.co.domain.entity.HolidayEntity
+import kr.co.main.calendar.common.CalendarWeather
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.ui.icon.DreamIcon

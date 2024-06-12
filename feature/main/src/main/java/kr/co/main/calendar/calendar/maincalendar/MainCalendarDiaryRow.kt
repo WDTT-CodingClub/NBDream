@@ -16,13 +16,12 @@ import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.iterator
+import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Edit
 import java.time.LocalDate
 import kotlin.math.max
-
-private val DIARY_ITEM_IMAGE_SIZE = 24
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -84,7 +83,7 @@ private fun DiaryItemScope.MainCalendarDiaryItem(
         modifier = modifier
             .fillMaxWidth()
             .diaryItem(diary.registerDate)
-            .size(DIARY_ITEM_IMAGE_SIZE.dp)
+            .size(CalendarDesignToken.DIARY_ITEM_ICON_SIZE.dp)
             .clickable {
                 onDiaryClick(diary.id)
             },

@@ -23,13 +23,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kr.co.domain.entity.FarmWorkEntity
 import kr.co.main.R
+import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.model.FarmWorkModel
 import kr.co.main.calendar.providers.FakeFarmWorkModelListProvider
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-
-private const val FARM_WORK_ITEM_HEIGHT = 20
 
 @Composable
 internal fun FarmWorkCalendar(
@@ -111,7 +110,7 @@ private fun FarmWorkItem(
 ) {
     Box(
         modifier = modifier
-            .height(FARM_WORK_ITEM_HEIGHT.dp)
+            .height(CalendarDesignToken.FARM_WORK_ITEM_HEIGHT.dp)
             .clip(shape = RoundedCornerShape(5.dp))
             .background(color = Color(farmWork.crop.color)),
     ) {
