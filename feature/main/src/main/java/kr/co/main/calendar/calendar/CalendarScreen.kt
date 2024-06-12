@@ -53,6 +53,7 @@ import kr.co.ui.icon.dreamicon.Spinner
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import kr.co.ui.widget.DreamCenterTopAppBar
 
 // TODO 재배 작물 목록 비어있을 때 처리
 
@@ -125,18 +126,16 @@ private fun CalendarTopBar(
     onSelectCrop: (CropModel) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = Paddings.medium)
-    ) {
-        CalendarTitle(
-            modifier = Modifier.align(Alignment.Center),
-            userCrops = userCrops,
-            selectedCrop = selectedCrop,
-            onSelectCrop = onSelectCrop
-        )
-    }
+    DreamCenterTopAppBar(
+        modifier = modifier,
+        title = {
+            CalendarTitle(
+                userCrops = userCrops,
+                selectedCrop = selectedCrop,
+                onSelectCrop = onSelectCrop
+            )
+        }
+    )
 }
 
 @Composable
