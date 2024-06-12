@@ -6,8 +6,8 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import kr.co.data.source.remote.AccountBookRemoteDataSource
 import kr.co.remote.mapper.AccountBookListRemoteMapper
-import kr.co.remote.model.request.GetAccountBookListRequest
-import kr.co.remote.model.request.PostAccountBookRequest
+import kr.co.remote.model.request.account.GetAccountBookListRequest
+import kr.co.remote.model.request.account.PostAccountBookRequest
 import kr.co.remote.model.response.GetAccountBookListResponse
 import javax.inject.Inject
 
@@ -16,8 +16,8 @@ internal class AccountBookRemoteDataSourceImpl @Inject constructor(
 ): AccountBookRemoteDataSource {
 
     companion object {
-        private const val GET_ACCOUNT_LIST = "auth/account"
-        private const val POST_ACCOUNT = "auth/account"
+        private const val GET_ACCOUNT_LIST = "api/auth/account"
+        private const val POST_ACCOUNT = "api/auth/account"
     }
     override suspend fun create(
         expense: Long?,

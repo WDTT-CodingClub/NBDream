@@ -1,4 +1,4 @@
-package kr.co.remote.model.request
+package kr.co.remote.model.request.account
 
 import kotlinx.serialization.Serializable
 
