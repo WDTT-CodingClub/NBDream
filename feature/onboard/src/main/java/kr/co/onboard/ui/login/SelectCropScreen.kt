@@ -27,9 +27,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.co.nbdream.core.ui.R
+import kr.co.onboard.login.DescriptionText
+import kr.co.onboard.login.DynamicStepProgressBars
+import kr.co.onboard.login.Title
 import kr.co.ui.theme.ColorSet
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.typo
+import kr.co.ui.widget.NextButton
 
 @Composable
 fun SelectCropScreen() {
@@ -54,7 +58,7 @@ fun SelectCropScreen() {
         StepText("2/2", modifier = Modifier)
         DescriptionText("재배 작물을 선택해주세요(중복 선택 가능)")
         CropsList(crops)
-        NextButton(modifier = Modifier)
+        NextButton()
     }
 }
 
@@ -138,11 +142,9 @@ fun LazyVerticalGridDemo(
         content = {
             items(list.size) { index ->
                 Card(
-//                    backgroundColor = Color.Red,
                     modifier = Modifier
                         .padding(20.dp)
-                        .fillMaxWidth(),
-//                    elevation = 8.dp,
+                        .fillMaxWidth()
                 ) {
                     Text(
                         text = list[index],
