@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -37,11 +40,11 @@ import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import java.time.LocalDate
 
-private const val SKY_ICON_SIZE = 20
-
 private const val ROUNDED_CORNER_RADIUS = 12
 
+private const val SKY_ICON_SIZE = 20
 private const val CROP_COLOR_SHAPE_SIZE = 8
+private const val FAB_ICON_SIZE = 20
 
 @Composable
 internal fun CalendarBaseTopBar(
@@ -221,5 +224,28 @@ internal fun CalendarCategoryIndicator(
             .clip(CircleShape)
             .background(Color(categoryColor)),
     )
+}
+
+@Composable
+internal fun CalendarBaseFab(
+    imageVector: ImageVector,
+    onClick: () -> Unit,
+    modifier:Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colors.primary,
+    contentColor: Color = Color.White,
+){
+    FloatingActionButton(
+        modifier = modifier,
+        shape = CircleShape,
+        containerColor = containerColor,
+        contentColor = contentColor,
+        onClick = { onClick() }
+    ) {
+        Icon(
+            modifier = Modifier.size(FAB_ICON_SIZE.dp),
+            imageVector = imageVector,
+            contentDescription = ""
+        )
+    }
 }
 
