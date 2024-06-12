@@ -6,7 +6,6 @@ import kr.co.domain.proivder.SocialLoginProvider
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Provider
-import javax.inject.Singleton
 
 internal class SocialLoginProviderImpl @Inject constructor(
     private val providers: Map<AuthType, @JvmSuppressWildcards Provider<SocialLoginProvider>>
@@ -14,7 +13,6 @@ internal class SocialLoginProviderImpl @Inject constructor(
 
     override suspend fun login(type: AuthType): LoginResult {
         val provider = providers[type]?.get()
-        Timber.d("Provider for $type: ${provider?.javaClass?.name ?: "None"}")
         return provider?.login(type)
             ?: throw IllegalArgumentException("$type of parameter type is not allowed value")
     }
