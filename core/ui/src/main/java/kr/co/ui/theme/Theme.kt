@@ -2,6 +2,7 @@ package kr.co.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
@@ -13,6 +14,7 @@ private val LocalColors = staticCompositionLocalOf { ColorSet.Dream.lightColors 
 fun NBDreamTheme(
     colorSet: ColorSet = ColorSet.Dream,
     darkTheme: Boolean = isSystemInDarkTheme(),
+    shapes: Shapes = Shapes,
     content: @Composable () -> Unit,
 ) {
     val colors = if (darkTheme) {
@@ -24,7 +26,8 @@ fun NBDreamTheme(
     CompositionLocalProvider(LocalColors provides colors) {
         CompositionLocalProvider(LocalTypography provides Typography) {
             MaterialTheme(
-                content = content
+                content = content,
+                shapes = shapes,
             )
         }
     }

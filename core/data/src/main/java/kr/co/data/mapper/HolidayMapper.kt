@@ -1,15 +1,15 @@
 package kr.co.data.mapper
 
 import kr.co.common.mapper.Mapper
-import kr.co.data.model.data.HolidayResult
+import kr.co.data.model.data.HolidayData
 import kr.co.domain.entity.HolidayEntity
 import kr.co.domain.entity.HolidayEntity.Type
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 internal object HolidayMapper :
-    Mapper<List<HolidayResult>, List<HolidayEntity>> {
-    override fun convert(param: List<HolidayResult>): List<HolidayEntity> =
+    Mapper<List<HolidayData>, List<HolidayEntity>> {
+    override fun convert(param: List<HolidayData>): List<HolidayEntity> =
         param.map {
             HolidayEntity(
                 date = LocalDate.parse(it.date.toString(), DateTimeFormatter.ofPattern("yyyyMMdd")),

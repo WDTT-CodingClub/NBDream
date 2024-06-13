@@ -1,6 +1,6 @@
 package kr.co.data.model.data
 
-data class WeatherForecastResult(
+data class WeatherForecastData(
     val precipitation: Int,
     val precipitationProbability: Int,
     val humidity: String,

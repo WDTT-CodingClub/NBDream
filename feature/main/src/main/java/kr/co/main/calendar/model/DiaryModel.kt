@@ -3,7 +3,6 @@ package kr.co.main.calendar.model
 import androidx.annotation.StringRes
 import kr.co.domain.entity.DiaryEntity
 import kr.co.domain.entity.HolidayEntity
-import kr.co.domain.entity.WeatherForecastEntity
 import kr.co.main.R
 import java.time.LocalDate
 
@@ -12,19 +11,21 @@ data class DiaryModel(
     val crop: CropModel,
     val registerDate: LocalDate,
     val holidays: List<HolidayEntity> = emptyList(),
-    val weatherForecast: WeatherForecastEntity,
+    val weatherForecast: WeatherForecastModel,
     val workLaborer: Int = 0,
     val workHours: Int = 0,
     val workArea: Int = 0,
     val workDescriptions: List<WorkDescriptionModel> = emptyList(),
     val images: List<String> = emptyList(),
     val memo: String = ""
-){
+) {
     data class WorkDescriptionModel(
+        val id:String? = null,
         @StringRes val typeId: Int,
         val description: String
-    ){
-        enum class TypeId(@StringRes val id:Int){
+    ) {
+        enum class TypeId(@StringRes val id: Int) {
+            NOT_SET(R.string.feature_main_calendar_add_diary_input_work_category),
             SEED_PREP(R.string.feature_main_calendar_work_type_seed_prep),
             SEEDBED_PREP(R.string.feature_main_calendar_work_type_seedbed_prep),
             SOW(R.string.feature_main_calendar_work_type_sow),
@@ -56,7 +57,7 @@ internal fun DiaryEntity.convert() = DiaryModel(
     crop = crop.convert(),
     registerDate = registerDate,
     holidays = holidays,
-    weatherForecast = weatherForecast,
+    weatherForecast = weatherForecast.convert(),
     workLaborer = workLaborer,
     workHours = workHours,
     workArea = workArea,
@@ -70,7 +71,7 @@ internal fun DiaryModel.convert() = DiaryEntity(
     crop = crop.convert(),
     registerDate = registerDate,
     holidays = holidays,
-    weatherForecast = weatherForecast,
+    weatherForecast = weatherForecast.convert(),
     workLaborer = workLaborer,
     workHours = workHours,
     workArea = workArea,
@@ -82,6 +83,7 @@ internal fun DiaryModel.convert() = DiaryEntity(
 
 internal fun DiaryEntity.WorkDescriptionEntity.convert() =
     DiaryModel.WorkDescriptionModel(
+        id = id,
         typeId = when (type) {
             DiaryEntity.WorkDescriptionEntity.Type.SEED_PREP -> DiaryModel.WorkDescriptionModel.TypeId.SEED_PREP.id
             DiaryEntity.WorkDescriptionEntity.Type.SEEDBED_PREP -> DiaryModel.WorkDescriptionModel.TypeId.SEEDBED_PREP.id
@@ -110,7 +112,8 @@ internal fun DiaryEntity.WorkDescriptionEntity.convert() =
     )
 
 internal fun DiaryModel.WorkDescriptionModel.convert() = DiaryEntity.WorkDescriptionEntity(
-    type = when(typeId){
+    id = id ?: "", // TODO 서버에서 id 생성되기 전 필드 디폴트 값 ""로 설정해도 되는지?
+    type = when (typeId) {
         DiaryModel.WorkDescriptionModel.TypeId.SEED_PREP.id -> DiaryEntity.WorkDescriptionEntity.Type.SEED_PREP
         DiaryModel.WorkDescriptionModel.TypeId.SEEDBED_PREP.id -> DiaryEntity.WorkDescriptionEntity.Type.SEEDBED_PREP
         DiaryModel.WorkDescriptionModel.TypeId.SOW.id -> DiaryEntity.WorkDescriptionEntity.Type.SOW

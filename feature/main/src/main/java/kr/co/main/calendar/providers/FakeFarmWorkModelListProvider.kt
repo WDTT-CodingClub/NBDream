@@ -5,8 +5,9 @@ import kr.co.domain.entity.FarmWorkEntity
 import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.FarmWorkModel
 
-internal class FakeFarmWorkModelListProvider : PreviewParameterProvider<FarmWorkModel>{
+internal class FakeFarmWorkModelListProvider : PreviewParameterProvider<List<FarmWorkModel>> {
     override val values = sequenceOf(
+        listOf(
             FarmWorkModel(
                 id = "1",
                 crop = CropModel.POTATO,
@@ -63,6 +64,7 @@ internal class FakeFarmWorkModelListProvider : PreviewParameterProvider<FarmWork
                 category = FarmWorkEntity.Category.PEST,
                 farmWork = "진딧물(바이러스병)",
                 videoUrl = ""
+            )
         )
     )
     override val count: Int = values.count()

@@ -3,11 +3,6 @@ package kr.co.main.home
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kr.co.domain.usecase.GetDayWeatherForecast
 import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
@@ -22,8 +17,23 @@ internal class HomeViewModel @Inject constructor(
 
     data class State(
         val address: String? = null,
-        val todayWeather: String? = null,
-    ): BaseViewModel.State
+        val todayWeather: WeatherDetail? = null,
+        val weatherList: List<WeatherSimple>? = null,
+    ): BaseViewModel.State {
+        data class WeatherDetail(
+            val probability: Int? = null,
+            val precipitation: Int? = null,
+            val humidity: Int? = null,
+            val temperature: Float? = null,
+        )
+
+        data class WeatherSimple(
+            val weather: String? = null,
+            val minTemperature: Float? = null,
+            val maxTemperature: Float? = null,
+            val day: String? = null,
+        )
+    }
 
     override fun createInitialState(savedState: Parcelable?) = State()
 }

@@ -1,13 +1,13 @@
 package kr.co.data.mapper
 
 import kr.co.common.mapper.Mapper
-import kr.co.data.model.data.AccountBookListResult
+import kr.co.data.model.data.AccountBookListData
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.entity.AccountBookTotalEntity
 
 internal object GetAccountBookMapper
-    :Mapper<AccountBookListResult, Pair<AccountBookTotalEntity, List<AccountBookEntity>>> {
-    override fun convert(param: AccountBookListResult) =
+    :Mapper<AccountBookListData, Pair<AccountBookTotalEntity, List<AccountBookEntity>>> {
+    override fun convert(param: AccountBookListData) =
         with(param) {
             AccountBookTotalEntity(
                 totalCost = totalCost,
