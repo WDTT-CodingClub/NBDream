@@ -158,8 +158,10 @@ fun AccountBookRegister() {
                             focusedContainerColor = Color.Transparent,
                         )
                     )
-                    Text(text = "원",
-                        style = MaterialTheme.typo.header2B)
+                    Text(
+                        text = "원",
+                        style = MaterialTheme.typo.header2B
+                    )
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = null,
@@ -257,8 +259,11 @@ fun AccountBookRegister() {
                             description = newValue
                         },
                         placeholder = {
-                            Text("입력하세요",
-                                color = MaterialTheme.colors.grey6) },
+                            Text(
+                                "입력하세요",
+                                color = MaterialTheme.colors.grey6
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
@@ -366,43 +371,15 @@ fun AccountBookRegister() {
     )
 
     if (showDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {},
-            colors = DatePickerDefaults.colors(
-                containerColor = Color.White,
-                selectedDayContentColor = MaterialTheme.colors.primary,
-                selectedDayContainerColor = MaterialTheme.colors.primary,
-                dayInSelectionRangeContentColor = MaterialTheme.colors.primary,
-            ),
-            shape = RoundedCornerShape(6.dp),
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            val datePickerState = rememberDatePickerState(
-                yearRange = IntRange(1900, 2100),
-                initialDisplayMode = DisplayMode.Picker,
-                initialSelectedDateMillis = System.currentTimeMillis(),
-                selectableDates = object : SelectableDates {
-                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                        return true
-                    }
-                }
-            )
-
-            DatePicker(
-                state = datePickerState,
-            )
-
-            LaunchedEffect(datePickerState.selectedDateMillis) {
-                datePickerState.selectedDateMillis?.let { selectedDateMillis ->
-                    val date = Date(selectedDateMillis)
-                    val formatter = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
-                    currentDateTime = formatter.format(date)
-                    showDatePicker = false
-                }
+        ShowDatePickerDialog(
+            onClickCancel = { showDatePicker = false },
+            onClickConfirm = {selectedDate ->
+                currentDateTime = selectedDate
+                showDatePicker = false
             }
-        }
+        )
     }
+
 
     if (showBottomSheet) {
         AccountBookCategoryBottomSheet(
@@ -412,6 +389,54 @@ fun AccountBookRegister() {
             },
             categories = AccountBookEntity.Category.entries.map { it.value },
             dismissBottomSheet = { showBottomSheet = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ShowDatePickerDialog(
+    onClickCancel: () -> Unit,
+    onClickConfirm: (yyyyMMdd: String) -> Unit
+) {
+    val datePickerState = rememberDatePickerState(
+        yearRange = IntRange(1900, 2100),
+        initialDisplayMode = DisplayMode.Picker,
+        initialSelectedDateMillis = System.currentTimeMillis(),
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return true
+            }
+        }
+    )
+    val initialSelectedDate = remember { datePickerState.selectedDateMillis }
+
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        if (initialSelectedDate != datePickerState.selectedDateMillis) {
+            datePickerState.selectedDateMillis?.let { selectedDateMillis ->
+                val date = Date(selectedDateMillis)
+                val formatter = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
+                val formattedDate = formatter.format(date)
+
+                onClickConfirm(formattedDate)
+            }
+        }
+    }
+
+    DatePickerDialog(
+        onDismissRequest = onClickCancel,
+        confirmButton = {},
+        colors = DatePickerDefaults.colors(
+            containerColor = Color.White,
+            selectedDayContentColor = MaterialTheme.colors.primary,
+            selectedDayContainerColor = MaterialTheme.colors.primary,
+            dayInSelectionRangeContentColor = MaterialTheme.colors.primary,
+        ),
+        shape = RoundedCornerShape(6.dp),
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        DatePicker(
+            state = datePickerState,
         )
     }
 }
