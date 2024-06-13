@@ -16,6 +16,7 @@ data class DiaryEntity(
     val memo: String = ""
 ) {
     data class WorkDescriptionEntity(
+        val id:String,
         val type: Type,
         val description: String,
     ) {

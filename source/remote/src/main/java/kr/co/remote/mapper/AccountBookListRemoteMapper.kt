@@ -1,20 +1,20 @@
 package kr.co.remote.mapper
 
 import kr.co.common.mapper.Mapper
-import kr.co.data.model.data.AccountBookListResult
+import kr.co.data.model.data.AccountBookListData
 import kr.co.remote.model.response.GetAccountBookListResponse
 
 internal object AccountBookListRemoteMapper
-    : Mapper<GetAccountBookListResponse, AccountBookListResult> {
-    override fun convert(param: GetAccountBookListResponse): AccountBookListResult =
+    : Mapper<GetAccountBookListResponse, AccountBookListData> {
+    override fun convert(param: GetAccountBookListResponse): AccountBookListData =
         with(param.resultData) {
-            AccountBookListResult(
+            AccountBookListData(
                 categories = categories,
                 totalRevenue = totalRevenue,
                 totalExpense = totalExpense,
                 totalCost = totalCost,
                 items = items.map {
-                    AccountBookListResult.Item(
+                    AccountBookListData.Item(
                         id = it.id,
                         title = it.title,
                         category = it.category,

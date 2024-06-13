@@ -7,6 +7,7 @@ import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.home.HomeRoute
+import kr.co.main.home.chat.ChatRoute
 
 const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
@@ -54,7 +55,9 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = CHAT_ROUTE
     ) {
-
+        ChatRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(

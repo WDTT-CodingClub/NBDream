@@ -1,6 +1,7 @@
-
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,11 +11,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,19 +27,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
 import kr.co.main.calendar.calendar.CalendarViewModel
 import kr.co.main.calendar.calendar.maincalendar.MainCalendar
+import kr.co.main.calendar.common.CalendarBaseFab
 import kr.co.main.calendar.common.CalendarContent
 import kr.co.main.calendar.common.CalendarContentWrapper
 import kr.co.main.calendar.common.CalendarHorizontalDivider
@@ -46,8 +46,9 @@ import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Alarm
+import kr.co.ui.icon.dreamicon.Add
 import kr.co.ui.icon.dreamicon.ArrowLeft
+import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.icon.dreamicon.Spinner
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
@@ -57,7 +58,7 @@ import kr.co.ui.theme.typo
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-internal fun CalendarScreen(
+fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel()
 ) {
     val calendarScreenState by viewModel.state.collectAsState()
@@ -68,7 +69,8 @@ internal fun CalendarScreen(
         topBar = {
             CalendarTopBar(
                 userCrops = calendarScreenState.userCrops,
-                selectedCrop = calendarScreenState.selectedCrop
+                selectedCrop = calendarScreenState.selectedCrop,
+                onSelectCrop = calendarScreenInput::onSelectCrop
             )
         },
         floatingActionButton = {
@@ -120,82 +122,134 @@ internal fun CalendarScreen(
 private fun CalendarTopBar(
     userCrops: List<CropModel>,
     selectedCrop: CropModel?,
+    onSelectCrop: (CropModel) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.padding(vertical = Paddings.medium)) {
-        CalendarDropDownTitle(
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = Paddings.medium)
+    ) {
+        CalendarTitle(
             modifier = Modifier.align(Alignment.Center),
             userCrops = userCrops,
-            selectedCrop = selectedCrop
-        )
-        // TODO 알람 있는 경우, 초록색 뱃지 표시
-        CalendarAlarm(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = Paddings.xlarge),
-            newAlarm = true
+            selectedCrop = selectedCrop,
+            onSelectCrop = onSelectCrop
         )
     }
 }
 
 @Composable
-private fun CalendarDropDownTitle(
+private fun CalendarTitle(
     userCrops: List<CropModel>,
     selectedCrop: CropModel?,
+    onSelectCrop: (CropModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // TODO 작물 선택 스피너
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (selectedCrop == null) {
-            Text(
-                modifier = Modifier,
-                text = stringResource(id = R.string.feature_main_calendar_no_title),
-                style = MaterialTheme.typo.headerB
-            )
-        } else {
-            Text(
-                modifier = Modifier,
-                text = stringResource(
-                id = R.string.feature_main_calendar_title,
-                stringResource(id = selectedCrop.nameId)
-            ),
+    var expandSpinner by remember { mutableStateOf(false) }
+
+    if (selectedCrop == null) {
+        Text(
+            modifier = modifier,
+            text = stringResource(id = R.string.feature_main_calendar_no_title),
             style = MaterialTheme.typo.headerB
+        )
+    } else {
+        Column(
+            modifier = modifier
+        ) {
+            CalendarTitleSpinner(
+                crop = selectedCrop,
+                onClick = { expandSpinner = true }
             )
-            Icon(
-                modifier = Modifier.padding(start = Paddings.medium),
-                imageVector = DreamIcon.Spinner,
-                contentDescription = ""
+            CalendarTitleDropDownMenu(
+                expandSpinner = expandSpinner,
+                userCrops = userCrops,
+                selectedCrop = selectedCrop,
+                onSelectCrop = onSelectCrop,
+                onDismiss = { expandSpinner = false }
             )
         }
     }
 }
 
-// TODO 상단바에 있는 알람 - 다른 화면에서도 재사용할 수 있도록 바꾸기
 @Composable
-private fun CalendarAlarm(
-    newAlarm: Boolean = false,
+private fun CalendarTitleSpinner(
+    crop: CropModel,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
-        if (newAlarm) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .align(Alignment.TopEnd)
-                    .clip(shape = CircleShape)
-                    .zIndex(1f)
-            )
-        }
+    Row(
+        modifier = modifier
+            .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier,
+            text = stringResource(
+                id = R.string.feature_main_calendar_title,
+                stringResource(id = crop.nameId)
+            ),
+            style = MaterialTheme.typo.headerB
+        )
         Icon(
-            modifier = Modifier.align(Alignment.Center),
-            imageVector = DreamIcon.Alarm,
+            modifier = Modifier.padding(start = Paddings.medium),
+            imageVector = DreamIcon.Spinner,
             contentDescription = ""
         )
     }
 }
+
+@Composable
+private fun CalendarTitleDropDownMenu(
+    expandSpinner: Boolean,
+    userCrops: List<CropModel>,
+    selectedCrop: CropModel,
+    onSelectCrop: (CropModel) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    DropdownMenu(
+        modifier = modifier,
+        expanded = expandSpinner,
+        onDismissRequest = onDismiss
+    ) {
+        for (crop in userCrops) {
+            CalendarTitleDropDownMenuItem(
+                crop = crop,
+                isSelected = (crop == selectedCrop),
+                onClick = {
+                    onSelectCrop(crop)
+                    onDismiss()
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun CalendarTitleDropDownMenuItem(
+    crop: CropModel,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    DropdownMenuItem(
+        modifier = modifier
+            .background(
+                if (isSelected) MaterialTheme.colors.green1
+                else Color.Transparent
+            ),
+        text = {
+            Text(
+                text = stringResource(id = crop.nameId),
+                style = MaterialTheme.typo.bodyM,
+            )
+        },
+        onClick = onClick
+    )
+}
+
 
 //TODO 캘린더 항목 추가 플로팅 액션 버튼
 @Composable
@@ -203,36 +257,57 @@ private fun CalendarFab(
     onAddScheduleClick: () -> Unit,
     onAddDiaryClick: () -> Unit,
     modifier: Modifier = Modifier
-){
-    var showChildFab = remember{ mutableStateOf(false) }
-    Column(modifier = modifier){
-        AddDiaryFab(onAddDiaryClick = onAddDiaryClick)
-        AddScheduleFab(onAddScheduleClick = onAddScheduleClick)
+) {
+    var showChildFab by remember { mutableStateOf(false) }
+
+    Column(modifier = modifier) {
+        AnimatedVisibility(visible = showChildFab) {
+            Column(modifier = Modifier) {
+                AddDiaryFab(
+                    modifier = Modifier.padding(bottom = Paddings.medium),
+                    onAddDiaryClick = onAddDiaryClick,
+                )
+                AddScheduleFab(
+                    modifier = Modifier.padding(bottom = Paddings.medium),
+                    onAddScheduleClick = onAddScheduleClick
+                )
+            }
+        }
+
+        CalendarBaseFab(
+            modifier = Modifier,
+            imageVector = DreamIcon.Add,
+            onClick = { showChildFab = !showChildFab }
+        )
     }
 }
 
 @Composable
 private fun AddScheduleFab(
-    onAddScheduleClick: ()->Unit,
-    modifier:Modifier = Modifier
-){
-    FloatingActionButton(
-        onClick = onAddScheduleClick
-    ) {
-
-    }
+    onAddScheduleClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    CalendarBaseFab(
+        modifier = modifier,
+        imageVector = DreamIcon.Edit, //TODO 일정 추가 아이콘으로 변경
+        onClick = onAddScheduleClick,
+        containerColor = Color.White,
+        contentColor = Color.Gray
+    )
 }
 
 @Composable
 private fun AddDiaryFab(
-    onAddDiaryClick: ()->Unit,
-    modifier:Modifier = Modifier
-){
-    FloatingActionButton(
-        onClick = onAddDiaryClick
-    ) {
-
-    }
+    onAddDiaryClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    CalendarBaseFab(
+        modifier = modifier,
+        imageVector = DreamIcon.Edit, //TODO 영농일지 추가 아이콘으로 변경
+        onClick = onAddDiaryClick,
+        containerColor = Color.White,
+        contentColor = Color.Gray
+    )
 }
 
 @Composable
@@ -351,4 +426,11 @@ private fun DiaryListPreview(
     }
 }
 
-
+@Preview
+@Composable
+private fun CalendarFabPreview() {
+    CalendarFab(
+        onAddScheduleClick = {},
+        onAddDiaryClick = {}
+    )
+}

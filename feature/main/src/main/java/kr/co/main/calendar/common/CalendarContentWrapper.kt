@@ -36,6 +36,3 @@ internal fun CalendarContentWrapper(
             modifier = modifier
         )
 }
-
-
-

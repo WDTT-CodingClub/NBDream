@@ -1,6 +1,6 @@
 package kr.co.data.model.data
 
-data class AccountBookListResult(
+data class AccountBookListData(
     val categories: List<String>,
     val totalRevenue: Long,
     val totalExpense: Long,

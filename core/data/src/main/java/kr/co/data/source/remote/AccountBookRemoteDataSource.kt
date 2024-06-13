@@ -1,6 +1,6 @@
 package kr.co.data.source.remote
 
-import kr.co.data.model.data.AccountBookListResult
+import kr.co.data.model.data.AccountBookListData
 
 interface AccountBookRemoteDataSource {
     suspend fun create(
@@ -19,5 +19,5 @@ interface AccountBookRemoteDataSource {
         start: String,
         end: String,
         cost: String
-    ): AccountBookListResult
+    ): AccountBookListData
 }

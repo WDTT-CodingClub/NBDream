@@ -10,7 +10,10 @@ import java.util.Calendar
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
-internal class MainCalendarStateHolder(year: Int, month: Int) {
+internal class MainCalendarStateHolder(
+    private val year: Int,
+    private val month: Int
+) {
     private val calendar = Calendar.getInstance(Locale.getDefault())
 
     val startWeekNumber: Int = calendar.apply {
@@ -22,8 +25,8 @@ internal class MainCalendarStateHolder(year: Int, month: Int) {
         set(year, month, 1)
     }.get(Calendar.WEEK_OF_YEAR)
 
-    private fun monthBefore(year:Int, month:Int) =
-        if(month - 1 < 1) Pair(year - 1, 12) else Pair(year, month-1)
+    private fun monthBefore(year: Int, month: Int) =
+        if (month - 1 < 1) Pair(year - 1, 12) else Pair(year, month - 1)
 
     fun getWeekRange(year: Int, weekNumber: Int): Pair<LocalDate, LocalDate> {
         val weekFields = WeekFields.of(Locale.getDefault())
