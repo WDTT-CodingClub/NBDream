@@ -58,14 +58,14 @@ internal class CommunityViewModel @Inject constructor(
         // TODO: 테스트용으로 첫번째 이미지 업로드
         if (images.isNotEmpty()) {
             val image = images[0]
-            try {
-                viewModelScope.launch {
-                    Timber.d("uploadImage 코루틴 시작")
+            viewModelScope.launch {
+                Timber.d("uploadImage 코루틴 시작")
+                try {
                     val url = uploadImage(context, "bulletin", image)
                     Timber.d("uploadImage 코루틴 끝, url: $url")
+                } catch (e: Throwable) {
+                    Timber.e(e, "uploadImage 코루틴 에러")
                 }
-            } catch (e: Throwable) {
-                Timber.e("addImages", e)
             }
 
 //            viewModelScopeEH.launch {
@@ -83,7 +83,11 @@ internal class CommunityViewModel @Inject constructor(
         _writingImages.value = writingImages.value.toMutableList().apply { removeAt(index) }
     }
 
-    private suspend fun uploadImage(context: Context, domain: String, uri: Uri): ServerImageEntity? {
+    private suspend fun uploadImage(
+        context: Context,
+        domain: String,
+        uri: Uri
+    ): ServerImageEntity? {
         val file = UriUtil.toPngFile(context, uri)
         return serverImageRepository.upload(domain, file)
     }
