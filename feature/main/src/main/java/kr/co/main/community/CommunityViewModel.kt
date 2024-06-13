@@ -61,7 +61,7 @@ internal class CommunityViewModel @Inject constructor(
             viewModelScope.launch {
                 Timber.d("uploadImage 코루틴 시작")
                 try {
-                    val url = uploadImage(context, "bulletin", image)
+                    val url = uploadImage(context, image)
                     Timber.d("uploadImage 코루틴 끝, url: $url")
                 } catch (e: Throwable) {
                     Timber.e(e, "uploadImage 코루틴 에러")
@@ -85,11 +85,10 @@ internal class CommunityViewModel @Inject constructor(
 
     private suspend fun uploadImage(
         context: Context,
-        domain: String,
         uri: Uri
     ): ServerImageEntity? {
         val file = UriUtil.toPngFile(context, uri)
-        return serverImageRepository.upload(domain, file)
+        return serverImageRepository.upload("bulletin", file)
     }
 
     private val _bulletinEntities = MutableStateFlow(listOf<BulletinEntity>())
