@@ -10,6 +10,6 @@ import javax.inject.Inject
 internal class ServerImageRepositoryImpl @Inject constructor(
     private val remote: ServerImageRemoteDataSource
 ) : ServerImageRepository {
-    override suspend fun upload(domain: String, image: File): ServerImageEntity =
+    override suspend fun upload(domain: String, image: File): ServerImageEntity? =
         remote.upload(domain, image).let(ServerImageMapper::convert)
 }

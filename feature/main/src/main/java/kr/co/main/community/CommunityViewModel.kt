@@ -83,7 +83,7 @@ internal class CommunityViewModel @Inject constructor(
         _writingImages.value = writingImages.value.toMutableList().apply { removeAt(index) }
     }
 
-    private suspend fun uploadImage(context: Context, domain: String, uri: Uri): ServerImageEntity {
+    private suspend fun uploadImage(context: Context, domain: String, uri: Uri): ServerImageEntity? {
         val file = UriUtil.toPngFile(context, uri)
         return serverImageRepository.upload(domain, file)
     }

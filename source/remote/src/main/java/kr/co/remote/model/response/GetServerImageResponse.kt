@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class GetServerImageResponse(
-    val code: Int,
-    val status: String,
-    val message: String,
-    val data: String,
+    val code: Int?,
+    val status: String?,
+    val message: String?,
+    val data: String?,
 )
