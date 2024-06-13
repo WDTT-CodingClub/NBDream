@@ -25,16 +25,24 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +57,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
@@ -68,18 +77,19 @@ private fun PreviewAccountBookRegister() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountBookRegister() {
     var selectedCategory by remember { mutableStateOf("지출") }
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedCategoryText by remember { mutableStateOf("선택하세요") }
-    val currentDateTime = remember {
-        SimpleDateFormat("yyyy년MM월dd일", Locale.getDefault()).format(Date())
-    }
     var amount by remember { mutableStateOf(TextFieldValue("")) }
     var writingImages by remember { mutableStateOf(listOf<Uri>()) }
     var description by remember { mutableStateOf("") }
-
+    var showDatePicker by remember { mutableStateOf(false) }
+    var currentDateTime by remember {
+        mutableStateOf(SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault()).format(Date()))
+    }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -230,7 +240,6 @@ fun AccountBookRegister() {
 
                 HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
 
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -249,7 +258,7 @@ fun AccountBookRegister() {
                         },
                         placeholder = {
                             Text("입력하세요",
-                            color = MaterialTheme.colors.grey6) },
+                                color = MaterialTheme.colors.grey6) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
@@ -257,12 +266,11 @@ fun AccountBookRegister() {
                             unfocusedContainerColor = Color.Transparent,
                             focusedContainerColor = Color.Transparent,
                         ),
-                        textStyle = MaterialTheme.typo.titleM
+                        textStyle = MaterialTheme.typo.bodyM
                     )
                 }
 
                 HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
-
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -275,19 +283,18 @@ fun AccountBookRegister() {
                     )
 
                     Button(
-                        onClick = { },
+                        onClick = { showDatePicker = true },
                         colors = ButtonDefaults.buttonColors(Color.Transparent),
                     ) {
                         Text(
                             text = currentDateTime,
                             color = MaterialTheme.colors.black,
-                            style = MaterialTheme.typo.titleM
+                            style = MaterialTheme.typo.bodyM
                         )
                     }
                 }
 
                 HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
-
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -357,6 +364,45 @@ fun AccountBookRegister() {
             }
         }
     )
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {},
+            colors = DatePickerDefaults.colors(
+                containerColor = Color.White,
+                selectedDayContentColor = MaterialTheme.colors.primary,
+                selectedDayContainerColor = MaterialTheme.colors.primary,
+                dayInSelectionRangeContentColor = MaterialTheme.colors.primary,
+            ),
+            shape = RoundedCornerShape(6.dp),
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            val datePickerState = rememberDatePickerState(
+                yearRange = IntRange(1900, 2100),
+                initialDisplayMode = DisplayMode.Picker,
+                initialSelectedDateMillis = System.currentTimeMillis(),
+                selectableDates = object : SelectableDates {
+                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                        return true
+                    }
+                }
+            )
+
+            DatePicker(
+                state = datePickerState,
+            )
+
+            LaunchedEffect(datePickerState.selectedDateMillis) {
+                datePickerState.selectedDateMillis?.let { selectedDateMillis ->
+                    val date = Date(selectedDateMillis)
+                    val formatter = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
+                    currentDateTime = formatter.format(date)
+                    showDatePicker = false
+                }
+            }
+        }
+    }
 
     if (showBottomSheet) {
         AccountBookCategoryBottomSheet(
