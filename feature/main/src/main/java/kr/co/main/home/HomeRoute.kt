@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -55,6 +56,7 @@ import kr.co.ui.icon.dreamicon.Bell
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import kr.co.ui.widget.DreamTopAppBar
 
 @Composable
 internal fun HomeRoute(
@@ -85,33 +87,18 @@ private fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(24.dp))
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "내 농장",
-                            style = MaterialTheme.typo.h2
-                        )
-
-                        Icon(
-                            imageVector = DreamIcon.Bell,
-                            contentDescription = "notification"
-                        )
+                DreamTopAppBar(
+                    title = "내 농장",
+                    description = "산 좋고 물 좋 나만의 농장 1번지",
+                    actions = {
+                        IconButton(onClick = { /*navigateToNotification*/ }) {
+                            Icon(
+                                imageVector = DreamIcon.Bell,
+                                contentDescription = "notification"
+                            )
+                        }
                     }
-                    Text(
-                        text = "산 좋고 물 좋 나만의 농장 1번지",
-                        style = MaterialTheme.typo.body1,
-                        color = MaterialTheme.colors.gray2
-                    )
-                }
+                )
             }
 
             item {

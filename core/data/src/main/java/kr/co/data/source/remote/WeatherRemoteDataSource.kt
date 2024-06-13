@@ -1,8 +1,7 @@
 package kr.co.data.source.remote
 
-import kotlinx.coroutines.flow.Flow
-import kr.co.data.model.data.WeatherForecastResult
+import kr.co.data.model.data.WeatherForecastData
 
 interface WeatherRemoteDataSource {
-    suspend fun get(): WeatherForecastResult
+    suspend fun get(): WeatherForecastData
 }

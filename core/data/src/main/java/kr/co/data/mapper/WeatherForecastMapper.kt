@@ -1,13 +1,12 @@
 package kr.co.data.mapper
 
 import kr.co.common.mapper.Mapper
-import kr.co.data.model.data.WeatherForecastResult
+import kr.co.data.model.data.WeatherForecastData
 import kr.co.domain.entity.WeatherForecastEntity
-import javax.inject.Inject
 
 internal object WeatherForecastMapper
-    : Mapper<WeatherForecastResult, WeatherForecastEntity> {
-    override fun convert(param: WeatherForecastResult): WeatherForecastEntity {
+    : Mapper<WeatherForecastData, WeatherForecastEntity> {
+    override fun convert(param: WeatherForecastData): WeatherForecastEntity {
         return with(param) {
             WeatherForecastEntity(
                 precipitation = precipitation.toString(),
