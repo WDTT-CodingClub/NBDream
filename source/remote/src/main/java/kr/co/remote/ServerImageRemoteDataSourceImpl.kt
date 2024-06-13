@@ -130,7 +130,7 @@ internal class ServerImageRemoteDataSourceImpl @Inject constructor(
         return client.submitFormWithBinaryData(
             url = "api/$domain/images",
             formData = formData {
-                append("file", image.readBytes(), Headers.build {
+                append("image", image.readBytes(), Headers.build {
                     append(HttpHeaders.ContentType, "image/png")
                     append(HttpHeaders.ContentDisposition, "filename=${image.name}")
                 }
