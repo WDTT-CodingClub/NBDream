@@ -8,6 +8,7 @@ import kr.co.main.MainRoute
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
+import kr.co.main.my.MyPageRoute
 
 const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
@@ -46,7 +47,11 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.MY_PAGE.route
                 ) {
-
+                    MyPageRoute(
+                        navigateToNotification = {
+                            navController.navigate(NOTIFICATION_ROUTE)
+                        }
+                    )
                 }
             }
         )
