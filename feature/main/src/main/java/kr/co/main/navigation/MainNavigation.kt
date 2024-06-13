@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.main.AccountBookRoute
+import kr.co.main.accountbook.register.AccountBookRegister
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
@@ -13,6 +14,7 @@ import kr.co.main.my.MyPageRoute
 const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
 internal const val NOTIFICATION_ROUTE = "notificationRoute"
+internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
 
 fun NavGraphBuilder.mainNavGraph(
     navController: NavController
@@ -35,7 +37,7 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.ACCOUNT.route
                 ) {
-                    AccountBookRoute()
+                    AccountBookRoute(navigationToRegister = { navController.navigate(ACCOUNT_BOOK_ROUTE) })
                 }
 
                 composable(
@@ -69,5 +71,11 @@ fun NavGraphBuilder.mainNavGraph(
         route = NOTIFICATION_ROUTE
     ) {
 
+    }
+
+    composable(
+        route = ACCOUNT_BOOK_ROUTE
+    ) {
+        AccountBookRegister()
     }
 }
