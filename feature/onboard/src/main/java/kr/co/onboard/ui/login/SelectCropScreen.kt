@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,10 +34,13 @@ import kr.co.onboard.login.Title
 import kr.co.ui.theme.ColorSet
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.typo
+import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.NextButton
 
 @Composable
-fun SelectCropScreen() {
+fun SelectCropScreen(
+    modifier: Modifier = Modifier
+) {
     val crops = listOf(
         CropItem("고추", R.drawable.img_logo),
         CropItem("벼", R.drawable.img_logo),
@@ -49,16 +53,22 @@ fun SelectCropScreen() {
         CropItem("배추", R.drawable.img_logo),
         CropItem("토마토", R.drawable.img_logo)
     )
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-    ) {
-        Title("내 농장 정보")
-        DynamicStepProgressBars(colors = listOf(ColorSet.Dream.lightColors.green2, ColorSet.Dream.lightColors.green2))
-        StepText("2/2", modifier = Modifier)
-        DescriptionText("재배 작물을 선택해주세요(중복 선택 가능)")
-        CropsList(crops)
-        NextButton()
+    Scaffold(
+        modifier = modifier.padding(16.dp),
+        topBar = {
+            DreamCenterTopAppBar(title = "내 농장 정보")
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+        ) {
+            DynamicStepProgressBars(colors = listOf(ColorSet.Dream.lightColors.green2, ColorSet.Dream.lightColors.green2))
+            StepText("2/2", modifier = Modifier)
+            DescriptionText("재배 작물을 선택해주세요(중복 선택 가능)")
+            CropsList(crops)
+            NextButton()
+        }
     }
 }
 
