@@ -3,10 +3,12 @@ package kr.co.onboard.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import kr.co.onboard.login.AddressSelectionListener
+import kr.co.onboard.login.InputAddressScreen
+import kr.co.onboard.login.LocationSearchScreen
+import kr.co.onboard.login.LocationSearchWebViewScreen
 import kr.co.onboard.ui.OnBoardRoute
-import kr.co.onboard.ui.login.AddressSelectionListener
-import kr.co.onboard.ui.login.LocationSearchScreen
-import kr.co.onboard.ui.login.LocationSearchWebViewScreen
+import kr.co.onboard.ui.login.SelectCropScreen
 
 const val ONBOARD_ROUTE = "onboardRoute"
 internal const val ADDRESS_ROUTE = "addressRoute"
@@ -20,7 +22,10 @@ fun NavGraphBuilder.onboardNavGraph(
     composable(
         route = ONBOARD_ROUTE
     ) {
-        OnBoardRoute()
+//        OnBoardRoute(onKakaoClick = { /*TODO*/ }, onNaverClick = { /*TODO*/ }) {
+//
+//        }
+        navController.navigate("ADDRESS_ROUTE")
     }
 
     composable(
@@ -47,19 +52,22 @@ fun NavGraphBuilder.onboardNavGraph(
 
     }
 
-    composable("location_search") {
-        LocationSearchScreen(
-            navController = navController,
-            initialFullRoadAddr = "",
-            initialJibunAddr = "",
-            onAddressSelected = { roadAddr, jibun ->
-
-            }
+    composable("ADDRESS_ROUTE") {
+//        LocationSearchScreen(
+//            navController = navController,
+//            initialFullRoadAddr = "",
+//            initialJibunAddr = "",
+//            onAddressSelected = { roadAddr, jibun ->
+//
+//            }
+//        )
+        InputAddressScreen(
+            navController = navController
         )
     }
 
-    composable("webview") {
-        LocationSearchWebViewScreen(navController = navController, addressSelectionListener = object : AddressSelectionListener {
+    composable("ADDRESS_FIND_ROUTE") {
+        LocationSearchWebViewScreen(addressSelectionListener = object : AddressSelectionListener {
             override fun onAddressSelected(fullRoadAddr: String, jibunAddr: String) {
                 navController.previousBackStackEntry?.savedStateHandle?.set("fullRoadAddr", fullRoadAddr)
                 navController.previousBackStackEntry?.savedStateHandle?.set("jibunAddr", jibunAddr)
