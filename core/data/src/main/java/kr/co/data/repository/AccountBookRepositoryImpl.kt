@@ -1,7 +1,9 @@
 package kr.co.data.repository
 
+import kr.co.data.mapper.GetAccountBookListMapper
 import kr.co.data.mapper.GetAccountBookMapper
 import kr.co.data.source.remote.AccountBookRemoteDataSource
+import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import javax.inject.Inject
 
@@ -23,7 +25,49 @@ internal class AccountBookRepositoryImpl @Inject constructor(
         start = start,
         end = end,
         cost = cost
-    ).let(GetAccountBookMapper::convert)
+    ).let(GetAccountBookListMapper::convert)
+
+    override suspend fun createAccountBook(
+        expense: Long?,
+        revenue: Long?,
+        category: String,
+        title: String,
+        registerDateTime: String
+    ) {
+        remote.create(
+            expense = expense,
+            revenue = revenue,
+            category = category,
+            title = title,
+            registerDateTime = registerDateTime
+        )
+    }
+
+    override suspend fun updateAccountBook(
+        id: String,
+        expense: Long?,
+        revenue: Long?,
+        category: String,
+        title: String,
+        registerDateTime: String
+    ) {
+        remote.update(
+            id = id,
+            expense = expense,
+            revenue = revenue,
+            category = category,
+            title = title,
+            registerDateTime = registerDateTime
+        )
+    }
+
+    override suspend fun getAccountBookDetail(id: String): AccountBookEntity {
+        return remote.fetchDetail(id).let(GetAccountBookMapper::convert)
+    }
+
+    override suspend fun deleteAccountBook(id: String) {
+        remote.delete(id)
+    }
 
 //    override suspend fun createAccountBook(accountBook: kr.co.domain.entity.AccountBookEntity) = Unit
 //        val body = AccountBookRequest(

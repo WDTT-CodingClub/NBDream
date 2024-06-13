@@ -13,6 +13,27 @@ interface AccountBookRepository {
         cost: String
     ): Pair<AccountBookTotalEntity, List<AccountBookEntity>>
 
+    suspend fun createAccountBook(
+        expense: Long?,
+        revenue: Long?,
+        category: String,
+        title: String,
+        registerDateTime: String
+    )
+
+    suspend fun updateAccountBook(
+        id: String,
+        expense: Long?,
+        revenue: Long?,
+        category: String,
+        title: String,
+        registerDateTime: String
+    )
+
+    suspend fun getAccountBookDetail(id: String): AccountBookEntity
+
+    suspend fun deleteAccountBook(id: String)
+
 //    suspend fun createAccountBook(accountBook: AccountBookEntity): kr.co.data.model.ApiResponse<AccountBookEntity>
 //
 //    suspend fun updateAccountBook(id: String, accountBook: AccountBookEntity): kr.co.data.model.ApiResponse<AccountBookEntity>
