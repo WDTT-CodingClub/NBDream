@@ -8,6 +8,7 @@ import kr.co.domain.usecase.*
 import kr.co.impl.FetchAuthUseCaseImpl
 import kr.co.impl.GetCalendarDateImpl
 import kr.co.impl.GetDayWeatherForecastImpl
+import kr.co.impl.LoginUseCaseImpl
 import javax.inject.Singleton
 
 @Module
@@ -28,4 +29,7 @@ internal abstract class UsecaseModule {
     @Singleton
     @Binds
     abstract fun bindFetchAuthUseCase(impl: FetchAuthUseCaseImpl): FetchAuthUseCase
+    @Singleton
+    @Binds
+    abstract fun bindLoginUseCase(impl: LoginUseCaseImpl): LoginUseCase
 }
