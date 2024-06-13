@@ -8,12 +8,14 @@ import kr.co.data.repository.AccountBookRepositoryImpl
 import kr.co.data.repository.AuthRepositoryImpl
 import kr.co.data.repository.FarmWorkRepositoryImpl
 import kr.co.data.repository.HolidayRepositoryImpl
+import kr.co.data.repository.ServerImageRepositoryImpl
 import kr.co.data.repository.SessionRepositoryImpl
 import kr.co.data.repository.WeatherForecastRepositoryImpl
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.domain.repository.AuthRepository
 import kr.co.domain.repository.FarmWorkRepository
 import kr.co.domain.repository.HolidayRepository
+import kr.co.domain.repository.ServerImageRepository
 import kr.co.domain.repository.SessionRepository
 import kr.co.domain.repository.WeatherForecastRepository
 import javax.inject.Singleton
@@ -27,6 +29,9 @@ internal abstract class DataModule {
     @Singleton
     @Binds
     abstract fun bindWeatherRepository(impl: WeatherForecastRepositoryImpl): WeatherForecastRepository
+    @Singleton
+    @Binds
+    abstract fun bindServerImageRepository(impl: ServerImageRepositoryImpl): ServerImageRepository
     @Singleton
     @Binds
     abstract fun bindsFarmWorkRepository(repositoryImpl: FarmWorkRepositoryImpl): FarmWorkRepository

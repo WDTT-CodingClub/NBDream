@@ -8,10 +8,12 @@ import io.ktor.client.HttpClient
 import kr.co.data.source.remote.AccountBookRemoteDataSource
 import kr.co.data.source.remote.AuthRemoteDataSource
 import kr.co.data.source.remote.HolidayRemoteDataSource
+import kr.co.data.source.remote.ServerImageRemoteDataSource
 import kr.co.data.source.remote.WeatherRemoteDataSource
 import kr.co.remote.AccountBookRemoteDataSourceImpl
 import kr.co.remote.AuthRemoteDataSourceImpl
 import kr.co.remote.HolidayRemoteDataSourceImpl
+import kr.co.remote.ServerImageRemoteDataSourceImpl
 import kr.co.remote.WeatherRemoteDataSourceImpl
 import kr.co.remote.retrofit.api.HolidayApi
 import javax.inject.Singleton
@@ -24,6 +26,12 @@ internal class RemoteModule {
     fun provideWeatherApi(
         client: HttpClient,
     ): WeatherRemoteDataSource = WeatherRemoteDataSourceImpl(client)
+
+    @Singleton
+    @Provides
+    fun provideServerImageApi(
+        client: HttpClient,
+    ): ServerImageRemoteDataSource = ServerImageRemoteDataSourceImpl(client)
 
     @Singleton
     @Provides
