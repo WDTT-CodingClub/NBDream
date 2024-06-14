@@ -22,15 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.co.nbdream.core.ui.R
-import kr.co.onboard.login.DescriptionText
-import kr.co.onboard.login.DynamicStepProgressBars
-import kr.co.onboard.login.Title
 import kr.co.ui.theme.ColorSet
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.typo
@@ -133,42 +129,6 @@ fun CropsList(
     }
 }
 
-@Composable
-fun LazyVerticalGridDemo(
-    modifier: Modifier
-){
-    val list = (1..10).map { it.toString() }
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-
-        // content padding
-        contentPadding = PaddingValues(
-            start = 12.dp,
-            top = 16.dp,
-            end = 12.dp,
-            bottom = 16.dp
-        ),
-        content = {
-            items(list.size) { index ->
-                Card(
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = list[index],
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 30.sp,
-                        color = Color(0xFFFFFFFF),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            }
-        }
-    )
-}
 data class CropItem(
     val name: String,
     val image: Int
