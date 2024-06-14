@@ -1,4 +1,4 @@
-package kr.co.onboard.login
+package kr.co.onboard.ui.login
 
 import android.os.Handler
 import android.os.Looper
@@ -54,7 +54,6 @@ import com.kakao.vectormap.KakaoMapSdk
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import kr.co.onboard.BuildConfig
-import kr.co.onboard.ui.login.StepText
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.typo
@@ -63,7 +62,7 @@ import kr.co.ui.widget.NextButton
 import timber.log.Timber
 
 @Composable
-fun InputAddressScreen(
+internal fun InputAddressScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -106,18 +105,6 @@ fun InputAddressScreen(
             NextButton()
         }
     }
-}
-@Composable
-fun Title(
-    title: String,
-) {
-    Text(
-        title,
-        style = MaterialTheme.typo.headerB,
-        modifier = Modifier
-            .fillMaxWidth(),
-        textAlign = TextAlign.Center,
-    )
 }
 
 @Composable
@@ -300,48 +287,6 @@ class KakaoMapReadyCallbackImpl(val onMapReady: (KakaoMap) -> Unit) : KakaoMapRe
     }
 }
 
-@Composable
-fun LocationSearchScreen(
-    navController: NavController,
-    initialFullRoadAddr: String,
-    initialJibunAddr: String,
-    onAddressSelected: (String, String) -> Unit
-) {
-    var fullRoadAddr by remember { mutableStateOf(initialFullRoadAddr) }
-    var jibunAddr by remember { mutableStateOf(initialJibunAddr) }
-
-    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
-
-    // savedStateHandle을 관찰하고 변화에 반응하기 위해 DisposableEffect 사용
-    DisposableEffect(savedStateHandle) {
-        // 옵저버 설정
-        val observer = Observer<String> { newValue ->
-            if (newValue != null) {
-                val currentRoadAddr = savedStateHandle?.get<String>("fullRoadAddr")
-                val currentJibunAddr = savedStateHandle?.get<String>("jibunAddr")
-
-                if (currentRoadAddr != null && currentRoadAddr != fullRoadAddr) {
-                    fullRoadAddr = currentRoadAddr
-                    onAddressSelected(currentRoadAddr, jibunAddr)
-                }
-
-                if (currentJibunAddr != null && currentJibunAddr != jibunAddr) {
-                    jibunAddr = currentJibunAddr
-                    onAddressSelected(fullRoadAddr, currentJibunAddr)
-                }
-            }
-        }
-
-        savedStateHandle?.getLiveData<String>("fullRoadAddr")?.observe(navController.currentBackStackEntry!!, observer)
-        savedStateHandle?.getLiveData<String>("jibunAddr")?.observe(navController.currentBackStackEntry!!, observer)
-
-        onDispose {
-            savedStateHandle?.getLiveData<String>("fullRoadAddr")?.removeObserver(observer)
-            savedStateHandle?.getLiveData<String>("jibunAddr")?.removeObserver(observer)
-        }
-    }
-}
-
 //주소 찾기 버튼을 눌렀을 때 나오는 WebView
 @Composable
 fun LocationSearchWebViewScreen(
@@ -461,7 +406,7 @@ private fun DynamicStepProgressBarsPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun AddressPreview(){
-    Address(fullRoadAddr = "사랑시 고백구 행복동", jibunAddr = "jibunAddr", onFullRoadAddrChange = {}, onJubunAddrChange = {}) {
+    Address(fullRoadAddr = "허리도 가늘군 만지면 부서지리", jibunAddr = "jibunAddr", onFullRoadAddrChange = {}, onJubunAddrChange = {}) {
 
     }
 }
