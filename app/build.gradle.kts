@@ -90,14 +90,13 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.ui)
     implementation(projects.core.common)
-    implementation(projects.core.impl)
 
     implementation(projects.feature.main)
     implementation(projects.feature.onboard)
 
-    implementation(projects.source.local)
-    implementation(projects.source.remote)
-    implementation(projects.source.oauth)
+    implementation(projects.core.local)
+    implementation(projects.core.remote)
+    implementation(projects.core.oauth)
 
     implementation(libs.androidx.core.ktx)
 
