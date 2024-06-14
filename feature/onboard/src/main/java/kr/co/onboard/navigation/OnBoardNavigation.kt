@@ -3,9 +3,9 @@ package kr.co.onboard.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import kr.co.onboard.login.AddressSelectionListener
-import kr.co.onboard.login.InputAddressScreen
-import kr.co.onboard.login.LocationSearchWebViewScreen
+import kr.co.onboard.ui.login.AddressSelectionListener
+import kr.co.onboard.ui.login.InputAddressScreen
+import kr.co.onboard.ui.login.LocationSearchWebViewScreen
 import kr.co.onboard.ui.OnBoardRoute
 
 const val ONBOARD_ROUTE = "onboardRoute"
@@ -26,13 +26,24 @@ fun NavGraphBuilder.onboardNavGraph(
     composable(
         route = ADDRESS_ROUTE
     ) {
-
+        InputAddressScreen(
+            navController = navController
+        )
     }
 
     composable(
         route = ADDRESS_FIND_ROUTE
     ) {
-
+        LocationSearchWebViewScreen(addressSelectionListener = object : AddressSelectionListener {
+            override fun onAddressSelected(fullRoadAddr: String, jibunAddr: String) {
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    "fullRoadAddr",
+                    fullRoadAddr
+                )
+                navController.previousBackStackEntry?.savedStateHandle?.set("jibunAddr", jibunAddr)
+                navController.popBackStack()
+            }
+        })
     }
 
     composable(
