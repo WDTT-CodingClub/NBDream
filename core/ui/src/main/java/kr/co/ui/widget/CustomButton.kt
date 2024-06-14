@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kr.co.ui.theme.ColorSet
+import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 
 @Composable
@@ -57,9 +57,9 @@ fun SkipButton(
         text = text,
         onClick = onSkipClick,
         containerColor = Color.Transparent,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
-        contentColor = ColorSet.Dream.lightColors.secondary
+        contentColor = MaterialTheme.colors.secondary
     )
 }
 @Composable
@@ -71,12 +71,12 @@ fun InputCompleteButton(
     CustomButton(
         text = text,
         onClick = onNextClick,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
             .padding(top = 8.dp),
         shape = RoundedCornerShape(12.dp),
-        containerColor = ColorSet.Dream.lightColors.primary,
+        containerColor = MaterialTheme.colors.primary,
         contentColor = Color.White,
         textStyle = MaterialTheme.typo.button
     )
@@ -113,9 +113,10 @@ fun TestCropButton(
     CustomButton(
         text = text,
         onClick = onSkipClick,
-        containerColor = ColorSet.Dream.lightColors.green6,
+        modifier = modifier,
+        containerColor = MaterialTheme.colors.green6,
         shape = RoundedCornerShape(12.dp),
-        contentColor = ColorSet.Dream.lightColors.secondary
+        contentColor = MaterialTheme.colors.secondary
     )
 }
 @Preview

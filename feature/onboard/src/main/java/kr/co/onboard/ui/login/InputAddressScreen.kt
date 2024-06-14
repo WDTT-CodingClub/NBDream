@@ -56,6 +56,7 @@ import com.kakao.vectormap.MapView
 import kr.co.onboard.BuildConfig
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.NextButton
@@ -83,7 +84,7 @@ internal fun InputAddressScreen(
         Column(
             modifier = Modifier.padding(paddingValues)
         ) {
-            DynamicStepProgressBars(colors = listOf(lightColors.green2, Color.Transparent))
+            DynamicStepProgressBars(colors = listOf(MaterialTheme.colors.green2, Color.Transparent))
             StepText("1/2", modifier = Modifier)
             DescriptionText("내 농장의 주소지를 입력해주세요")
             Address(
