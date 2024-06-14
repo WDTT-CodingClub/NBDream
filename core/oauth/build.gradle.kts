@@ -9,9 +9,17 @@ plugins {
 android {
     namespace = "kr.co.nbdream.core.oauth"
 
+    defaultConfig {
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = project.findProperty("KAKAO_NATIVE_APP_KEY") ?: ""
+    }
+
     buildFeatures {
         buildConfig = true
     }
+}
+
+secrets {
+    propertiesFileName = "local.properties"
 }
 
 dependencies {

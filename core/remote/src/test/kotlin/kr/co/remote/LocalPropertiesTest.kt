@@ -1,7 +1,7 @@
 package kr.co.remote
 
 import junit.framework.TestCase.assertNotNull
-import kr.co.nbdream.source.remote.BuildConfig
+import kr.co.nbdream.core.remote.BuildConfig
 import kotlin.test.Test
 
 class LocalPropertiesTest {
