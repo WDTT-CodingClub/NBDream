@@ -40,13 +40,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
@@ -54,6 +53,7 @@ import com.kakao.vectormap.KakaoMapSdk
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import kr.co.onboard.BuildConfig
+import kr.co.onboard.R
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -65,7 +65,7 @@ import timber.log.Timber
 @Composable
 internal fun InputAddressScreen(
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier
 ) {
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
     var fullRoadAddr by remember {
@@ -78,16 +78,17 @@ internal fun InputAddressScreen(
     Scaffold(
         modifier = modifier.padding(16.dp),
         topBar = {
-            DreamCenterTopAppBar(title = "내 농장 정보")
+            DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title))
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(paddingValues)
+            modifier = modifier.padding(paddingValues)
         ) {
-            DynamicStepProgressBars(colors = listOf(MaterialTheme.colors.green2, Color.Transparent))
-            StepText("1/2", modifier = Modifier)
-            DescriptionText("내 농장의 주소지를 입력해주세요")
+            DynamicStepProgressBars(modifier, colors = listOf(MaterialTheme.colors.green2, Color.Transparent))
+            StepText(stringResource(id = R.string.feature_onboard_step_bar_first), modifier = modifier)
+            DescriptionText(stringResource(id = R.string.feature_onboard_my_farm_address_description))
             Address(
+                modifier,
                 fullRoadAddr = fullRoadAddr,
                 jibunAddr = jibunAddr,
                 onFullRoadAddrChange = {
@@ -102,15 +103,15 @@ internal fun InputAddressScreen(
                     navController.navigate("ADDRESS_FIND_ROUTE")
                 }
             )
-            KakaoMapScreen() //padding 없애야 함
-            NextButton()
+            KakaoMapScreen(modifier) //padding 없애야 함
+            NextButton(skipId = R.string.feature_onboard_my_farm_skip_input, nextId = R.string.feature_onboard_my_farm_next)
         }
     }
 }
 
 @Composable
 private fun StepProgressBar(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     color: Color
 ) {
     Box(
@@ -122,9 +123,9 @@ private fun StepProgressBar(
             )
             .then(
                 if (color == Color.Transparent)
-                    Modifier.border(0.5.dp, Color.Gray, RoundedCornerShape(4.dp))
+                    modifier.border(0.5.dp, Color.Gray, RoundedCornerShape(4.dp))
                 else
-                    Modifier
+                    modifier
             )
 
     )
@@ -132,10 +133,11 @@ private fun StepProgressBar(
 
 @Composable
 fun DynamicStepProgressBars(
+    modifier: Modifier,
     colors: List<Color>
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -143,7 +145,7 @@ fun DynamicStepProgressBars(
         colors.forEach { color ->
             StepProgressBar(
                 color = color,
-                modifier = Modifier.weight(1f)
+                modifier = modifier.weight(1f)
             )
         }
     }
@@ -160,6 +162,7 @@ fun DescriptionText(
 }
 @Composable
 private fun Address(
+    modifier: Modifier,
     fullRoadAddr: String,
     jibunAddr: String,
     onFullRoadAddrChange: (String) -> Unit,
@@ -167,20 +170,20 @@ private fun Address(
     onSearchClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding()
     ) {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CustomTextField(
                 fullRoadAddr,
                 onFullRoadAddrChange,
-                modifier = Modifier
+                modifier = modifier
                     .weight(3f),
-                placeholder = "주소를 입력해주세요"
+                placeholder = stringResource(id = R.string.feature_onboard_my_farm_address_placeholder)
             )
             Button(
                 onClick = onSearchClick,
@@ -190,21 +193,23 @@ private fun Address(
                     containerColor = Color.Transparent,
                     contentColor = lightColors.secondary
                 ),
-                modifier = Modifier
+                modifier = modifier
                     .padding(start = 8.dp)
                     .border(1.dp, lightColors.secondary, RoundedCornerShape(12.dp))
                     .weight(1f)
                     .height(35.dp)
 
             ) {
-                Text("주소 찾기", style = TextStyle(fontSize = 16.sp, color = lightColors.secondary)) // Adjust text style
+                Text(stringResource(id = R.string.feature_onboard_my_farm_address_find), style = MaterialTheme.typo.body1)
             }
         }
     }
 }
 
 @Composable
-fun KakaoMapScreen() {
+fun KakaoMapScreen(
+    modifier: Modifier
+) {
     val context = LocalContext.current
     val apiKey = BuildConfig.KAKAO_API_KEY
     var mapView by remember { mutableStateOf<MapView?>(null) }
@@ -236,7 +241,7 @@ fun KakaoMapScreen() {
     //화면에 지도 표시
     if (isSdkInitialized) { //SDK 초기화 확인
         AndroidView(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .aspectRatio(1f),
             factory = { ctx ->
@@ -264,7 +269,7 @@ fun KakaoMapScreen() {
         )
     } else {
         // 초기화가 완료되지 않았을 때 보여줄 로딩 UI 또는 메시지
-        Text("Loading map...", modifier = Modifier.padding(16.dp))
+        Text("Loading map...", modifier = modifier.padding(16.dp))
     }
 }
 
@@ -291,6 +296,7 @@ class KakaoMapReadyCallbackImpl(val onMapReady: (KakaoMap) -> Unit) : KakaoMapRe
 //주소 찾기 버튼을 눌렀을 때 나오는 WebView
 @Composable
 fun LocationSearchWebViewScreen(
+    modifier: Modifier,
     addressSelectionListener: AddressSelectionListener
 ) {
     Scaffold(
@@ -299,7 +305,7 @@ fun LocationSearchWebViewScreen(
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier.padding(paddingValues)
+            modifier = modifier.padding(paddingValues)
         ){
             AndroidView(
                 factory = { context ->
@@ -316,7 +322,7 @@ fun LocationSearchWebViewScreen(
                         loadUrl("https://seulseul-35d52.web.app")
                     }
                 },
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
             )
         }
@@ -394,20 +400,20 @@ private fun InputAddressScreenPreview() {
 @Composable
 private fun DynamicStepProgressBarsPreview() {
     Column(modifier = Modifier.fillMaxWidth()) {
-        DynamicStepProgressBars(colors = listOf(lightColors.green2)) // 한 개의 StepProgressBar
+        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2)) // 한 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
-        DynamicStepProgressBars(colors = listOf(lightColors.green2, Color.Transparent)) // 두 개의 StepProgressBar
+        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2, Color.Transparent)) // 두 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
-        DynamicStepProgressBars(colors = listOf(lightColors.green2, lightColors.green2)) // 두 개의 StepProgressBar
+        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2, lightColors.green2)) // 두 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
-        DynamicStepProgressBars(colors = listOf(lightColors.green2, lightColors.green2, lightColors.green3)) // 세 개의 StepProgressBar
+        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2, lightColors.green2, lightColors.green3)) // 세 개의 StepProgressBar
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun AddressPreview(){
-    Address(fullRoadAddr = "허리도 가늘군 만지면 부서지리", jibunAddr = "jibunAddr", onFullRoadAddrChange = {}, onJubunAddrChange = {}) {
+    Address(Modifier, fullRoadAddr = "허리도 가늘군 만지면 부서지리", jibunAddr = "jibunAddr", onFullRoadAddrChange = {}, onJubunAddrChange = {}) {
 
     }
 }

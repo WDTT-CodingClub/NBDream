@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,18 +53,18 @@ fun SelectCropScreen(
     Scaffold(
         modifier = modifier.padding(16.dp),
         topBar = {
-            DreamCenterTopAppBar(title = "내 농장 정보")
+            DreamCenterTopAppBar(title = stringResource(id = kr.co.onboard.R.string.feature_onboard_my_farm_title))
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(paddingValues)
         ) {
-            DynamicStepProgressBars(colors = listOf(ColorSet.Dream.lightColors.green2, ColorSet.Dream.lightColors.green2))
-            StepText("2/2", modifier = Modifier)
-            DescriptionText("재배 작물을 선택해주세요(중복 선택 가능)")
+            DynamicStepProgressBars(modifier, colors = listOf(ColorSet.Dream.lightColors.green2, ColorSet.Dream.lightColors.green2))
+            StepText(stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second), modifier = Modifier)
+            DescriptionText(stringResource(id = kr.co.onboard.R.string.feature_onboard_my_farm_crops_description))
             CropsList(crops)
-            NextButton()
+            NextButton(skipId = kr.co.onboard.R.string.feature_onboard_my_farm_skip_select, nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next)
         }
     }
 }
@@ -99,7 +100,7 @@ fun CropsList(
     ) {
         items(cropList.size) { index ->
             Card(
-                modifier = Modifier
+                modifier = modifier
                     .padding(12.dp)
                     .fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -108,20 +109,20 @@ fun CropsList(
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = modifier.padding(16.dp)
                 ) {
                     Image(
                         painter = painterResource(id = cropList[index].image),
                         contentDescription = cropList[index].name,
-                        modifier = Modifier.size(64.dp)
+                        modifier = modifier.size(64.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = modifier.height(8.dp))
                     Text(
                         text = cropList[index].name,
                         fontSize = 16.sp,
                         color = ColorSet.Dream.lightColors.text2,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = modifier.fillMaxWidth()
                     )
                 }
             }

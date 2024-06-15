@@ -1,5 +1,6 @@
 package kr.co.onboard.navigation
 
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -27,6 +28,7 @@ fun NavGraphBuilder.onboardNavGraph(
         route = ADDRESS_ROUTE
     ) {
         InputAddressScreen(
+            modifier = Modifier,
             navController = navController
         )
     }
@@ -34,7 +36,7 @@ fun NavGraphBuilder.onboardNavGraph(
     composable(
         route = ADDRESS_FIND_ROUTE
     ) {
-        LocationSearchWebViewScreen(addressSelectionListener = object : AddressSelectionListener {
+        LocationSearchWebViewScreen(Modifier, addressSelectionListener = object : AddressSelectionListener {
             override fun onAddressSelected(fullRoadAddr: String, jibunAddr: String) {
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     "fullRoadAddr",
@@ -68,12 +70,13 @@ fun NavGraphBuilder.onboardNavGraph(
 //            }
 //        )
         InputAddressScreen(
+            modifier = Modifier,
             navController = navController
         )
     }
 
     composable("ADDRESS_FIND_ROUTE") {
-        LocationSearchWebViewScreen(addressSelectionListener = object : AddressSelectionListener {
+        LocationSearchWebViewScreen(Modifier, addressSelectionListener = object : AddressSelectionListener {
             override fun onAddressSelected(fullRoadAddr: String, jibunAddr: String) {
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     "fullRoadAddr",
