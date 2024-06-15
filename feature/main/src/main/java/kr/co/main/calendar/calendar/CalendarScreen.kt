@@ -1,7 +1,6 @@
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +17,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,9 +38,9 @@ import kr.co.main.R
 import kr.co.main.calendar.calendar.CalendarViewModel
 import kr.co.main.calendar.calendar.maincalendar.MainCalendar
 import kr.co.main.calendar.common.CalendarBaseFab
+import kr.co.main.calendar.common.CalendarHorizontalDivider
 import kr.co.main.calendar.common.content.CalendarContent
 import kr.co.main.calendar.common.content.CalendarContentWrapper
-import kr.co.main.calendar.common.CalendarHorizontalDivider
 import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
@@ -54,9 +54,7 @@ import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 
-// TODO 재배 작물 목록 비어있을 때 처리
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel()
@@ -85,6 +83,7 @@ fun CalendarScreen(
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 CalendarYearMonth(
+                    modifier = Modifier.fillMaxWidth(),
                     year = calendarScreenState.year,
                     month = calendarScreenState.month,
                     onMonthSelect = { month: Int ->
@@ -111,7 +110,10 @@ fun CalendarScreen(
                         diaries = calendarScreenState.diaries
                     )
 
-                    DiaryList(diaries = calendarScreenState.diaries)
+                    DiaryList(
+                        modifier = Modifier.fillMaxWidth(),
+                        diaries = calendarScreenState.diaries
+                    )
                 }
             }
         }
@@ -122,7 +124,7 @@ fun CalendarScreen(
 private fun CalendarTopBar(
     userCrops: List<CropModel>,
     selectedCrop: CropModel?,
-    onSelectCrop: (CropModel) -> Unit = {},
+    onSelectCrop: (CropModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     DreamCenterTopAppBar(
@@ -157,10 +159,11 @@ private fun CalendarTitle(
             modifier = modifier
         ) {
             CalendarTitleSpinner(
-                crop = selectedCrop,
-                onClick = { expandSpinner = true }
+                modifier = Modifier.clickable { expandSpinner = true },
+                crop = selectedCrop
             )
             CalendarTitleDropDownMenu(
+                modifier = Modifier.align(Alignment.Start),
                 expandSpinner = expandSpinner,
                 userCrops = userCrops,
                 selectedCrop = selectedCrop,
@@ -174,12 +177,10 @@ private fun CalendarTitle(
 @Composable
 private fun CalendarTitleSpinner(
     crop: CropModel,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier
-            .clickable { onClick() },
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -233,11 +234,12 @@ private fun CalendarTitleDropDownMenuItem(
     modifier: Modifier = Modifier
 ) {
     DropdownMenuItem(
-        modifier = modifier
-            .background(
-                if (isSelected) MaterialTheme.colors.green1
-                else Color.Transparent
-            ),
+        modifier = modifier,
+        enabled = isSelected,
+        colors = MenuDefaults.itemColors().copy(
+            textColor = MaterialTheme.colors.primary,
+            disabledTextColor = MaterialTheme.colors.text1,
+        ),
         text = {
             Text(
                 text = stringResource(id = crop.nameId),
@@ -249,7 +251,6 @@ private fun CalendarTitleDropDownMenuItem(
 }
 
 
-//TODO 캘린더 항목 추가 플로팅 액션 버튼
 @Composable
 private fun CalendarFab(
     onAddScheduleClick: () -> Unit,
@@ -315,7 +316,7 @@ private fun CalendarYearMonth(
     onMonthSelect: (month: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.fillMaxWidth()) {
+    Box(modifier = modifier) {
         Icon(
             modifier = Modifier
                 .align(Alignment.CenterStart)
@@ -339,19 +340,16 @@ private fun CalendarYearMonth(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DiaryList(
     diaries: List<DiaryModel>,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         color = Color.LightGray
     ) {
         LazyColumn(
-            modifier = modifier,
             contentPadding = PaddingValues(Paddings.xlarge),
             verticalArrangement = Arrangement.spacedBy(Paddings.medium)
         ) {
@@ -362,7 +360,6 @@ private fun DiaryList(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DiaryItem(
     diary: DiaryModel,
@@ -378,50 +375,49 @@ private fun DiaryItem(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun CalendarTopBarPreview() {
-    Surface(modifier = Modifier.fillMaxWidth()) {
-        CalendarTopBar(
-            userCrops = listOf(
-                CropModel.POTATO,
-                CropModel.SWEET_POTATO,
-                CropModel.TOMATO
-            ).sortedBy { it.ranking },
-            selectedCrop = CropModel.POTATO
-        )
-    }
+    var selectedCrop by remember { mutableStateOf<CropModel?>(null) }
+    CalendarTopBar(
+        userCrops = listOf(
+            CropModel.POTATO,
+            CropModel.SWEET_POTATO,
+            CropModel.TOMATO,
+            CropModel.APPLE
+        ).sortedBy { it.ranking },
+        selectedCrop = CropModel.POTATO,
+        onSelectCrop = { selectedCrop = it }
+    )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun CalendarYearMonthPreview() {
-    Surface(modifier = Modifier.fillMaxWidth()) {
-        CalendarYearMonth(
-            year = 2024,
-            month = 6,
-            onMonthSelect = { _ -> }
-        )
-    }
+    CalendarYearMonth(
+        modifier = Modifier.fillMaxWidth(),
+        year = 2024,
+        month = 6,
+        onMonthSelect = { _ -> }
+    )
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun DiaryListPreview(
     @PreviewParameter(FakeDiaryModelProvider::class) diary: DiaryModel
 ) {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        DiaryList(
-            diaries = listOf(
-                diary.copy(id = "1"),
-                diary.copy(id = "2"),
-                diary.copy(id = "3"),
-                diary.copy(id = "4"),
-                diary.copy(id = "5")
-            )
+    DiaryList(
+        modifier = Modifier.fillMaxWidth(),
+        diaries = listOf(
+            diary.copy(id = "1"),
+            diary.copy(id = "2"),
+            diary.copy(id = "3"),
+            diary.copy(id = "4"),
+            diary.copy(id = "5")
         )
-    }
+    )
 }
 
 @Preview
