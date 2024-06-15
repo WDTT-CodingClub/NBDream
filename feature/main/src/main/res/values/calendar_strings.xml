@@ -1,7 +1,7 @@
 <resources>
 
     <!--    캘린더 제목    -->
-    <string name="feature_main_calendar_title">캘린더</string>
+    <string name="feature_main_calendar_title">%s 캘린더</string>
     <string name="feature_main_calendar_no_title">재배 작물을 추가해 주세요</string>
     <string name="feature_main_calendar_year_month">%d년 %d월</string>
 
