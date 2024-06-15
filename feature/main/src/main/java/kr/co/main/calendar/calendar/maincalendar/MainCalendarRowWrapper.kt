@@ -1,7 +1,5 @@
 package kr.co.main.calendar.calendar.maincalendar
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Constraints
@@ -12,7 +10,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 
-internal sealed class MainCalendarRowContent{
+internal sealed class MainCalendarRowContent {
     abstract val weekStartDate: LocalDate
     abstract val weekEndDate: LocalDate
 
@@ -20,50 +18,54 @@ internal sealed class MainCalendarRowContent{
         override val weekStartDate: LocalDate,
         override val weekEndDate: LocalDate,
         val holidays: List<HolidayEntity>
-    ): MainCalendarRowContent()
+    ) : MainCalendarRowContent()
 
     data class HolidayRowContent(
         override val weekStartDate: LocalDate,
         override val weekEndDate: LocalDate,
         val holidays: List<HolidayEntity>
-    ): MainCalendarRowContent()
+    ) : MainCalendarRowContent()
+
     data class ScheduleRowContent(
         override val weekStartDate: LocalDate,
         override val weekEndDate: LocalDate,
         val schedules: List<ScheduleModel>
-    ): MainCalendarRowContent()
+    ) : MainCalendarRowContent()
+
     data class DiaryRowContent(
         override val weekStartDate: LocalDate,
         override val weekEndDate: LocalDate,
         val diaries: List<DiaryModel>
-    ): MainCalendarRowContent()
-
+    ) : MainCalendarRowContent()
 }
 
 @Composable
 internal fun MainCalendarRowWrapper(
     mainCalendarRowContent: MainCalendarRowContent,
     modifier: Modifier = Modifier
-){
-    when(mainCalendarRowContent){
+) {
+    when (mainCalendarRowContent) {
         is MainCalendarRowContent.DateRowContent -> MainCalendarDateRow(
             modifier = modifier,
             weekStartDate = mainCalendarRowContent.weekStartDate,
             weekEndDate = mainCalendarRowContent.weekEndDate,
             holidays = mainCalendarRowContent.holidays
         )
+
         is MainCalendarRowContent.HolidayRowContent -> MainCalendarHolidayRow(
             modifier = modifier,
             weekStartDate = mainCalendarRowContent.weekStartDate,
             weekEndDate = mainCalendarRowContent.weekEndDate,
             holidays = mainCalendarRowContent.holidays
         )
+
         is MainCalendarRowContent.ScheduleRowContent -> MainCalendarScheduleRow(
             modifier = modifier,
             weekStartDate = mainCalendarRowContent.weekStartDate,
             weekEndDate = mainCalendarRowContent.weekEndDate,
             schedules = mainCalendarRowContent.schedules
         )
+
         is MainCalendarRowContent.DiaryRowContent -> MainCalendarDiaryRow(
             modifier = modifier,
             weekStartDate = mainCalendarRowContent.weekStartDate,
@@ -73,7 +75,6 @@ internal fun MainCalendarRowWrapper(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 internal fun getXPosition(dayOfWeek: DayOfWeek, constraints: Constraints) =
     when (dayOfWeek) {
         DayOfWeek.SUNDAY -> 0

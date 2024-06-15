@@ -1,9 +1,6 @@
 package kr.co.main.calendar.calendar.maincalendar
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +13,6 @@ import kr.co.ui.theme.typo
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun MainCalendarDateRow(
     weekStartDate: LocalDate,
@@ -24,7 +20,7 @@ internal fun MainCalendarDateRow(
     holidays: List<HolidayEntity>,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier.fillMaxWidth()) {
+    Row(modifier = modifier) {
         for (date in weekStartDate..weekEndDate) {
             val isHoliday = (
                     holidays.any { (it.date == date) && (it.isHoliday) } or

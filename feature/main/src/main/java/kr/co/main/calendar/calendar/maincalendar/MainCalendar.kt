@@ -1,8 +1,6 @@
 package kr.co.main.calendar.calendar.maincalendar
 
-import android.os.Build
 import androidx.annotation.ColorInt
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +20,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Constraints
 import kr.co.domain.entity.HolidayEntity
 import kr.co.main.R
 import kr.co.main.calendar.common.CalendarCategoryIndicator
@@ -33,7 +30,6 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.wdtt.nbdream.ui.main.calendar.providers.FakeMainCalendarDataProvider
-import java.time.DayOfWeek
 import java.time.LocalDate
 
 internal data class MainCalendarData(
@@ -45,7 +41,6 @@ internal data class MainCalendarData(
     val diaries: List<DiaryModel>
 )
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainCalendar(
     year: Int,
@@ -58,13 +53,16 @@ fun MainCalendar(
 ) {
     val scheduleCalendarStateHolder = rememberScheduleCalendarStateHolder(year, month)
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
         CategoryIndicatorList(
             modifier = Modifier.padding(vertical = Paddings.medium),
             crop = crop
         )
-        DayOfWeekHeader()
+        DayOfWeekHeader(
+            modifier = Modifier.fillMaxWidth()
+        )
         MainCalendarContent(
+            modifier = Modifier.fillMaxWidth(),
             year = year,
             startWeekNum = scheduleCalendarStateHolder.startWeekNumber,
             endWeekNum = scheduleCalendarStateHolder.endWeekNumber,
@@ -76,7 +74,6 @@ fun MainCalendar(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun rememberScheduleCalendarStateHolder(year: Int, month: Int) = remember {
     MainCalendarStateHolder(year, month)
@@ -140,7 +137,7 @@ private fun DayOfWeekHeader(
             R.string.feature_main_calendar_day_of_week_sat,
         )
     }
-    Row(modifier = modifier.fillMaxWidth()) {
+    Row(modifier = modifier) {
         dayOfWeekIds.forEachIndexed { index, id ->
             DayOfWeekItem(
                 modifier = Modifier.weight(1f),
@@ -154,8 +151,8 @@ private fun DayOfWeekHeader(
 @Composable
 private fun DayOfWeekItem(
     @StringRes dayOfWeekId: Int,
-    dayOfWeekColor: Color = MaterialTheme.colors.text1,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    dayOfWeekColor: Color = MaterialTheme.colors.text1
 ) {
     Text(
         modifier = modifier,
@@ -166,7 +163,6 @@ private fun DayOfWeekItem(
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun MainCalendarContent(
     year: Int,
@@ -178,11 +174,12 @@ private fun MainCalendarContent(
     diaries: List<DiaryModel>,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
         for (weekNum in startWeekNum..endWeekNum) {
             val (weekStartDate, weekEndDate) = getWeekRange(year, weekNum)
 
             MainCalendarRowWrapper(
+                modifier = Modifier.fillMaxWidth(),
                 mainCalendarRowContent = MainCalendarRowContent.DateRowContent(
                     weekStartDate = weekStartDate,
                     weekEndDate = weekEndDate,
@@ -190,6 +187,7 @@ private fun MainCalendarContent(
                 )
             )
             MainCalendarRowWrapper(
+                modifier = Modifier.fillMaxWidth(),
                 mainCalendarRowContent = MainCalendarRowContent.HolidayRowContent(
                     weekStartDate = weekStartDate,
                     weekEndDate = weekEndDate,
@@ -197,6 +195,7 @@ private fun MainCalendarContent(
                 )
             )
             MainCalendarRowWrapper(
+                modifier = Modifier.fillMaxWidth(),
                 mainCalendarRowContent = MainCalendarRowContent.ScheduleRowContent(
                     weekStartDate = weekStartDate,
                     weekEndDate = weekEndDate,
@@ -205,6 +204,7 @@ private fun MainCalendarContent(
             )
 
             MainCalendarRowWrapper(
+                modifier = Modifier.fillMaxWidth(),
                 mainCalendarRowContent = MainCalendarRowContent.DiaryRowContent(
                     weekStartDate = weekStartDate,
                     weekEndDate = weekEndDate,
@@ -216,7 +216,6 @@ private fun MainCalendarContent(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 private fun MainCalendarPreview(

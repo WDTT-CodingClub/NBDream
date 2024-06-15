@@ -1,7 +1,5 @@
 package kr.co.main.calendar.calendar.maincalendar
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.LayoutScopeMarker
@@ -45,7 +43,6 @@ import java.time.Period
 private const val SLOT_EMPTY = 0
 private const val SLOT_FULL = 1
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun MainCalendarScheduleRow(
     weekStartDate: LocalDate,
@@ -84,15 +81,11 @@ internal fun MainCalendarScheduleRow(
             }
 
             val layoutHeight = getLayoutHeight(placeables)
-            val scheduleSlots = mutableMapOf(
-                DayOfWeek.SUNDAY to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.MONDAY to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.TUESDAY to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.WEDNESDAY to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.THURSDAY to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.FRIDAY to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.SATURDAY to MutableList(layoutHeight) { SLOT_EMPTY }
-            )
+            val scheduleSlots = mutableMapOf<DayOfWeek, MutableList<Int>>().apply {
+                for (dayOfWeek in DayOfWeek.SUNDAY..DayOfWeek.SATURDAY) {
+                    put(dayOfWeek, MutableList(layoutHeight) { SLOT_EMPTY })
+                }
+            }
 
             layout(
                 width = constraints.maxWidth,
@@ -130,7 +123,7 @@ private fun ScheduleItemScope.MainCalendarScheduleItem(
         modifier = modifier
             .fillMaxWidth()
             .height(CalendarDesignToken.SCHEDULE_ITEM_HEIGHT.dp)
-            .clip(shape = RoundedCornerShape(5.dp))
+            .clip(shape = RoundedCornerShape(CalendarDesignToken.SCHEDULE_ITEM_CORNER_RADIUS.dp))
             .background(
                 color = when (schedule.category) {
                     is ScheduleModel.Category.All -> Color.LightGray
@@ -168,7 +161,6 @@ private fun MainCalendarScheduleItemPreview(
 @LayoutScopeMarker
 @Immutable
 object ScheduleItemScope {
-    @RequiresApi(Build.VERSION_CODES.O)
     @Stable
     fun Modifier.scheduleItem(
         startDate: LocalDate,
@@ -185,7 +177,6 @@ private class ScheduleItemParentData(
     override fun Density.modifyParentData(parentData: Any?) = this@ScheduleItemParentData
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 private fun getLayoutHeight(placeables: List<Placeable>): Int {
     if (placeables.isEmpty()) return 0
 
