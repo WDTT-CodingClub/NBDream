@@ -59,17 +59,23 @@ import kr.co.ui.widget.DreamTopAppBar
 @Composable
 internal fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
+    navigateToNotification: () -> Unit = {},
+    navigateToChat: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     HomeScreen(
-        state = state
+        state = state,
+        navigateToNotification = navigateToNotification,
+        navigateToChat = navigateToChat
     )
 }
 
 @Composable
 private fun HomeScreen(
     state: HomeViewModel.State = HomeViewModel.State(),
+    navigateToNotification: () -> Unit = {},
+    navigateToChat: () -> Unit = {},
 ) {
     var maxWidth by remember {
         mutableIntStateOf(0)
@@ -89,7 +95,7 @@ private fun HomeScreen(
                     title = "내 농장",
                     description = "산 좋고 물 좋 나만의 농장 1번지",
                     actions = {
-                        IconButton(onClick = { /*navigateToNotification*/ }) {
+                        IconButton(onClick = navigateToNotification) {
                             Icon(
                                 imageVector = DreamIcon.Bell,
                                 contentDescription = "notification"
@@ -120,6 +126,8 @@ private fun HomeScreen(
                         color = MaterialTheme.colors.gray10,
                     )
                     Text(
+                        modifier = Modifier
+                            .noRippleClickable(onClick = navigateToChat),
                         text = "챗봇 연결 >",
                         style = MaterialTheme.typo.body2,
                         color = MaterialTheme.colors.gray10

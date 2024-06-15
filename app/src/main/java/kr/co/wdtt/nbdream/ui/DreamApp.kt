@@ -35,6 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNotNull
 import kr.co.main.navigation.MAIN_ROUTE
 import kr.co.main.navigation.mainNavGraph
 import kr.co.onboard.navigation.ONBOARD_ROUTE
@@ -63,7 +64,7 @@ internal fun DreamApp(
 
     LaunchedEffect(Unit) {
         setSplashVisible(true)
-        viewModel.isAuthorized.drop(1).collectLatest {
+        viewModel.isAuthorized.filterNotNull().collectLatest {
             setSplashVisible(false)
             navRoute = if (it) DreamNavRoute.MAIN else DreamNavRoute.ONBOARDING
         }

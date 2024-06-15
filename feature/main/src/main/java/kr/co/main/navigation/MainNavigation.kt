@@ -25,7 +25,14 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.HOME.route
                 ) {
-                    HomeRoute()
+                    HomeRoute(
+                        navigateToChat = {
+                            navController.navigate(CHAT_ROUTE)
+                        },
+                        navigateToNotification = {
+                            navController.navigate(NOTIFICATION_ROUTE)
+                        }
+                    )
                 }
 
                 composable(
