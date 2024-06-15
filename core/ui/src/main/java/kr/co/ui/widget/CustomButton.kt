@@ -1,5 +1,6 @@
 package kr.co.ui.widget
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kr.co.ui.theme.colors
@@ -85,6 +87,8 @@ fun InputCompleteButton(
 @Composable
 fun NextButton(
     modifier: Modifier = Modifier,
+    @StringRes skipId: Int,
+    @StringRes nextId: Int,
     onSkipClick: () -> Unit = {},
     onNextClick: () -> Unit = {}
 ) {
@@ -97,15 +101,15 @@ fun NextButton(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SkipButton(text = "나중에 입력할게요")
-            InputCompleteButton(text = "다음으로")
+            SkipButton(text = stringResource(id = skipId))
+            InputCompleteButton(text = stringResource(id = nextId))
         }
     }
 }
 
 //다른 버튼 예시
 @Composable
-fun TestCropButton(
+private fun TestCropButton(
     modifier: Modifier = Modifier,
     text: String,
     onSkipClick: () -> Unit = {}
@@ -135,8 +139,8 @@ private fun InputCompleteButtonPreview() {
     InputCompleteButton(text = "다음으로")
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun NextButtonPreview() {
-    NextButton()
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun NextButtonPreview() {
+//    NextButton()
+//}
