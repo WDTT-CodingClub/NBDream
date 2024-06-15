@@ -8,11 +8,17 @@ internal object CalendarDesignToken {
     const val SKY_ICON_SIZE = 20
     const val CROP_COLOR_SHAPE_SIZE = 8
 
+    // 일정/영농일지
+    const val DIARY_IMAGE_SIZE = 80
+    const val DIARY_ALARM_ICON_SIZE = 12
+
     // 농작업 일정 캘린더
     const val FARM_WORK_ITEM_HEIGHT = 20
+    const val FARM_WORK_ITEM_CORNER_RADIUS = 5
 
     // 메인 캘린더
     const val SCHEDULE_ITEM_HEIGHT = 20
+    const val SCHEDULE_ITEM_CORNER_RADIUS = 5
     const val DIARY_ITEM_ICON_SIZE = 24
 
     // 영농일지 추가 화면 이미지 입력

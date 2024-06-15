@@ -28,7 +28,6 @@
     <string name="feature_main_calendar_day_of_week_fri">금</string>
     <string name="feature_main_calendar_day_of_week_sat">토</string>
 
-
     <!--    농작업일정    -->
     <string name="feature_main_calendar_farm_work_era_early">상순</string>
     <string name="feature_main_calendar_farm_work_era_mid">중순</string>
@@ -36,9 +35,12 @@
 
     <string name="feature_main_calendar_farm_work_growth">주요 농작업 일정</string>
     <string name="feature_main_calendar_farm_work_climate">기상 재해 및 문제점</string>
-    <string name="feature_main_calendar_farm_work_pest">병해충 방제</string>
+    <string name="feature_main_calendar_farm_work_pest">병해충 방제</string>"
 
-    <!--    영농일지 하늘    -->
+    <!--    영농일지    -->
+    <string name="feature_main_calendar_diary_overview">%d명\/%d시간\/%d평</string>
+
+    <!--    영농일지 하늘   -->
     <string name="feature_main_calendar_sky_sunny">맑음</string>
     <string name="feature_main_calendar_sky_partly_cloudy">구름 많음</string>
     <string name="feature_main_calendar_sky_mostly_cloudy">흐림</string>

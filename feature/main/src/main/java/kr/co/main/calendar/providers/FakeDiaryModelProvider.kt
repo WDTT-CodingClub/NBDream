@@ -19,15 +19,15 @@ internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {
             holidays = listOf(
                 HolidayEntity(
                     date = LocalDate.of(2024, 5, 6),
-                    name = "어린이날",
-                    type = HolidayEntity.Type.NATIONAL_HOLIDAY,
-                    isHoliday = true
-                ),
-                HolidayEntity(
-                    date = LocalDate.of(2024, 5, 6),
                     name = "입하(立夏)",
                     type = HolidayEntity.Type.SOLAR_TERM,
                     isHoliday = false
+                ),
+                HolidayEntity(
+                    date = LocalDate.of(2024, 5, 6),
+                    name = "어린이날",
+                    type = HolidayEntity.Type.NATIONAL_HOLIDAY,
+                    isHoliday = true
                 )
             ),
             weatherForecast = WeatherForecastModel(
