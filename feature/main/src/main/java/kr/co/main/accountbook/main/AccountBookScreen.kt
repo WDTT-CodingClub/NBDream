@@ -44,24 +44,27 @@ import java.time.temporal.ChronoUnit
 
 @Composable
 internal fun AccountBookRoute(
-    viewModel: AccountBookViewModel = hiltViewModel()
+    viewModel: AccountBookViewModel = hiltViewModel(),
+    navigationToRegister: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     AccountBookScreen(
-        state = state
+        state = state,
+        navigationToRegister = navigationToRegister
     )
 }
 
 @Preview
 @Composable
 private fun PreviewAccountBookScreen() {
-    AccountBookScreen()
+
 }
 
 @Composable
 private fun AccountBookScreen(
-    state: AccountBookViewModel.State = AccountBookViewModel.State()
+    state: AccountBookViewModel.State = AccountBookViewModel.State(),
+    navigationToRegister: () -> Unit
 ) {
     var sortOrder by remember { mutableStateOf(SortOrder.RECENCY) }
     var showTotalExpenses by remember { mutableStateOf(true) }
@@ -69,7 +72,7 @@ private fun AccountBookScreen(
     val totalExpenses = accountBookList.sumOf { it.expense ?: 0L }
     val totalRevenue = accountBookList.sumOf { it.revenue ?: 0L }
 
-    var daysInRange by remember { mutableStateOf(0L) }
+    var daysInRange by remember { mutableLongStateOf(0L) }
 
     val sortedList = remember(accountBookList, sortOrder) {
         when (sortOrder) {
@@ -91,7 +94,7 @@ private fun AccountBookScreen(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* TODO */ },
+                onClick = navigationToRegister,
                 shape = CircleShape,
                 containerColor = MaterialTheme.colors.green1
             ) {
@@ -153,7 +156,7 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
             .clickable { bottomSheetState = true }
     ) {
         Text(
-            text = "${startDate.value.format(formatter)} - ${endDate.value.format(formatter)}", // LocalDate를 문자열로 변환하여 표시
+            text = "${startDate.value.format(formatter)} - ${endDate.value.format(formatter)}",
             modifier = Modifier.padding(start = 8.dp, end = 4.dp),
             style = MaterialTheme.typo.header2M
         )

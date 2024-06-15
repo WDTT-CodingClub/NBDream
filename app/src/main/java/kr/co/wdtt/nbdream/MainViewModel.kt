@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class MainViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val fetchAuthUseCase: FetchAuthUseCase
+    private val fetchAuthUseCase: FetchAuthUseCase,
 ): BaseViewModel<MainViewModel.State>(savedStateHandle) {
     private val _isAuthorized: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isAuthorized = _isAuthorized.asStateFlow()

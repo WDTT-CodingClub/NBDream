@@ -49,7 +49,7 @@ internal fun DreamApp(
 
     LaunchedEffect(Unit) {
         viewModel.isAuthorized.drop(1).collectLatest {
-            navRoute = if (it) DreamNavRoute.MAIN else DreamNavRoute.ONBOARDING
+            navRoute = if (it) DreamNavRoute.ONBOARDING else DreamNavRoute.ONBOARDING
         }
     }
 

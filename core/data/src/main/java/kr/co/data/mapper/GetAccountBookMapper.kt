@@ -1,37 +1,25 @@
 package kr.co.data.mapper
 
 import kr.co.common.mapper.Mapper
-import kr.co.data.model.data.AccountBookListResult
+import kr.co.data.model.data.AccountBookData
 import kr.co.domain.entity.AccountBookEntity
-import kr.co.domain.entity.AccountBookTotalEntity
 
 internal object GetAccountBookMapper
-    :Mapper<AccountBookListResult, Pair<AccountBookTotalEntity, List<AccountBookEntity>>> {
-    override fun convert(param: AccountBookListResult) =
+    : Mapper<AccountBookData, AccountBookEntity> {
+    override fun convert(param: AccountBookData) =
         with(param) {
-            AccountBookTotalEntity(
-                totalCost = totalCost,
-                totalExpense = totalExpense,
-                totalRevenue = totalRevenue,
-                categories = categories
-            ) to items.map {
-                AccountBookEntity(
-                    id = it.id,
-                    title = it.title,
-                    category = toCategory(it.category),
-                    imageUrl = listOf(it.thumbnail),
-                    year = it.year,
-                    month = it.month,
-                    day = it.day,
-                    dayName = it.dayName,
-                    expense = it.expense,
-                    revenue = it.revenue
-                )
-            }
+            AccountBookEntity(
+                id = id,
+                title = title,
+                category = GetAccountBookListMapper.toCategory(category),
+                imageUrl = imageUrls,
+                registerDateTime = registerDateTime,
+                year = year,
+                month = month,
+                day = day,
+                dayName = dayName,
+                revenue = revenue,
+                expense = expense
+            )
         }
-
-    private fun toCategory(category: String) =
-        AccountBookEntity.Category.entries.find {
-            it.name == category
-        }?: AccountBookEntity.Category.OTHER
 }

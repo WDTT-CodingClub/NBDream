@@ -13,6 +13,7 @@ import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.ArrowLeft
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,7 +29,8 @@ fun DreamCenterTopAppBar(
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typo.headerB
+                style = MaterialTheme.typo.pageName,
+                color = MaterialTheme.colors.gray1
             )
         },
         navigationIcon = navigationIcon,
