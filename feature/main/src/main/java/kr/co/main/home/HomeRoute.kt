@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,12 +20,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -48,9 +45,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kr.co.main.R
+import kr.co.main.home.HomeViewModel.State.WeatherDetail
+import kr.co.main.home.HomeViewModel.State.WeatherSimple
+import kr.co.main.model.home.WeatherMetrics
 import kr.co.ui.ext.noRippleClickable
-import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Bell
 import kr.co.ui.theme.NBDreamTheme
@@ -71,7 +69,7 @@ internal fun HomeRoute(
 
 @Composable
 private fun HomeScreen(
-    state: HomeViewModel.State = HomeViewModel.State()
+    state: HomeViewModel.State = HomeViewModel.State(),
 ) {
     var maxWidth by remember {
         mutableIntStateOf(0)
@@ -130,7 +128,10 @@ private fun HomeScreen(
             }
 
             item {
-                WeatherCard()
+                WeatherCard(
+                    todayWeather = state.todayWeather,
+                    weatherList = state.weatherList,
+                )
             }
 
             item {
@@ -179,7 +180,7 @@ private fun HomeScreen(
                             Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
                             Triple("감자 물 관리 작업 감자 물 관리 작업", "2024.05.16", "2024.05.21"),
                         )
-                            dummy.forEachIndexed { index, value ->
+                        dummy.forEachIndexed { index, value ->
                             ScheduleText(
                                 parentWidth = maxWidth,
                                 title = value.first,
@@ -203,7 +204,7 @@ private fun HomeScreen(
                             text = "펼쳐보기",
                             style = MaterialTheme.typo.label,
                             color = MaterialTheme.colors.gray3
-                            )
+                        )
                         Spacer(modifier = Modifier.width(6.dp))
                         Icon(
                             modifier = Modifier.size(20.dp),
@@ -219,7 +220,11 @@ private fun HomeScreen(
 }
 
 @Composable
-private fun WeatherCard() {
+private fun WeatherCard(
+    todayWeather: WeatherDetail,
+    weatherList: List<WeatherSimple>?,
+    modifier: Modifier = Modifier,
+) {
     var weatherColumnHeight by remember {
         mutableIntStateOf(0)
     }
@@ -228,7 +233,7 @@ private fun WeatherCard() {
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colors.white,
@@ -259,8 +264,10 @@ private fun WeatherCard() {
             ) {
                 Image(
                     modifier = Modifier
-                        .fillMaxWidth(104 / 346f)
-                        .aspectRatio(104 / 69.33f),
+                        .size(
+                            width = 104.dp,
+                            height = 69.33.dp
+                        ),
                     painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_sunny),
                     contentDescription = "weather state"
                 )
@@ -271,7 +278,7 @@ private fun WeatherCard() {
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "24°",
+                        text = "${todayWeather.temperature}°",
                         style = MaterialTheme.typo.weather,
                         color = MaterialTheme.colors.gray1
                     )
@@ -280,7 +287,7 @@ private fun WeatherCard() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "23°",
+                            text = "${weatherList?.first()?.maxTemperature?: 0}°",
                             style = MaterialTheme.typo.body2,
                             color = MaterialTheme.colors.red
                         )
@@ -295,7 +302,7 @@ private fun WeatherCard() {
                         Spacer(modifier = Modifier.width(4.dp))
 
                         Text(
-                            text = "23°",
+                            text = "${weatherList?.first()?.minTemperature?: 23}°",
                             style = MaterialTheme.typo.body2,
                             color = MaterialTheme.colors.gray4
                         )
@@ -317,12 +324,19 @@ private fun WeatherCard() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                listOf("강수확률", "강수량", "습도", "풍속").forEachIndexed { index, value ->
+                WeatherMetrics.entries.forEachIndexed { index, value ->
                     WeatherState(
-                        modfier = Modifier.onGloballyPositioned {
+                        modifier = Modifier.onGloballyPositioned {
                             weatherColumnHeight = it.size.height - 48
                         },
-                        title = value
+                        title = value.label,
+                        measure = when (value) {
+                            WeatherMetrics.Probability -> todayWeather.probability ?: 0
+                            WeatherMetrics.Precipitation -> todayWeather.precipitation ?: 0
+                            WeatherMetrics.Humidity -> todayWeather.humidity ?: 0
+                            WeatherMetrics.Wind -> todayWeather.wind ?: 0
+                        },
+                        unit = value.unit
                     )
 
                     if (index < 3)
@@ -337,7 +351,7 @@ private fun WeatherCard() {
             }
         }
 
-        if(expanded){
+        if (expanded) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -345,7 +359,7 @@ private fun WeatherCard() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                listOf(1,2,3,4,5,6,7).forEach {
+                listOf(1, 2, 3, 4, 5, 6, 7).forEach {
                     Image(
                         modifier = Modifier.width(32.dp),
                         painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_sunny),
@@ -364,7 +378,7 @@ private fun WeatherCard() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = if (!expanded)"펼쳐보기" else "접기",
+                text = if (!expanded) "펼쳐보기" else "접기",
                 style = MaterialTheme.typo.label,
                 color = MaterialTheme.colors.gray3
             )
@@ -373,7 +387,7 @@ private fun WeatherCard() {
 
             Icon(
                 modifier = Modifier.size(20.dp),
-                imageVector = if (!expanded)Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowUp,
+                imageVector = if (!expanded) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowUp,
                 contentDescription = "expand",
                 tint = MaterialTheme.colors.gray5
             )
@@ -386,7 +400,7 @@ private fun ScheduleText(
     parentWidth: Int,
     title: String,
     startDate: String,
-    endDate: String
+    endDate: String,
 ) {
     val textMeasurer = rememberTextMeasurer()
 
@@ -420,11 +434,13 @@ private fun ScheduleText(
 
 @Composable
 private fun WeatherState(
-    modfier: Modifier = Modifier,
-    title: String
+    title: String,
+    measure: Int,
+    unit: String,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modfier,
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
@@ -434,7 +450,7 @@ private fun WeatherState(
             color = MaterialTheme.colors.gray4
         )
         Text(
-            text = "0%",
+            text = "$measure$unit",
             style = MaterialTheme.typo.body2,
             color = MaterialTheme.colors.gray4
         )

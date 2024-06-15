@@ -17,14 +17,15 @@ internal class HomeViewModel @Inject constructor(
 
     data class State(
         val address: String? = null,
-        val todayWeather: WeatherDetail? = null,
+        val todayWeather: WeatherDetail = WeatherDetail(),
         val weatherList: List<WeatherSimple>? = null,
     ): BaseViewModel.State {
         data class WeatherDetail(
-            val probability: Int? = null,
-            val precipitation: Int? = null,
-            val humidity: Int? = null,
-            val temperature: Float? = null,
+            val probability: Int = 0,
+            val precipitation: Int = 0,
+            val humidity: Int = 0,
+            val wind: Int = 0,
+            val temperature: Float = 0f,
         )
 
         data class WeatherSimple(
