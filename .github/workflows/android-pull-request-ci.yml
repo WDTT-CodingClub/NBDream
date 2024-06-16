@@ -21,6 +21,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Create local.properties
+        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+
       - name: Access HOLIDAY_API_KEY
         env:
           HOLIDAY_API_KEY: ${{secrets.HOLIDAY_API_KEY}}
