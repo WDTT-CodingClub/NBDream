@@ -11,6 +11,7 @@ import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
+import kr.co.main.my.setting.MyPageSettingRoute
 
 const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
@@ -101,5 +102,46 @@ fun NavGraphBuilder.mainNavGraph(
         MyPageProfileEditRoute(
             popBackStack = navController::popBackStack
         )
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_ROUTE
+    ) {
+        MyPageSettingRoute(
+            popBackStack = navController::popBackStack,
+            navigateTo = { route ->
+                navController.navigate(route)
+            }
+        )
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_NOTIFICATION_ROUTE
+    ) {
+
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_PRIVACY_POLICY_ROUTE
+    ) {
+
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_LOGOUT_ROUTE
+    ) {
+
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_APP_INFO_ROUTE
+    ) {
+
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_DELETE_ACCOUNT_ROUTE
+    ) {
+
     }
 }
