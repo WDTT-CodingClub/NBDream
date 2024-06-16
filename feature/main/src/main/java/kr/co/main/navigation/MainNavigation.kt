@@ -18,6 +18,12 @@ internal const val NOTIFICATION_ROUTE = "notificationRoute"
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
 
 internal const val MY_PAGE_EDIT_ROUTE = "myPageProfileEditRoute"
+internal const val MY_PAGE_SETTING_ROUTE = "myPageSettingRoute"
+internal const val MY_PAGE_SETTING_NOTIFICATION_ROUTE = "myPageSettingNotificationRoute"
+internal const val MY_PAGE_SETTING_PRIVACY_POLICY_ROUTE = "myPageSettingPrivacyPolicyRoute"
+internal const val MY_PAGE_SETTING_LOGOUT_ROUTE = "myPageSettingLogoutRoute"
+internal const val MY_PAGE_SETTING_APP_INFO_ROUTE = "myPageSettingAppInfoRoute"
+internal const val MY_PAGE_SETTING_DELETE_ACCOUNT_ROUTE = "myPageSettingDeleteAccountRoute"
 
 fun NavGraphBuilder.mainNavGraph(
     navController: NavController

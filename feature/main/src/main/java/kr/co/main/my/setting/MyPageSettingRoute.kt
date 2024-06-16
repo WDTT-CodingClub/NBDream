@@ -1,6 +1,5 @@
 package kr.co.main.my.setting
 
-import android.content.pm.ApplicationInfo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kr.co.main.BuildConfig
 import kr.co.main.R
 import kr.co.main.model.my.MyPageSetting
 import kr.co.ui.ext.noRippleClickable
@@ -36,23 +34,30 @@ import kr.co.ui.widget.DreamCenterTopAppBar
 @Composable
 internal fun MyPageSettingRoute(
     popBackStack: () -> Unit,
+    navigateTo: (String) -> Unit,
 ) {
 
     MyPageSettingScreen(
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        navigateTo = navigateTo
     )
 }
 
 @Composable
 private fun MyPageSettingScreen(
     popBackStack: () -> Unit,
+    navigateTo: (String) -> Unit,
 ) {
     Scaffold(
         topBar = {
             DreamCenterTopAppBar(
                 title = "설정",
                 navigationIcon = {
-                    IconButton(onClick = popBackStack) {
+                    IconButton(
+                        modifier = Modifier
+                            /*.minimumInteractiveComponentSize() 기본적으로 보장*/,
+                        onClick = popBackStack
+                    ) {
                         Icon(
                             modifier = Modifier.size(32.dp),
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
@@ -75,6 +80,7 @@ private fun MyPageSettingScreen(
             MyPageSetting.entries.forEachIndexed { index, myPageSetting ->
                 SettingRow(
                     type = myPageSetting,
+                    navigateTo = navigateTo
                 )
 
                 if(index != MyPageSetting.entries.lastIndex){
@@ -85,19 +91,26 @@ private fun MyPageSettingScreen(
                 }
             }
 
-            Text(text = "버전: 1.0.0")
+            Text(
+                modifier = Modifier
+                    .align(Alignment.End),
+                text = "버전: 1.0.0",
+                style = MaterialTheme.typo.body2,
+                color = MaterialTheme.colors.gray6
+            )
         }
     }
 }
 
 @Composable
 private fun SettingRow(
-    type: MyPageSetting
+    type: MyPageSetting,
+    navigateTo: (String) -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .noRippleClickable { },
+            .noRippleClickable { navigateTo(type.route) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -120,7 +133,7 @@ private fun SettingRow(
 @Composable
 private fun Preview() {
     NBDreamTheme {
-        MyPageSettingScreen{
+        MyPageSettingScreen({}){
 
         }
     }

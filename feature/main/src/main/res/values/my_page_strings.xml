@@ -14,4 +14,5 @@
     <string name="feature_main_my_setting_logout">로그아웃</string>
     <string name="feature_main_my_setting_app_info">앱 정보</string>
     <string name="feature_main_my_setting_unregister">회원 탈퇴</string>
+    <string name="feature_main_setting_app_version_info">앱 버전 정보</string>
 </resources>
