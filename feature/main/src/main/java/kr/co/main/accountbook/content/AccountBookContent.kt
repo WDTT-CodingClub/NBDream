@@ -143,13 +143,7 @@ internal fun AccountBookContentScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = formatNumber(
-                            if (state.revenue != 0L) {
-                                state.revenue
-                            } else {
-                                state.expense
-                            }
-                        ),
+                        text = formatNumber(state.amount),
                         style = MaterialTheme.typo.header2M,
                         color = MaterialTheme.colors.black
                     )

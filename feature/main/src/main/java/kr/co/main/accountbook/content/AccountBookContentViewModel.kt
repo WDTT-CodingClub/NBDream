@@ -30,8 +30,8 @@ internal class AccountBookContentViewModel @Inject constructor(
                         year = accountBookDetail.year ?: 0,
                         month = accountBookDetail.month ?: 0,
                         day = accountBookDetail.day ?: 0,
-                        revenue = accountBookDetail.revenue ?: 0,
-                        expense = accountBookDetail.expense ?: 0
+                        transactionType = accountBookDetail.transactionType ?: AccountBookEntity.TransactionType.EXPENSE,
+                        amount = accountBookDetail.amount ?: 0
                     )
                 }
             } catch (e: Exception) {
@@ -40,8 +40,8 @@ internal class AccountBookContentViewModel @Inject constructor(
         }
     }
 
+    override fun createInitialState(savedState: Parcelable?): State = State()
 
-    override fun createInitialState(savedState: Parcelable?): State  = State()
     data class State(
         val id: String = "",
         val title: String = "",
@@ -49,7 +49,7 @@ internal class AccountBookContentViewModel @Inject constructor(
         val year: Int = 0,
         val month: Int = 0,
         val day: Int = 0,
-        val revenue: Long = 0,
-        val expense: Long = 0
+        val transactionType: AccountBookEntity.TransactionType = AccountBookEntity.TransactionType.EXPENSE,
+        val amount: Long = 0
     ) : BaseViewModel.State
 }
