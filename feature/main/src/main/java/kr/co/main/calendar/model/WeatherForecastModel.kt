@@ -14,7 +14,7 @@ data class WeatherForecastModel(
     val sky:Sky,
     val maxTemp: String,
     val minTemp: String,
-    val precipitation: String
+    val precipitation: Int
 ){
     // TODO 하늘 상태 별 아이콘
     enum class Sky(
@@ -54,7 +54,7 @@ internal fun WeatherForecastEntity.convert() = WeatherForecastModel(
 internal fun WeatherForecastModel.convert() = WeatherForecastEntity(
     precipitation = precipitation,
     probability = 0, //meaningless
-    humidity = "0%", //meaningless,
+    humidity = 0, //meaningless,
     temperature = 0.0f, //meaningless
     windSpeed = 0, //meaningless
     weather = listOf(

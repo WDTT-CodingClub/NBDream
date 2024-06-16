@@ -10,11 +10,14 @@ import kr.co.main.accountbook.register.AccountBookRegister
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
+import kr.co.main.my.profile.MyPageProfileEditRoute
 
 const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
 internal const val NOTIFICATION_ROUTE = "notificationRoute"
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
+
+internal const val MyPageProfileEditRoute = "myPageProfileEditRoute"
 
 fun NavGraphBuilder.mainNavGraph(
     navController: NavController
@@ -57,8 +60,8 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.MY_PAGE.route
                 ) {
                     MyPageRoute(
-                        navigateToNotification = {
-                            navController.navigate(NOTIFICATION_ROUTE)
+                        navigateToProfileEdit = {
+                            navController.navigate(MyPageProfileEditRoute)
                         }
                     )
                 }
@@ -84,5 +87,13 @@ fun NavGraphBuilder.mainNavGraph(
         route = ACCOUNT_BOOK_ROUTE
     ) {
         AccountBookRegister()
+    }
+
+    composable(
+        route = MyPageProfileEditRoute
+    ) {
+        MyPageProfileEditRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 }
