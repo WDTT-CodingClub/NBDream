@@ -11,9 +11,11 @@ internal class MyPageProfileEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<MyPageProfileEditViewModel.State>(savedStateHandle) {
 
-    override fun createInitialState(savedState: Parcelable?): State {
-        TODO("Not yet implemented")
+    init {
+
     }
+
+    override fun createInitialState(savedState: Parcelable?) = State()
 
     data class State(
         val state: Any? = null,

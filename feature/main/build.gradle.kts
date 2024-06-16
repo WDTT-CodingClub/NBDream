@@ -5,4 +5,8 @@ plugins {
 
 android {
     namespace = "kr.co.main"
+
+    buildFeatures {
+        buildConfig = true
+    }
 }

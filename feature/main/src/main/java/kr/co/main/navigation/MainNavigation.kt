@@ -17,7 +17,7 @@ internal const val CHAT_ROUTE = "chatRoute"
 internal const val NOTIFICATION_ROUTE = "notificationRoute"
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
 
-internal const val MyPageProfileEditRoute = "myPageProfileEditRoute"
+internal const val MY_PAGE_EDIT_ROUTE = "myPageProfileEditRoute"
 
 fun NavGraphBuilder.mainNavGraph(
     navController: NavController
@@ -61,7 +61,7 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     MyPageRoute(
                         navigateToProfileEdit = {
-                            navController.navigate(MyPageProfileEditRoute)
+                            navController.navigate(MY_PAGE_EDIT_ROUTE)
                         }
                     )
                 }
@@ -90,7 +90,7 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = MyPageProfileEditRoute
+        route = MY_PAGE_EDIT_ROUTE
     ) {
         MyPageProfileEditRoute(
             popBackStack = navController::popBackStack
