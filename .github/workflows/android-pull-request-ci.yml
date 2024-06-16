@@ -23,22 +23,22 @@ jobs:
 
       - name: Access HOLIDAY_API_KEY
         env:
-          HOLIDAY_API_KEY: $
+          HOLIDAY_API_KEY: ${{secrets.HOLIDAY_API_KEY}}
         run: echo HOLIDAY_API_KEY=\"$HOLIDAY_API_KEY\" > ./local.properties
 
       - name: Access KAKAO_NATIVE_APP_KEY
         env:
-          KAKAO_NATIVE_APP_KEY: $
+          KAKAO_NATIVE_APP_KEY: ${{secrets.KAKAO_NATIVE_APP_KEY}}
         run: echo KAKAO_NATIVE_APP_KEY=\"$KAKAO_NATIVE_APP_KEY\" > ./local.properties
 
       - name: Access DATASTORE_NAME
         env:
-          DATASTORE_NAME: $
+          DATASTORE_NAME: ${{secrets.DATASTORE_NAME}}
         run: echo DATASTORE_NAME=\"$DATASTORE_NAME\" > ./local.properties
 
       - name: Access BASE_URL
         env:
-          DATASTORE_NAME: $
+          DATASTORE_NAME: ${{secrets.BASE_URL}}
         run: echo BASE_URL=\"$BASE_URL\" > ./local.properties
 
       - name: Build with Gradle
