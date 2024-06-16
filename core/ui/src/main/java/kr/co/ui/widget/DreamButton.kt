@@ -2,6 +2,7 @@ package kr.co.ui.widget
 
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -28,7 +29,7 @@ fun DreamButton(
     Button(
         modifier = modifier.fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .aspectRatio(343/61f),
+            .height(60.dp),
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
         colors = colors

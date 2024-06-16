@@ -1,5 +1,6 @@
 package kr.co.main.my.setting.delete
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.ButtonDefaults
@@ -24,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +38,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.main.R
 import kr.co.main.model.my.MyPageDeleteReason
 import kr.co.ui.ext.IconDefaults
-import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.ext.vectorColors
 import kr.co.ui.icon.DreamIcon
@@ -144,7 +146,10 @@ private fun MyPageSettingDeleteAccountScreen(
             ) {
                 MyPageDeleteReason.entries.forEach { reason ->
                     Row(
-                        modifier = Modifier.noRippleClickable { setSelected(reason.ordinal) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(CircleShape)
+                            .clickable { setSelected(reason.ordinal) },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         DreamCheckIcon(
@@ -153,7 +158,7 @@ private fun MyPageSettingDeleteAccountScreen(
                             leftIcon = DreamIcon.OutLineCircle,
                             rightIcon = DreamIcon.Checkcircle,
                             contentDescription = "check reason",
-                            onClick = {  },
+                            onClick = { setSelected(reason.ordinal) },
                             colors = IconDefaults.vectorColors(
                                 default = MaterialTheme.colors.gray6,
                             )
