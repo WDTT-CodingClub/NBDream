@@ -20,6 +20,27 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Access HOLIDAY_API_KEY
+        env:
+          HOLIDAY_API_KEY: $
+        run: echo HOLIDAY_API_KEY=\"$HOLIDAY_API_KEY\" > ./local.properties
+
+      - name: Access KAKAO_NATIVE_APP_KEY
+        env:
+          KAKAO_NATIVE_APP_KEY: $
+        run: echo KAKAO_NATIVE_APP_KEY=\"$KAKAO_NATIVE_APP_KEY\" > ./local.properties
+
+      - name: Access DATASTORE_NAME
+        env:
+          DATASTORE_NAME: $
+        run: echo DATASTORE_NAME=\"$DATASTORE_NAME\" > ./local.properties
+
+      - name: Access BASE_URL
+        env:
+          DATASTORE_NAME: $
+        run: echo BASE_URL=\"$BASE_URL\" > ./local.properties
+
       - name: Build with Gradle
         run: ./gradlew build
 
@@ -67,4 +88,4 @@ jobs:
             fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          if: always() 
+          if: always()
