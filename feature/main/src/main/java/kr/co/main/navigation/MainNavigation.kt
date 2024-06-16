@@ -12,6 +12,7 @@ import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
 import kr.co.main.my.setting.MyPageSettingRoute
+import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
 
 const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
@@ -142,6 +143,8 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = MY_PAGE_SETTING_DELETE_ACCOUNT_ROUTE
     ) {
-
+        MyPageSettingDeleteAccountRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 }
