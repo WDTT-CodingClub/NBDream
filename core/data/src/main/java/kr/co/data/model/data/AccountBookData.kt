@@ -8,8 +8,8 @@ data class AccountBookData(
     val month: Int,
     val day: Int,
     val dayName: String,
-    val revenue: Long?,
-    val expense: Long?,
+    val transactionType: String,
+    val amount: Long,
     val imageUrls: List<String>,
     val registerDateTime: String
 )

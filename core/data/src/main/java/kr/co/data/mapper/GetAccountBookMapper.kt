@@ -18,8 +18,8 @@ internal object GetAccountBookMapper
                 month = month,
                 day = day,
                 dayName = dayName,
-                revenue = revenue,
-                expense = expense
+                transactionType = GetAccountBookListMapper.toTransactionType(transactionType),
+                amount = amount
             )
         }
 }
