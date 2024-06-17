@@ -7,10 +7,10 @@ interface AuthRemoteDataSource {
     suspend fun getAuthToken(
         refreshToken: String
     )
+
     suspend fun login(
         type: AuthTypeData,
-        token: String,
-        remember: Boolean
+        token: String
     ): Auth
 
     suspend fun register(

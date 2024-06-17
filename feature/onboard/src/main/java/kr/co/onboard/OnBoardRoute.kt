@@ -1,4 +1,4 @@
-package kr.co.onboard.ui
+package kr.co.onboard
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Scaffold
@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.domain.model.AuthType
-import kr.co.onboard.ui.login.LoginBtn
+import kr.co.onboard.login.SocialLoginButtons
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 
@@ -38,7 +38,7 @@ private fun OnBoardScreen(
 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LoginBtn(
+            SocialLoginButtons(
                 onSocialLoginClick = onSocialLoginClick,
             )
         }

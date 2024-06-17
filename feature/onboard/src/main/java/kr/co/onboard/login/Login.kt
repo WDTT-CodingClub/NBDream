@@ -1,4 +1,4 @@
-package kr.co.onboard.ui.login
+package kr.co.onboard.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -31,7 +31,7 @@ internal fun Login() {
         modifier = Modifier.padding(16.dp)
     ) {
         Logo()
-        LoginBtn {}
+        SocialLoginButtons {}
     }
 }
 
@@ -55,7 +55,7 @@ internal fun Logo() {
 }
 
 @Composable
-internal fun LoginBtn(
+internal fun SocialLoginButtons(
     onSocialLoginClick: (AuthType) -> Unit,
 ) {
     Box(
