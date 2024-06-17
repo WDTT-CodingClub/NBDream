@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,9 +24,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.VerticalDivider
@@ -41,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
@@ -75,9 +71,6 @@ internal fun CommunityScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            item {
-                Spacer(Modifier.height(40.dp))  // 상태바 겹쳐서 바로 나오길래 여백
-            }
             item {
                 CenterAlignedTopAppBar(title = { Text("감자 게시판") })
                 // 나중에 알림버튼 추가
@@ -212,16 +205,16 @@ internal fun CommunityScreen(
     }
 }
 
-@Preview(heightDp = 1200)
-@Composable
-private fun CommunityScreenPreview() {
-    MaterialTheme {
-        Surface {
-            CommunityScreen(
-                onWritingClick = {},
-                onNotificationClick = {},
-                onBulletinClick = {},
-            )
-        }
-    }
-}
+//@Preview(heightDp = 1200)
+//@Composable
+//private fun CommunityScreenPreview() {
+//    MaterialTheme {
+//        Surface {
+//            CommunityScreen(
+//                onWritingClick = {},
+//                onNotificationClick = {},
+//                onBulletinClick = {},
+//            )
+//        }
+//    }
+//}

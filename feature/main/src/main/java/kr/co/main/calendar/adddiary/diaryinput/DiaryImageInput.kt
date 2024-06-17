@@ -26,17 +26,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kr.co.main.R
+import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Delete
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-
-private const val ADD_IMAGE_BUTTON_SIZE = 66
-private const val IMAGE_SIZE = 66
-private const val DELETE_IMAGE_BUTTON_OFFSET = 2
-private const val DELETE_IMAGE_BUTTON_SIZE = 16
 
 @Composable
 internal fun DiaryImageInput(
@@ -67,7 +63,7 @@ private fun AddImageButton(
 ) {
     Box(
         modifier = modifier
-            .size(ADD_IMAGE_BUTTON_SIZE.dp)
+            .size(CalendarDesignToken.ADD_IMAGE_BUTTON_SIZE.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(Color.LightGray)
             .clickable {
@@ -121,15 +117,17 @@ private fun ImageItem(
 ) {
     Box(
         modifier = modifier
-            .size((IMAGE_SIZE + DELETE_IMAGE_BUTTON_OFFSET).dp)
+            .size(
+                (CalendarDesignToken.IMAGE_SIZE + CalendarDesignToken.DELETE_IMAGE_BUTTON_OFFSET).dp
+            )
     ) {
         AsyncImage(
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(IMAGE_SIZE.dp)
+                .size(CalendarDesignToken.IMAGE_SIZE.dp)
                 .offset(
-                    x = (-DELETE_IMAGE_BUTTON_OFFSET).dp,
-                    y = (DELETE_IMAGE_BUTTON_OFFSET).dp
+                    x = (-CalendarDesignToken.DELETE_IMAGE_BUTTON_OFFSET).dp,
+                    y = (CalendarDesignToken.DELETE_IMAGE_BUTTON_OFFSET).dp
                 ),
             model = imageUrl,
             contentDescription = "",
@@ -155,7 +153,7 @@ private fun ImageItemDeleteButton(
     ) {
         Icon(
             modifier = Modifier
-                .size(DELETE_IMAGE_BUTTON_SIZE.dp)
+                .size(CalendarDesignToken.DELETE_IMAGE_BUTTON_SIZE.dp)
                 .padding(Paddings.xsmall)
                 .align(Alignment.Center),
             imageVector = DreamIcon.Delete, // TODO X 아이콘으로 변경

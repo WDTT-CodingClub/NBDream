@@ -1,7 +1,5 @@
-package kr.co.main.calendar.common
+package kr.co.main.calendar.common.content
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kr.co.main.calendar.model.DiaryModel
@@ -18,7 +16,6 @@ internal sealed class CalendarContent {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun CalendarContentWrapper(
     calendarContent: CalendarContent,

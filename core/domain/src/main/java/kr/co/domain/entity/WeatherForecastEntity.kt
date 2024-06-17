@@ -2,8 +2,8 @@ package kr.co.domain.entity
 
 data class WeatherForecastEntity(
     val probability: Int,
-    val precipitation: String,
-    val humidity: String,
+    val precipitation: Int,
+    val humidity: Int,
     val temperature: Float,
     val windSpeed: Int,
     val weather: List<Weather>,
@@ -14,4 +14,8 @@ data class WeatherForecastEntity(
         val maxTemp: Float,
         val day: String
     )
+
+    enum class WeatherType {
+        SUNNY, RAINY, CLOUDY,
+    }
 }
