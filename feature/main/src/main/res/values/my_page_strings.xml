@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Profile edit-->
+    <string name="feature_main_profile_edit">프로필 수정</string>
+    <string name="feature_main_profile_edit_complete">완료</string>
+    <string name="feature_main_profile_edit_image">프로필 이미지</string>
+    <string name="feature_main_profile_edit_nick_name">닉네임</string>
+    <string name="feature_main_profile_edit_my_adrress">내 농장 주소지</string>
+
+    <!-- MyPage Setting-->
+    <string name="feature_main_my_setting_notification">알림 설정</string>
+    <string name="feature_main_my_setting_privacy_policy">약관 및 개인정보 처리방침</string>
+    <string name="feature_main_my_setting_logout">로그아웃</string>
+    <string name="feature_main_my_setting_app_info">앱 정보</string>
+    <string name="feature_main_my_setting_unregister">회원 탈퇴</string>
+    <string name="feature_main_setting_app_version_info">앱 버전 정보</string>
+
+    <!-- MyPage Notification Setting-->
+    <string name="feature_main_my_setting_notification_kakao">카카오톡</string>
+    <string name="feature_main_my_setting_notification_message">문자</string>
+    <string name="feature_main_my_setting_notification_notification">앱 알림</string>
+    <string name="feature_main_my_setting_notification_like">좋아요</string>
+    <string name="feature_main_my_setting_notification_comment">댓글</string>
+    <string name="feature_main_my_setting_notification_schedule">일정 알림</string>
+    <string name="feature_main_my_setting_notification_pest">이번달 병해출 정보 알림</string>
+    <string name="feature_main_my_setting_notification_hazardous">위험 기상 정보 알림</string>
+
+</resources>

@@ -16,67 +16,60 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.util.InternalAPI
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kr.co.data.model.data.ServerImageResult
 import kr.co.data.source.remote.ServerImageRemoteDataSource
 import kr.co.nbdream.core.remote.BuildConfig
 import kr.co.remote.mapper.ServerImageRemoteMapper
-import kr.co.remote.model.response.GetServerImageResponse
+import kr.co.remote.model.response.PostServerImageResponse
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
-internal class ServerImageRemoteDataSourceImpl @Inject constructor(
-    private val client: HttpClient,
-) : ServerImageRemoteDataSource {
-
-    @OptIn(InternalAPI::class, ExperimentalSerializationApi::class)
-    override suspend fun upload(domain: String, image: File): ServerImageResult {
-        // TODO: client를 DI로 받은 걸 사용하게끔 해야 함. 근데 여러 HttpClient가 존재할텐데.
-        val client = HttpClient(Android) {
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        prettyPrint = true //출력시 이쁘게 포맷팅
-                        isLenient = true // 관대한 파싱
-                        ignoreUnknownKeys = true // 알수없는 키 무시
-                        encodeDefaults = true // 기본값 인코딩
-                        explicitNulls = false // 명시적인 null생략
-                    }
-                )
+@OptIn(ExperimentalSerializationApi::class)
+internal fun tempCreateHttpClient() = HttpClient(Android) {
+    install(ContentNegotiation) {
+        json(
+            Json {
+                prettyPrint = true //출력시 이쁘게 포맷팅
+                isLenient = true // 관대한 파싱
+                ignoreUnknownKeys = true // 알수없는 키 무시
+                encodeDefaults = true // 기본값 인코딩
+                explicitNulls = false // 명시적인 null생략
             }
+        )
+    }
 
-            install(Logging) {
-                level = if (BuildConfig.DEBUG) {
-                    LogLevel.ALL
-                } else {
-                    LogLevel.NONE
-                }
+    install(Logging) {
+        level = if (BuildConfig.DEBUG) {
+            LogLevel.ALL
+        } else {
+            LogLevel.NONE
+        }
 
-                logger = object : Logger {
-                    override fun log(message: String) {
-                        Timber.tag("NetworkModule: Logger").d(message)
-                    }
-                }
+        logger = object : Logger {
+            override fun log(message: String) {
+                Timber.tag("NetworkModule: Logger").d(message)
             }
+        }
+    }
 
-            install(HttpTimeout) {
-                requestTimeoutMillis = 10_000L
-                connectTimeoutMillis = 10_000L
-            }
+    install(HttpTimeout) {
+        requestTimeoutMillis = 10_000L
+        connectTimeoutMillis = 10_000L
+    }
 
-            install(DefaultRequest) {
-                url("http://34.47.73.18/")
-                contentType(ContentType.Application.Json)
+    install(DefaultRequest) {
+        url("http://34.47.73.18/")
+        contentType(ContentType.Application.Json)
 
 //                runBlocking { session.getAccessToken() }?.let {
 //                    headers {
 //                        append(HttpHeaders.Authorization, NetworkModule.HEADER_RESPONSE_BEARER + it)
 //                    }
 //                }
-            }
+    }
 
 //            install(Auth) {
 //                bearer {
@@ -125,10 +118,18 @@ internal class ServerImageRemoteDataSourceImpl @Inject constructor(
 //                    }
 //                }
 //            }
-        }
+}
+
+internal class ServerImageRemoteDataSourceImpl @Inject constructor(
+    private val client: HttpClient,
+) : ServerImageRemoteDataSource {
+
+    override suspend fun upload(domain: String, image: File): ServerImageResult {
+        // TODO: client를 DI로 받은 걸 사용하게끔 해야 함. 근데 여러 HttpClient가 존재할텐데.
+        val client = tempCreateHttpClient()
 
         return client.submitFormWithBinaryData(
-            url = "api/$domain/images",
+            url = "api/images/upload/$domain",
             formData = formData {
                 append("image", image.readBytes(), Headers.build {
                     append(HttpHeaders.ContentType, "image/png")
@@ -138,7 +139,7 @@ internal class ServerImageRemoteDataSourceImpl @Inject constructor(
             },
 
             )
-            .body<GetServerImageResponse>()
+            .body<PostServerImageResponse>()
             .let(ServerImageRemoteMapper::convert)
     }
 }

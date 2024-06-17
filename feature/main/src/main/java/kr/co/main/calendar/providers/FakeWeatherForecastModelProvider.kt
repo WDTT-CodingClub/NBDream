@@ -11,7 +11,7 @@ class FakeWeatherForecastModelProvider : PreviewParameterProvider<WeatherForecas
             sky = WeatherForecastModel.Sky.SUNNY,
             minTemp = "25°C",
             maxTemp = "28°C",
-            precipitation = "1mm 미만"
+            precipitation = 1
         )
     )
     override val count = values.count()

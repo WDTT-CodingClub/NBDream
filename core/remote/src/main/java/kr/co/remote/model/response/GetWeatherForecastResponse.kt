@@ -13,7 +13,7 @@ internal data class GetWeatherForecastResponse(
     data class ResultData(
         val probability: Int,
         val precipitation: Int,
-        val humidity: String,
+        val humidity: Int,
         val windSpeed: Int,
         val temp: Float,
         val items: List<Item>

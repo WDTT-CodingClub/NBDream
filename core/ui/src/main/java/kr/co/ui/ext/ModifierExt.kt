@@ -65,3 +65,8 @@ fun Modifier.scaffoldBackground(
     .fillMaxSize()
     .padding(scaffoldPadding)
     .padding(padding)
+
+inline fun Modifier.conditional(
+    condition: Boolean,
+    ifTrue: Modifier.() -> Modifier
+): Modifier = if (condition) then(ifTrue(Modifier)) else this

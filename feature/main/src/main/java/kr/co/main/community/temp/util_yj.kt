@@ -49,9 +49,16 @@ object UriUtil {
 
     // 파일 이름 생성
     private fun getFileName(context: Context, uri: Uri): String {
-        val name = uri.toString().split("/").last()
-        val ext = context.contentResolver.getType(uri)!!.split("/").last()
+        val name = uri.toString().getLastAfterSlash()
+        val ext = context.contentResolver.getType(uri)!!.getLastAfterSlash()
 
         return "$name.$ext"
     }
+
+    private fun String.getLastAfterSlash(): String {
+        val idx = this.indexOfLast { it == '/' }
+        return if (idx < 0) this
+        else this.substring(idx + 1)
+    }
+
 }

@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import kr.co.main.community.BulletinDetailScreen
-import kr.co.main.community.BulletinWritingScreen
+import kr.co.main.community.BulletinWritingRoute
 import kr.co.main.community.CommunityScreen
 
 
@@ -38,7 +38,7 @@ fun NavGraphBuilder.bulletinWritingScreen(
     onBackClick: () -> Unit,
 ) {
     composable(route = BULLETIN_WRITING_ROUTE) {
-        BulletinWritingScreen(
+        BulletinWritingRoute(
             onBackClick = onBackClick,
         )
     }
