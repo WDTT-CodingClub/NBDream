@@ -6,7 +6,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import kr.co.main.community.BulletinDetailScreen
 import kr.co.main.community.BulletinWritingRoute
-import kr.co.main.community.CommunityScreen
+import kr.co.main.community.CommunityRoute
 
 
 const val COMMUNITY_ROUTE = "community_route"
@@ -20,7 +20,7 @@ fun NavGraphBuilder.communityScreen(
     onBulletinClick: (String) -> Unit,
 ) {
     composable(route = COMMUNITY_ROUTE) {
-        CommunityScreen(
+        CommunityRoute(
             onWritingClick = onWritingClick,
             onNotificationClick = onNotificationClick,
             onBulletinClick = onBulletinClick,

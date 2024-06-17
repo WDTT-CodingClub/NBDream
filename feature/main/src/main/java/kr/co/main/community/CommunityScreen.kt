@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -24,35 +23,60 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kr.co.domain.entity.BulletinEntity
+import kr.co.domain.entity.CropEntity
+import java.text.DecimalFormat
+
+@Composable
+internal fun CommunityRoute(
+    onWritingClick: () -> Unit,
+    onNotificationClick: () -> Unit,
+    onBulletinClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: CommunityViewModel = hiltViewModel(),
+) {
+    val bulletinEntities by viewModel.bulletinEntities.collectAsStateWithLifecycle()
+    val searchInput by viewModel.searchInput.collectAsStateWithLifecycle()
+    CommunityScreen(
+        modifier = modifier,
+        onWritingClick = onWritingClick,
+        onNotificationClick = onNotificationClick,
+        onBulletinClick = onBulletinClick,
+        bulletinEntities = bulletinEntities,
+        searchInput = searchInput,
+        onSearchInputChanged = viewModel::onSearchInputChanged,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CommunityScreen(
-    viewModel: CommunityViewModel = hiltViewModel(),
-    onWritingClick: () -> Unit,
-    onNotificationClick: () -> Unit,
-    onBulletinClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onWritingClick: () -> Unit = {},
+    onNotificationClick: () -> Unit = {},
+    onBulletinClick: (String) -> Unit = {},
+    bulletinEntities: List<BulletinEntity> = emptyList(),
+    searchInput: String = "",
+    onSearchInputChanged: (String) -> Unit = {},
 ) {
-    var tempTextFieldValue by remember {
-        mutableStateOf(TextFieldValue())
-    }
-    val bulletinEntities = viewModel.bulletinEntities.collectAsState().value
+//    var tempTextFieldValue by remember {
+//        mutableStateOf(TextFieldValue())
+//    }
 
     Scaffold(
         floatingActionButton = {
@@ -98,14 +122,12 @@ internal fun CommunityScreen(
                         Text("자유 주제")
                         // TODO: 디바이더에도 여백이 붙는데...
                         VerticalDivider(
-                            modifier = Modifier
-                                .width(1.dp),
+                            thickness = 1.dp,
                             color = Color.Red,
                         )
                         Text("질문")
                         VerticalDivider(
-                            modifier = Modifier
-                                .width(1.dp),
+                            thickness = 1.dp,
                             color = Color.Red,
                         )
                         Text("병해충")
@@ -114,9 +136,9 @@ internal fun CommunityScreen(
             }
             item {
                 TextField(
-                    value = viewModel.searchInput.collectAsState().value,
+                    value = searchInput,
                     onValueChange = {
-                        if ("\n" !in it) viewModel.onSearchInputChanged(it)
+                        if ("\n" !in it) onSearchInputChanged(it)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("검색어를 입력하세요") },
@@ -205,16 +227,22 @@ internal fun CommunityScreen(
     }
 }
 
-//@Preview(heightDp = 1200)
-//@Composable
-//private fun CommunityScreenPreview() {
-//    MaterialTheme {
-//        Surface {
-//            CommunityScreen(
-//                onWritingClick = {},
-//                onNotificationClick = {},
-//                onBulletinClick = {},
-//            )
-//        }
-//    }
-//}
+@Preview(heightDp = 1200)
+@Composable
+private fun CommunityScreenPreview() {
+    MaterialTheme {
+        Surface {
+            CommunityScreen(
+                bulletinEntities = List(10) { i ->
+                    BulletinEntity(
+                        id = "bulletinId$i",  // 게시글 id가 필요할지 안할지? 필요하다면 어떤 식으로 만들지?
+                        userId = "userId$i",
+                        content = "게시글 내용 $i",
+                        crop = CropEntity(name = CropEntity.Name.PEPPER),
+                        createdTime = "2000.00.00 00:00:${DecimalFormat("00").format(i)}",
+                    )
+                },
+            )
+        }
+    }
+}
