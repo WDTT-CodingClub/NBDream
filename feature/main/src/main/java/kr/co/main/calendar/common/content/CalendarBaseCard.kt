@@ -1,15 +1,17 @@
-package kr.co.main.calendar.common
+package kr.co.main.calendar.common.content
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,7 +51,6 @@ internal fun CalendarBaseCard(
     ) {
         Box(modifier = Modifier.padding(Paddings.xlarge)) {
             //TODO 일정 제목 길어졌을 때 드롭다운 아이콘과 겹쳐지지 않도록 하기
-
             CardDropDownMenu(
                 onEdit = { /*TODO*/ },
                 onDelete = { /*TODO*/ },
@@ -71,27 +72,22 @@ private fun CardDropDownMenu(
 ) {
     var expandDropDown by remember { mutableStateOf(false) }
 
-    Row(modifier = modifier) {
+    Column(modifier = modifier) {
         Icon(
             modifier = Modifier.clickable { expandDropDown = true },
             imageVector = DreamIcon.Dropdown,
             contentDescription = ""
         )
-        // TODO 드롭다운 메뉴 expanded 되었을 때 드롭다운 아이템 보이는지 확인
-        // TODO 드롭다운 아이템 목록 아이콘 아래에 오도록 위치 조정
         DropdownMenu(
             expanded = expandDropDown,
-            //expanded = true,
             onDismissRequest = { expandDropDown = false },
         ) {
             CardDropDownMenuItem(
-                modifier = Modifier.zIndex(1f),
                 menuIcon = DreamIcon.Edit,
                 menuNameId = R.string.core_ui_dropdown_menu_edit,
                 onClick = onEdit
             )
             CardDropDownMenuItem(
-                modifier = Modifier.zIndex(1f),
                 menuIcon = DreamIcon.Delete,
                 menuNameId = R.string.core_ui_dropdown_menu_delete,
                 onClick = onDelete
@@ -107,23 +103,26 @@ private fun CardDropDownMenuItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.clickable { onClick() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.padding(end = Paddings.xlarge),
-            text = stringResource(id = menuNameId),
-            style = MaterialTheme.typo.bodyM
-        )
-        Icon(
-            imageVector = menuIcon,
-            contentDescription = "",
-        )
-    }
+    DropdownMenuItem(
+        modifier = modifier,
+        text = {
+            Text(
+                modifier = Modifier.padding(end = Paddings.xlarge),
+                text = stringResource(id = menuNameId),
+                style = MaterialTheme.typo.bodyM
+            )
+        },
+        trailingIcon = {
+            Icon(
+                imageVector = menuIcon,
+                contentDescription = "",
+            )
+        },
+        onClick = onClick
+    )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun CardDropDownMenuItemPreview() {
     CardDropDownMenuItem(
@@ -133,7 +132,6 @@ private fun CardDropDownMenuItemPreview() {
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 private fun ScheduleCardPreview(
@@ -142,7 +140,6 @@ private fun ScheduleCardPreview(
     CalendarBaseCard(calendarContent = CalendarContent.create(schedule))
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 private fun DiaryCardPreview(

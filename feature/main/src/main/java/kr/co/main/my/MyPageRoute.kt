@@ -40,19 +40,19 @@ import kr.co.ui.widget.DreamTopAppBar
 
 @Composable
 internal fun MyPageRoute(
+    navigateToProfileEdit: () -> Unit,
     viewModel: MyPageViewModel = hiltViewModel(),
-    navigateToNotification: () -> Unit,
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     MyPageScreen(
-        navigateToNotification = navigateToNotification
+        navigateToProfileEdit = navigateToProfileEdit,
     )
 }
 
 @Composable
 private fun MyPageScreen(
-    navigateToNotification: () -> Unit = {},
+    navigateToProfileEdit: () -> Unit = {},
 ) {
     Surface {
         LazyColumn(
@@ -65,7 +65,7 @@ private fun MyPageScreen(
                 DreamTopAppBar(
                     title = "마이페이지",
                 ) {
-                    IconButton(onClick = navigateToNotification) {
+                    IconButton(onClick = navigateToProfileEdit) {
                         Icon(
                             modifier = Modifier.size(32.dp),
                             imageVector = DreamIcon.OutlineEdit,

@@ -1,7 +1,5 @@
 package kr.co.main.calendar.calendar.maincalendar
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.LayoutScopeMarker
@@ -30,6 +28,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.iterator
 import kr.co.main.calendar.calendar.maincalendar.ScheduleItemScope.scheduleItem
+import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.model.ScheduleModel
 import kr.co.main.calendar.providers.FakeScheduleModelProvider
 import kr.co.ui.icon.DreamIcon
@@ -41,12 +40,9 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Period
 
-private const val SCHEDULE_ITEM_HEIGHT = 20
-
 private const val SLOT_EMPTY = 0
 private const val SLOT_FULL = 1
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun MainCalendarScheduleRow(
     weekStartDate: LocalDate,
@@ -85,21 +81,17 @@ internal fun MainCalendarScheduleRow(
             }
 
             val layoutHeight = getLayoutHeight(placeables)
-            val scheduleSlots = mutableMapOf(
-                DayOfWeek.SUNDAY.value to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.MONDAY.value to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.TUESDAY.value to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.WEDNESDAY.value to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.THURSDAY.value to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.FRIDAY.value to MutableList(layoutHeight) { SLOT_EMPTY },
-                DayOfWeek.SATURDAY.value to MutableList(layoutHeight) { SLOT_EMPTY }
-            )
+            val scheduleSlots = mutableMapOf<DayOfWeek, MutableList<Int>>().apply {
+                for (dayOfWeek in DayOfWeek.SUNDAY..DayOfWeek.SATURDAY) {
+                    put(dayOfWeek, MutableList(layoutHeight) { SLOT_EMPTY })
+                }
+            }
 
             layout(
                 width = constraints.maxWidth,
                 height = layoutHeight
             ) {
-                placeables.forEachIndexed { index, placeable ->
+                for (placeable in placeables) {
                     val scheduleParentData = placeable.parentData as ScheduleItemParentData
                     val startDate = scheduleParentData.startDate
                     val endDate = scheduleParentData.endDate
@@ -111,8 +103,8 @@ internal fun MainCalendarScheduleRow(
                         ),
                         y = getYPosition(
                             scheduleSlots = scheduleSlots,
-                            startValue = startDate.dayOfWeek.value,
-                            endValue = endDate.dayOfWeek.value,
+                            startDayOfWeek = startDate.dayOfWeek,
+                            endDayOfWeek = endDate.dayOfWeek,
                             placeableHeight = placeable.height
                         )
                     )
@@ -130,8 +122,8 @@ private fun ScheduleItemScope.MainCalendarScheduleItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(SCHEDULE_ITEM_HEIGHT.dp)
-            .clip(shape = RoundedCornerShape(5.dp))
+            .height(CalendarDesignToken.SCHEDULE_ITEM_HEIGHT.dp)
+            .clip(shape = RoundedCornerShape(CalendarDesignToken.SCHEDULE_ITEM_CORNER_RADIUS.dp))
             .background(
                 color = when (schedule.category) {
                     is ScheduleModel.Category.All -> Color.LightGray
@@ -169,7 +161,6 @@ private fun MainCalendarScheduleItemPreview(
 @LayoutScopeMarker
 @Immutable
 object ScheduleItemScope {
-    @RequiresApi(Build.VERSION_CODES.O)
     @Stable
     fun Modifier.scheduleItem(
         startDate: LocalDate,
@@ -186,23 +177,18 @@ private class ScheduleItemParentData(
     override fun Density.modifyParentData(parentData: Any?) = this@ScheduleItemParentData
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 private fun getLayoutHeight(placeables: List<Placeable>): Int {
-    if(placeables.isEmpty()) return 0
+    if (placeables.isEmpty()) return 0
 
-    var scheduleCount = mutableMapOf(
-        DayOfWeek.SUNDAY.value to 0,
-        DayOfWeek.MONDAY.value to 0,
-        DayOfWeek.TUESDAY.value to 0,
-        DayOfWeek.WEDNESDAY.value to 0,
-        DayOfWeek.THURSDAY.value to 0,
-        DayOfWeek.FRIDAY.value to 0,
-        DayOfWeek.SATURDAY.value to 0
-    )
+    var scheduleCount = mutableMapOf<DayOfWeek, Int>().apply {
+        for (dayOfWeek in DayOfWeek.SUNDAY..DayOfWeek.SATURDAY) {
+            put(dayOfWeek, 0)
+        }
+    }
     placeables.forEach {
         with(it.parentData as ScheduleItemParentData) {
             for (date in startDate..endDate) {
-                scheduleCount[date.dayOfWeek.value] = scheduleCount[date.dayOfWeek.value]!! + 1
+                scheduleCount[date.dayOfWeek] = scheduleCount[date.dayOfWeek]!! + 1
             }
         }
     }
@@ -210,27 +196,54 @@ private fun getLayoutHeight(placeables: List<Placeable>): Int {
 }
 
 private fun getYPosition(
-    scheduleSlots: Map<Int, MutableList<Int>>,
-    startValue: Int,
-    endValue: Int,
+    scheduleSlots: Map<DayOfWeek, MutableList<Int>>,
+    startDayOfWeek: DayOfWeek,
+    endDayOfWeek: DayOfWeek,
     placeableHeight: Int
 ): Int {
-    val maxSlot = scheduleSlots.values.first().size-1
-    var availableSlot = maxSlot
-    for(slot in 0 .. maxSlot) {
+    val maxSlot = scheduleSlots.values.first().size - 1
+
+    for (slot in 0..maxSlot) {
         var isAvailable = true
-        for (i in startValue..endValue) {
-            if(scheduleSlots[i]!![slot] != SLOT_EMPTY){
+        for (dayOfWeek in startDayOfWeek..endDayOfWeek) {
+            if (scheduleSlots[dayOfWeek]!![slot] != SLOT_EMPTY) {
                 isAvailable = false
                 break
             }
         }
-        if(isAvailable){
-            for (i in startValue..endValue)
-                scheduleSlots[i]!![slot] = SLOT_FULL
-            availableSlot = slot
-            break
+        if (isAvailable) {
+            for (dayOfWeek in startDayOfWeek..endDayOfWeek) {
+                scheduleSlots[dayOfWeek]!![slot] = SLOT_FULL
+            }
+            return slot * placeableHeight
         }
     }
-    return availableSlot * placeableHeight
+    return maxSlot * placeableHeight
+}
+
+private operator fun ClosedRange<DayOfWeek>.iterator(): Iterator<DayOfWeek> {
+    return object : Iterator<DayOfWeek> {
+        private var next = this@iterator.start
+        private val finalElement = this@iterator.endInclusive
+        private var hasNext = (next != DayOfWeek.SATURDAY)
+
+        override fun hasNext(): Boolean = hasNext
+        override fun next(): DayOfWeek {
+            val value = next
+            if (value == finalElement) {
+                hasNext = false
+            } else {
+                next = when (next) {
+                    DayOfWeek.SUNDAY -> DayOfWeek.MONDAY
+                    DayOfWeek.MONDAY -> DayOfWeek.TUESDAY
+                    DayOfWeek.TUESDAY -> DayOfWeek.WEDNESDAY
+                    DayOfWeek.WEDNESDAY -> DayOfWeek.THURSDAY
+                    DayOfWeek.THURSDAY -> DayOfWeek.FRIDAY
+                    DayOfWeek.FRIDAY -> DayOfWeek.SATURDAY
+                    DayOfWeek.SATURDAY -> throw IllegalArgumentException("no day of week after saturday")
+                }
+            }
+            return value
+        }
+    }
 }

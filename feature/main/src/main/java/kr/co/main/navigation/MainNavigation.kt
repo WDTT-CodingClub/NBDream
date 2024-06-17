@@ -10,11 +10,22 @@ import kr.co.main.accountbook.register.AccountBookRegister
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
+import kr.co.main.my.profile.MyPageProfileEditRoute
+import kr.co.main.my.setting.MyPageSettingRoute
+import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
 
 const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
 internal const val NOTIFICATION_ROUTE = "notificationRoute"
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
+
+internal const val MY_PAGE_EDIT_ROUTE = "myPageProfileEditRoute"
+internal const val MY_PAGE_SETTING_ROUTE = "myPageSettingRoute"
+internal const val MY_PAGE_SETTING_NOTIFICATION_ROUTE = "myPageSettingNotificationRoute"
+internal const val MY_PAGE_SETTING_PRIVACY_POLICY_ROUTE = "myPageSettingPrivacyPolicyRoute"
+internal const val MY_PAGE_SETTING_LOGOUT_ROUTE = "myPageSettingLogoutRoute"
+internal const val MY_PAGE_SETTING_APP_INFO_ROUTE = "myPageSettingAppInfoRoute"
+internal const val MY_PAGE_SETTING_DELETE_ACCOUNT_ROUTE = "myPageSettingDeleteAccountRoute"
 
 fun NavGraphBuilder.mainNavGraph(
     navController: NavController
@@ -25,7 +36,14 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.HOME.route
                 ) {
-                    HomeRoute()
+                    HomeRoute(
+                        navigateToChat = {
+                            navController.navigate(CHAT_ROUTE)
+                        },
+                        navigateToNotification = {
+                            navController.navigate(NOTIFICATION_ROUTE)
+                        }
+                    )
                 }
 
                 composable(
@@ -50,8 +68,8 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.MY_PAGE.route
                 ) {
                     MyPageRoute(
-                        navigateToNotification = {
-                            navController.navigate(NOTIFICATION_ROUTE)
+                        navigateToProfileEdit = {
+                            navController.navigate(MY_PAGE_EDIT_ROUTE)
                         }
                     )
                 }
@@ -77,5 +95,56 @@ fun NavGraphBuilder.mainNavGraph(
         route = ACCOUNT_BOOK_ROUTE
     ) {
         AccountBookRegister()
+    }
+
+    composable(
+        route = MY_PAGE_EDIT_ROUTE
+    ) {
+        MyPageProfileEditRoute(
+            popBackStack = navController::popBackStack
+        )
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_ROUTE
+    ) {
+        MyPageSettingRoute(
+            popBackStack = navController::popBackStack,
+            navigateTo = { route ->
+                navController.navigate(route)
+            }
+        )
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_NOTIFICATION_ROUTE
+    ) {
+
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_PRIVACY_POLICY_ROUTE
+    ) {
+
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_LOGOUT_ROUTE
+    ) {
+
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_APP_INFO_ROUTE
+    ) {
+
+    }
+
+    composable(
+        route = MY_PAGE_SETTING_DELETE_ACCOUNT_ROUTE
+    ) {
+        MyPageSettingDeleteAccountRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 }

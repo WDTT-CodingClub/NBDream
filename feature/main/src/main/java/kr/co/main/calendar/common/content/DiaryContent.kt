@@ -1,7 +1,5 @@
-package kr.co.main.calendar.common
+package kr.co.main.calendar.common.content
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,6 +23,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kr.co.common.util.toTitleDateString
 import kr.co.domain.entity.HolidayEntity
+import kr.co.main.R
+import kr.co.main.calendar.common.CalendarDesignToken
+import kr.co.main.calendar.common.CalendarWeather
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.ui.icon.DreamIcon
@@ -34,9 +36,7 @@ import kr.co.ui.theme.typo
 import java.time.LocalDate
 
 private const val HORIZONTAL_DIVIDER_HEIGHT = 0.5
-private const val IMAGE_SCALE = 120
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun DiaryContent(
     diary: DiaryModel,
@@ -53,11 +53,12 @@ internal fun DiaryContent(
             weatherForecast = diary.weatherForecast
         )
         HorizontalDivider(
+            modifier = Modifier.padding(vertical = Paddings.medium),
             color = Color.LightGray,
-            thickness = HORIZONTAL_DIVIDER_HEIGHT.dp,
-            modifier = Modifier.padding(vertical = Paddings.medium)
+            thickness = HORIZONTAL_DIVIDER_HEIGHT.dp
         )
         DiaryBody(
+            modifier = Modifier.fillMaxWidth(),
             workLaborer = diary.workLaborer,
             workHours = diary.workHours,
             workArea = diary.workArea,
@@ -72,7 +73,6 @@ internal fun DiaryContent(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DiaryTitle(
     date: LocalDate,
@@ -86,30 +86,34 @@ private fun DiaryTitle(
             style = MaterialTheme.typo.header2M,
             color = MaterialTheme.colors.text1
         )
-        // TODO 휴일 중요도 순으로 정렬
-        holidays.forEach {
-            Text(
-                modifier = Modifier.padding(end = Paddings.small),
-                text = it.name,
-                style = MaterialTheme.typo.labelM,
-                color = if (it.isHoliday) Color.Red else MaterialTheme.colors.text2
-            )
-        }
+        holidays
+            .sortedBy { it.type.priority }
+            .forEach {
+                Text(
+                    modifier = Modifier.padding(end = Paddings.small),
+                    text = it.name,
+                    style = MaterialTheme.typo.labelM,
+                    color = if (it.isHoliday) Color.Red else MaterialTheme.colors.text2
+                )
+            }
     }
 }
 
 @Composable
 private fun DiaryBody(
-    workLaborer: Int,
-    workHours: Int,
-    workArea: Int,
     workDescriptions: List<DiaryModel.WorkDescriptionModel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    workLaborer: Int = 0,
+    workHours: Int = 0,
+    workArea: Int = 0
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
         Text(
             modifier = Modifier.align(Alignment.End),
-            text = "${workLaborer}명/${workHours}시간/${workArea}평",
+            text = stringResource(
+                id = R.string.feature_main_calendar_diary_overview,
+                workLaborer, workHours, workArea
+            ),
             style = MaterialTheme.typo.labelM,
             color = MaterialTheme.colors.text1
         )
@@ -157,16 +161,29 @@ private fun DiaryImages(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        // TODO 이미지 크기 확인, 이미지 모서리 둥글게
-        images.forEach {
-            AsyncImage(
-                modifier = Modifier.size(IMAGE_SCALE.dp),
-                model = it,
-                contentDescription = "",
-                clipToBounds = true
+        // TODO 이미지 크기 조정
+        for(imageUrl in images){
+            DiaryImage(
+                modifier = Modifier
+                    .size(CalendarDesignToken.DIARY_IMAGE_SIZE.dp)
+                    .clip(RoundedCornerShape(CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp)),
+                imageUrl =imageUrl
             )
         }
     }
+}
+
+@Composable
+private fun DiaryImage(
+    imageUrl: String,
+    modifier: Modifier = Modifier
+) {
+    AsyncImage(
+        modifier = modifier,
+        model = imageUrl,
+        contentDescription = "",
+        clipToBounds = true
+    )
 }
 
 @Composable
@@ -174,8 +191,8 @@ private fun DiaryMemo(
     memo: String,
     modifier: Modifier = Modifier
 ) {
-    //TODO 메모 2줄 이상인 경우, 더보기로 접었다 폈다 할 수 있도록
-    if (!memo.isNullOrBlank()) {
+    //TODO 메모 2줄 이상인 경우, 더보기  접었다 폈다 할 수 있도록
+    if (memo.isNotBlank()) {
         Surface(
             modifier = modifier.padding(top = Paddings.medium),
             shape = RoundedCornerShape(Paddings.xlarge),
@@ -191,8 +208,7 @@ private fun DiaryMemo(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun DiaryContentPreview(
     @PreviewParameter(FakeDiaryModelProvider::class) diary: DiaryModel

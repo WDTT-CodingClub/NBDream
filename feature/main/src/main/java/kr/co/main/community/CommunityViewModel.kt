@@ -1,7 +1,5 @@
 package kr.co.main.community
 
-import android.content.Context
-import android.icu.text.DecimalFormat
 import android.net.Uri
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -12,29 +10,40 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.CropEntity
-import kr.co.domain.entity.ServerImageEntity
+import kr.co.domain.repository.CommunityRepository
 import kr.co.domain.repository.ServerImageRepository
-import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
+import java.io.File
+import java.text.DecimalFormat
 import javax.inject.Inject
 
 @HiltViewModel
 internal class CommunityViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val serverImageRepository: ServerImageRepository,
+    private val communityRepository: CommunityRepository,
 ) : BaseViewModel<CommunityViewModel.State>(savedStateHandle) {
-    private val _currentBoard = MutableStateFlow("")
+
+    // TODO: currentBoard 초기값? 혹은 들어올 때 받아서.
+    private val _currentBoard = MutableStateFlow(CropEntity.Name.PEPPER)
     val currentBoard = _currentBoard.asStateFlow()
 
-    private val _currentCategory = MutableStateFlow("")
+    // TODO: currentCategory 초기값? 혹은 들어올 때 받아서.
+    private val _currentCategory = MutableStateFlow(BulletinEntity.BulletinCategory.Free)
     val currentCategory = _currentCategory.asStateFlow()
 
     private val _searchInput = MutableStateFlow("")
     val searchInput = _searchInput.asStateFlow()
     fun onSearchInputChanged(input: String) {
         _searchInput.value = input
+    }
+
+    private val _isShowWaitingDialog = MutableStateFlow(false)
+    val isShowWaitingDialog = _isShowWaitingDialog.asStateFlow()
+    fun setIsShowWaitingDialog(boolean: Boolean) {
+        _isShowWaitingDialog.value = boolean
     }
 
     private val _bulletinWritingInput = MutableStateFlow("")
@@ -51,7 +60,7 @@ internal class CommunityViewModel @Inject constructor(
 
     private val _writingImages = MutableStateFlow(listOf<WritingSelectedImageModel>())
     val writingImages = _writingImages.asStateFlow()
-    fun addImages(context: Context, images: List<Uri>) {
+    fun onAddImagesClick(images: List<Uri>, uriToFile: (Uri) -> File) {
         _writingImages.value =
             writingImages.value + images.map { WritingSelectedImageModel(uri = it) }
 
@@ -61,7 +70,7 @@ internal class CommunityViewModel @Inject constructor(
             viewModelScope.launch {
                 Timber.d("uploadImage 코루틴 시작")
                 try {
-                    val url = uploadImage(context, image)
+                    val url = uploadImage(uriToFile(image))
                     Timber.d("uploadImage 코루틴 끝, url: $url")
                 } catch (e: Throwable) {
                     Timber.e(e, "uploadImage 코루틴 에러")
@@ -77,18 +86,31 @@ internal class CommunityViewModel @Inject constructor(
         Timber.d("addImages 끝")
     }
 
-    fun removeImage(image: Uri) {
+    fun onRemoveImageClick(image: Uri) {
         val index = writingImages.value.indexOfFirst { it.uri == image }
         if (index < 0) return
         _writingImages.value = writingImages.value.toMutableList().apply { removeAt(index) }
     }
 
-    private suspend fun uploadImage(
-        context: Context,
-        uri: Uri
-    ): ServerImageEntity? {
-        val file = UriUtil.toPngFile(context, uri)
-        return serverImageRepository.upload("bulletin", file)
+    private suspend fun uploadImage(file: File) = serverImageRepository.upload("bulletin", file)
+
+    fun onFinishWritingClick() {
+        Timber.d("onFinishWritingClick 시작")
+        viewModelScope.launch {
+            try {
+                val uploadedBulletinId = communityRepository.postBulletin(
+                    content = bulletinWritingInput.value,
+                    dreamCrop = currentBoard.value.name,
+                    bulletinCategory = currentCategory.value.name,
+//                    imageUrls = writingImages.value.map { it.url.toString() },
+                    imageUrls = emptyList(),  // temp
+                )
+                Timber.d("onFinishWritingClick 코루틴 끝, id: $uploadedBulletinId")
+            } catch (e: Throwable) {
+                Timber.e(e, "onFinishWritingClick 코루틴 에러")
+            }
+        }
+        Timber.d("onFinishWritingClick 끝")
     }
 
     private val _bulletinEntities = MutableStateFlow(listOf<BulletinEntity>())

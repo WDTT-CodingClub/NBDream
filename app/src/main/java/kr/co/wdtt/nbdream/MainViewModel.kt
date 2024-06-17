@@ -18,7 +18,7 @@ internal class MainViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchAuthUseCase: FetchAuthUseCase,
 ): BaseViewModel<MainViewModel.State>(savedStateHandle) {
-    private val _isAuthorized: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _isAuthorized: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     val isAuthorized = _isAuthorized.asStateFlow()
     init {
         viewModelScopeEH.launch {

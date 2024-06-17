@@ -3,7 +3,7 @@ package kr.co.data.model.data
 data class WeatherForecastData(
     val precipitation: Int,
     val precipitationProbability: Int,
-    val humidity: String,
+    val humidity: Int,
     val windSpeed: Int,
     val temp: Float,
     val items: List<Item>

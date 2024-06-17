@@ -16,15 +16,13 @@ import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.iterator
+import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Edit
 import java.time.LocalDate
 import kotlin.math.max
 
-private val DIARY_ITEM_IMAGE_SIZE = 24
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun MainCalendarDiaryRow(
     weekStartDate: LocalDate,
@@ -34,7 +32,7 @@ internal fun MainCalendarDiaryRow(
 ) {
     val content = @Composable {
         for (date in weekStartDate..weekEndDate) {
-            diaries.find { it.registerDate == date }?.let{
+            diaries.find { it.registerDate == date }?.let {
                 DiaryItemScope.MainCalendarDiaryItem(
                     diary = it,
                     onDiaryClick = { _ -> } //TODO 새싹 아이콘 클릭 시, 영농일지 다이얼로그 띄우기
@@ -60,7 +58,7 @@ internal fun MainCalendarDiaryRow(
                 width = constraints.maxWidth,
                 height = layoutHeight
             ) {
-                placeables.forEachIndexed { index, placeable ->
+                for (placeable in placeables) {
                     placeable.place(
                         x = getXPosition(
                             dayOfWeek = (placeable.parentData as DiaryItemParentData).date.dayOfWeek,
@@ -83,8 +81,8 @@ private fun DiaryItemScope.MainCalendarDiaryItem(
     Icon(
         modifier = modifier
             .fillMaxWidth()
-            .diaryItem(diary.registerDate)
-            .size(DIARY_ITEM_IMAGE_SIZE.dp)
+            .diaryDate(diary.registerDate)
+            .size(CalendarDesignToken.DIARY_ITEM_ICON_SIZE.dp)
             .clickable {
                 onDiaryClick(diary.id)
             },
@@ -97,7 +95,7 @@ private fun DiaryItemScope.MainCalendarDiaryItem(
 @Immutable
 object DiaryItemScope {
     @Stable
-    fun Modifier.diaryItem(date: LocalDate) =
+    fun Modifier.diaryDate(date: LocalDate) =
         then(
             DiaryItemParentData(date)
         )
