@@ -290,61 +290,6 @@ class KakaoMapReadyCallbackImpl(val onMapReady: (KakaoMap) -> Unit) : KakaoMapRe
     }
 }
 
-//주소 찾기 버튼을 눌렀을 때 나오는 WebView
-@Composable
-fun LocationSearchWebViewScreen(
-    modifier: Modifier,
-    addressSelectionListener: AddressSelectionListener
-) {
-    Scaffold(
-        topBar = {
-
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = modifier.padding(paddingValues)
-        ){
-            AndroidView(
-                factory = { context ->
-                    WebView(context).apply {
-                        settings.javaScriptEnabled = true
-                        settings.domStorageEnabled = true
-                        webViewClient = object : WebViewClient() {
-                            override fun onPageFinished(view: WebView?, url: String?) {
-                                loadUrl("javascript:sample2_execDaumPostcode();")
-                            }
-                        }
-                        webChromeClient = WebChromeClient()
-                        addJavascriptInterface(WebAppInterface(addressSelectionListener), "Android")
-                        loadUrl("https://seulseul-35d52.web.app")
-                    }
-                },
-                modifier = modifier
-                    .fillMaxSize()
-            )
-        }
-    }
-}
-
-interface AddressSelectionListener {
-    fun onAddressSelected(fullRoadAddr: String, jibunAddr: String)
-}
-class WebAppInterface(private val listener: AddressSelectionListener) {
-    private val handler = Handler(Looper.getMainLooper())
-
-    @JavascriptInterface
-    fun processDATA(fullRoadAddr: String, jibunAddr: String) {
-        handler.post {
-            try {
-                Log.d("WebAppInterface", "fullRoadAddr: $fullRoadAddr, jibunAddr: $jibunAddr")
-                listener.onAddressSelected(fullRoadAddr, jibunAddr)
-            } catch (e: Exception) {
-                Log.e("WebAppInterface", "Error processing data", e)
-            }
-        }
-    }
-}
-
 @Composable
 private fun CustomTextField(
     value: String,
