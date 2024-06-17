@@ -13,15 +13,15 @@ import javax.inject.Inject
 internal class SessionLocalDataSourceImpl @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : SessionLocalDataSource {
-    override suspend fun saveUserId(userId: String) {
+    override suspend fun saveUserName(userName: String) {
         dataStore.edit { pref ->
-            pref[USER_ID] = userId
+            pref[USER_NAME] = userName
         }
     }
 
-    override fun fetchUserId(): Flow<String?> =
+    override fun fetchUserName(): Flow<String?> =
         dataStore.data.map { pref ->
-            pref[USER_ID]
+            pref[USER_NAME]
     }
 
     override suspend fun updateAccessToken(accessToken: String) {
@@ -53,7 +53,7 @@ internal class SessionLocalDataSourceImpl @Inject constructor(
     }
 
     companion object {
-        private val USER_ID = stringPreferencesKey("user_id")
+        private val USER_NAME = stringPreferencesKey("user_id")
         private val ACCESS_TOKEN = stringPreferencesKey("access_token")
         private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
     }

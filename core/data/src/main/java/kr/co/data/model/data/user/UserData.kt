@@ -1,11 +1,10 @@
 package kr.co.data.model.data.user
 
 data class UserData(
-    val id: String,
     val name: String,
-    val profileImage: String,
-    val address: String,
-    val latitude: Double,
-    val longitude: Double,
+    val profileImage: String?,
+    val address: String?,
+    val latitude: Double?,
+    val longitude: Double?,
     val crops: List<String>
 )
