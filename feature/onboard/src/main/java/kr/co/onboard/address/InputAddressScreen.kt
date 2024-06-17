@@ -59,6 +59,7 @@ import kr.co.onboard.R
 import kr.co.onboard.crop.StepText
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
@@ -75,7 +76,7 @@ internal fun InputAddressScreen(
     val state by viewModel.state.collectAsState()
 
     Scaffold(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier.padding(Paddings.xlarge),
         topBar = {
             DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title))
         }
@@ -266,7 +267,7 @@ fun KakaoMapScreen(
         )
     } else {
         // 초기화가 완료되지 않았을 때 보여줄 로딩 UI 또는 메시지
-        Text("Loading map...", modifier = modifier.padding(16.dp))
+        Text("Loading map...", modifier = modifier.padding(Paddings.xlarge))
     }
 }
 
