@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,9 +30,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import kr.co.domain.entity.CropEntity
 import kr.co.nbdream.core.ui.R
 import kr.co.onboard.address.DescriptionText
 import kr.co.onboard.address.DynamicStepProgressBars
+import kr.co.onboard.crop.model.CropItem
+import kr.co.onboard.crop.model.toKoreanName
 import kr.co.ui.theme.ColorSet
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.typo
@@ -38,20 +45,11 @@ import kr.co.ui.widget.NextButton
 
 @Composable
 fun SelectCropScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: SelectCropViewModel = hiltViewModel()
 ) {
-    val crops = listOf(
-        CropItem("고추", R.drawable.img_logo),
-        CropItem("벼", R.drawable.img_logo),
-        CropItem("감자", R.drawable.img_logo),
-        CropItem("고구마", R.drawable.img_logo),
-        CropItem("사과", R.drawable.img_logo),
-        CropItem("딸기", R.drawable.img_logo),
-        CropItem("마늘", R.drawable.img_logo),
-        CropItem("상추", R.drawable.img_logo),
-        CropItem("배추", R.drawable.img_logo),
-        CropItem("토마토", R.drawable.img_logo)
-    )
+    val crops by viewModel.crops.collectAsState()
+
     Scaffold(
         modifier = modifier.padding(16.dp),
         topBar = {
@@ -61,12 +59,16 @@ fun SelectCropScreen(
         Column(
             modifier = modifier
                 .padding(paddingValues)
+                .fillMaxHeight()
         ) {
             DynamicStepProgressBars(modifier, colors = listOf(ColorSet.Dream.lightColors.green2, ColorSet.Dream.lightColors.green2))
             StepText(stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second), modifier = Modifier)
             DescriptionText(stringResource(id = kr.co.onboard.R.string.feature_onboard_my_farm_crops_description))
             CropsList(crops)
-            NextButton(skipId = kr.co.onboard.R.string.feature_onboard_my_farm_skip_select, nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next)
+            NextButton(
+                skipId = kr.co.onboard.R.string.feature_onboard_my_farm_skip_select,
+                nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next
+            )
         }
     }
 }
@@ -114,13 +116,13 @@ fun CropsList(
                     modifier = modifier.padding(16.dp)
                 ) {
                     Image(
-                        painter = painterResource(id = cropList[index].image),
-                        contentDescription = cropList[index].name,
+                        painter = painterResource(id = cropList[index].imageRes),
+                        contentDescription = cropList[index].name.name,
                         modifier = modifier.size(64.dp)
                     )
                     Spacer(modifier = modifier.height(8.dp))
                     Text(
-                        text = cropList[index].name,
+                        text = cropList[index].name.toKoreanName(),
                         fontSize = 16.sp,
                         color = ColorSet.Dream.lightColors.text2,
                         textAlign = TextAlign.Center,
@@ -132,26 +134,20 @@ fun CropsList(
     }
 }
 
-data class CropItem(
-    val name: String,
-    val image: Int
-)
-
-
 @Composable
 @Preview(showSystemUi = true)
 private fun LazyVerticalGridDemoPreview() {
     val crops = listOf(
-        CropItem("고추", R.drawable.img_logo),
-        CropItem("벼", R.drawable.img_logo),
-        CropItem("감자", R.drawable.img_logo),
-        CropItem("고구마", R.drawable.img_logo),
-        CropItem("사과", R.drawable.img_logo),
-        CropItem("딸기", R.drawable.img_logo),
-        CropItem("마늘", R.drawable.img_logo),
-        CropItem("상추", R.drawable.img_logo),
-        CropItem("배추", R.drawable.img_logo),
-        CropItem("토마토", R.drawable.img_logo)
+        CropItem(CropEntity.Name.PEPPER, R.drawable.img_logo),
+        CropItem(CropEntity.Name.RICE, R.drawable.img_logo),
+        CropItem(CropEntity.Name.POTATO, R.drawable.img_logo),
+        CropItem(CropEntity.Name.SWEET_POTATO, R.drawable.img_logo),
+        CropItem(CropEntity.Name.APPLE, R.drawable.img_logo),
+        CropItem(CropEntity.Name.STRAWBERRY, R.drawable.img_logo),
+        CropItem(CropEntity.Name.GARLIC, R.drawable.img_logo),
+        CropItem(CropEntity.Name.LETTUCE, R.drawable.img_logo),
+        CropItem(CropEntity.Name.NAPPA_CABBAGE, R.drawable.img_logo),
+        CropItem(CropEntity.Name.TOMATO, R.drawable.img_logo)
     )
     NBDreamTheme {
         CropsList(crops, modifier = Modifier)
