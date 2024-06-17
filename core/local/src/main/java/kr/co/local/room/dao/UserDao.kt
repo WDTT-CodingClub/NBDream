@@ -9,7 +9,7 @@ import kr.co.local.model.UserEntity
 
 @Dao
 internal interface UserDao {
-    @Query("SELECT * FROM user")
+    @Query("SELECT * FROM user WHERE id = :id")
     fun fetchUser(id: String): Flow<UserEntity?>
 
     @Insert(onConflict = REPLACE)
