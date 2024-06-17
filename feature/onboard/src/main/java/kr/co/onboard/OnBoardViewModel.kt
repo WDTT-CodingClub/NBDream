@@ -1,4 +1,4 @@
-package kr.co.onboard.ui
+package kr.co.onboard
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle

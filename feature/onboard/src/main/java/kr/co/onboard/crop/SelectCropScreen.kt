@@ -1,4 +1,4 @@
-package kr.co.onboard.ui.login
+package kr.co.onboard.crop
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.co.nbdream.core.ui.R
+import kr.co.onboard.address.DescriptionText
+import kr.co.onboard.address.DynamicStepProgressBars
 import kr.co.ui.theme.ColorSet
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.typo
