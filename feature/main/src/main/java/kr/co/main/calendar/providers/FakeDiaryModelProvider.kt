@@ -35,7 +35,7 @@ internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {
                 sky = WeatherForecastModel.Sky.SUNNY,
                 minTemp = "25°C",
                 maxTemp = "28°C",
-                precipitation = "1mm 미만"
+                precipitation = 1
             ),
             workLaborer = 4,
             workHours = 6,
