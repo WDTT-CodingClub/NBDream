@@ -1,4 +1,4 @@
-package kr.co.main.calendar.calendar
+package kr.co.main.calendar.ui
 
 import android.os.Build
 import android.os.Parcelable
@@ -26,7 +26,7 @@ interface CalendarScreenInput {
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
-) : BaseViewModel<CalendarViewModel.State>(savedStateHandle), CalendarScreenInput{
+) : BaseViewModel<CalendarViewModel.State>(savedStateHandle), CalendarScreenInput {
     private val TAG = this@CalendarViewModel::class.java.simpleName
 
     val input = this@CalendarViewModel

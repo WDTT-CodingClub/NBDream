@@ -1,4 +1,4 @@
-package kr.co.main.calendar.adddiary.diaryinput
+package kr.co.main.calendar.ui.diarytab.adddiary.diaryinput
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

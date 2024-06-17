@@ -1,4 +1,4 @@
-package kr.co.main.calendar.calendar.maincalendar
+package kr.co.main.calendar.ui.common.maincalendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi

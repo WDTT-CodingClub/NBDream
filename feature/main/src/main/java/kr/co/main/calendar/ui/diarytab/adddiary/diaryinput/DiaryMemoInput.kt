@@ -1,4 +1,4 @@
-package kr.co.main.calendar.adddiary.diaryinput
+package kr.co.main.calendar.ui.diarytab.adddiary.diaryinput
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import kr.co.main.R
-import kr.co.main.calendar.common.CalendarContainerTextField
+import kr.co.main.calendar.ui.common.CalendarContainerTextField
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 

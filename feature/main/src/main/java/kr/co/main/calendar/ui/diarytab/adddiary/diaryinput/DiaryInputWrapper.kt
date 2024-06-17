@@ -1,4 +1,4 @@
-package kr.co.main.calendar.adddiary.diaryinput
+package kr.co.main.calendar.ui.diarytab.adddiary.diaryinput
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
@@ -30,26 +30,26 @@ internal sealed class DiaryInputContent(
         val onWorkLaborerInput: (Int) -> Unit,
         val onWorkHourInput: (Int) -> Unit,
         val onWorkAreaInput: (Int) -> Unit,
-    ):DiaryInputContent()
+    ): DiaryInputContent()
 
     data class WorkInputContent(
         @StringRes override val headerId:Int,
         val workDescriptions: List<DiaryModel.WorkDescriptionModel>,
         val onAddWorkDescription: (DiaryModel.WorkDescriptionModel.TypeId, String) -> Unit,
         val onDeleteDescription: (String) -> Unit
-    ):DiaryInputContent()
+    ): DiaryInputContent()
     data class ImageInputContent(
         @StringRes override val headerId:Int,
         val images: List<String>,
         val onAddImage: (String) -> Unit,
         val onDeleteImage: (String) -> Unit,
-    ):DiaryInputContent()
+    ): DiaryInputContent()
     data class MemoInputContent(
         @StringRes override val headerId:Int,
         val memo: String,
         val onMemoInput: (String) -> Unit,
         val modifier: Modifier = Modifier
-    ):DiaryInputContent()
+    ): DiaryInputContent()
 }
 
 @Composable

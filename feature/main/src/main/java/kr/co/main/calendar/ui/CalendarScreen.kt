@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,12 +35,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
-import kr.co.main.calendar.calendar.CalendarViewModel
-import kr.co.main.calendar.calendar.maincalendar.MainCalendar
-import kr.co.main.calendar.common.CalendarBaseFab
-import kr.co.main.calendar.common.CalendarContent
-import kr.co.main.calendar.common.CalendarContentWrapper
-import kr.co.main.calendar.common.CalendarHorizontalDivider
+import kr.co.main.calendar.ui.CalendarViewModel
+import kr.co.main.calendar.ui.common.maincalendar.MainCalendar
+import kr.co.main.calendar.ui.common.CalendarBaseFab
+import kr.co.main.calendar.ui.common.CalendarContent
+import kr.co.main.calendar.ui.common.CalendarContentWrapper
+import kr.co.main.calendar.ui.common.CalendarHorizontalDivider
 import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeDiaryModelProvider

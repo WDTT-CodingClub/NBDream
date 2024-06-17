@@ -1,4 +1,4 @@
-package kr.co.main.calendar.adddiary.diaryinput
+package kr.co.main.calendar.ui.diarytab.adddiary.diaryinput
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Surface
@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import kr.co.main.calendar.common.CalendarDatePicker
-import kr.co.main.calendar.common.CalendarWeather
+import kr.co.main.calendar.ui.common.CalendarDatePicker
+import kr.co.main.calendar.ui.common.CalendarWeather
 import kr.co.main.calendar.model.WeatherForecastModel
 import kr.co.main.calendar.providers.FakeWeatherForecastModelProvider
 import java.time.LocalDate

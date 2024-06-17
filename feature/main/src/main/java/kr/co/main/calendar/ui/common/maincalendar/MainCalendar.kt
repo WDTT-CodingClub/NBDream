@@ -1,4 +1,4 @@
-package kr.co.main.calendar.calendar.maincalendar
+package kr.co.main.calendar.ui.common.maincalendar
 
 import android.os.Build
 import androidx.annotation.ColorInt
@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Constraints
 import kr.co.domain.entity.HolidayEntity
 import kr.co.main.R
-import kr.co.main.calendar.common.CalendarCategoryIndicator
+import kr.co.main.calendar.ui.common.CalendarCategoryIndicator
 import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.model.ScheduleModel

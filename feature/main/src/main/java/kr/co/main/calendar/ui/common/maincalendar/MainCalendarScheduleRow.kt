@@ -1,4 +1,4 @@
-package kr.co.main.calendar.calendar.maincalendar
+package kr.co.main.calendar.ui.common.maincalendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.iterator
-import kr.co.main.calendar.calendar.maincalendar.ScheduleItemScope.scheduleItem
+import kr.co.main.calendar.ui.common.maincalendar.ScheduleItemScope.scheduleItem
 import kr.co.main.calendar.model.ScheduleModel
 import kr.co.main.calendar.providers.FakeScheduleModelProvider
 import kr.co.ui.icon.DreamIcon

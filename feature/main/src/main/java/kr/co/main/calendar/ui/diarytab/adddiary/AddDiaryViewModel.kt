@@ -1,4 +1,4 @@
-package kr.co.main.calendar.adddiary
+package kr.co.main.calendar.ui.diarytab.adddiary
 
 import android.os.Build
 import android.os.Parcelable

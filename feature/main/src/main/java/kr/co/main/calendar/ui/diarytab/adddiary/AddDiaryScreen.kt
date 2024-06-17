@@ -1,4 +1,4 @@
-package kr.co.main.calendar.adddiary
+package kr.co.main.calendar.ui.diarytab.adddiary
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -13,10 +13,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
-import kr.co.main.calendar.adddiary.diaryinput.DiaryInputContent
-import kr.co.main.calendar.adddiary.diaryinput.DiaryInputWrapper
-import kr.co.main.calendar.common.CalendarBaseTopBar
-import kr.co.main.calendar.common.CalendarHorizontalDivider
+import kr.co.main.calendar.ui.diarytab.adddiary.diaryinput.DiaryInputContent
+import kr.co.main.calendar.ui.diarytab.adddiary.diaryinput.DiaryInputWrapper
+import kr.co.main.calendar.ui.common.CalendarBaseTopBar
+import kr.co.main.calendar.ui.common.CalendarHorizontalDivider
 
 
 @RequiresApi(Build.VERSION_CODES.O)
