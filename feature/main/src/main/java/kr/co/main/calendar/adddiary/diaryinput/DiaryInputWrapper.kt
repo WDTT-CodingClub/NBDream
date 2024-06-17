@@ -15,13 +15,13 @@ import java.time.LocalDate
 
 internal sealed class DiaryInputContent(
     @StringRes open val headerId: Int? = null
-){
+) {
     data class DateInputContent(
-        @StringRes override val headerId:Int,
+        @StringRes override val headerId: Int,
         val registerDate: LocalDate,
         val weatherForecast: WeatherForecastModel,
         val onRegisterDateInput: (LocalDate) -> Unit,
-    ): DiaryInputContent()
+    ) : DiaryInputContent()
 
     data class OverviewInputContent(
         val workLaborer: Int,
@@ -30,61 +30,67 @@ internal sealed class DiaryInputContent(
         val onWorkLaborerInput: (Int) -> Unit,
         val onWorkHourInput: (Int) -> Unit,
         val onWorkAreaInput: (Int) -> Unit,
-    ):DiaryInputContent()
+    ) : DiaryInputContent()
 
     data class WorkInputContent(
-        @StringRes override val headerId:Int,
+        @StringRes override val headerId: Int,
         val workDescriptions: List<DiaryModel.WorkDescriptionModel>,
         val onAddWorkDescription: (DiaryModel.WorkDescriptionModel.TypeId, String) -> Unit,
         val onDeleteDescription: (String) -> Unit
-    ):DiaryInputContent()
+    ) : DiaryInputContent()
+
     data class ImageInputContent(
-        @StringRes override val headerId:Int,
+        @StringRes override val headerId: Int,
         val images: List<String>,
         val onAddImage: (String) -> Unit,
         val onDeleteImage: (String) -> Unit,
-    ):DiaryInputContent()
+    ) : DiaryInputContent()
+
     data class MemoInputContent(
-        @StringRes override val headerId:Int,
+        @StringRes override val headerId: Int,
         val memo: String,
         val onMemoInput: (String) -> Unit,
         val modifier: Modifier = Modifier
-    ):DiaryInputContent()
+    ) : DiaryInputContent()
 }
 
 @Composable
 internal fun DiaryInputWrapper(
     diaryInputContent: DiaryInputContent,
-    modifier:Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth()){
+    Column(modifier = modifier.fillMaxWidth()) {
         diaryInputContent.headerId?.let {
             InputHeader(headerId = it)
         }
-        when(diaryInputContent){
+        when (diaryInputContent) {
             is DiaryInputContent.DateInputContent -> DiaryDateInput(
                 registerDate = diaryInputContent.registerDate,
                 weatherForecast = diaryInputContent.weatherForecast,
-                onRegisterDateInput =diaryInputContent.onRegisterDateInput
+                onRegisterDateInput = diaryInputContent.onRegisterDateInput
             )
+
             is DiaryInputContent.OverviewInputContent -> DiaryOverviewInput(
                 workLaborer = diaryInputContent.workLaborer,
                 workHour = diaryInputContent.workHour,
                 workArea = diaryInputContent.workArea,
                 onWorkLaborerInput = diaryInputContent.onWorkLaborerInput,
                 onWorkHourInput = diaryInputContent.onWorkHourInput,
-                onWorkAreaInput =diaryInputContent.onWorkAreaInput
+                onWorkAreaInput = diaryInputContent.onWorkAreaInput
             )
+
             is DiaryInputContent.WorkInputContent -> DiaryWorkInput(
                 workDescriptions = diaryInputContent.workDescriptions,
                 onAddWorkDescription = diaryInputContent.onAddWorkDescription,
-                onDeleteDescription =diaryInputContent.onDeleteDescription
+                onDeleteDescription = diaryInputContent.onDeleteDescription
             )
+
             is DiaryInputContent.ImageInputContent -> DiaryImageInput(
                 images = diaryInputContent.images,
                 onAddImage = diaryInputContent.onAddImage,
                 onDeleteImage = diaryInputContent.onDeleteImage
             )
+
             is DiaryInputContent.MemoInputContent -> DiaryMemoInput(
                 memo = diaryInputContent.memo,
                 onMemoInput = diaryInputContent.onMemoInput,

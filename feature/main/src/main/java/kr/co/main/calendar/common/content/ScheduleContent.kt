@@ -1,7 +1,5 @@
-package kr.co.main.calendar.common
+package kr.co.main.calendar.common.content
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +20,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.toDateString
 import kr.co.common.util.toDateTimeString
+import kr.co.main.calendar.common.CalendarCategoryIndicator
+import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.model.ScheduleModel
 import kr.co.main.calendar.providers.FakeScheduleModelProvider
 import kr.co.ui.icon.DreamIcon
@@ -30,9 +30,6 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 
-private const val ALARM_ICON_SIZE = 16
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun ScheduleContent(
     schedule: ScheduleModel,
@@ -76,20 +73,20 @@ private fun ScheduleTitle(
 ) {
     val categoryColor = remember(category) {
         when (category) {
-            is ScheduleModel.Category.Crop -> Color.Green.toArgb()
+            is ScheduleModel.Category.Crop -> Color(category.crop.color).toArgb()
             is ScheduleModel.Category.All -> Color.LightGray.toArgb()
         }
     }
 
-    Row(modifier = modifier) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         CalendarCategoryIndicator(
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .padding(end = Paddings.small),
+            modifier = Modifier.padding(end = Paddings.small),
             categoryColor = categoryColor
         )
         Text(
-            modifier = Modifier,
             text = title,
             style = MaterialTheme.typo.bodyM,
             color = MaterialTheme.colors.text1
@@ -117,11 +114,15 @@ private fun ScheduleAlarm(
     alarmDateTime: String?,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         alarmDateTime?.let {
             Icon(
-                modifier = Modifier.size(ALARM_ICON_SIZE.dp),
-                imageVector = DreamIcon.Alarm, contentDescription = ""
+                modifier = Modifier.size(CalendarDesignToken.DIARY_ALARM_ICON_SIZE.dp),
+                imageVector = DreamIcon.Alarm, contentDescription = "",
+                tint = MaterialTheme.colors.yellow1
             )
             Text(
                 modifier = Modifier.padding(start = Paddings.xsmall),
@@ -146,8 +147,7 @@ private fun ScheduleMemo(
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun ScheduleContentPreview(
     @PreviewParameter(FakeScheduleModelProvider::class) schedule: ScheduleModel

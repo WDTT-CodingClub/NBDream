@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import kr.co.main.R
+import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.common.CalendarUnderLineTextField
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeWorkDescriptionModelListProvider
@@ -48,11 +49,6 @@ import kr.co.ui.icon.dreamicon.Spinner
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-
-private const val ROUNDED_CORNER_RADIUS = 12
-private const val WORK_TYPE_SPINNER_ICON_SIZE = 20
-private const val WORK_TYPE_SPINNER_DROP_DOWN_OFFSET = 50
-private const val WORK_TYPE_SPINNER_DROP_DOWN_HEIGHT = 300
 
 class WorkInputStateHolder {
     var typeId = DiaryModel.WorkDescriptionModel.TypeId.NOT_SET
@@ -169,7 +165,7 @@ private fun WorkTypeSpinnerButton(
 ){
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(ROUNDED_CORNER_RADIUS.dp))
+            .clip(RoundedCornerShape(CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp))
             .background(Color.LightGray)
             .clickable { onClick() }
     ) {
@@ -185,7 +181,7 @@ private fun WorkTypeSpinnerButton(
                 color = MaterialTheme.colors.text1
             )
             Icon(
-                modifier = Modifier.size(WORK_TYPE_SPINNER_ICON_SIZE.dp),
+                modifier = Modifier.size(CalendarDesignToken.WORK_TYPE_SPINNER_ICON_SIZE.dp),
                 imageVector = DreamIcon.Spinner,
                 contentDescription = ""
             )
@@ -203,9 +199,9 @@ private fun WorkTypeSpinnerDropDown(
 ) {
     DropdownMenu(
         modifier = modifier
-            .height(WORK_TYPE_SPINNER_DROP_DOWN_HEIGHT.dp)
-            .clip(RoundedCornerShape(ROUNDED_CORNER_RADIUS.dp)),
-        offset = DpOffset(0.dp, WORK_TYPE_SPINNER_DROP_DOWN_OFFSET.dp),
+            .height(CalendarDesignToken.WORK_TYPE_SPINNER_DROP_DOWN_HEIGHT.dp)
+            .clip(RoundedCornerShape(CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp)),
+        offset = DpOffset(0.dp, CalendarDesignToken.WORK_TYPE_SPINNER_DROP_DOWN_OFFSET.dp),
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
@@ -277,7 +273,7 @@ private fun AddWorkDescriptionButton(
 ) {
     Button(
         modifier = modifier
-            .clip(RoundedCornerShape(ROUNDED_CORNER_RADIUS.dp)),
+            .clip(RoundedCornerShape(CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp)),
         onClick = onClick,
         border = BorderStroke(1.dp, Color.Black),
         colors = ButtonDefaults.buttonColors().copy(

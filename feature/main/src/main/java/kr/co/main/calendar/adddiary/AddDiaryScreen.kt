@@ -96,7 +96,7 @@ private fun AddDiaryTopBar(
 ) {
     CalendarBaseTopBar(
         titleId = R.string.feature_main_calendar_add_diary_title,
-        rightLabelId = R.string.feature_main_calendar_add_diary_post,
+        rightLabelId = R.string.feature_main_calendar_post,
         onBackClick = { /*TODO 전 화면으로 이동*/ },
         onRightLabelClick = onPostClick
     )

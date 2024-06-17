@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -23,13 +22,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kr.co.domain.entity.FarmWorkEntity
 import kr.co.main.R
+import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.model.FarmWorkModel
 import kr.co.main.calendar.providers.FakeFarmWorkModelListProvider
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-
-private const val FARM_WORK_ITEM_HEIGHT = 20
 
 @Composable
 internal fun FarmWorkCalendar(
@@ -45,7 +43,7 @@ internal fun FarmWorkCalendar(
     }
 
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         FarmWorkEraHeader(
             modifier = Modifier.padding(bottom = Paddings.medium)
@@ -111,8 +109,8 @@ private fun FarmWorkItem(
 ) {
     Box(
         modifier = modifier
-            .height(FARM_WORK_ITEM_HEIGHT.dp)
-            .clip(shape = RoundedCornerShape(5.dp))
+            .height(CalendarDesignToken.FARM_WORK_ITEM_HEIGHT.dp)
+            .clip(shape = RoundedCornerShape(CalendarDesignToken.FARM_WORK_ITEM_CORNER_RADIUS.dp))
             .background(color = Color(farmWork.crop.color)),
     ) {
         Text(
@@ -166,12 +164,13 @@ private fun FarmWorkCalendarRow(
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun FarmWorkCalendarPreview(
     @PreviewParameter(FakeFarmWorkModelListProvider::class) farmWorks: List<FarmWorkModel>
 ) {
-    Surface {
-        FarmWorkCalendar(farmWorks = farmWorks)
-    }
+    FarmWorkCalendar(
+        modifier = Modifier.fillMaxWidth(),
+        farmWorks = farmWorks
+    )
 }

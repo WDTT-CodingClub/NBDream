@@ -40,46 +40,6 @@ import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import java.time.LocalDate
 
-private const val ROUNDED_CORNER_RADIUS = 12
-
-private const val SKY_ICON_SIZE = 20
-private const val CROP_COLOR_SHAPE_SIZE = 8
-private const val FAB_ICON_SIZE = 20
-
-@Composable
-internal fun CalendarBaseTopBar(
-    @StringRes titleId: Int,
-    @StringRes rightLabelId: Int,
-    onBackClick: () -> Unit,
-    onRightLabelClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Icon(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .clickable { onBackClick() },
-            imageVector = DreamIcon.ArrowLeft,
-            contentDescription = ""
-        )
-        Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = stringResource(id = titleId),
-            style = MaterialTheme.typo.header2M,
-            color = MaterialTheme.colors.text1
-        )
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .clickable { onRightLabelClick() },
-            text = stringResource(id = rightLabelId),
-            style = MaterialTheme.typo.header2M,
-            color = MaterialTheme.colors.text1
-        )
-    }
-}
 
 @Composable
 internal fun CalendarHorizontalDivider(
@@ -90,36 +50,6 @@ internal fun CalendarHorizontalDivider(
         color = Color.LightGray
     )
 }
-
-@Composable
-internal fun CalendarDatePicker(
-    date: LocalDate,
-    onDateInput: (LocalDate) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        Row(
-            modifier = Modifier
-                .clickable {
-                    //TODO Date Picker 띄우기 - 수빈님 PR 올리시면 참고
-                },
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Text(
-                modifier = Modifier,
-                text = date.toDateString(),
-                style = MaterialTheme.typo.bodyM,
-                color = MaterialTheme.colors.text1
-            )
-            Icon(
-                modifier = Modifier,
-                imageVector = DreamIcon.Edit, // TODO 캘린더 아이콘으로 바꾸기
-                contentDescription = ""
-            )
-        }
-    }
-}
-
 
 @Composable
 internal fun CalendarWeather(
@@ -133,7 +63,7 @@ internal fun CalendarWeather(
         Icon(
             modifier = Modifier
                 .padding(end = Paddings.medium)
-                .size(SKY_ICON_SIZE.dp),
+                .size(CalendarDesignToken.SKY_ICON_SIZE.dp),
             imageVector = weatherForecast.sky.icon,
             contentDescription = ""
         )
@@ -149,104 +79,14 @@ internal fun CalendarWeather(
 }
 
 @Composable
-internal fun CalendarUnderLineTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    placeHolder: @Composable () -> Unit = {},
-    maxLines: Int = 1,
-    textAlign: TextAlign = TextAlign.Start,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
-) {
-    BasicTextField(
-        modifier = modifier,
-        value = value,
-        onValueChange = onValueChange,
-        maxLines = maxLines,
-        textStyle = TextStyle.Default.copy(
-            textAlign = textAlign
-        ),
-        keyboardOptions = keyboardOptions
-    ) { innerTextField ->
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(modifier = Modifier){
-                if (value.isEmpty()) placeHolder()
-                innerTextField()
-            }
-            HorizontalDivider()
-        }
-    }
-}
-
-@Composable
-internal fun CalendarContainerTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    placeHolder: @Composable () -> Unit = {},
-    maxLines: Int = 1,
-    textAlign: TextAlign = TextAlign.Start,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
-) {
-    BasicTextField(
-        modifier = modifier,
-        value = value,
-        onValueChange = onValueChange,
-        maxLines = maxLines,
-        textStyle = TextStyle.Default.copy(
-            textAlign = textAlign
-        ),
-        keyboardOptions = keyboardOptions
-    ) { innerTextField ->
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(ROUNDED_CORNER_RADIUS.dp))
-                .background(Color.LightGray),
-        ) {
-            Box(modifier = Modifier.padding(Paddings.medium)) {
-                if (value.isEmpty()) placeHolder()
-                innerTextField()
-            }
-        }
-    }
-}
-
-@Composable
 internal fun CalendarCategoryIndicator(
     @ColorInt categoryColor: Int,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
-            .size(CROP_COLOR_SHAPE_SIZE.dp)
+            .size(CalendarDesignToken.CROP_COLOR_SHAPE_SIZE.dp)
             .clip(CircleShape)
             .background(Color(categoryColor)),
     )
-}
-
-@Composable
-internal fun CalendarBaseFab(
-    imageVector: ImageVector,
-    onClick: () -> Unit,
-    modifier:Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colors.primary,
-    contentColor: Color = Color.White,
-){
-    FloatingActionButton(
-        modifier = modifier,
-        shape = CircleShape,
-        containerColor = containerColor,
-        contentColor = contentColor,
-        onClick = { onClick() }
-    ) {
-        Icon(
-            modifier = Modifier.size(FAB_ICON_SIZE.dp),
-            imageVector = imageVector,
-            contentDescription = ""
-        )
-    }
 }
