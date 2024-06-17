@@ -1,4 +1,4 @@
-package kr.co.onboard.ui.login
+package kr.co.onboard.address
 
 import android.os.Handler
 import android.os.Looper
@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
@@ -54,6 +56,7 @@ import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import kr.co.onboard.BuildConfig
 import kr.co.onboard.R
+import kr.co.onboard.crop.StepText
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -65,15 +68,11 @@ import timber.log.Timber
 @Composable
 internal fun InputAddressScreen(
     navController: NavController,
-    modifier: Modifier
+    modifier: Modifier,
+    viewModel: InputAddressViewModel = hiltViewModel()
 ) {
-    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
-    var fullRoadAddr by remember {
-        mutableStateOf(savedStateHandle?.get<String>("fullRoadAddr") ?: "")
-    }
-    var jibunAddr by remember {
-        mutableStateOf(savedStateHandle?.get<String>("jibunAddr") ?: "")
-    }
+
+    val state by viewModel.state.collectAsState()
 
     Scaffold(
         modifier = modifier.padding(16.dp),
@@ -89,15 +88,13 @@ internal fun InputAddressScreen(
             DescriptionText(stringResource(id = R.string.feature_onboard_my_farm_address_description))
             Address(
                 modifier,
-                fullRoadAddr = fullRoadAddr,
-                jibunAddr = jibunAddr,
+                fullRoadAddr = state.fullRoadAddr,
+                jibunAddr = state.jibunAddr,
                 onFullRoadAddrChange = {
-                    fullRoadAddr = it
-                    savedStateHandle?.set("fullRoadAddr", it)
+                    viewModel.onFullRoadAddrChange(it)
                 },
                 onJubunAddrChange = {
-                    jibunAddr = it
-                    savedStateHandle?.set("jibunAddr", it)
+                    viewModel.onJibunAddrChange(it)
                 },
                 onSearchClick = {
                     navController.navigate("ADDRESS_FIND_ROUTE")
@@ -200,7 +197,7 @@ private fun Address(
                     .height(35.dp)
 
             ) {
-                Text(stringResource(id = R.string.feature_onboard_my_farm_address_find), style = MaterialTheme.typo.body1)
+                Text(stringResource(id = R.string.feature_onboard_my_farm_address_find), style = MaterialTheme.typo.body1, color = MaterialTheme.colors.secondary)
             }
         }
     }
@@ -368,7 +365,7 @@ private fun CustomTextField(
                 Box(
                     modifier = Modifier
                         .background(Color.Transparent, RoundedCornerShape(4.dp))
-                        .padding(horizontal = 8.dp, vertical = 4.dp) // Adjust padding as needed
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     if (value.isEmpty()) {
                         Text(text = placeholder, style = TextStyle(color = Color.Gray, fontSize = 16.sp))
