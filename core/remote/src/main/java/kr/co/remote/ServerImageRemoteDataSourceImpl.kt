@@ -23,7 +23,7 @@ import kr.co.data.model.data.ServerImageResult
 import kr.co.data.source.remote.ServerImageRemoteDataSource
 import kr.co.nbdream.core.remote.BuildConfig
 import kr.co.remote.mapper.ServerImageRemoteMapper
-import kr.co.remote.model.response.GetServerImageResponse
+import kr.co.remote.model.response.PostServerImageResponse
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -138,7 +138,7 @@ internal class ServerImageRemoteDataSourceImpl @Inject constructor(
             },
 
             )
-            .body<GetServerImageResponse>()
+            .body<PostServerImageResponse>()
             .let(ServerImageRemoteMapper::convert)
     }
 }
