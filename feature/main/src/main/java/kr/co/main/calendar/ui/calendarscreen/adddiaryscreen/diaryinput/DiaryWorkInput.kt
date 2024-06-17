@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.diarytab.adddiary.diaryinput
+package kr.co.main.calendar.ui.calendarscreen.adddiaryscreen.diaryinput
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

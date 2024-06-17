@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.diarytab.adddiary.diaryinput
+package kr.co.main.calendar.ui.calendarscreen.adddiaryscreen.diaryinput
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Surface
