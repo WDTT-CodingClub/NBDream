@@ -1,5 +1,7 @@
 package kr.co.main.community
 
+import android.content.Context
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,13 +16,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
@@ -33,34 +35,68 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kr.co.main.community.temp.UriUtil
+import kr.co.main.community.temp.WritingSelectedImageModel
+import java.io.File
 
 @Composable
-internal fun BulletinWritingScreen(
+internal fun BulletinWritingRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val writingInput by viewModel.bulletinWritingInput.collectAsStateWithLifecycle()
+    val writingImages by viewModel.writingImages.collectAsStateWithLifecycle()
+    val isShowWaitingDialog by viewModel.isShowWaitingDialog.collectAsStateWithLifecycle()
+    BulletinWritingScreen(
+        modifier = modifier,
+        context = context,
+        writingInput = writingInput,
+        writingImages = writingImages,
+        isShowWaitingDialog = isShowWaitingDialog,
+        onBackClick = onBackClick,
+        onAddImagesClick = viewModel::onAddImagesClick,
+        onBulletinWritingInputChanged = viewModel::onBulletinWritingInputChanged,
+        onRemoveImageClick = viewModel::onRemoveImageClick,
+        onFinishWritingClick = viewModel::onFinishWritingClick,
+        setIsShowWaitingDialog = viewModel::setIsShowWaitingDialog,
+    )
+}
 
-    val writing = viewModel.bulletinWritingInput.collectAsState().value
-    val writingImages = viewModel.writingImages.collectAsState().value
+@Composable
+internal fun BulletinWritingScreen(
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    writingInput: String = "",
+    writingImages: List<WritingSelectedImageModel> = emptyList(),
+    isShowWaitingDialog: Boolean = false,
+    onBackClick: () -> Unit = {},
+    onAddImagesClick: (uris: List<Uri>, (Uri) -> File) -> Unit = { _, _ -> },
+    onBulletinWritingInputChanged: (input: String) -> Unit = {},
+    onRemoveImageClick: (image: Uri) -> Unit = {},
+    onFinishWritingClick: () -> Unit = {},
+    setIsShowWaitingDialog: (Boolean) -> Unit = {},
+) {
 
     val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
         onResult = { uris ->
-            viewModel.addImages(context, uris)
+            onAddImagesClick(uris) { UriUtil.toPngFile(context, it) }
         }
     )
 
@@ -83,7 +119,9 @@ internal fun BulletinWritingScreen(
                     modifier = Modifier.weight(1f),
                 )
                 TextButton(onClick = {
+                    setIsShowWaitingDialog(true)
                 }) {
+//                TextButton(onClick = onFinishWritingClick) {
                     Text(
                         "등록",
                         Modifier.padding(horizontal = 20.dp, vertical = 0.dp),
@@ -96,9 +134,7 @@ internal fun BulletinWritingScreen(
                 modifier = Modifier
                     .height(40.dp)
                     .border(
-                        width = 1.dp,
-                        color = Color(0),
-                        shape = RoundedCornerShape(12.dp)
+                        width = 1.dp, color = Color(0), shape = RoundedCornerShape(12.dp)
                     ),
                 colors = CardColors(
                     containerColor = Color.Green,
@@ -114,14 +150,12 @@ internal fun BulletinWritingScreen(
                     Text("자유 주제")
                     // TODO: 디바이더에도 여백이 붙는데...
                     VerticalDivider(
-                        modifier = Modifier
-                            .width(1.dp),
+                        thickness = 1.dp,
                         color = Color.Red,
                     )
                     Text("질문")
                     VerticalDivider(
-                        modifier = Modifier
-                            .width(1.dp),
+                        thickness = 1.dp,
                         color = Color.Red,
                     )
                     Text("병해충")
@@ -130,10 +164,10 @@ internal fun BulletinWritingScreen(
         }
         item {
             TextField(
-                value = writing,
+                value = writingInput,
                 onValueChange = {
                     if (it.length <= 3000) {
-                        viewModel.onBulletinWritingInputChanged(it)
+                        onBulletinWritingInputChanged(it)
                     }
                 },
                 modifier = Modifier
@@ -143,7 +177,7 @@ internal fun BulletinWritingScreen(
             )
         }
         item {
-            Text("${writing.length}/3000")
+            Text("${writingInput.length}/3000")
         }
         item {
             Text("사진")
@@ -192,7 +226,7 @@ internal fun BulletinWritingScreen(
                         )
                         IconButton(
                             onClick = {
-                                it.uri?.let { viewModel.removeImage(it) }
+                                it.uri?.let { onRemoveImageClick(it) }
                             },
                             modifier = Modifier.align(Alignment.TopEnd),
                             colors = IconButtonDefaults.iconButtonColors(
@@ -211,6 +245,43 @@ internal fun BulletinWritingScreen(
             }
         }
     }
+
+    if (isShowWaitingDialog) AlertDialogExample(
+        onDismissRequest = { setIsShowWaitingDialog(false) },
+        onConfirmation = {},
+        dialogTitle = "title",
+        dialogText = "text",
+        icon = null,
+    )
+
+}
+
+@Composable
+fun AlertDialogExample(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector?,
+) {
+    AlertDialog(onDismissRequest = onDismissRequest, confirmButton = { onConfirmation() })
+
+//    AlertDialog(
+//        icon = { Icon(icon, contentDescription = "Example Icon") },
+//        title = { Text(dialogTitle) },
+//        text = { Text(dialogText) },
+//        onDismissRequest = onDismissRequest,
+//        confirmButton = {
+//            TextButton(onClick = onConfirmation) {
+//                Text("Confirm")
+//            }
+//        },
+//        dismissButton = {
+//            TextButton(onClick = onDismissRequest) {
+//                Text("Dismiss")
+//            }
+//        },
+//    )
 }
 
 @Preview(heightDp = 1200)
@@ -218,7 +289,7 @@ internal fun BulletinWritingScreen(
 private fun BulletinWritingScreenPreview() {
     MaterialTheme {
         Surface {
-            BulletinWritingScreen(onBackClick = {})
+            BulletinWritingScreen()
         }
     }
 }
