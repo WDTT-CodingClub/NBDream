@@ -43,9 +43,9 @@ import kr.co.domain.entity.BulletinEntity
 
 @Composable
 internal fun CommunityRoute(
-    onWritingClick: () -> Unit,
-    onNotificationClick: () -> Unit,
-    onBulletinClick: (String) -> Unit,
+    navigateToWriting: () -> Unit,
+    navigateToNotification: () -> Unit,
+    navigateToBulletinDetail: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {
@@ -53,9 +53,9 @@ internal fun CommunityRoute(
     val searchInput by viewModel.searchInput.collectAsStateWithLifecycle()
     CommunityScreen(
         modifier = modifier,
-        onWritingClick = onWritingClick,
-        onNotificationClick = onNotificationClick,
-        onBulletinClick = onBulletinClick,
+        navigateToWriting = navigateToWriting,
+        navigateToNotification = navigateToNotification,
+        navigateToBulletinDetail = navigateToBulletinDetail,
         bulletinEntities = bulletinEntities,
         searchInput = searchInput,
         onSearchInputChanged = viewModel::onSearchInputChanged,
@@ -67,9 +67,9 @@ internal fun CommunityRoute(
 @Composable
 internal fun CommunityScreen(
     modifier: Modifier = Modifier,
-    onWritingClick: () -> Unit = {},
-    onNotificationClick: () -> Unit = {},
-    onBulletinClick: (String) -> Unit = {},
+    navigateToWriting: () -> Unit = {},
+    navigateToNotification: () -> Unit = {},
+    navigateToBulletinDetail: (String) -> Unit = {},
     bulletinEntities: List<BulletinEntity> = emptyList(),
     searchInput: String = "",
     onSearchInputChanged: (String) -> Unit = {},
@@ -81,7 +81,7 @@ internal fun CommunityScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onWritingClick) {
+            FloatingActionButton(onClick = navigateToWriting) {
                 Icon(
                     imageVector = Icons.Filled.Create,
                     contentDescription = "Writing floating action button",
@@ -165,7 +165,7 @@ internal fun CommunityScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .clickable { onBulletinClick("") },
+                        .clickable { navigateToBulletinDetail("") },
                     colors = CardDefaults.cardColors(),
                     elevation = CardDefaults.elevatedCardElevation(
                         defaultElevation = 4.dp,
