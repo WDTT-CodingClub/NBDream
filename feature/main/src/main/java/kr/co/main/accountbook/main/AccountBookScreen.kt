@@ -14,12 +14,12 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,7 +39,6 @@ import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 @Composable
 internal fun AccountBookRoute(
@@ -48,22 +47,35 @@ internal fun AccountBookRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    LaunchedEffect(
+        state.page,
+        state.category,
+        state.sort,
+        state.start,
+        state.end
+    ) {
+         viewModel.fetchAccountBooks()
+    }
+
     AccountBookScreen(
         state = state,
-        navigationToRegister = navigationToRegister
+        navigationToRegister = navigationToRegister,
+        onPageChange = { viewModel.updatePage(it) },
+        onCategoryChange = { viewModel.updateCategory(it) },
+        onSortOrderChange = { viewModel.updateSortOrder(it) },
+        onDateRangeChange = { start, end -> viewModel.updateDateRange(start, end) }
     )
 }
 
 @Composable
 private fun AccountBookScreen(
     state: AccountBookViewModel.State = AccountBookViewModel.State(),
-    navigationToRegister: () -> Unit
+    navigationToRegister: () -> Unit,
+    onPageChange: (Int) -> Unit,
+    onCategoryChange: (String) -> Unit,
+    onSortOrderChange: (String) -> Unit,
+    onDateRangeChange: (String, String) -> Unit
 ) {
-    var sortOrder by remember { mutableStateOf(SortOrder.RECENCY) }
-    var showingExpenses by remember { mutableStateOf(true) }
-
-    var daysInRange by remember { mutableLongStateOf(0L) }
-
     Scaffold(
         topBar = {},
         modifier = Modifier.fillMaxSize(),
@@ -81,32 +93,44 @@ private fun AccountBookScreen(
             }
         },
         floatingActionButtonPosition = FabPosition.End
-    ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            Column {
-                CalendarSection(onDaysInRangeChange = { daysInRange = it })
-                GraphSection(
-                    state = state,
-                    daysInRange = daysInRange,
-                    showingExpenses = showingExpenses,
-                    onToggleTypeClick = { showingExpenses = !showingExpenses }
+    ) { padding ->
+        if (state.isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else if (state.errorMessage != null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Error: ${state.errorMessage}")
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                SelectorSection(
+                    state = state.categories,
+                    sortOrder = state.sort,
+                    onCategoryChange = onCategoryChange,
+                    onSortOrderChange = onSortOrderChange
                 )
-                SelectorSection(state, sortOrder) {
-                    sortOrder = it
-                }
-                AccountBooksList(state.accountBooks)
+
+                CalendarSection(onDaysInRangeChange = { startDate, endDate ->
+                    onDateRangeChange(startDate.toString(), endDate.toString())
+                })
+
+                AccountBookList(
+                    accountBooks = state.accountBooks,
+                    onPageChange = onPageChange,
+                    currentPage = state.page
+                )
             }
         }
     }
 }
 
-
 @Composable
-private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
+private fun CalendarSection(onDaysInRangeChange: (LocalDate, LocalDate) -> Unit) {
     val currentDate = LocalDate.now()
     val currentYearMonth = YearMonth.from(currentDate)
     val firstDayOfMonth = currentYearMonth.atDay(1)
@@ -116,8 +140,7 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
     val startDate = remember { mutableStateOf(firstDayOfMonth) }
     val endDate = remember { mutableStateOf(lastDayOfMonth) }
 
-    val daysInRange = ChronoUnit.DAYS.between(firstDayOfMonth, lastDayOfMonth) + 1
-    onDaysInRangeChange(daysInRange)
+    onDaysInRangeChange(startDate.value, endDate.value)
 
     var bottomSheetState by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("1개월") }
@@ -150,11 +173,13 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
                 startDate.value = LocalDate.parse(selectedStartDate)
                 endDate.value = LocalDate.parse(selectedEndDate)
                 bottomSheetState = false
+                onDaysInRangeChange(startDate.value, endDate.value)
             },
             dismissBottomSheet = { bottomSheetState = false }
         )
     }
 }
+
 @Composable
 private fun GraphSection(
     state: AccountBookViewModel.State,
@@ -271,9 +296,10 @@ private fun AccountBookOptionButton(option: String, isSelected: Boolean, onSelec
 
 @Composable
 private fun SelectorSection(
-    state: AccountBookViewModel.State,
-    sortOrder: SortOrder,
-    onSortOrderChange: (SortOrder) -> Unit
+    state: List<String>?,
+    sortOrder: String,
+    onCategoryChange: (String) -> Unit,
+    onSortOrderChange: (String) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -290,13 +316,13 @@ private fun SelectorSection(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        CategorySelector(state)
+        CategorySelector(state, onCategoryChange = onCategoryChange)
         SortOrderSelector(sortOrder, onSortOrderChange)
     }
 }
 
 @Composable
-private fun CategorySelector(state: AccountBookViewModel.State) {
+private fun CategorySelector(state: List<String>?, onCategoryChange: (String) -> Unit) {
     var bottomSheetState by remember { mutableStateOf(false) }
 
     Row(
@@ -317,13 +343,12 @@ private fun CategorySelector(state: AccountBookViewModel.State) {
     }
 
     if (bottomSheetState) {
-        state.categories?.let {
+        state?.let {
             AccountBookCategoryBottomSheet(
                 onSelectedListener = { selectedCategory ->
-                    // TODO Handle selected category
+                    onCategoryChange(selectedCategory.name)
                     bottomSheetState = false
                 },
-                categories = it,
                 dismissBottomSheet = { bottomSheetState = false }
             )
         }
@@ -332,7 +357,7 @@ private fun CategorySelector(state: AccountBookViewModel.State) {
 
 
 @Composable
-private fun SortOrderSelector(sortOrder: SortOrder, onSortOrderChange: (SortOrder) -> Unit) {
+private fun SortOrderSelector(sortOrder: String, onSortOrderChange: (String) -> Unit) {
     Row(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
@@ -342,25 +367,30 @@ private fun SortOrderSelector(sortOrder: SortOrder, onSortOrderChange: (SortOrde
     ) {
         ClickableText(
             text = "최신순",
-            isSelected = sortOrder == SortOrder.RECENCY,
-            onClick = { onSortOrderChange(SortOrder.RECENCY) }
+            isSelected = sortOrder == SortOrder.EARLIEST.name,
+            onClick = { onSortOrderChange(SortOrder.EARLIEST.name) }
         )
         Spacer(modifier = Modifier.width(16.dp))
         ClickableText(
             text = "과거순",
-            isSelected = sortOrder == SortOrder.OLDEST,
-            onClick = { onSortOrderChange(SortOrder.OLDEST) }
+            isSelected = sortOrder == SortOrder.OLDEST.name,
+            onClick = { onSortOrderChange(SortOrder.OLDEST.name) }
         )
     }
 }
 
 @Composable
-private fun AccountBooksList(accountBooks: List<AccountBookViewModel.State.AccountBook>) {
+private fun AccountBookList(
+    accountBooks: List<AccountBookViewModel.State.AccountBook>,
+    onPageChange: (Int) -> Unit,
+    currentPage: Int
+) {
     LazyColumn {
         items(accountBooks) { accountBook ->
             AccountBookItem(accountBook)
         }
     }
+    // TODO 페이징
 }
 
 @Composable
