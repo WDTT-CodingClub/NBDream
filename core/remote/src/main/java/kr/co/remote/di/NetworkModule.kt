@@ -37,7 +37,7 @@ import kotlinx.serialization.json.put
 import kr.co.common.model.CustomErrorType
 import kr.co.common.model.CustomException
 import kr.co.nbdream.core.remote.BuildConfig
-import kr.co.remote.model.response.PostAuthRefreshResponse
+import kr.co.remote.model.response.auth.PostAuthRefreshResponse
 import kr.co.data.source.local.SessionLocalDataSource
 import kr.co.remote.retrofit.api.HolidayApi
 import okhttp3.MediaType.Companion.toMediaType

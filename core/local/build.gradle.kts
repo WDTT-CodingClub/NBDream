@@ -3,6 +3,11 @@ import kr.co.wdtt.convention.Local
 plugins {
     alias(libs.plugins.nbdream.android.library)
     alias(libs.plugins.nbdream.android.hilt)
+    alias(libs.plugins.kotlin.serialization)
+}
+
+ksp {
+    arg("room.generateKotlin", "true")
 }
 
 android {
@@ -18,6 +23,8 @@ android {
 
 dependencies {
     implementation(projects.core.data)
+    implementation(projects.core.common)
+    implementation(libs.kotlinx.serialization.json)
 
     Local()
 }

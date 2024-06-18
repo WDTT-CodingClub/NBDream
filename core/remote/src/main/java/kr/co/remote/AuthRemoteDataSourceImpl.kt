@@ -29,11 +29,9 @@ internal class AuthRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun login(type: AuthTypeData, token: String) =
         client.post("$LOGIN_URL/${type.name.lowercase()}") {
-            setBody(
-                mapOf(
-                    "token" to token
-                )
-            )
+            url {
+                parameters.append("token", token)
+            }
         }.body<Dto<PostAuthResponse>>()
             .let {
                 PostAuthMapper.convert(it.data)

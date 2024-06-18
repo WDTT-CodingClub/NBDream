@@ -26,7 +26,7 @@ internal class MainViewModel @Inject constructor(
                 .distinctUntilChanged()
                 .collectLatest {
                     delay(SPLASH_DURATION)
-                    _isAuthorized.emit(it == null)
+                    _isAuthorized.emit(it != null)
                 }
         }
     }
