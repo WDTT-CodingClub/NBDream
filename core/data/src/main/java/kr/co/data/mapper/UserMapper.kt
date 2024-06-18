@@ -1,19 +1,19 @@
-package kr.co.local.mapper
+package kr.co.data.mapper
 
 import kr.co.common.mapper.BaseMapper
 import kr.co.data.model.data.user.UserData
-import kr.co.local.model.UserEntity
+import kr.co.domain.entity.UserEntity
 
-internal object UserLocalMapper
+internal object UserMapper
     :BaseMapper<UserData, UserEntity>(){
     override fun toRight(model: UserData): UserEntity {
         return with(model) {
             UserEntity(
                 name = name,
-                profileImage = profileImage,
                 address = address,
-                latitude = latitude,
+                profileImage = profileImage,
                 longitude = longitude,
+                latitude = latitude,
                 crops = crops
             )
         }
@@ -23,10 +23,10 @@ internal object UserLocalMapper
         return with(entity) {
             UserData(
                 name = name,
-                profileImage = profileImage,
                 address = address,
-                latitude = latitude,
+                profileImage = profileImage,
                 longitude = longitude,
+                latitude = latitude,
                 crops = crops
             )
         }
