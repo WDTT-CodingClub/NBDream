@@ -17,4 +17,7 @@ android {
 
 dependencies {
     api(libs.kakao.maps)
+    implementation(libs.naver.auth)
+
+    implementation(files("libs/oauth-5.9.1.arr"))
 }

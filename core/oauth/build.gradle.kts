@@ -26,5 +26,9 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.common)
 
+    implementation(libs.naver.auth)
+
+    implementation(files("libs/oauth-5.9.1.arr"))
+
     Social()
 }
