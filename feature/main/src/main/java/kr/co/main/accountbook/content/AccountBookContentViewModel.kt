@@ -14,28 +14,32 @@ internal class AccountBookContentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AccountBookContentViewModel.State>(savedStateHandle) {
 
-    init {
-
+    fun deleteAccountBookById() {
+        state.value.id.let { id ->
+            updateState { copy(error = null) }
+            loadingScope {
+                repository.deleteAccountBook(id)
+            }
+        }
     }
 
     fun fetchAccountBookById(id: String) {
         loadingScope {
-            try {
-                val accountBookDetail = repository.getAccountBookDetail(id)
-                updateState {
-                    copy(
-                        id = accountBookDetail.id,
-                        title = accountBookDetail.title,
-                        category = accountBookDetail.category,
-                        year = accountBookDetail.year ?: 0,
-                        month = accountBookDetail.month ?: 0,
-                        day = accountBookDetail.day ?: 0,
-                        transactionType = accountBookDetail.transactionType ?: AccountBookEntity.TransactionType.EXPENSE,
-                        amount = accountBookDetail.amount ?: 0
-                    )
-                }
-            } catch (e: Exception) {
-                // TODO Error
+            updateState { copy(isLoading = true, error = null) }
+            val accountBookDetail = repository.getAccountBookDetail(id)
+            updateState {
+                copy(
+                    id = accountBookDetail.id,
+                    title = accountBookDetail.title,
+                    category = accountBookDetail.category,
+                    year = accountBookDetail.year ?: 0,
+                    month = accountBookDetail.month ?: 0,
+                    day = accountBookDetail.day ?: 0,
+                    transactionType = accountBookDetail.transactionType ?: AccountBookEntity.TransactionType.EXPENSE,
+                    amount = accountBookDetail.amount ?: 0,
+                    isLoading = false,
+                    error = null
+                )
             }
         }
     }
@@ -50,6 +54,8 @@ internal class AccountBookContentViewModel @Inject constructor(
         val month: Int = 0,
         val day: Int = 0,
         val transactionType: AccountBookEntity.TransactionType = AccountBookEntity.TransactionType.EXPENSE,
-        val amount: Long = 0
+        val amount: Long = 0,
+        val isLoading: Boolean = false,
+        val error: String? = null
     ) : BaseViewModel.State
 }
