@@ -66,7 +66,8 @@ internal fun DreamApp(
         setSplashVisible(true)
         viewModel.isAuthorized.filterNotNull().collectLatest {
             setSplashVisible(false)
-            navRoute = if (it) DreamNavRoute.MAIN else DreamNavRoute.ONBOARDING
+            //navRoute = if (it) DreamNavRoute.MAIN else DreamNavRoute.ONBOARDING
+            navRoute = DreamNavRoute.MAIN
         }
     }
 

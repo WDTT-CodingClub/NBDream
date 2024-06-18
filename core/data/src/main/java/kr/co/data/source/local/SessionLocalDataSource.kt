@@ -3,9 +3,9 @@ package kr.co.data.source.local
 import kotlinx.coroutines.flow.Flow
 
 interface SessionLocalDataSource {
-    suspend fun saveUserId(userId: String)
+    suspend fun saveUserName(userName: String)
 
-    fun fetchUserId(): Flow<String?>
+    fun fetchUserName(): Flow<String?>
 
     suspend fun updateAccessToken(
         accessToken: String,

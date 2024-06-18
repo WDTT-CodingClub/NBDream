@@ -9,11 +9,11 @@ internal class SessionRepositoryImpl @Inject constructor(
     private val local: SessionLocalDataSource
 ): SessionRepository {
     override fun fetch(): Flow<String?> {
-        return local.fetchUserId()
+        return local.fetchUserName()
     }
 
-    override suspend fun save(email: String) {
-        local.saveUserId(email)
+    override suspend fun save(name: String) {
+        local.saveUserName(name)
     }
 
     override suspend fun clearAll() {

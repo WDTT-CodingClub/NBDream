@@ -18,6 +18,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
@@ -26,19 +27,17 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.http.headers
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import kr.co.common.model.CustomErrorType
 import kr.co.common.model.CustomException
-import kr.co.nbdream.core.remote.BuildConfig
-import kr.co.remote.model.response.PostAuthRefreshResponse
 import kr.co.data.source.local.SessionLocalDataSource
+import kr.co.nbdream.core.remote.BuildConfig
+import kr.co.remote.model.request.auth.PostAuthRefreshTokenRequest
+import kr.co.remote.model.response.auth.PostAuthRefreshResponse
 import kr.co.remote.retrofit.api.HolidayApi
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -107,9 +106,10 @@ internal class NetworkModule {
                         markAsRefreshTokenRequest()
                         url(BuildConfig.BASE_URL + REFRESH_AUTHORIZATION_URL)
                         setBody(
-                            buildJsonObject {
-                                put(REFRESH_TOKEN, session.getRefreshToken())
-                            }
+                            PostAuthRefreshTokenRequest(
+                                accessToken = session.getAccessToken()!!,
+                                refreshToken = session.getRefreshToken()!!
+                            )
                         )
                     }.body<PostAuthRefreshResponse>()
 
@@ -151,8 +151,7 @@ internal class NetworkModule {
 
     companion object {
         private const val HEADER_RESPONSE_BEARER = "Bearer "
-        private const val REFRESH_AUTHORIZATION_URL = "/api/v1/auth/refresh"
-        private const val REFRESH_TOKEN = "refreshToken"
+        private const val REFRESH_AUTHORIZATION_URL = "refresh-tokens"
         private const val RESPONSE_ERROR_MESSAGE = "message"
 
         private const val CONNECTION_TIMEOUT = 10_000L

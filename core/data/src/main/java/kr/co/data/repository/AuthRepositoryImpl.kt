@@ -15,8 +15,7 @@ internal class AuthRepositoryImpl @Inject constructor(
     override suspend fun login(type: AuthType, token: String) {
         remote.login(
             type = type.let(AuthTypeDataMapper::toLeft),
-            token = token,
-            remember = true
+            token = token
         ).also {
             session.updateAccessToken(it.accessToken)
             session.updateRefreshToken(it.refreshToken)

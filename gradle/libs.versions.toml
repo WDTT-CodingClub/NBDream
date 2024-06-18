@@ -33,6 +33,7 @@ ktor = "2.3.11"
 timber = "5.0.1"
 appcompat = "1.6.1"
 material = "1.12.0"
+kakao-maps = "2.9.5"
 
 kakao = "2.20.1"
 google-auth = "21.3.0"
@@ -136,6 +137,8 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion" }
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
+kakao-maps = { group = "com.kakao.maps.open", name = "android", version.ref = "kakao-maps" }
+room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 
 [bundles]
 hilt = [
@@ -146,6 +149,10 @@ paging = [
     "paging-common",
     "paging-runtime",
     "paging-compose"
+]
+rooms = [
+    "room-ktx",
+    "room-runtime"
 ]
 composes = [
     "compose-runtime",
@@ -186,6 +193,7 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 sgp = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "sgp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+room = { id = "androidx.room", version.ref = "room" }
 
 nbdream-android-hilt = { id = "nbdream.android.hilt", version = "unspecified" }
 nbdream-android-application-compose = { id = "nbdream.android.application.compose", version = "unspecified" }

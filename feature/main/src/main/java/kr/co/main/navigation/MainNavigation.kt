@@ -7,6 +7,7 @@ import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.register.AccountBookRegister
+import kr.co.main.calendar.ui.calendar_route.CalendarRoute
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
@@ -49,13 +50,19 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.CALENDAR.route
                 ) {
-
+                    CalendarRoute(
+                        navToNotification = { navController.navigate(NOTIFICATION_ROUTE) }
+                    )
                 }
 
                 composable(
                     route = MainBottomRoute.ACCOUNT.route
                 ) {
-                    AccountBookRoute(navigationToRegister = { navController.navigate(ACCOUNT_BOOK_ROUTE) })
+                    AccountBookRoute(navigationToRegister = {
+                        navController.navigate(
+                            ACCOUNT_BOOK_ROUTE
+                        )
+                    })
                 }
 
                 composable(
