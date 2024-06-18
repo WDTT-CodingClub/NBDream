@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendar_route.add_diary_screen.diary_input
+package kr.co.main.calendar.ui.calendar_screen.add_diary_screen.diary_input
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kr.co.main.R
-import kr.co.main.calendar.common.CalendarDesignToken
+import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Delete
 import kr.co.ui.icon.dreamicon.Edit

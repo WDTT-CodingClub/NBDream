@@ -9,11 +9,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -22,9 +20,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kr.co.domain.entity.FarmWorkEntity
 import kr.co.main.R
-import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.model.FarmWorkModel
 import kr.co.main.calendar.providers.FakeFarmWorkModelListProvider
+import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -34,36 +32,20 @@ internal fun FarmWorkCalendar(
     farmWorks: List<FarmWorkModel>,
     modifier: Modifier = Modifier
 ) {
-    val graphCategories = remember {
-        listOf(
-            Pair(R.string.feature_main_calendar_farm_work_growth, FarmWorkEntity.Category.GROWTH),
-            Pair(R.string.feature_main_calendar_farm_work_climate, FarmWorkEntity.Category.CLIMATE),
-            Pair(R.string.feature_main_calendar_farm_work_pest, FarmWorkEntity.Category.PEST)
-        )
-    }
-
     Column(
         modifier = modifier
     ) {
-        FarmWorkEraHeader(
-            modifier = Modifier.padding(bottom = Paddings.medium)
+        FarmWorkEraRow(
+            modifier = Modifier.padding(vertical = Paddings.medium)
         )
-        graphCategories.forEach { graphCategory ->
-            Text(
-                text = stringResource(id = graphCategory.first),
-                style = MaterialTheme.typo.bodyM,
-                color = MaterialTheme.colors.text1
-            )
-            FarmWorkCalendarContent(
-                modifier = Modifier.fillMaxWidth(),
-                farmWorks = farmWorks.filter { it.category == graphCategory.second }
-            )
-        }
+        FarmWorkCalendarContent(
+            farmWorks = farmWorks
+        )
     }
 }
 
 @Composable
-private fun FarmWorkEraHeader(
+private fun FarmWorkEraRow(
     modifier: Modifier = Modifier
 ) {
     Row(modifier) {
@@ -75,8 +57,8 @@ private fun FarmWorkEraHeader(
             Text(
                 modifier = Modifier.weight(1f),
                 text = stringResource(id = it),
-                style = MaterialTheme.typo.labelM,
-                color = MaterialTheme.colors.text2,
+                style = MaterialTheme.typo.labelSB,
+                color = MaterialTheme.colors.text1,
                 textAlign = TextAlign.Center
             )
         }
@@ -88,47 +70,39 @@ private fun FarmWorkCalendarContent(
     farmWorks: List<FarmWorkModel>,
     modifier: Modifier = Modifier
 ) {
-    FarmWorkCalendarRow(
-        modifier = modifier,
-        farmWorks = farmWorks,
-        content = {
-            farmWorks.forEach {
-                FarmWorkItem(
-                    modifier = Modifier.padding(bottom = Paddings.xsmall),
-                    farmWork = it
-                )
-            }
+    Column(modifier = modifier) {
+        listOf(
+            Pair(R.string.feature_main_calendar_farm_work_growth, FarmWorkEntity.Category.GROWTH),
+            Pair(R.string.feature_main_calendar_farm_work_climate, FarmWorkEntity.Category.CLIMATE),
+            Pair(R.string.feature_main_calendar_farm_work_pest, FarmWorkEntity.Category.PEST)
+        ).forEach { graphCategory ->
+            Text(
+                modifier = Modifier.padding(vertical = Paddings.medium),
+                text = stringResource(id = graphCategory.first),
+                style = MaterialTheme.typo.labelSB
+            )
+            FarmWorkCalendarRow(
+                modifier = Modifier.fillMaxWidth(),
+                farmWorks = farmWorks.filter { it.category == graphCategory.second },
+            )
         }
-    )
-}
-
-@Composable
-private fun FarmWorkItem(
-    farmWork: FarmWorkModel,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(CalendarDesignToken.FARM_WORK_ITEM_HEIGHT.dp)
-            .clip(shape = RoundedCornerShape(CalendarDesignToken.FARM_WORK_ITEM_CORNER_RADIUS.dp))
-            .background(color = Color(farmWork.crop.color)),
-    ) {
-        Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = farmWork.farmWork,
-            style = MaterialTheme.typo.labelR,
-            color = MaterialTheme.colors.text1,
-            textAlign = TextAlign.Center
-        )
     }
 }
 
 @Composable
 private fun FarmWorkCalendarRow(
     farmWorks: List<FarmWorkModel>,
-    content: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val content: @Composable () -> Unit = {
+        farmWorks.forEach {
+            FarmWorkItem(
+                modifier = Modifier.padding(bottom = Paddings.xsmall),
+                farmWork = it
+            )
+        }
+    }
+
     Layout(
         modifier = modifier,
         content = content,
@@ -163,6 +137,26 @@ private fun FarmWorkCalendarRow(
     )
 }
 
+@Composable
+private fun FarmWorkItem(
+    farmWork: FarmWorkModel,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .height(CalendarDesignToken.FARM_WORK_ITEM_HEIGHT.dp)
+            .clip(shape = RoundedCornerShape(CalendarDesignToken.FARM_WORK_ITEM_CORNER_RADIUS.dp))
+            .background(color = MaterialTheme.colors.gray8)
+    ) {
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = farmWork.farmWork,
+            style = MaterialTheme.typo.body1,
+            color = MaterialTheme.colors.text1,
+            textAlign = TextAlign.Center
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendar_route.add_diary_screen.diary_input
+package kr.co.main.calendar.ui.calendar_screen.add_diary_screen.diary_input
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Surface
