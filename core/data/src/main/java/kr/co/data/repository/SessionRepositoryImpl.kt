@@ -12,8 +12,8 @@ internal class SessionRepositoryImpl @Inject constructor(
         return local.fetchUserName()
     }
 
-    override suspend fun save(email: String) {
-        local.saveUserName(email)
+    override suspend fun save(name: String) {
+        local.saveUserName(name)
     }
 
     override suspend fun clearAll() {

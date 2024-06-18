@@ -53,7 +53,7 @@ internal class SessionLocalDataSourceImpl @Inject constructor(
     }
 
     companion object {
-        private val USER_NAME = stringPreferencesKey("user_id")
+        private val USER_NAME = stringPreferencesKey("user_name")
         private val ACCESS_TOKEN = stringPreferencesKey("access_token")
         private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
     }

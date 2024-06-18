@@ -34,7 +34,6 @@ internal class UserRepositoryImpl @Inject constructor(
             .map(UserMapper::toRight)
 
     override suspend fun save(user: UserEntity) {
-        session.saveUserName(user.name)
         local.save(user.let(UserMapper::toLeft))
     }
 
