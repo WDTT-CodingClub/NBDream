@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -39,8 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.domain.entity.BulletinEntity
-import kr.co.domain.entity.CropEntity
-import java.text.DecimalFormat
 
 @Composable
 internal fun CommunityRoute(
@@ -60,6 +59,7 @@ internal fun CommunityRoute(
         bulletinEntities = bulletinEntities,
         searchInput = searchInput,
         onSearchInputChanged = viewModel::onSearchInputChanged,
+        onFreeCategoryClick = viewModel::onFreeCategoryClick,
     )
 }
 
@@ -73,6 +73,7 @@ internal fun CommunityScreen(
     bulletinEntities: List<BulletinEntity> = emptyList(),
     searchInput: String = "",
     onSearchInputChanged: (String) -> Unit = {},
+    onFreeCategoryClick: () -> Unit = {},
 ) {
 //    var tempTextFieldValue by remember {
 //        mutableStateOf(TextFieldValue())
@@ -119,7 +120,9 @@ internal fun CommunityScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround,
                     ) {
-                        Text("자유 주제")
+                        TextButton(onClick = onFreeCategoryClick) {
+                            Text("자유 주제")
+                        }
                         // TODO: 디바이더에도 여백이 붙는데...
                         VerticalDivider(
                             thickness = 1.dp,
@@ -150,10 +153,14 @@ internal fun CommunityScreen(
                     },
                 )
             }
-            items(
-                Array(10) { it }
-            ) {
-                val bulletin = bulletinEntities[it]
+            if (bulletinEntities.isEmpty()) {
+                item {
+                    Text("게시물이 없습니다.")
+                }
+            }
+            itemsIndexed(
+                bulletinEntities
+            ) { idx, bulletin ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -176,7 +183,7 @@ internal fun CommunityScreen(
                                 .padding(4.dp),
                         )
                         Column {
-                            Text("${bulletin.userId}의닉네임")
+                            Text("${bulletin.authorId}의닉네임")
                             Text(bulletin.createdTime)
                         }
                         Icon(
@@ -187,14 +194,14 @@ internal fun CommunityScreen(
                             painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_border_24),
                             contentDescription = "북마크 빈 아이콘",
                         )
-                        Text("${bulletin.bookmarkedUsers.size}")
+                        Text("${bulletin.bookmarkedCount}")
                     }
                     Text(
                         bulletin.content,
                         modifier = Modifier.height(80.dp),
                     )
                     Text(
-                        "사진들 $it",
+                        "사진들 $idx",
                         modifier = Modifier.height(240.dp),
                     )
                     Row {
@@ -218,9 +225,9 @@ internal fun CommunityScreen(
                                 )
                                 .padding(4.dp),
                         )
-                        Text("댓글닉네임$it")
+                        Text("댓글닉네임$idx")
                     }
-                    Text("댓글 내용 $it")
+                    Text("댓글 내용 $idx")
                 }
             }
         }
@@ -233,15 +240,7 @@ private fun CommunityScreenPreview() {
     MaterialTheme {
         Surface {
             CommunityScreen(
-                bulletinEntities = List(10) { i ->
-                    BulletinEntity(
-                        id = "bulletinId$i",  // 게시글 id가 필요할지 안할지? 필요하다면 어떤 식으로 만들지?
-                        userId = "userId$i",
-                        content = "게시글 내용 $i",
-                        crop = CropEntity(name = CropEntity.Name.PEPPER),
-                        createdTime = "2000.00.00 00:00:${DecimalFormat("00").format(i)}",
-                    )
-                },
+                bulletinEntities = List(10) { i -> BulletinEntity.dummy(i) },
             )
         }
     }
