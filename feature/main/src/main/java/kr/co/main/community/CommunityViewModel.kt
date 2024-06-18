@@ -93,7 +93,7 @@ internal class CommunityViewModel @Inject constructor(
 
     private suspend fun uploadImage(file: File) = serverImageRepository.upload("bulletin", file)
 
-    fun onFinishWritingClick() {
+    fun onFinishWritingClick(popBackStack: () -> Unit) {
         Timber.d("onFinishWritingClick 시작")
         viewModelScope.launch {
             try {
@@ -105,6 +105,7 @@ internal class CommunityViewModel @Inject constructor(
                     imageUrls = emptyList(),  // temp
                 )
                 Timber.d("onFinishWritingClick 코루틴 끝, id: $uploadedBulletinId")
+                popBackStack()
             } catch (e: Throwable) {
                 Timber.e(e, "onFinishWritingClick 코루틴 에러")
             }

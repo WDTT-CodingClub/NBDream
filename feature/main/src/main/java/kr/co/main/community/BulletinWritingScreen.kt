@@ -89,7 +89,7 @@ internal fun BulletinWritingScreen(
     onAddImagesClick: (uris: List<Uri>, (Uri) -> File) -> Unit = { _, _ -> },
     onBulletinWritingInputChanged: (input: String) -> Unit = {},
     onRemoveImageClick: (image: Uri) -> Unit = {},
-    onFinishWritingClick: () -> Unit = {},
+    onFinishWritingClick: (() -> Unit) -> Unit = {},
     setIsShowWaitingDialog: (Boolean) -> Unit = {},
 ) {
 
@@ -120,6 +120,7 @@ internal fun BulletinWritingScreen(
                 )
                 TextButton(onClick = {
                     setIsShowWaitingDialog(true)
+                    onFinishWritingClick(popBackStack)
                 }) {
 //                TextButton(onClick = onFinishWritingClick) {
                     Text(
