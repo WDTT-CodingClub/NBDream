@@ -31,12 +31,8 @@ internal object GetAccountBookListMapper
         }
 
     fun toCategory(category: String) =
-        AccountBookEntity.Category.entries.find {
-            it.display == category
-        }?: AccountBookEntity.Category.OTHER
+        AccountBookEntity.Category.entries.find { it.name == category } ?: AccountBookEntity.Category.OTHER
 
     fun toTransactionType(transactionType: String) =
-        AccountBookEntity.TransactionType.entries.find {
-            it.value == transactionType
-        }
+        AccountBookEntity.TransactionType.entries.find { it.name == transactionType }
 }

@@ -28,7 +28,7 @@ internal data class GetAccountBookListResponse(
             val dayName: String,
             val transactionType: String,
             val amount: Long,
-            val thumbnail: String,
+            val thumbnail: String?,
             val imageSize: Int
         )
     }
