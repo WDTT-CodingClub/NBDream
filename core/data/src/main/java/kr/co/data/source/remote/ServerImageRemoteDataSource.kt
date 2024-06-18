@@ -9,5 +9,7 @@ interface ServerImageRemoteDataSource {
         image: File,
     ): ServerImageResult
 
-    // TODO: delete
+    suspend fun delete(
+        url: String,
+    )
 }
