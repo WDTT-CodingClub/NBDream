@@ -1,10 +1,10 @@
-package kr.co.domain.entity
+package kr.co.data.model.data.user
 
-data class UserEntity(
+data class UserData(
     val name: String,
-    val address: String?,
     val profileImage: String?,
-    val longitude: Double?,
+    val address: String?,
     val latitude: Double?,
+    val longitude: Double?,
     val crops: List<String>
 )

@@ -49,11 +49,11 @@ fun Project.App(){
 fun Project.Local() {
     project.dependencies {
         implementations(
-//            libs.bundles.rooms,
+            libs.bundles.rooms,
             libs.datastore.preferences
         )
 
-//        ksp(libs.room.compiler)
+        ksp(libs.room.compiler)
 
         testImplementations(
             libs.junit,
