@@ -55,7 +55,11 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.ACCOUNT.route
                 ) {
-                    AccountBookRoute(navigationToRegister = { navController.navigate(ACCOUNT_BOOK_ROUTE) })
+                    AccountBookRoute(navigationToRegister = {
+                        navController.navigate(
+                            ACCOUNT_BOOK_ROUTE
+                        )
+                    })
                 }
 
                 composable(
@@ -94,7 +98,9 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = ACCOUNT_BOOK_ROUTE
     ) {
-        AccountBookRegister()
+        AccountBookRegister(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(
