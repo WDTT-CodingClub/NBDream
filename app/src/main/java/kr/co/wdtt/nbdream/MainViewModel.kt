@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kr.co.ui.base.BaseViewModel
-import kr.co.domain.usecase.FetchAuthUseCase
+import kr.co.domain.usecase.auth.FetchAuthUseCase
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,7 +26,7 @@ internal class MainViewModel @Inject constructor(
                 .distinctUntilChanged()
                 .collectLatest {
                     delay(SPLASH_DURATION)
-                    _isAuthorized.emit(it == null)
+                    _isAuthorized.emit(it != null)
                 }
         }
     }
