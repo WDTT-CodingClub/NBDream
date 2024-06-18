@@ -1,18 +1,29 @@
-package kr.co.main.calendar.ui.calendar_route.add_diary_screen
+package kr.co.main.calendar.ui.calendar_screen.add_diary_screen
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import kr.co.main.R
+import androidx.hilt.navigation.compose.hiltViewModel
 
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-internal fun AddDiaryScreen(
-    modifier: Modifier = Modifier,
-    //viewModel: AddDiaryViewModel = hiltViewModel()
+internal fun AddDiaryRoute(
+    viewModel: AddDiaryViewModel = hiltViewModel()
+){
+    AddDiaryScreen(
+        modifier = Modifier.fillMaxSize(),
+        state = viewModel.state.collectAsState(),
+        event = viewModel.event
+    )
+}
+
+@Composable
+private fun AddDiaryScreen(
+    state: State<AddDiaryViewModel.AddDiaryScreenState>,
+    event: AddDiaryScreenEvent,
+    modifier: Modifier = Modifier
 ) {
 
     Text("AddDiaryScreen")

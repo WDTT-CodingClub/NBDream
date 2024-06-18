@@ -1,12 +1,28 @@
-package kr.co.main.calendar.ui.calendar_route.add_schedule_screen
+package kr.co.main.calendar.ui.calendar_screen.add_schedule_screen
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-internal fun AddScheduleScreen(
-    //viewModel: AddScheduleViewModel = hiltViewModel(),
+internal fun AddScheduleRoute(
+    viewModel: AddScheduleViewModel = hiltViewModel()
+){
+    AddScheduleScreen(
+        modifier = Modifier.fillMaxSize(),
+        state = viewModel.state.collectAsState(),
+        event = viewModel.event
+    )
+}
+
+@Composable
+private fun AddScheduleScreen(
+    state: State<AddScheduleViewModel.AddScheduleScreenState>,
+    event: AddScheduleScreenEvent,
     modifier: Modifier = Modifier
 ) {
     Text("AddScheduleScreen")
@@ -28,12 +44,4 @@ internal fun AddScheduleScreen(
 //
 //        }
 //    }
-}
-
-@Composable
-private fun AddScheduleTopBar(
-    onBackClick: () -> Unit,
-    onPostClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
 }

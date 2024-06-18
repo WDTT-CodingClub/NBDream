@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendar_route.add_schedule_screen
+package kr.co.main.calendar.ui.calendar_screen.add_schedule_screen
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -9,24 +9,44 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
-internal interface AddScheduleScreenInput{
+internal interface AddScheduleScreenEvent{
+    fun onBackClick()
     fun onPostClick()
+
     fun onCategoryInput(category: ScheduleModel.Category)
     fun onTitleInput(title:String)
+
     fun onStartDateInput(startDate: LocalDate)
     fun onEndDateInput(endDate: LocalDate)
+
     fun onSetAlarmInput(setAlarm:Boolean)
     fun onAlarmDateTimeInput(alarmDateTime: LocalDateTime)
+
     fun onMemoInput(memo:String)
 }
 
 @HiltViewModel
 class AddScheduleViewModel @Inject constructor(
     stateHandle: SavedStateHandle
-) : BaseViewModel<AddScheduleViewModel.State>(stateHandle), AddScheduleScreenInput {
-    val input = this@AddScheduleViewModel
+) : BaseViewModel<AddScheduleViewModel.AddScheduleScreenState>(stateHandle), AddScheduleScreenEvent {
+    val event = this@AddScheduleViewModel
 
-    override fun createInitialState(savedState: Parcelable?): State {
+    data class AddScheduleScreenState(
+        val category: ScheduleModel.Category = ScheduleModel.Category.All
+    ) : BaseViewModel.State{
+        override fun toParcelable(): Parcelable? {
+            // TODO ("serialize")
+            return null
+        }
+    }
+
+    override fun createInitialState(savedState: Parcelable?): AddScheduleScreenState =
+        savedState?.let{
+            // TODO ("deserialize")
+            AddScheduleScreenState()
+        }?: AddScheduleScreenState()
+
+    override fun onBackClick() {
         TODO("Not yet implemented")
     }
 
@@ -61,8 +81,4 @@ class AddScheduleViewModel @Inject constructor(
     override fun onMemoInput(memo: String) {
         TODO("Not yet implemented")
     }
-
-    data class State(
-        val category: ScheduleModel.Category = ScheduleModel.Category.All
-    ) : BaseViewModel.State
 }

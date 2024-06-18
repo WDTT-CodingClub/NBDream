@@ -1,16 +1,22 @@
-package kr.co.main.calendar.ui.calendar_route.calendar_screen
+package kr.co.main.calendar.ui.calendar_screen.calendar_screen
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,19 +33,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
-import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.model.CropModel
-import kr.co.main.calendar.ui.calendar_route.calendar_screen.diary_tab.DiaryTab
-import kr.co.main.calendar.ui.calendar_route.calendar_screen.schedule_tab.ScheduleTab
+import kr.co.main.calendar.ui.calendar_screen.calendar_screen.diary_tab.DiaryTab
+import kr.co.main.calendar.ui.calendar_screen.calendar_screen.schedule_tab.ScheduleTab
+import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Bell
 import kr.co.ui.icon.dreamicon.Edit
@@ -49,22 +59,39 @@ import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamTopAppBar
 
 @Composable
-internal fun CalendarScreen(
+internal fun CalendarRoute(
     navToAddSchedule: () -> Unit,
     navToAddDiary: () -> Unit,
     navToNotification: () -> Unit,
-    modifier: Modifier = Modifier,
     viewModel: CalendarScreenViewModel = hiltViewModel()
-) {
-    val state = viewModel.state.collectAsState()
-    val event = viewModel.event
+){
+    CalendarScreen(
+        modifier = Modifier.fillMaxSize(),
+        navToAddSchedule = navToAddSchedule,
+        navToAddDiary = navToAddDiary,
+        navToNotification = navToNotification,
+        state = viewModel.state.collectAsState(),
+        event = viewModel.event
+    )
+}
 
+@Composable
+private fun CalendarScreen(
+    navToAddSchedule: () -> Unit,
+    navToAddDiary: () -> Unit,
+    navToNotification: () -> Unit,
+    state: State<CalendarScreenViewModel.CalendarScreenState>,
+    event: CalendarScreenEvent,
+    modifier: Modifier = Modifier,
+) {
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colors.gray9,
         topBar = {
             CalendarScreenTopAppBar(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Paddings.large),
                 selectedTab = state.value.selectedTab,
                 onSelectTab = event::onSelectTab,
                 navToAddSchedule = navToAddSchedule,
@@ -73,13 +100,34 @@ internal fun CalendarScreen(
             )
         }
     ) { innerPadding ->
-        Surface(
-            modifier = Modifier.padding(innerPadding)
-        ) {
+        val scaffoldScrollState = rememberScrollState()
 
-            when (state.value.selectedTab) {
-                CalendarScreenViewModel.CalendarScreenState.CalendarTab.SCHEDULE -> ScheduleTab()
-                CalendarScreenViewModel.CalendarScreenState.CalendarTab.DIARY -> DiaryTab()
+        Surface(
+            modifier = Modifier
+                .padding(innerPadding)
+                .verticalScroll(
+                    state = scaffoldScrollState
+                )
+        ) {
+            // TODO userCrop 목록 비어있는 경우 예외 처리
+            Column {
+                CalendarInfoPicker(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Paddings.large)
+                        .background(MaterialTheme.colors.gray9),
+                    userCrops = state.value.userCrops,
+                    calendarYear = state.value.calendarYear,
+                    calendarMonth = state.value.calendarMonth,
+                    calendarCrop = state.value.calendarCrop!!,
+                    onSelectYear = event::onSelectYear,
+                    onSelectMonth = event::onSelectMonth,
+                    onSelectCrop = event::onSelectCrop
+                )
+                when (state.value.selectedTab) {
+                    CalendarScreenViewModel.CalendarScreenState.CalendarTab.SCHEDULE -> ScheduleTab()
+                    CalendarScreenViewModel.CalendarScreenState.CalendarTab.DIARY -> DiaryTab()
+                }
             }
         }
     }
@@ -128,9 +176,11 @@ private fun CalendarScreenTopAppBarTitle(
     ) {
         CalendarScreenViewModel.CalendarScreenState.CalendarTab.entries.forEach {
             CalendarScreenTopAppBarTitleItem(
-                modifier = Modifier.clickable {
-                    onSelectTab(it)
-                },
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clickable {
+                        onSelectTab(it)
+                    },
                 titleId = it.titleId,
                 isSelected = (it == selectedTab)
             )
@@ -144,43 +194,35 @@ private fun CalendarScreenTopAppBarTitleItem(
     isSelected: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val textWidth = remember { mutableStateOf(0.dp) }
+    val textWidth = measureTextWidth(
+        text = LocalContext.current.getString(titleId),
+        style = MaterialTheme.typo.h2
+    )
 
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            modifier = Modifier
-                .onGloballyPositioned {
-                    textWidth.value = it.size.width.dp
-                },
+            modifier = Modifier.width(textWidth),
             text = stringResource(id = titleId),
             style = MaterialTheme.typo.h2,
             color = if (isSelected) MaterialTheme.colors.text1 else MaterialTheme.colors.text2,
             textAlign = TextAlign.Center
         )
         HorizontalDivider(
-            modifier = Modifier.width(textWidth.value),
+            modifier = Modifier.width(textWidth),
             thickness = 2.dp,
             color = if (isSelected) Color.Black else Color.Transparent
         )
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun CalendarScreenTopAppBarPreview() {
-    val selectedTab = remember {
-        mutableStateOf(CalendarScreenViewModel.CalendarScreenState.CalendarTab.SCHEDULE)
-    }
-    CalendarScreenTopAppBar(
-        selectedTab = selectedTab.value,
-        onSelectTab = { selectedTab.value = it },
-        navToAddSchedule = {},
-        navToAddDiary = {},
-        navToNotification = {}
-    )
+private fun measureTextWidth(text: String, style: TextStyle): Dp {
+    val textMeasurer = rememberTextMeasurer()
+    val widthInPixels = textMeasurer.measure(text, style).size.width
+    return with(LocalDensity.current) { widthInPixels.toDp() }
 }
 
 @Composable
@@ -209,6 +251,7 @@ private fun CalendarScreenTopAppBarActions(
 
 @Composable
 private fun CalendarInfoPicker(
+    userCrops: List<CropModel>,
     calendarYear: Int,
     calendarMonth: Int,
     calendarCrop: CropModel,
@@ -217,12 +260,21 @@ private fun CalendarInfoPicker(
     onSelectCrop: (CropModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(Paddings.medium),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         CalendarYearMonthPicker(
             calendarYear = calendarYear,
             calendarMonth = calendarMonth,
             onSelectYear = onSelectYear,
             onSelectMonth = onSelectMonth
+        )
+        CalendarCropPicker(
+            userCrops = userCrops,
+            calendarCrop = calendarCrop,
+            onSelectCrop = onSelectCrop
         )
     }
 }
@@ -240,6 +292,7 @@ private fun CalendarYearMonthPicker(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
+            modifier = Modifier.padding(end = Paddings.medium),
             text = stringResource(
                 id = R.string.feature_main_calendar_year_month,
                 calendarYear,
@@ -259,60 +312,62 @@ private fun CalendarYearMonthPicker(
 
 @Composable
 private fun CalendarCropPicker(
-    selectedCrop: CropModel,
+    userCrops: List<CropModel>,
+    calendarCrop: CropModel,
     onSelectCrop: (CropModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showCropPickerSpinner by remember { mutableStateOf(false) }
+    var showCropPickerDropDown by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
-        Box(
+        CalendarCropPickerButton(
             modifier = Modifier
-                .clip(RoundedCornerShape(CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp))
+                .width(CalendarDesignToken.CALENDAR_CROP_PICKER_WIDTH.dp)
                 .clickable {
-                    showCropPickerSpinner = true
-                }
+                    showCropPickerDropDown = true
+                },
+            calendarCrop = calendarCrop
         )
-        Row(
-            modifier = Modifier.clickable {
-                showCropPickerSpinner = true
-            }
-        ) {
-            Text(
-                text = stringResource(id = selectedCrop.nameId),
-                style = MaterialTheme.typo.body1,
-                color = MaterialTheme.colors.text2
-            )
-            Icon(
-                imageVector = DreamIcon.Spinner,
-                contentDescription = ""
-            )
-        }
+        CalendarCropPickerDropDown(
+            modifier = Modifier
+                .background(Color.White)
+                .width(CalendarDesignToken.CALENDAR_CROP_PICKER_WIDTH.dp),
+            expanded = showCropPickerDropDown,
+            onDismissRequest = { showCropPickerDropDown = false },
+            userCrops = userCrops,
+            calendarCrop = calendarCrop,
+            onSelectCrop = onSelectCrop
+        )
     }
 }
 
-/*
 @Composable
-private fun CalendarTitleSpinner(
-    crop: CropModel,
-    onClick: () -> Unit,
+private fun CalendarCropPickerButton(
+    calendarCrop: CropModel,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Box(
         modifier = modifier
-            .clickable { onClick() },
-        verticalAlignment = Alignment.CenterVertically
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colors.text2,
+                shape = RoundedCornerShape(CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp)
+            )
     ) {
         Text(
-            modifier = Modifier,
-            text = stringResource(
-                id = R.string.feature_main_calendar_title,
-                stringResource(id = crop.nameId)
-            ),
-            style = MaterialTheme.typo.headerB
+            modifier = Modifier
+                .padding(vertical = Paddings.medium)
+                .padding(start = Paddings.large)
+                .align(Alignment.CenterStart),
+            text = stringResource(id = calendarCrop.nameId),
+            style = MaterialTheme.typo.body1,
+            color = MaterialTheme.colors.text2
         )
         Icon(
-            modifier = Modifier.padding(start = Paddings.medium),
+            modifier = Modifier
+                .padding(vertical = Paddings.medium)
+                .padding(end = Paddings.large)
+                .align(Alignment.CenterEnd),
             imageVector = DreamIcon.Spinner,
             contentDescription = ""
         )
@@ -320,53 +375,64 @@ private fun CalendarTitleSpinner(
 }
 
 @Composable
-private fun CalendarTitleDropDownMenu(
-    expandSpinner: Boolean,
+private fun CalendarCropPickerDropDown(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
     userCrops: List<CropModel>,
-    selectedCrop: CropModel,
+    calendarCrop: CropModel,
     onSelectCrop: (CropModel) -> Unit,
-    onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     DropdownMenu(
         modifier = modifier,
-        expanded = expandSpinner,
-        onDismissRequest = onDismiss
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
     ) {
         for (crop in userCrops) {
-            CalendarTitleDropDownMenuItem(
+            CalendarCropPickerDropDownItem(
+                modifier = Modifier
+                    .padding(Paddings.medium)
+                    .clickable {
+                        onSelectCrop(crop)
+                        onDismissRequest()
+                    },
                 crop = crop,
-                isSelected = (crop == selectedCrop),
-                onClick = {
-                    onSelectCrop(crop)
-                    onDismiss()
-                }
+                isSelected = (crop == calendarCrop)
             )
         }
     }
 }
 
 @Composable
-private fun CalendarTitleDropDownMenuItem(
+private fun CalendarCropPickerDropDownItem(
     crop: CropModel,
     isSelected: Boolean,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    DropdownMenuItem(
-        modifier = modifier
-            .background(
-                if (isSelected) MaterialTheme.colors.green1
-                else Color.Transparent
-            ),
-        text = {
-            Text(
-                text = stringResource(id = crop.nameId),
-                style = MaterialTheme.typo.bodyM,
-            )
-        },
-        onClick = onClick
+    Text(
+        modifier = modifier,
+        text = stringResource(id = crop.nameId),
+        style = MaterialTheme.typo.body1,
+        color = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.text2
     )
 }
 
-*/
+@Preview(showBackground = true)
+@Composable
+private fun CalendarCropPickerPreview() {
+    val calendarCrop = remember {
+        mutableStateOf(CropModel.POTATO)
+    }
+
+    CalendarCropPicker(
+        userCrops = listOf(
+            CropModel.POTATO,
+            CropModel.TOMATO,
+            CropModel.APPLE
+        ),
+        calendarCrop = calendarCrop.value,
+        onSelectCrop = {
+            calendarCrop.value = it
+        }
+    )
+}

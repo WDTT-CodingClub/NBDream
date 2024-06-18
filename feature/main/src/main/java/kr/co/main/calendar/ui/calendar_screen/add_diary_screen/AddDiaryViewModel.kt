@@ -1,28 +1,30 @@
-package kr.co.main.calendar.ui.calendar_route.add_diary_screen
+package kr.co.main.calendar.ui.calendar_screen.add_diary_screen
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.main.calendar.model.DiaryModel
-import kr.co.main.calendar.model.WeatherForecastModel
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import javax.inject.Inject
 
 
-interface AddDiaryInput {
+interface AddDiaryScreenEvent {
     fun onBackClick()
     fun onPostClick()
+
     fun onRegisterDateInput(date: LocalDate)
+
     fun onWorkLaborerInput(workLaborer: Int)
     fun onWorkHourInput(workHour: Int)
     fun onWorkAreaInput(workArea: Int)
+
     fun onAddWorkDescription(
         workCategory: DiaryModel.WorkDescriptionModel.TypeId,
         workDescription: String
     )
-
     fun onDeleteWorkDescription(workDescriptionId: String)
+
     fun onAddImage(imageUrl: String)
     fun onDeleteImage(imageUrl: String)
 
@@ -32,12 +34,32 @@ interface AddDiaryInput {
 @HiltViewModel
 internal class AddDiaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
-) : BaseViewModel<AddDiaryViewModel.State>(savedStateHandle), AddDiaryInput {
-    override fun createInitialState(savedState: Parcelable?): State {
-        TODO("Not yet implemented")
+) : BaseViewModel<AddDiaryViewModel.AddDiaryScreenState>(savedStateHandle), AddDiaryScreenEvent {
+
+    val event = this@AddDiaryViewModel
+
+    data class AddDiaryScreenState(
+        val diaryId: String = "",
+        val registerDate: LocalDate = LocalDate.now(),
+        val weatherForecast: String = "",
+        val workLaborer: Int = 0,
+        val workHour: Int = 0,
+        val workArea: Int = 0,
+        val workDescriptions: List<DiaryModel.WorkDescriptionModel> = emptyList(),
+        val images: List<String> = emptyList(),
+        val memo: String = ""
+    ) : BaseViewModel.State{
+        override fun toParcelable(): Parcelable? {
+            // TODO("serialize")
+            return null
+        }
     }
 
-    val input = this@AddDiaryViewModel
+    override fun createInitialState(savedState: Parcelable?): AddDiaryScreenState =
+        savedState?.let {
+            // TODO("deserialize")
+            AddDiaryScreenState()
+        }?: AddDiaryScreenState()
 
     override fun onBackClick() {
         TODO("Not yet implemented")
@@ -86,15 +108,4 @@ internal class AddDiaryViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    data class State(
-        val diaryId: String,
-        val registerDate: LocalDate = LocalDate.now(),
-        val weatherForecast: WeatherForecastModel,
-        val workLaborer: Int = 0,
-        val workHour: Int = 0,
-        val workArea: Int = 0,
-        val workDescriptions: List<DiaryModel.WorkDescriptionModel> = emptyList(),
-        val images: List<String> = emptyList(),
-        val memo: String = ""
-    ) : BaseViewModel.State
 }
