@@ -7,7 +7,7 @@ import java.time.temporal.WeekFields
 import java.util.Calendar
 import java.util.Locale
 
-internal class MainCalendarStateHolder(
+internal class InnerCalendarStateHolder(
     private val year: Int,
     private val month: Int
 ) {
