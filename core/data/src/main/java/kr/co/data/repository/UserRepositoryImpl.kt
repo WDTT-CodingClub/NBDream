@@ -38,7 +38,7 @@ internal class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun update(user: UserEntity) {
-        TODO("Not yet implemented")
+        remote.update(user.let(UserMapper::toLeft))
     }
 
     override suspend fun delete() {
