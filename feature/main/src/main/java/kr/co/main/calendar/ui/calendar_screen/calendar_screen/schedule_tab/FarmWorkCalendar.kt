@@ -15,13 +15,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kr.co.domain.entity.FarmWorkEntity
 import kr.co.main.R
 import kr.co.main.calendar.model.FarmWorkModel
-import kr.co.main.calendar.providers.FakeFarmWorkModelListProvider
 import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
@@ -116,6 +113,7 @@ private fun FarmWorkCalendarRow(
                 )
             }
 
+            // TODO farm work list empty 일 때 UI
             layout(
                 width = constraints.maxWidth,
                 height = placeables.first().height * placeables.size
@@ -156,15 +154,4 @@ private fun FarmWorkItem(
             textAlign = TextAlign.Center
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun FarmWorkCalendarPreview(
-    @PreviewParameter(FakeFarmWorkModelListProvider::class) farmWorks: List<FarmWorkModel>
-) {
-    FarmWorkCalendar(
-        modifier = Modifier.fillMaxWidth(),
-        farmWorks = farmWorks
-    )
 }
