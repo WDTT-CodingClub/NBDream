@@ -25,6 +25,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.collectLatest
 import kr.co.common.util.FileUtil
 import kr.co.main.R
 import kr.co.ui.ext.noRippleClickable
@@ -55,6 +57,7 @@ import timber.log.Timber
 @Composable
 internal fun MyPageProfileEditRoute(
     popBackStack: () -> Unit,
+    navigateToMyPage: () -> Unit,
     viewModel: MyPageProfileEditViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -69,6 +72,12 @@ internal fun MyPageProfileEditRoute(
             }
         }
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.complete.collectLatest {
+            navigateToMyPage()
+        }
+    }
 
     MyPageProfileEditScreen(
         state = state,
