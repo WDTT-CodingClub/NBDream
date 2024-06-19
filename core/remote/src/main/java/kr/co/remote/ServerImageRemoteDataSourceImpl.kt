@@ -32,16 +32,17 @@ internal class ServerImageRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun upload(domain: String, image: File): ServerImageResult {
         return client.post("$IMG_UPLOAD_URL$domain") {
-            MultiPartFormDataContent(
-                formData {
-                    append(IMG, image.readBytes(), Headers.build {
-                        append(HttpHeaders.ContentType, Files.probeContentType(image.toPath()))
-                        append(HttpHeaders.ContentDisposition, "form-data; name=\"file\"; filename=\"${image.name}\"")
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        append(IMG, image.readBytes(), Headers.build {
+                            append(HttpHeaders.ContentType, Files.probeContentType(image.toPath()))
+                            append(HttpHeaders.ContentDisposition, "filename=${image.name}")
+                        }
+                        )
                     }
-                    )
-                }
+                )
             )
-            contentType(MultiPart.FormData)
         }.body<PostServerImageResponse>()
             .let(ServerImageRemoteMapper::convert)
     }
