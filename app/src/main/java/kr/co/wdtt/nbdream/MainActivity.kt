@@ -30,29 +30,10 @@ class MainActivity : ComponentActivity() {
                 darkScrim = Color.TRANSPARENT
             )
         )
-
-        printHashKey()
-
         setContent {
             NBDreamTheme {
                 DreamApp()
             }
-        }
-    }
-
-    private fun printHashKey() {
-        try {
-            val info: PackageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-            for (signature in info.signatures) {
-                val md: MessageDigest = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                val hashKey = Base64.encodeToString(md.digest(), Base64.NO_WRAP)
-                Timber.d("KeyHash: $hashKey")
-            }
-        } catch (e: NoSuchAlgorithmException) {
-            Timber.e(e, "NoSuchAlgorithmException")
-        } catch (e: Exception) {
-            Timber.e(e, "Exception")
         }
     }
 }
