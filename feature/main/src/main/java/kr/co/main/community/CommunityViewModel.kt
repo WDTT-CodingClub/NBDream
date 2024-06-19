@@ -27,11 +27,11 @@ internal class CommunityViewModel @Inject constructor(
 
     // TODO: currentBoard 초기값? 혹은 들어올 때 받아서.
     private val _currentBoard = MutableStateFlow(CropEntity.Name.PEPPER)
-    val currentBoard = _currentBoard.asStateFlow()
+    private val currentBoard = _currentBoard.asStateFlow()
 
     // TODO: currentCategory 초기값? 혹은 들어올 때 받아서.
     private val _currentCategory = MutableStateFlow(BulletinEntity.BulletinCategory.Free)
-    val currentCategory = _currentCategory.asStateFlow()
+    private val currentCategory = _currentCategory.asStateFlow()
 
     private val _searchInput = MutableStateFlow("")
     val searchInput = _searchInput.asStateFlow()
@@ -59,36 +59,65 @@ internal class CommunityViewModel @Inject constructor(
 
     private val _writingImages = MutableStateFlow(listOf<WritingSelectedImageModel>())
     val writingImages = _writingImages.asStateFlow()
-    fun onAddImagesClick(images: List<Uri>, uriToFile: (Uri) -> File) {
-        _writingImages.value =
-            writingImages.value + images.map { WritingSelectedImageModel(uri = it) }
 
-        // TODO: 테스트용으로 첫번째 이미지 업로드
-        if (images.isNotEmpty()) {
-            val image = images[0]
+//    private fun setWritingImages(list: List<WritingSelectedImageModel>) {
+//        _writingImages.value = list
+//    }
+//
+//    private fun addWritingImages(list: List<WritingSelectedImageModel>) {
+//        _writingImages.value += list
+//    }
+
+    private fun addWritingImage(model: WritingSelectedImageModel) {
+        _writingImages.value += model
+    }
+
+    private fun removeWritingImage(model: WritingSelectedImageModel) {
+        _writingImages.value -= model  // 이거 이렇게 해도 되려나..?
+    }
+
+    private fun replaceWritingImagesByUri(model: WritingSelectedImageModel) {
+        val idx = writingImages.value.indexOfFirst { it.uri == model.uri }
+        if (idx < 0) return
+        _writingImages.value = writingImages.value.toMutableList().apply {
+            removeAt(idx)
+            add(idx, model)
+        }
+    }
+
+    fun onAddImagesClick(uris: List<Uri>, uriToFile: (Uri) -> File) {
+        for (uri in uris) {
+            val model = WritingSelectedImageModel(uri = uri)
+            addWritingImage(model)
             viewModelScope.launch {
                 Timber.d("uploadImage 코루틴 시작")
                 try {
-                    val url = uploadImage(uriToFile(image))
-                    Timber.d("uploadImage 코루틴 끝, url: $url")
+                    val serverImageEntity = uploadImage(uriToFile(uri))
+                    serverImageEntity?.let { replaceWritingImagesByUri(model.copy(url = it.url)) }
+                    Timber.d("uploadImage 코루틴 끝, url: $serverImageEntity")
                 } catch (e: Throwable) {
                     Timber.e(e, "uploadImage 코루틴 에러")
                 }
             }
-
-//            viewModelScopeEH.launch {
-//                val url = uploadImage(context, "bulletin", image)
-//                Timber.d("uploadImage 코루틴 끝, url: $url")
-//            }
         }
-
         Timber.d("addImages 끝")
     }
 
-    fun onRemoveImageClick(image: Uri) {
-        val index = writingImages.value.indexOfFirst { it.uri == image }
-        if (index < 0) return
-        _writingImages.value = writingImages.value.toMutableList().apply { removeAt(index) }
+    fun onRemoveImageClick(model: WritingSelectedImageModel) {
+        viewModelScope.launch {
+            try {
+                val boolean = serverImageRepository.delete(model.url.toString())
+                Timber.d("onRemoveImageClick 코루틴 끝, boolean: $boolean")
+            } catch (e: Throwable) {
+                Timber.e(e, "onRemoveImageClick 코루틴 에러")
+            }
+        }
+
+        removeWritingImage(model)
+
+//        val index = writingImages.value.indexOfFirst { it == model }
+//        if (index >= 0) _writingImages.value =
+//            writingImages.value.toMutableList().apply { removeAt(index) }
     }
 
     private suspend fun uploadImage(file: File) = serverImageRepository.upload("bulletin", file)
