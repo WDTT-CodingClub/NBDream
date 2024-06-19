@@ -31,22 +31,23 @@ internal class AccountBookRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun create(
-        expense: Long?,
-        revenue: Long?,
+        transactionType: String,
+        amount: Long,
         category: String,
         title: String,
         registerDateTime: String,
-        imageUrl: List<String>
+        imageUrls: List<String>
     ) {
         client.post(POST_ACCOUNT) {
             setBody(
                 PostAccountBookRequest(
-                    expense = expense,
-                    revenue = revenue,
+                    transactionType = transactionType,
+                    amount = amount,
                     category = category,
                     title = title,
                     registerDateTime = registerDateTime,
-                    imageUrl = imageUrl
+                    imageUrls = imageUrls,
+                    parsedRegisterDateTime = registerDateTime
                 )
             )
         }
@@ -58,16 +59,19 @@ internal class AccountBookRemoteDataSourceImpl @Inject constructor(
         sort: String,
         start: String,
         end: String,
-        cost: String
+        transactionType: String
     ) = client.get(GET_ACCOUNT_LIST) {
         setBody(
             GetAccountBookListRequest(
-                page = page,
+                lastContentsId = page,
                 category = category,
                 sort = sort,
                 start = start,
                 end = end,
-                cost = cost
+                transactionType = transactionType,
+                categoryEnum = category,
+                transactionTypeEnum = transactionType,
+                sortEnum = sort
             )
         )
     }
@@ -77,21 +81,24 @@ internal class AccountBookRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun update(
         id: String,
-        expense: Long?,
-        revenue: Long?,
+        transactionType: String,
+        amount: Long,
         category: String,
         title: String,
-        registerDateTime: String
+        registerDateTime: String,
+        imageUrls: List<String>
     ) {
-        client.put(PUT_ACCOUNT) {
+        client.put("$PUT_ACCOUNT/$id") {
             setBody(
                 UpdateAccountBookRequest(
                     id = id,
-                    expense = expense,
-                    revenue = revenue,
+                    transactionType = transactionType,
+                    amount = amount,
                     category = category,
                     title = title,
-                    registerDateTime = registerDateTime
+                    registerDateTime = registerDateTime,
+                    imageUrls = imageUrls,
+                    parsedRegisterDateTime = registerDateTime
                 )
             )
         }

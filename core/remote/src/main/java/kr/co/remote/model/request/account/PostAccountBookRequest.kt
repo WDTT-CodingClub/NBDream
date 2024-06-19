@@ -4,10 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class PostAccountBookRequest(
-    val title: String,
+    val transactionType: String,
+    val amount: Long,
     val category: String,
-    val imageUrl: List<String>,
-    val revenue: Long? = null,
-    val expense: Long? = null,
+    val title: String,
     val registerDateTime: String,
+    val imageUrls: List<String>,
+    val parsedRegisterDateTime: String
 )

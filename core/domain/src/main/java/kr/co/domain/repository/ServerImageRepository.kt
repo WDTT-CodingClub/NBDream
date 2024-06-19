@@ -6,5 +6,6 @@ import java.io.File
 interface ServerImageRepository {
     suspend fun upload(domain: String, image: File): ServerImageEntity?
 
-    // TODO: delete
+    suspend fun delete(imageUrl: String): Boolean
+
 }

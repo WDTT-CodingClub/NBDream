@@ -26,5 +26,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.common)
 
+    implementation(files("libs/oauth-5.9.1.arr"))
+
     Social()
 }

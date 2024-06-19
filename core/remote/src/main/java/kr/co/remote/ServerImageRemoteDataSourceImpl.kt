@@ -9,8 +9,10 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.delete
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -22,7 +24,10 @@ import kr.co.data.model.data.ServerImageResult
 import kr.co.data.source.remote.ServerImageRemoteDataSource
 import kr.co.nbdream.core.remote.BuildConfig
 import kr.co.remote.mapper.ServerImageRemoteMapper
+import kr.co.remote.model.request.community.DeleteImageRequest
 import kr.co.remote.model.response.PostServerImageResponse
+import kr.co.remote.model.response.community.DeleteImageResponse
+import kr.co.remote.model.response.community.convertToResult
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -125,9 +130,6 @@ internal class ServerImageRemoteDataSourceImpl @Inject constructor(
 ) : ServerImageRemoteDataSource {
 
     override suspend fun upload(domain: String, image: File): ServerImageResult {
-        // TODO: client를 DI로 받은 걸 사용하게끔 해야 함. 근데 여러 HttpClient가 존재할텐데.
-        val client = tempCreateHttpClient()
-
         return client.submitFormWithBinaryData(
             url = "api/images/upload/$domain",
             formData = formData {
@@ -142,4 +144,13 @@ internal class ServerImageRemoteDataSourceImpl @Inject constructor(
             .body<PostServerImageResponse>()
             .let(ServerImageRemoteMapper::convert)
     }
+
+    override suspend fun delete(imageUrl: String) = client.delete("api/images") {
+        setBody(
+            DeleteImageRequest(
+                imageUrl = imageUrl,
+            )
+        )
+    }.body<DeleteImageResponse>().convertToResult()
+
 }
