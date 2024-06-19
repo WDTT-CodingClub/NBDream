@@ -14,6 +14,7 @@ import kr.co.data.source.remote.ServerImageRemoteDataSource
 import kr.co.remote.mapper.ServerImageRemoteMapper
 import kr.co.remote.model.response.PostServerImageResponse
 import java.io.File
+import java.nio.file.Files
 import javax.inject.Inject
 
 internal class ServerImageRemoteDataSourceImpl @Inject constructor(
@@ -22,24 +23,21 @@ internal class ServerImageRemoteDataSourceImpl @Inject constructor(
 
     private companion object {
         const val IMG = "image"
-        const val IMG_EXT = "image/png"
         const val IMG_UPLOAD_URL = "api/images/upload/"
         const val IMG_DELETE_URL = "api/images/"
     }
 
     override suspend fun upload(domain: String, image: File): ServerImageResult {
         return client.post("$IMG_UPLOAD_URL$domain") {
-            setBody {
-                MultiPartFormDataContent(
-                    formData {
-                        append(IMG, image.readBytes(), Headers.build {
-                            append(HttpHeaders.ContentType, IMG_EXT)
-                            append(HttpHeaders.ContentDisposition, "filename=${image.name}")
-                        }
-                        )
+            MultiPartFormDataContent(
+                formData {
+                    append(IMG, image.readBytes(), Headers.build {
+                        append(HttpHeaders.ContentType, Files.probeContentType(image.toPath()))
+                        append(HttpHeaders.ContentDisposition, "filename=${image.name}")
                     }
-                )
-            }
+                    )
+                }
+            )
         }.body<PostServerImageResponse>()
             .let(ServerImageRemoteMapper::convert)
     }

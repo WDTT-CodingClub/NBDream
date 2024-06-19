@@ -1,5 +1,6 @@
 package kr.co.domain.usecase.user
 
+import kotlinx.coroutines.flow.first
 import kr.co.domain.entity.UserEntity
 import kr.co.domain.repository.SessionRepository
 import kr.co.domain.repository.UserRepository
@@ -15,7 +16,18 @@ class SaveUserLocalUseCase @Inject constructor(
     override suspend fun build(params: UserEntity?) {
         checkNotNull(params)
 
-        userRepository.save(params)
-        sessionRepository.save(params.name)
+        userRepository.fetchLocal().first().let {
+            it.copy(
+                name = params.name ?: it.name,
+                address = params.address ?: it.address,
+                profileImage = params.profileImage ?: it.profileImage,
+                longitude = params.longitude ?: it.longitude,
+                latitude = params.latitude ?: it.latitude,
+                crops = params.crops.ifEmpty { it.crops }
+            ).let { user ->
+                userRepository.save(user)
+                sessionRepository.save(user.name)
+            }
+        }
     }
 }

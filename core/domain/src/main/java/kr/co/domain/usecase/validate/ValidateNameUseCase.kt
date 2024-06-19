@@ -8,6 +8,6 @@ import javax.inject.Singleton
 class ValidateNameUseCase @Inject constructor() {
     operator fun invoke(name: String?): Boolean {
         checkNotNull(name)
-        return ValidatePatterns.name.matcher(name.trim()).matches()
+        return ValidatePatterns.nickName.matcher(name.trim()).matches()
     }
 }
