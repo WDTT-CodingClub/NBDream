@@ -15,11 +15,12 @@ internal data class GetAccountBookListResponse(
         val totalRevenue: Long,
         val totalExpense: Long,
         val totalCost: Long,
+        val hasNext: Boolean,
         val items: List<Item>
     ) {
         @Serializable
         data class Item(
-            val id: String,
+            val id: Long,
             val title: String,
             val category: String,
             val year: Int,

@@ -5,4 +5,5 @@ data class AccountBookTotalEntity(
     val totalRevenue: Long,
     val totalExpense: Long,
     val totalCost: Long,
+    val hasNext: Boolean
 )

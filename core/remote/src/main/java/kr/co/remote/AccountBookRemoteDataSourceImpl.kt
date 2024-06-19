@@ -47,15 +47,14 @@ internal class AccountBookRemoteDataSourceImpl @Inject constructor(
                     category = category,
                     title = title,
                     registerDateTime = registerDateTime,
-                    imageUrls = imageUrls,
-                    parsedRegisterDateTime = registerDateTime
+                    imageUrls = imageUrls
                 )
             )
         }
     }
 
     override suspend fun fetchList(
-        page: Int,
+        lastContentsId: Long?,
         category: String,
         sort: String,
         start: String,
@@ -63,7 +62,7 @@ internal class AccountBookRemoteDataSourceImpl @Inject constructor(
         transactionType: String
     ): AccountBookListData {
         return client.get(GET_ACCOUNT_LIST) {
-            parameter("lastContentsId", page)
+            parameter("lastContentsId", lastContentsId)
             parameter("category", category)
             parameter("sort", sort)
             parameter("start", start)
@@ -74,7 +73,7 @@ internal class AccountBookRemoteDataSourceImpl @Inject constructor(
 
 
     override suspend fun update(
-        id: String,
+        id: Long,
         transactionType: String,
         amount: Long,
         category: String,
@@ -91,20 +90,19 @@ internal class AccountBookRemoteDataSourceImpl @Inject constructor(
                     category = category,
                     title = title,
                     registerDateTime = registerDateTime,
-                    imageUrls = imageUrls,
-                    parsedRegisterDateTime = registerDateTime
+                    imageUrls = imageUrls
                 )
             )
         }
     }
 
-    override suspend fun fetchDetail(id: String): AccountBookData =
+    override suspend fun fetchDetail(id: Long): AccountBookData =
          client.get("$GET_ACCOUNT_DETAIL/$id")
             .body<GetAccountBookDetailResponse>()
             .let(AccountBookRemoteMapper::convert)
 
 
-    override suspend fun delete(id: String) {
+    override suspend fun delete(id: Long) {
         client.delete("$DELETE_ACCOUNT/$id")
     }
 

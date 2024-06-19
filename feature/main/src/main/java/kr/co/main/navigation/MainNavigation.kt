@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
+import kr.co.main.accountbook.content.AccountBookContentScreen
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.register.AccountBookRegister
 import kr.co.main.community.BulletinDetailScreen
@@ -16,6 +17,7 @@ import kr.co.main.my.MyPageRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
 import kr.co.main.my.setting.MyPageSettingRoute
 import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
+import timber.log.Timber
 
 const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
@@ -122,14 +124,16 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = "$ACCOUNT_BOOK_CONTENT_ROUTE/{id}"
     ) { backStackEntry ->
-        val id = backStackEntry.arguments?.getString("id")
+        val idString = backStackEntry.arguments?.getString("id")
+        val id = idString?.toLongOrNull()
+
         if (id != null) {
             AccountBookContentScreen(
                 popBackStack = navController::popBackStack,
                 id = id
             )
         } else {
-
+            Timber.e("Invalid id")
         }
     }
 

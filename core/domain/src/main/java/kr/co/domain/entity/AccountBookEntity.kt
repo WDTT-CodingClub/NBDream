@@ -2,7 +2,7 @@ package kr.co.domain.entity
 
 
 data class AccountBookEntity(
-    val id: String,
+    val id: Long,
     val title: String,
     val category: Category = Category.OTHER,
     val imageUrl: List<String> = emptyList(),

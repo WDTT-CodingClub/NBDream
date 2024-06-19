@@ -12,6 +12,7 @@ internal object AccountBookListRemoteMapper : Mapper<GetAccountBookListResponse,
                 totalRevenue = totalRevenue,
                 totalExpense = totalExpense,
                 totalCost = totalCost,
+                hasNext = hasNext,
                 items = items.map {
                     AccountBookListData.Item(
                         id = it.id,

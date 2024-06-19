@@ -13,7 +13,8 @@ internal object GetAccountBookListMapper
                 totalCost = totalCost,
                 totalExpense = totalExpense,
                 totalRevenue = totalRevenue,
-                categories = categories
+                categories = categories,
+                hasNext = hasNext
             ) to items.map {
                 AccountBookEntity(
                     id = it.id,
