@@ -15,8 +15,8 @@ data class AccountBookListData(
         val month: Int,
         val day: Int,
         val dayName: String,
-        val revenue: Long?,
-        val expense: Long?,
+        val transactionType: String,
+        val amount: Long,
         val thumbnail: String,
         val imageSize: Int,
     )

@@ -4,10 +4,9 @@ import kr.co.common.mapper.Mapper
 import kr.co.data.model.data.AccountBookListData
 import kr.co.remote.model.response.GetAccountBookListResponse
 
-internal object AccountBookListRemoteMapper
-    : Mapper<GetAccountBookListResponse, AccountBookListData> {
+internal object AccountBookListRemoteMapper : Mapper<GetAccountBookListResponse, AccountBookListData> {
     override fun convert(param: GetAccountBookListResponse): AccountBookListData =
-        with(param.resultData) {
+        with(param.data) {
             AccountBookListData(
                 categories = categories,
                 totalRevenue = totalRevenue,
@@ -22,14 +21,12 @@ internal object AccountBookListRemoteMapper
                         month = it.month,
                         day = it.day,
                         dayName = it.dayName,
-                        revenue = it.revenue,
-                        expense = it.expense,
+                        transactionType = it.transactionType,
+                        amount = it.amount ?: 0L,
                         thumbnail = it.thumbnail,
                         imageSize = it.imageSize
-
                     )
                 }
             )
         }
-
 }
