@@ -50,18 +50,24 @@ internal class MyPageProfileEditViewModel @Inject constructor(
     }
 
     fun onClickConfirm() = loadingScope {
-        updateState {
-            copy(nameValid = validateNameUseCase(currentState.name))
+        validateNameUseCase(currentState.name).run {
+            updateState {
+                copy(nameValid = this@run)
+            }
+            if (this) {
+                registerUserUseCase(
+                    UserEntity(
+                        name = currentState.name!!,
+                        profileImage = currentState.profileImageUrl,
+                        address = currentState.address
+                    )
+                )
+            } else {
+                throw IllegalArgumentException("InValid")
+            }
         }
-
-        registerUserUseCase(
-            UserEntity(
-                name = currentState.name!!,
-                profileImage = currentState.profileImageUrl,
-                address = currentState.address
-            )
-        )
     }.invokeOnCompletion {
+        if (it == null)
         viewModelScopeEH.launch {
             saveUserLocalUseCase(
                 UserEntity(
@@ -88,7 +94,7 @@ internal class MyPageProfileEditViewModel @Inject constructor(
 
     data class State(
         val name: String? = null,
-        val nameValid: Boolean = true,
+        val nameValid: Boolean = false,
         val profileImageUrl: String? = null,
         val address: String? = null,
     ) : BaseViewModel.State {
