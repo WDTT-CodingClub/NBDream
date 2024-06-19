@@ -1,13 +1,6 @@
 package kr.co.onboard.address
 
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.ViewGroup
-import android.webkit.JavascriptInterface
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +11,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -59,6 +51,7 @@ import kr.co.onboard.R
 import kr.co.onboard.crop.StepText
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
@@ -75,7 +68,7 @@ internal fun InputAddressScreen(
     val state by viewModel.state.collectAsState()
 
     Scaffold(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier.padding(Paddings.xlarge),
         topBar = {
             DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title))
         }
@@ -83,8 +76,14 @@ internal fun InputAddressScreen(
         Column(
             modifier = modifier.padding(paddingValues)
         ) {
-            DynamicStepProgressBars(modifier, colors = listOf(MaterialTheme.colors.green2, Color.Transparent))
-            StepText(stringResource(id = R.string.feature_onboard_step_bar_first), modifier = modifier)
+            DynamicStepProgressBars(
+                modifier,
+                colors = listOf(MaterialTheme.colors.green2, Color.Transparent)
+            )
+            StepText(
+                stringResource(id = R.string.feature_onboard_step_bar_first),
+                modifier = modifier
+            )
             DescriptionText(stringResource(id = R.string.feature_onboard_my_farm_address_description))
             Address(
                 modifier,
@@ -101,7 +100,10 @@ internal fun InputAddressScreen(
                 }
             )
             KakaoMapScreen(modifier) //padding 없애야 함
-            NextButton(skipId = R.string.feature_onboard_my_farm_skip_input, nextId = R.string.feature_onboard_my_farm_next)
+            NextButton(
+                skipId = R.string.feature_onboard_my_farm_skip_input,
+                nextId = R.string.feature_onboard_my_farm_next
+            )
         }
     }
 }
@@ -151,12 +153,13 @@ fun DynamicStepProgressBars(
 @Composable
 fun DescriptionText(
     text: String
-){
+) {
     Text(
         text,
         style = MaterialTheme.typo.titleSB,
     )
 }
+
 @Composable
 private fun Address(
     modifier: Modifier,
@@ -197,7 +200,11 @@ private fun Address(
                     .height(35.dp)
 
             ) {
-                Text(stringResource(id = R.string.feature_onboard_my_farm_address_find), style = MaterialTheme.typo.body1, color = MaterialTheme.colors.secondary)
+                Text(
+                    stringResource(id = R.string.feature_onboard_my_farm_address_find),
+                    style = MaterialTheme.typo.body1,
+                    color = MaterialTheme.colors.secondary
+                )
             }
         }
     }
@@ -266,7 +273,7 @@ fun KakaoMapScreen(
         )
     } else {
         // 초기화가 완료되지 않았을 때 보여줄 로딩 UI 또는 메시지
-        Text("Loading map...", modifier = modifier.padding(16.dp))
+        Text("Loading map...", modifier = modifier.padding(Paddings.xlarge))
     }
 }
 
@@ -313,7 +320,10 @@ private fun CustomTextField(
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     if (value.isEmpty()) {
-                        Text(text = placeholder, style = TextStyle(color = Color.Gray, fontSize = 16.sp))
+                        Text(
+                            text = placeholder,
+                            style = TextStyle(color = Color.Gray, fontSize = 16.sp)
+                        )
                     }
                     innerTextField()
                 }
@@ -338,24 +348,42 @@ private fun InputAddressScreenPreview() {
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 private fun DynamicStepProgressBarsPreview() {
     Column(modifier = Modifier.fillMaxWidth()) {
-        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2)) // 한 개의 StepProgressBar
+        DynamicStepProgressBars(
+            Modifier,
+            colors = listOf(lightColors.green2)
+        ) // 한 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
-        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2, Color.Transparent)) // 두 개의 StepProgressBar
+        DynamicStepProgressBars(
+            Modifier,
+            colors = listOf(lightColors.green2, Color.Transparent)
+        ) // 두 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
-        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2, lightColors.green2)) // 두 개의 StepProgressBar
+        DynamicStepProgressBars(
+            Modifier,
+            colors = listOf(lightColors.green2, lightColors.green2)
+        ) // 두 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
-        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2, lightColors.green2, lightColors.green3)) // 세 개의 StepProgressBar
+        DynamicStepProgressBars(
+            Modifier,
+            colors = listOf(lightColors.green2, lightColors.green2, lightColors.green3)
+        ) // 세 개의 StepProgressBar
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun AddressPreview(){
-    Address(Modifier, fullRoadAddr = "허리도 가늘군 만지면 부서지리", jibunAddr = "jibunAddr", onFullRoadAddrChange = {}, onJubunAddrChange = {}) {
+private fun AddressPreview() {
+    Address(
+        Modifier,
+        fullRoadAddr = "허리도 가늘군 만지면 부서지리",
+        jibunAddr = "jibunAddr",
+        onFullRoadAddrChange = {},
+        onJubunAddrChange = {}) {
 
     }
 }

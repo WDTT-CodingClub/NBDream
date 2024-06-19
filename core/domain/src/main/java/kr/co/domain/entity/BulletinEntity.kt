@@ -1,40 +1,40 @@
 package kr.co.domain.entity
 
 data class BulletinEntity(
-    val id: String,  // 게시글 id가 필요할지 안할지? 필요하다면 어떤 식으로 만들지?
-    val userId: String,
+    val authorId: Long,
+    val bulletinId: Long,
+    val nickname: String,
+    val profileImageUrl: String,
     val content: String,
-    val crop:CropEntity,
-    val pictures: List<String> = emptyList(),
-    val bulletinCategory: BulletinCategory = BulletinCategory.Free,
+    val crop: CropEntity,
+    val imageUrls: List<String>,
+    val bulletinCategory: BulletinCategory,
     val createdTime: String,
-    val deletedTime: String? = null,
-    val modifiedTime: String? = null,
-    val bookmarkedUsers: List<String> = emptyList(),
-    val comments: List<String> = emptyList(),  // 댓글 id만 들고 통신할지, 데이터 들고있을지?
-    val bulletinSortType: BulletinSortType = BulletinSortType.Recent,  // 댓글 id만 들고 통신할지, 데이터 들고있을지?
+    val comments: List<CommentEntity>,
+    val bookmarkedCount: Long,
 ) {
+    companion object {
+        fun dummy(idx: Int = 0) = BulletinEntity(
+            authorId = 22222220 + (idx).toLong(),
+            bulletinId = 33333330 + (idx).toLong(),
+            nickname = "nickname${idx}",
+            profileImageUrl = "https://profileImageUrl.com/${idx}",
+            content = "content${idx}",
+            crop = CropEntity(CropEntity.Name.entries[(idx) % CropEntity.Name.entries.size]),
+            imageUrls = emptyList(),
+            bulletinCategory = BulletinCategory.entries[(idx) % BulletinCategory.entries.size],
+            createdTime = "createdTime${idx}",
+            comments = emptyList(),
+            bookmarkedCount = 220 + (idx).toLong(),
+        )
+    }
 
     enum class BulletinCategory(
-        val value: String,  // value가 필요 없을지도
+        val queryName: String,
     ) {
-        Free("자유주제"),
-        Qna("질문"),
-        Disease("병해충"),
+        Free("free"),
+        Qna("qna"),
+        Disease("bug"),
     }
 
-    enum class BulletinSortType {
-        Recent,
-        Order,
-    }
-
-    // 나중에 파일 나눌거. 일단 여기에 작성
-    data class CommentEntity(
-        val id: String,  // 댓글 id?
-        val userId: String,
-        val content: String,
-        val createdTime: String,
-        val deletedTime: String? = null,
-        val modifiedTime: String? = null,  // 댓글 수정은 가능하게 할지?
-    )
 }

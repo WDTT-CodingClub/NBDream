@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,42 +54,18 @@ internal fun AccountBookRoute(
     )
 }
 
-@Preview
-@Composable
-private fun PreviewAccountBookScreen() {
-
-}
-
 @Composable
 private fun AccountBookScreen(
     state: AccountBookViewModel.State = AccountBookViewModel.State(),
     navigationToRegister: () -> Unit
 ) {
     var sortOrder by remember { mutableStateOf(SortOrder.RECENCY) }
-    var showTotalExpenses by remember { mutableStateOf(true) }
-    var showTotalRevenue by remember { mutableStateOf(false) }
-    val totalExpenses = accountBookList.sumOf { it.expense ?: 0L }
-    val totalRevenue = accountBookList.sumOf { it.revenue ?: 0L }
+    var showingExpenses by remember { mutableStateOf(true) }
 
     var daysInRange by remember { mutableLongStateOf(0L) }
 
-    val sortedList = remember(accountBookList, sortOrder) {
-        when (sortOrder) {
-            SortOrder.RECENCY -> accountBookList.sortedWith(
-                compareByDescending<AccountBookEntity> { it.year ?: Int.MIN_VALUE }
-                    .thenByDescending { it.month ?: Int.MIN_VALUE }
-                    .thenByDescending { it.day ?: Int.MIN_VALUE }
-            )
-
-            SortOrder.OLDEST -> accountBookList.sortedWith(
-                compareBy<AccountBookEntity> { it.year ?: Int.MAX_VALUE }
-                    .thenBy { it.month ?: Int.MAX_VALUE }
-                    .thenBy { it.day ?: Int.MAX_VALUE }
-            )
-        }
-    }
-
     Scaffold(
+        topBar = {},
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingActionButton(
@@ -115,23 +90,20 @@ private fun AccountBookScreen(
             Column {
                 CalendarSection(onDaysInRangeChange = { daysInRange = it })
                 GraphSection(
-                    showTotalExpenses,
-                    showTotalRevenue,
-                    totalExpenses,
-                    totalRevenue,
-                    0,
-                    daysInRange,
-                    { showTotalExpenses = true; showTotalRevenue = false },
-                    { showTotalExpenses = false; showTotalRevenue = true }
+                    state = state,
+                    daysInRange = daysInRange,
+                    showingExpenses = showingExpenses,
+                    onToggleTypeClick = { showingExpenses = !showingExpenses }
                 )
-                SelectorSection(sortOrder) {
+                SelectorSection(state, sortOrder) {
                     sortOrder = it
                 }
-                AccountBooksList(sortedList)
+                AccountBooksList(state.accountBooks)
             }
         }
     }
 }
+
 
 @Composable
 private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
@@ -148,6 +120,7 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
     onDaysInRangeChange(daysInRange)
 
     var bottomSheetState by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf("1개월") }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -169,6 +142,10 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
 
     if (bottomSheetState) {
         AccountBookCalendarBottomSheet(
+//            selectedOption = selectedOption,
+//            onOptionSelected = { newOption ->
+//                selectedOption = newOption
+//            },
             onSelectedListener = { selectedStartDate, selectedEndDate ->
                 startDate.value = LocalDate.parse(selectedStartDate)
                 endDate.value = LocalDate.parse(selectedEndDate)
@@ -178,26 +155,30 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
         )
     }
 }
-
 @Composable
 private fun GraphSection(
-    showTotalExpenses: Boolean,
-    showTotalRevenue: Boolean,
-    totalExpenses: Long,
-    totalRevenue: Long,
-    totalCost: Long?,
+    state: AccountBookViewModel.State,
     daysInRange: Long,
-    onShowExpensesClick: () -> Unit,
-    onShowRevenueClick: () -> Unit
+    showingExpenses: Boolean,
+    onToggleTypeClick: () -> Unit
 ) {
-    val expensesMap = remember(accountBookList) {
-        groupByCategory(accountBookList.filter { it.expense != null }, AccountBookEntity::expense)
-    }
+    val data: List<Float>
+    val categories: List<String>
 
-    val revenuesMap = remember(accountBookList) {
-        groupByCategory(accountBookList.filter { it.revenue != null }, AccountBookEntity::revenue)
-    }
+    val totalExpense = state.totalExpense ?: 0L
+    val totalRevenue = state.totalRevenue ?: 0L
 
+    if (showingExpenses) {
+        data = if (totalExpense > 0) listOf(totalExpense.toFloat()) else emptyList()
+        categories = state.accountBooks
+            .filter { it.transactionType == AccountBookEntity.TransactionType.EXPENSE }
+            .map { it.category }
+    } else {
+        data = if (totalRevenue > 0) listOf(totalRevenue.toFloat()) else emptyList()
+        categories = state.accountBooks
+            .filter { it.transactionType == AccountBookEntity.TransactionType.REVENUE }
+            .map { it.category }
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -207,8 +188,8 @@ private fun GraphSection(
             modifier = Modifier.size(100.dp)
         ) {
             AccountBookGraph(
-                data = if (showTotalExpenses) expensesMap.values.toList() else revenuesMap.values.toList(),
-                categories = getCategoryNames(if (showTotalExpenses) expensesMap.keys.toList() else revenuesMap.keys.toList()),
+                data = data,
+                categories = categories,
                 label = "${daysInRange}일",
                 modifier = Modifier.size(100.dp)
             )
@@ -220,26 +201,17 @@ private fun GraphSection(
         ) {
             ClickableTotalText(
                 text = "지출",
-                onClick = onShowExpensesClick,
-                isSelected = showTotalExpenses
+                onClick = { onToggleTypeClick() },
+                isSelected = showingExpenses
             )
             ClickableTotalText(
                 text = "수입",
-                onClick = onShowRevenueClick,
-                isSelected = showTotalRevenue
+                onClick = { onToggleTypeClick() },
+                isSelected = !showingExpenses
             )
-            if (showTotalExpenses) {
-                Text(
-                    text = "-${formatNumber(totalExpenses)}원",
-                    style = MaterialTheme.typo.bodyM
-                )
-            } else {
-                Text(
-                    text = "+${formatNumber(totalRevenue)}원",
-                    style = MaterialTheme.typo.bodyM
-                )
-            }
-            Text(text = "합계: ${totalCost?.let { formatNumber(it) }}원")
+            Text(
+                text = "합계: ${state.totalCost?.let { formatNumber(it) }}원"
+            )
         }
     }
 }
@@ -298,7 +270,11 @@ private fun AccountBookOptionButton(option: String, isSelected: Boolean, onSelec
 }
 
 @Composable
-private fun SelectorSection(sortOrder: SortOrder, onSortOrderChange: (SortOrder) -> Unit) {
+private fun SelectorSection(
+    state: AccountBookViewModel.State,
+    sortOrder: SortOrder,
+    onSortOrderChange: (SortOrder) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -314,13 +290,13 @@ private fun SelectorSection(sortOrder: SortOrder, onSortOrderChange: (SortOrder)
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        CategorySelector()
+        CategorySelector(state)
         SortOrderSelector(sortOrder, onSortOrderChange)
     }
 }
 
 @Composable
-private fun CategorySelector() {
+private fun CategorySelector(state: AccountBookViewModel.State) {
     var bottomSheetState by remember { mutableStateOf(false) }
 
     Row(
@@ -331,7 +307,7 @@ private fun CategorySelector() {
         Text(
             text = "카테고리",
             modifier = Modifier.padding(end = 4.dp),
-            style = MaterialTheme.typo.bodyM
+            style = MaterialTheme.typography.bodyMedium
         )
         Icon(
             imageVector = Icons.Default.ArrowDropDown,
@@ -341,21 +317,19 @@ private fun CategorySelector() {
     }
 
     if (bottomSheetState) {
-        AccountBookCategoryBottomSheet(
-            onSelectedListener = { selectedCategory ->
-                // TODO 선택된 카테고리 처리
-                bottomSheetState = false
-            },
-            categories = listOf(
-                "농약",
-                "종자/종묘",
-                "비료",
-                "농산물 판매"
-            ),
-            dismissBottomSheet = { bottomSheetState = false }
-        )
+        state.categories?.let {
+            AccountBookCategoryBottomSheet(
+                onSelectedListener = { selectedCategory ->
+                    // TODO Handle selected category
+                    bottomSheetState = false
+                },
+                categories = it,
+                dismissBottomSheet = { bottomSheetState = false }
+            )
+        }
     }
 }
+
 
 @Composable
 private fun SortOrderSelector(sortOrder: SortOrder, onSortOrderChange: (SortOrder) -> Unit) {
@@ -381,18 +355,16 @@ private fun SortOrderSelector(sortOrder: SortOrder, onSortOrderChange: (SortOrde
 }
 
 @Composable
-private fun AccountBooksList(sortedList: List<AccountBookEntity>) {
-    LazyColumn(
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
-    ) {
-        items(sortedList) { accountBook ->
+private fun AccountBooksList(accountBooks: List<AccountBookViewModel.State.AccountBook>) {
+    LazyColumn {
+        items(accountBooks) { accountBook ->
             AccountBookItem(accountBook)
         }
     }
 }
 
 @Composable
-private fun AccountBookItem(accountBook: AccountBookEntity) {
+private fun AccountBookItem(accountBook: AccountBookViewModel.State.AccountBook) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -405,13 +377,12 @@ private fun AccountBookItem(accountBook: AccountBookEntity) {
         }
         Column(modifier = Modifier.weight(2f)) {
             Text(text = accountBook.title)
-            accountBook.revenue?.let {
-                Text(text = "+${formatNumber(it)}원")
-            } ?: accountBook.expense?.let {
-                Text(text = "-${formatNumber(it)}원")
-            }
+            Text(
+                text = "${accountBook.amount}원",
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
-        Text(text = accountBook.category.value, modifier = Modifier.weight(2f))
+        Text(text = accountBook.category)
         val imageUrl = accountBook.imageUrl.firstOrNull()
         if (imageUrl != null) {
             Image(
@@ -485,60 +456,7 @@ private fun ClickableTotalText(
     }
 }
 
-private fun formatNumber(number: Long): String {
+fun formatNumber(number: Long): String {
     val formatter = NumberFormat.getNumberInstance()
     return formatter.format(number)
 }
-
-private fun getCategoryNames(categories: List<AccountBookEntity.Category>): List<String> {
-    return categories.map { it.value }
-}
-
-private fun groupByCategory(
-    accountBooks: List<AccountBookEntity>,
-    selector: (AccountBookEntity) -> Long?
-): Map<AccountBookEntity.Category, Float> {
-    return accountBooks
-        .groupBy { it.category }
-        .mapValues { (_, accounts) ->
-            accounts.sumOf { selector(it)!! }.toFloat()
-        }
-}
-
-private val accountBookList = listOf(
-    AccountBookEntity(
-        id = "1",
-        title = "옥수수 판매",
-        category = AccountBookEntity.Category.FARM_PRODUCT_SALES,
-        day = 12,
-        dayName = "월요일",
-        revenue = 50000,
-        imageUrl = listOf("https://cdn.mkhealth.co.kr/news/photo/202206/58096_61221_124.jpg")
-    ),
-    AccountBookEntity(
-        id = "2",
-        title = "비료 구입",
-        category = AccountBookEntity.Category.FERTILIZER,
-        day = 14,
-        dayName = "수요일",
-        expense = 20000,
-        imageUrl = listOf("https://godomall.speedycdn.net/6686a1fdb6f0fed93d4f44074b951d13/goods/1000000025/image/main/1000000025_main_032.jpg")
-    ),
-    AccountBookEntity(
-        id = "3",
-        title = "종자 구매",
-        category = AccountBookEntity.Category.SEEDS_AND_SEEDLINGS,
-        day = 16,
-        dayName = "금요일",
-        expense = 15000,
-        imageUrl = listOf("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnN4P5HnBeFFnpRoF3rUPmGt8lb9YEkqB2YA&s")
-    ),
-    AccountBookEntity(
-        id = "4",
-        title = "농약 살포",
-        category = AccountBookEntity.Category.PESTICIDES,
-        day = 18,
-        dayName = "일요일",
-        expense = 10000,
-    ),
-)

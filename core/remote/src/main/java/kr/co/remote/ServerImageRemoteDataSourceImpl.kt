@@ -14,6 +14,7 @@ import io.ktor.http.contentType
 import kr.co.data.model.data.ServerImageResult
 import kr.co.data.source.remote.ServerImageRemoteDataSource
 import kr.co.remote.mapper.ServerImageRemoteMapper
+import kr.co.remote.model.request.community.DeleteImageRequest
 import kr.co.remote.model.response.PostServerImageResponse
 import java.io.File
 import java.nio.file.Files
@@ -47,9 +48,12 @@ internal class ServerImageRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun delete(url: String) {
         client.delete(IMG_DELETE_URL) {
-            setBody {
-                mapOf("imageUrl" to url) //TODO request 만들것
-            }
+            setBody(
+                DeleteImageRequest(
+                    imageUrl = url,
+                )
+            )
         }
+
     }
 }

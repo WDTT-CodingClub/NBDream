@@ -77,9 +77,8 @@ private fun PreviewAccountBookRegister() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountBookRegister() {
+internal fun AccountBookRegister() {
     var selectedCategory by remember { mutableStateOf("지출") }
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedCategoryText by remember { mutableStateOf("선택하세요") }
@@ -371,7 +370,7 @@ fun AccountBookRegister() {
     )
 
     if (showDatePicker) {
-        ShowDatePickerDialog(
+        AccountBookDatePickerDialog(
             onClickCancel = { showDatePicker = false },
             onClickConfirm = {selectedDate ->
                 currentDateTime = selectedDate
@@ -387,7 +386,7 @@ fun AccountBookRegister() {
                 selectedCategoryText = category
                 showBottomSheet = false
             },
-            categories = AccountBookEntity.Category.entries.map { it.value },
+            categories = AccountBookEntity.Category.entries.map { it.display },
             dismissBottomSheet = { showBottomSheet = false }
         )
     }
@@ -395,12 +394,12 @@ fun AccountBookRegister() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ShowDatePickerDialog(
+fun AccountBookDatePickerDialog(
     onClickCancel: () -> Unit,
     onClickConfirm: (yyyyMMdd: String) -> Unit
 ) {
     val datePickerState = rememberDatePickerState(
-        yearRange = IntRange(1900, 2100),
+        yearRange = IntRange(2000, 2050),
         initialDisplayMode = DisplayMode.Picker,
         initialSelectedDateMillis = System.currentTimeMillis(),
         selectableDates = object : SelectableDates {

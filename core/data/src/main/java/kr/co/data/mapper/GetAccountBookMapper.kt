@@ -14,12 +14,8 @@ internal object GetAccountBookMapper
                 category = GetAccountBookListMapper.toCategory(category),
                 imageUrl = imageUrls,
                 registerDateTime = registerDateTime,
-                year = year,
-                month = month,
-                day = day,
-                dayName = dayName,
-                revenue = revenue,
-                expense = expense
+                transactionType = GetAccountBookListMapper.toTransactionType(transactionType),
+                amount = amount
             )
         }
 }

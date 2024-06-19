@@ -11,8 +11,7 @@ import javax.inject.Inject
 internal class HolidayRepositoryImpl @Inject constructor(
     private val remote: HolidayRemoteDataSource
 ) : HolidayRepository {
-    override suspend fun get(year: Int, month: Int): Flow<List<HolidayEntity>> =
-        remote.get(year, month).mapLatest {
-            HolidayMapper.convert(it)
-        }
+    override fun getHolidays(year: Int, month: Int): Flow<List<HolidayEntity>> {
+        TODO("Not yet implemented")
+    }
 }
