@@ -4,10 +4,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class GetAccountBookListRequest(
+    val lastContentsId: Int,
     val category: String,
     val sort: String,
     val start: String,
     val end: String,
-    val cost: String,
-    val page: Int,
+    val transactionType: String,
+    val categoryEnum: String,
+    val transactionTypeEnum: String,
+    val sortEnum: String
 )

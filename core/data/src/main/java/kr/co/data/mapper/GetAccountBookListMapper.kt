@@ -24,14 +24,19 @@ internal object GetAccountBookListMapper
                     month = it.month,
                     day = it.day,
                     dayName = it.dayName,
-                    expense = it.expense,
-                    revenue = it.revenue
+                    transactionType = toTransactionType(it.transactionType),
+                    amount = it.amount
                 )
             }
         }
 
     fun toCategory(category: String) =
         AccountBookEntity.Category.entries.find {
-            it.name == category
+            it.display == category
         }?: AccountBookEntity.Category.OTHER
+
+    fun toTransactionType(transactionType: String) =
+        AccountBookEntity.TransactionType.entries.find {
+            it.value == transactionType
+        }
 }
