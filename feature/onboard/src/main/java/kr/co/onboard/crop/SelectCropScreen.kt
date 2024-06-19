@@ -39,6 +39,7 @@ import kr.co.onboard.crop.model.CropItem
 import kr.co.onboard.crop.model.toKoreanName
 import kr.co.ui.theme.ColorSet
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.NextButton
@@ -51,7 +52,7 @@ fun SelectCropScreen(
     val crops by viewModel.crops.collectAsState()
 
     Scaffold(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier.padding(Paddings.xlarge),
         topBar = {
             DreamCenterTopAppBar(title = stringResource(id = kr.co.onboard.R.string.feature_onboard_my_farm_title))
         }
@@ -105,7 +106,7 @@ fun CropsList(
         items(cropList.size) { index ->
             Card(
                 modifier = modifier
-                    .padding(12.dp)
+                    .padding(Paddings.large)
                     .fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.Transparent
@@ -113,7 +114,7 @@ fun CropsList(
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier.padding(16.dp)
+                    modifier = modifier.padding(Paddings.xlarge)
                 ) {
                     Image(
                         painter = painterResource(id = cropList[index].imageRes),
