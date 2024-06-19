@@ -55,7 +55,7 @@ import java.io.File
 
 @Composable
 internal fun BulletinWritingRoute(
-    onBackClick: () -> Unit,
+    popBackStack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {
@@ -69,7 +69,7 @@ internal fun BulletinWritingRoute(
         writingInput = writingInput,
         writingImages = writingImages,
         isShowWaitingDialog = isShowWaitingDialog,
-        onBackClick = onBackClick,
+        popBackStack = popBackStack,
         onAddImagesClick = viewModel::onAddImagesClick,
         onBulletinWritingInputChanged = viewModel::onBulletinWritingInputChanged,
         onRemoveImageClick = viewModel::onRemoveImageClick,
@@ -85,7 +85,7 @@ internal fun BulletinWritingScreen(
     writingInput: String = "",
     writingImages: List<WritingSelectedImageModel> = emptyList(),
     isShowWaitingDialog: Boolean = false,
-    onBackClick: () -> Unit = {},
+    popBackStack: () -> Unit = {},
     onAddImagesClick: (uris: List<Uri>, (Uri) -> File) -> Unit = { _, _ -> },
     onBulletinWritingInputChanged: (input: String) -> Unit = {},
     onRemoveImageClick: (image: Uri) -> Unit = {},
@@ -108,7 +108,7 @@ internal fun BulletinWritingScreen(
     ) {
         item {
             Row {
-                IconButton(onClick = onBackClick) {
+                IconButton(onClick = popBackStack) {
                     Icon(
                         painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
                         contentDescription = "뒤로가기 아이콘",
