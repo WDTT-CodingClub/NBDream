@@ -1,5 +1,6 @@
 package kr.co.data.source.remote
 
+import kr.co.data.model.data.community.GetBulletinsResult
 import kr.co.data.model.data.community.PostBulletinResult
 
 interface CommunityRemoteDataSource {
@@ -10,5 +11,12 @@ interface CommunityRemoteDataSource {
         bulletinCategory: String,
         imageUrls: List<String>,
     ): PostBulletinResult
+
+    suspend fun getBulletins(
+        keyword: String?,
+        bulletinCategory: String,
+        crop: String,
+        lastBulletinId: Long?,
+    ): GetBulletinsResult
 
 }

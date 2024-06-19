@@ -16,7 +16,6 @@ import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
 import java.io.File
-import java.text.DecimalFormat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -115,17 +114,28 @@ internal class CommunityViewModel @Inject constructor(
 
     private val _bulletinEntities = MutableStateFlow(listOf<BulletinEntity>())
     val bulletinEntities = _bulletinEntities.asStateFlow()
+    private fun setBulletinEntities(entities: List<BulletinEntity>) {
+        _bulletinEntities.value = entities
+    }
+
+    fun onFreeCategoryClick() {
+        viewModelScope.launch {
+            try {
+                val bulletins = communityRepository.getBulletins(
+                    keyword = null,
+                    bulletinCategory = BulletinEntity.BulletinCategory.Free,
+                    crop = currentBoard.value,
+                    lastBulletinId = null,
+                )
+                setBulletinEntities(bulletins)
+            } catch (e: Throwable) {
+                Timber.e(e, "onFreeCategoryClick 코루틴 에러")
+            }
+        }
+    }
 
     init {
-        _bulletinEntities.value = List(10) { i ->
-            BulletinEntity(
-                id = "bulletinId$i",  // 게시글 id가 필요할지 안할지? 필요하다면 어떤 식으로 만들지?
-                userId = "userId$i",
-                content = "게시글 내용 $i",
-                crop = CropEntity(name = CropEntity.Name.PEPPER),
-                createdTime = "2000.00.00 00:00:${DecimalFormat("00").format(i)}",
-            )
-        }
+        _bulletinEntities.value = List(10) { i -> BulletinEntity.dummy(i) }
     }
 
     override fun createInitialState(savedState: Parcelable?): State {
