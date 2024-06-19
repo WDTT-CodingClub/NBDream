@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
+import kr.co.main.accountbook.content.AccountBookContentScreen
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.register.AccountBookRegister
 import kr.co.main.home.HomeRoute
@@ -18,6 +19,7 @@ const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
 internal const val NOTIFICATION_ROUTE = "notificationRoute"
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
+internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
 
 internal const val MY_PAGE_EDIT_ROUTE = "myPageProfileEditRoute"
 internal const val MY_PAGE_SETTING_ROUTE = "myPageSettingRoute"
@@ -55,11 +57,14 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.ACCOUNT.route
                 ) {
-                    AccountBookRoute(navigationToRegister = {
-                        navController.navigate(
-                            ACCOUNT_BOOK_ROUTE
-                        )
-                    })
+                    AccountBookRoute(
+                        navigationToRegister = {
+                            navController.navigate(ACCOUNT_BOOK_ROUTE)
+                        },
+                        navigationToContent = { id ->
+                            navController.navigate("$ACCOUNT_BOOK_CONTENT_ROUTE/$id")
+                        }
+                    )
                 }
 
                 composable(
@@ -101,6 +106,20 @@ fun NavGraphBuilder.mainNavGraph(
         AccountBookRegister(
             popBackStack = navController::popBackStack
         )
+    }
+
+    composable(
+        route = "$ACCOUNT_BOOK_CONTENT_ROUTE/{id}"
+    ) { backStackEntry ->
+        val id = backStackEntry.arguments?.getString("id")
+        if (id != null) {
+            AccountBookContentScreen(
+                popBackStack = navController::popBackStack,
+                id = id
+            )
+        } else {
+
+        }
     }
 
     composable(
