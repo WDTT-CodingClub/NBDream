@@ -5,9 +5,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
-import kr.co.main.accountbook.content.AccountBookContentScreen
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.register.AccountBookRegister
+import kr.co.main.community.BulletinDetailScreen
+import kr.co.main.community.BulletinWritingRoute
+import kr.co.main.community.CommunityRoute
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
@@ -28,6 +30,9 @@ internal const val MY_PAGE_SETTING_PRIVACY_POLICY_ROUTE = "myPageSettingPrivacyP
 internal const val MY_PAGE_SETTING_LOGOUT_ROUTE = "myPageSettingLogoutRoute"
 internal const val MY_PAGE_SETTING_APP_INFO_ROUTE = "myPageSettingAppInfoRoute"
 internal const val MY_PAGE_SETTING_DELETE_ACCOUNT_ROUTE = "myPageSettingDeleteAccountRoute"
+
+internal const val COMMUNITY_WRITING_ROUTE = "community_writing_route"
+internal const val COMMUNITY_BULLETIN_DETAIL_ROUTE = "community_bulletin_detail_route"
 
 fun NavGraphBuilder.mainNavGraph(
     navController: NavController
@@ -70,7 +75,13 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.COMMUNITY.route
                 ) {
-
+                    CommunityRoute(
+                        navigateToWriting = { navController.navigate(COMMUNITY_WRITING_ROUTE) },
+                        navigateToNotification = {},
+                        navigateToBulletinDetail = {
+                            navController.navigate(COMMUNITY_BULLETIN_DETAIL_ROUTE)
+                        },
+                    )
                 }
 
                 composable(
@@ -172,4 +183,17 @@ fun NavGraphBuilder.mainNavGraph(
             popBackStack = navController::popBackStack
         )
     }
+
+    composable(
+        route = COMMUNITY_WRITING_ROUTE
+    ) {
+        BulletinWritingRoute(popBackStack = navController::popBackStack)
+    }
+
+    composable(
+        route = COMMUNITY_BULLETIN_DETAIL_ROUTE
+    ) {
+        BulletinDetailScreen(popBackStack = navController::popBackStack)
+    }
+
 }

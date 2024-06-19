@@ -34,7 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
-    onBackClick: () -> Unit,
+    popBackStack: () -> Unit,
 ) {
     Column {
         LazyColumn(
@@ -42,7 +42,7 @@ internal fun BulletinDetailScreen(
         ) {
             item {
                 Row {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = popBackStack) {
                         Icon(
                             painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
                             contentDescription = "뒤로가기 아이콘",
@@ -157,7 +157,7 @@ internal fun BulletinDetailScreen(
 private fun BulletinDetailScreenPreview() {
     MaterialTheme {
         Surface {
-            BulletinDetailScreen(onBackClick = {})
+            BulletinDetailScreen(popBackStack = {})
         }
     }
 }

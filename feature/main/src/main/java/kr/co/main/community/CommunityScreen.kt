@@ -10,9 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,39 +23,65 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kr.co.domain.entity.BulletinEntity
+
+@Composable
+internal fun CommunityRoute(
+    navigateToWriting: () -> Unit,
+    navigateToNotification: () -> Unit,
+    navigateToBulletinDetail: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: CommunityViewModel = hiltViewModel(),
+) {
+    val bulletinEntities by viewModel.bulletinEntities.collectAsStateWithLifecycle()
+    val searchInput by viewModel.searchInput.collectAsStateWithLifecycle()
+    CommunityScreen(
+        modifier = modifier,
+        navigateToWriting = navigateToWriting,
+        navigateToNotification = navigateToNotification,
+        navigateToBulletinDetail = navigateToBulletinDetail,
+        bulletinEntities = bulletinEntities,
+        searchInput = searchInput,
+        onSearchInputChanged = viewModel::onSearchInputChanged,
+        onFreeCategoryClick = viewModel::onFreeCategoryClick,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CommunityScreen(
-    viewModel: CommunityViewModel = hiltViewModel(),
-    onWritingClick: () -> Unit,
-    onNotificationClick: () -> Unit,
-    onBulletinClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    navigateToWriting: () -> Unit = {},
+    navigateToNotification: () -> Unit = {},
+    navigateToBulletinDetail: (String) -> Unit = {},
+    bulletinEntities: List<BulletinEntity> = emptyList(),
+    searchInput: String = "",
+    onSearchInputChanged: (String) -> Unit = {},
+    onFreeCategoryClick: () -> Unit = {},
 ) {
-    var tempTextFieldValue by remember {
-        mutableStateOf(TextFieldValue())
-    }
-    val bulletinEntities = viewModel.bulletinEntities.collectAsState().value
+//    var tempTextFieldValue by remember {
+//        mutableStateOf(TextFieldValue())
+//    }
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onWritingClick) {
+            FloatingActionButton(onClick = navigateToWriting) {
                 Icon(
                     imageVector = Icons.Filled.Create,
                     contentDescription = "Writing floating action button",
@@ -95,17 +120,17 @@ internal fun CommunityScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround,
                     ) {
-                        Text("자유 주제")
+                        TextButton(onClick = onFreeCategoryClick) {
+                            Text("자유 주제")
+                        }
                         // TODO: 디바이더에도 여백이 붙는데...
                         VerticalDivider(
-                            modifier = Modifier
-                                .width(1.dp),
+                            thickness = 1.dp,
                             color = Color.Red,
                         )
                         Text("질문")
                         VerticalDivider(
-                            modifier = Modifier
-                                .width(1.dp),
+                            thickness = 1.dp,
                             color = Color.Red,
                         )
                         Text("병해충")
@@ -114,9 +139,9 @@ internal fun CommunityScreen(
             }
             item {
                 TextField(
-                    value = viewModel.searchInput.collectAsState().value,
+                    value = searchInput,
                     onValueChange = {
-                        if ("\n" !in it) viewModel.onSearchInputChanged(it)
+                        if ("\n" !in it) onSearchInputChanged(it)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("검색어를 입력하세요") },
@@ -128,15 +153,19 @@ internal fun CommunityScreen(
                     },
                 )
             }
-            items(
-                Array(10) { it }
-            ) {
-                val bulletin = bulletinEntities[it]
+            if (bulletinEntities.isEmpty()) {
+                item {
+                    Text("게시물이 없습니다.")
+                }
+            }
+            itemsIndexed(
+                bulletinEntities
+            ) { idx, bulletin ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .clickable { onBulletinClick("") },
+                        .clickable { navigateToBulletinDetail("") },
                     colors = CardDefaults.cardColors(),
                     elevation = CardDefaults.elevatedCardElevation(
                         defaultElevation = 4.dp,
@@ -154,7 +183,7 @@ internal fun CommunityScreen(
                                 .padding(4.dp),
                         )
                         Column {
-                            Text("${bulletin.userId}의닉네임")
+                            Text("${bulletin.authorId}의닉네임")
                             Text(bulletin.createdTime)
                         }
                         Icon(
@@ -165,14 +194,14 @@ internal fun CommunityScreen(
                             painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_border_24),
                             contentDescription = "북마크 빈 아이콘",
                         )
-                        Text("${bulletin.bookmarkedUsers.size}")
+                        Text("${bulletin.bookmarkedCount}")
                     }
                     Text(
                         bulletin.content,
                         modifier = Modifier.height(80.dp),
                     )
                     Text(
-                        "사진들 $it",
+                        "사진들 $idx",
                         modifier = Modifier.height(240.dp),
                     )
                     Row {
@@ -196,25 +225,23 @@ internal fun CommunityScreen(
                                 )
                                 .padding(4.dp),
                         )
-                        Text("댓글닉네임$it")
+                        Text("댓글닉네임$idx")
                     }
-                    Text("댓글 내용 $it")
+                    Text("댓글 내용 $idx")
                 }
             }
         }
     }
 }
 
-//@Preview(heightDp = 1200)
-//@Composable
-//private fun CommunityScreenPreview() {
-//    MaterialTheme {
-//        Surface {
-//            CommunityScreen(
-//                onWritingClick = {},
-//                onNotificationClick = {},
-//                onBulletinClick = {},
-//            )
-//        }
-//    }
-//}
+@Preview(heightDp = 1200)
+@Composable
+private fun CommunityScreenPreview() {
+    MaterialTheme {
+        Surface {
+            CommunityScreen(
+                bulletinEntities = List(10) { i -> BulletinEntity.dummy(i) },
+            )
+        }
+    }
+}

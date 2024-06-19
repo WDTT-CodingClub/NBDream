@@ -19,12 +19,16 @@ internal class OnBoardViewModel @Inject constructor(
     private val socialLoginProvider: SocialLoginProvider,
     private val loginUseCase: LoginUseCase
 ) : BaseViewModel<OnBoardViewModel.State>(savedStateHandle) {
+
     fun onSocialLoginClick(authType: AuthType) {
         viewModelScopeEH.launch {
-            Timber.d(socialLoginProvider.login(authType).toString())
+            try {
+                val loginResult = socialLoginProvider.login(authType)
+                Timber.d(loginResult.toString())
 
-            socialLoginProvider.login(authType).let {
-                loginUseCase(LoginUseCase.Params(it.type,it.token))
+                loginUseCase(LoginUseCase.Params(loginResult.type, loginResult.token))
+            } catch (e: Exception) {
+                Timber.e(e, "Login failed")
             }
         }
     }
