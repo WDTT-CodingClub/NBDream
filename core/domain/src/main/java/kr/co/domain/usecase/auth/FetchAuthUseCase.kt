@@ -10,6 +10,6 @@ import javax.inject.Singleton
 class FetchAuthUseCase @Inject constructor(
     private val repository: SessionRepository,
 ) : FlowUseCase<Unit, String?>() {
-    override fun build(prams: Unit?): Flow<String?> =
+    override fun build(params: Unit?): Flow<String?> =
         repository.fetch()
 }

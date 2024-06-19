@@ -142,10 +142,10 @@ private fun CalendarSection(onDaysInRangeChange: (Long) -> Unit) {
 
     if (bottomSheetState) {
         AccountBookCalendarBottomSheet(
-            selectedOption = selectedOption,
-            onOptionSelected = { newOption ->
-                selectedOption = newOption
-            },
+//            selectedOption = selectedOption,
+//            onOptionSelected = { newOption ->
+//                selectedOption = newOption
+//            },
             onSelectedListener = { selectedStartDate, selectedEndDate ->
                 startDate.value = LocalDate.parse(selectedStartDate)
                 endDate.value = LocalDate.parse(selectedEndDate)

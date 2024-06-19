@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,8 +25,30 @@ import kr.co.ui.theme.typo
 
 @Composable
 fun DreamTopAppBar(
-    modifier: Modifier = Modifier,
     title: String,
+    modifier: Modifier = Modifier,
+    description: String? = null,
+    color: Color = Color.Transparent,
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    DreamTopAppBar(
+        modifier = modifier,
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typo.h2
+            )
+        },
+        description = description,
+        color = color,
+        actions = actions
+    )
+}
+
+@Composable
+fun DreamTopAppBar(
+    title: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     description: String? = null,
     color: Color = Color.Transparent,
     actions: @Composable RowScope.() -> Unit = {},
@@ -47,11 +67,7 @@ fun DreamTopAppBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typo.h2
-                )
-
+                title()
                 actions()
             }
             description?.let {
@@ -60,13 +76,16 @@ fun DreamTopAppBar(
                     style = MaterialTheme.typo.body1,
                     color = MaterialTheme.colors.gray2
                 )
-            }?: Spacer(modifier = Modifier.height(24.dp))
+            } ?: Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(backgroundColor = 0xFFF0F0F0)
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFFF0F0F0
+)
 @Composable
 private fun DreamTopAppBarPreview() {
     NBDreamTheme {
@@ -78,7 +97,8 @@ private fun DreamTopAppBarPreview() {
                     contentDescription = "bell",
                     tint = Color.Unspecified
                 )
-            }
+            },
+            description = "어쩌구 저쩌구"
         )
     }
 }
