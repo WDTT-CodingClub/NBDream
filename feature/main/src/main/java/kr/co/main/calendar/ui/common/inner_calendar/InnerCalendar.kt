@@ -1,5 +1,6 @@
 package kr.co.main.calendar.ui.common.inner_calendar
 
+import android.util.Range
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,8 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.iterator
-import kr.co.domain.entity.HolidayEntity
 import kr.co.main.R
+import kr.co.main.calendar.model.HolidayModel
+import kr.co.main.calendar.model.filterAndSortHolidays
 import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.main.calendar.ui.common.content.CalendarContent
 import kr.co.ui.theme.Paddings
@@ -42,7 +44,8 @@ internal fun InnerCalendar(
     calendarYear: Int,
     calendarMonth: Int,
     modifier: Modifier = Modifier,
-    holidayList: List<HolidayEntity> = emptyList(),
+    selectedDate: LocalDate = LocalDate.now(),
+    holidayList: List<HolidayModel> = emptyList(),
     dataList: List<InnerCalendarData> = emptyList()
 ) {
     val stateHolder = rememberInnerCalendarStateHolder(calendarYear, calendarMonth)
@@ -72,7 +75,7 @@ private fun InnerCalendarContent(
     startWeekNum: Int,
     endWeekNum: Int,
     getWeekRange: (Int, Int) -> Pair<LocalDate, LocalDate>,
-    holidayList: List<HolidayEntity>,
+    holidayList: List<HolidayModel>,
     dataList: List<InnerCalendarData>,
     modifier: Modifier = Modifier
 ) {
@@ -90,8 +93,14 @@ private fun InnerCalendarContent(
                 calendarMonth = calendarMonth,
                 weekStartDate = weekStartDate,
                 weekEndDate = weekEndDate,
-                holidayList = filterAndSortHolidayList(holidayList, weekStartDate, weekEndDate),
-                dataList = filterAndSortDataList(dataList, weekStartDate, weekEndDate),
+                holidayList = filterAndSortHolidays(
+                    holidays = holidayList,
+                    dateRange = Range(weekStartDate, weekEndDate)
+                ),
+                dataList = filterAndSortDatas(
+                    datas= dataList,
+                    dateRange = Range(weekStartDate, weekEndDate)
+                )
             )
         }
     }
@@ -145,7 +154,7 @@ internal fun InnerCalendarRow(
     calendarMonth: Int,
     weekStartDate: LocalDate,
     weekEndDate: LocalDate,
-    holidayList: List<HolidayEntity>,
+    holidayList: List<HolidayModel>,
     dataList: List<InnerCalendarData>,
     modifier: Modifier = Modifier
 ) {
@@ -169,7 +178,7 @@ private fun InnerCalendarDateRow(
     calendarMonth: Int,
     weekStartDate: LocalDate,
     weekEndDate: LocalDate,
-    holidayList: List<HolidayEntity>,
+    holidayList: List<HolidayModel>,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -230,21 +239,13 @@ private fun InnerCalendarDataItem(
     )
 }
 
-private fun filterAndSortHolidayList(
-    list: List<HolidayEntity>,
-    weekStartDate: LocalDate,
-    weekEndDate: LocalDate
-) = list
-    .filter { it.date in (weekStartDate..weekEndDate) }
-    .filter { it.isHoliday }
-    .sortedWith(compareBy({ it.date }, { it.type.priority }))
-
-private fun filterAndSortDataList(
-    list: List<InnerCalendarData>,
-    weekStartDate: LocalDate,
-    weekEndDate: LocalDate
-) = list
+private fun filterAndSortDatas(
+    datas: List<InnerCalendarData>,
+    dateRange: Range<LocalDate>
+) = datas
     .filter {
-        (it.startDate in (weekStartDate..weekEndDate)) or (it.endDate in (weekStartDate..weekEndDate))
+        (it.startDate in dateRange) or (it.endDate in dateRange)
     }
     .sortedWith(compareBy({ it.startDate }, { it.endDate }))
+
+

@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import kr.co.main.R
 import kr.co.main.calendar.ui.common.CalendarDesignToken
-import kr.co.main.calendar.common.CalendarUnderLineTextField
+import kr.co.main.calendar.ui.common.CalendarUnderLineTextField
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeWorkDescriptionModelListProvider
 import kr.co.ui.icon.DreamIcon

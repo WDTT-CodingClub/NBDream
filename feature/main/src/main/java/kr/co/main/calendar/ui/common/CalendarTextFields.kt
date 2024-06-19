@@ -1,4 +1,4 @@
-package kr.co.main.calendar.common
+package kr.co.main.calendar.ui.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

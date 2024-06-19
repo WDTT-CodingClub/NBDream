@@ -4,11 +4,8 @@ import androidx.annotation.ColorInt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,9 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kr.co.main.calendar.common.CalendarDesignToken
 import kr.co.main.calendar.model.WeatherForecastModel
-import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 
@@ -33,13 +28,6 @@ internal fun CalendarWeather(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            modifier = Modifier
-                .padding(end = Paddings.medium)
-                .size(CalendarDesignToken.SKY_ICON_SIZE.dp),
-            imageVector = weatherForecast.sky.icon,
-            contentDescription = ""
-        )
         Text(
             modifier = Modifier,
             text = with(weatherForecast) {

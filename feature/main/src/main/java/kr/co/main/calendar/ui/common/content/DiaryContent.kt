@@ -24,7 +24,7 @@ import coil.compose.AsyncImage
 import kr.co.common.util.toTitleDateString
 import kr.co.domain.entity.HolidayEntity
 import kr.co.main.R
-import kr.co.main.calendar.common.CalendarDesignToken
+import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.main.calendar.ui.common.CalendarWeather

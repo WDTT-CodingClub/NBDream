@@ -46,8 +46,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
 import kr.co.main.calendar.model.CropModel
+import kr.co.main.calendar.model.FarmWorkModel
+import kr.co.main.calendar.model.HolidayModel
+import kr.co.main.calendar.model.ScheduleModel
 import kr.co.main.calendar.ui.calendar_screen.calendar_screen.diary_tab.DiaryTab
 import kr.co.main.calendar.ui.calendar_screen.calendar_screen.schedule_tab.ScheduleTab
+import kr.co.main.calendar.ui.calendar_screen.calendar_screen.schedule_tab.ScheduleTabStateHolder
 import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Bell
@@ -64,7 +68,7 @@ internal fun CalendarRoute(
     navToAddDiary: () -> Unit,
     navToNotification: () -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
-){
+) {
     CalendarScreen(
         modifier = Modifier.fillMaxSize(),
         navToAddSchedule = navToAddSchedule,
@@ -109,28 +113,56 @@ private fun CalendarScreen(
                     state = scaffoldScrollState
                 )
         ) {
-            // TODO userCrop 목록 비어있는 경우 예외 처리
-            Column {
-                CalendarInfoPicker(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Paddings.large)
-                        .background(MaterialTheme.colors.gray9),
-                    userCrops = state.value.userCrops,
-                    calendarYear = state.value.calendarYear,
-                    calendarMonth = state.value.calendarMonth,
-                    calendarCrop = state.value.calendarCrop!!,
-                    onSelectYear = event::onSelectYear,
-                    onSelectMonth = event::onSelectMonth,
-                    onSelectCrop = event::onSelectCrop
-                )
-                when (state.value.selectedTab) {
-                    CalendarScreenViewModel.CalendarScreenState.CalendarTab.SCHEDULE -> ScheduleTab()
-                    CalendarScreenViewModel.CalendarScreenState.CalendarTab.DIARY -> DiaryTab()
+            if (state.value.calendarCrop != null) {
+                Column {
+                    CalendarInfoPicker(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Paddings.large)
+                            .background(MaterialTheme.colors.gray9),
+                        userCrops = state.value.userCrops,
+                        calendarYear = state.value.calendarYear,
+                        calendarMonth = state.value.calendarMonth,
+                        calendarCrop = state.value.calendarCrop!!,
+                        onSelectYear = event::onSelectYear,
+                        onSelectMonth = event::onSelectMonth,
+                        onSelectCrop = event::onSelectCrop
+                    )
+                    when (state.value.selectedTab) {
+                        CalendarScreenViewModel.CalendarScreenState.CalendarTab.SCHEDULE ->
+                            ScheduleTab(
+                                state = rememberScheduleStateHolder(
+                                    calendarCrop = state.value.calendarCrop!!,
+                                    farmWorks = state.value.farmWorks,
+                                    holidays = state.value.holidays,
+                                    schedules = state.value.schedules
+                                )
+                            )
+
+                        CalendarScreenViewModel.CalendarScreenState.CalendarTab.DIARY ->
+                            DiaryTab()
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun rememberScheduleStateHolder(
+    calendarCrop: CropModel,
+    farmWorks: List<FarmWorkModel>,
+    holidays: List<HolidayModel>,
+    schedules: List<ScheduleModel>
+) = remember {
+    mutableStateOf(
+        ScheduleTabStateHolder(
+            calendarCrop = calendarCrop,
+            farmWorks = farmWorks,
+            holidays = holidays,
+            schedules = schedules
+        )
+    )
 }
 
 @Composable

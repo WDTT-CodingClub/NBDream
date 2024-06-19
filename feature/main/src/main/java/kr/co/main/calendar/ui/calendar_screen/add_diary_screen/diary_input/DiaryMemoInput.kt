@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import kr.co.main.R
-import kr.co.main.calendar.common.CalendarContainerTextField
+import kr.co.main.calendar.ui.common.CalendarContainerTextField
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 

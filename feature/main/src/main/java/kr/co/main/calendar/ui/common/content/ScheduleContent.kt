@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.toDateString
 import kr.co.common.util.toDateTimeString
-import kr.co.main.calendar.common.CalendarDesignToken
+import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.main.calendar.model.ScheduleModel
 import kr.co.main.calendar.providers.FakeScheduleModelProvider
 import kr.co.main.calendar.ui.common.CalendarCategoryIndicator
