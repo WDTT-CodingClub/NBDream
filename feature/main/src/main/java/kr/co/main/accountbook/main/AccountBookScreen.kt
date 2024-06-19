@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.launch
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.entity.SortOrder
 import kr.co.ui.theme.colors
@@ -43,27 +45,20 @@ import java.time.format.DateTimeFormatter
 @Composable
 internal fun AccountBookRoute(
     viewModel: AccountBookViewModel = hiltViewModel(),
-    navigationToRegister: () -> Unit
+    navigationToRegister: () -> Unit,
+    navigationToContent: (Long?) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(
-        state.page,
-        state.category,
-        state.sort,
-        state.start,
-        state.end
-    ) {
-         viewModel.fetchAccountBooks()
-    }
 
     AccountBookScreen(
         state = state,
         navigationToRegister = navigationToRegister,
+        navigationToContent = navigationToContent,
         onPageChange = { viewModel.updatePage(it) },
         onCategoryChange = { viewModel.updateCategory(it) },
         onSortOrderChange = { viewModel.updateSortOrder(it) },
-        onDateRangeChange = { start, end -> viewModel.updateDateRange(start, end) }
+        onDateRangeChange = { start, end -> viewModel.updateDateRange(start, end) },
+        onTransactionChange = { viewModel.updateTransactionType(it) }
     )
 }
 
@@ -71,10 +66,12 @@ internal fun AccountBookRoute(
 private fun AccountBookScreen(
     state: AccountBookViewModel.State = AccountBookViewModel.State(),
     navigationToRegister: () -> Unit,
-    onPageChange: (Int) -> Unit,
+    navigationToContent: (Long?) -> Unit,
+    onPageChange: (Long) -> Unit,
     onCategoryChange: (String) -> Unit,
     onSortOrderChange: (String) -> Unit,
-    onDateRangeChange: (String, String) -> Unit
+    onDateRangeChange: (String, String) -> Unit,
+    onTransactionChange: (AccountBookEntity.TransactionType?) -> Unit
 ) {
     Scaffold(
         topBar = {},
@@ -94,37 +91,31 @@ private fun AccountBookScreen(
         },
         floatingActionButtonPosition = FabPosition.End
     ) { padding ->
-        if (state.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else if (state.errorMessage != null) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Error: ${state.errorMessage}")
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                SelectorSection(
-                    state = state.categories,
-                    sortOrder = state.sort,
-                    onCategoryChange = onCategoryChange,
-                    onSortOrderChange = onSortOrderChange
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            SelectorSection(
+                state = state.categories,
+                sortOrder = state.sort,
+                onCategoryChange = onCategoryChange,
+                onSortOrderChange = onSortOrderChange,
+                onTransactionChange = onTransactionChange
+            )
 
-                CalendarSection(onDaysInRangeChange = { startDate, endDate ->
-                    onDateRangeChange(startDate.toString(), endDate.toString())
-                })
+            CalendarSection(onDaysInRangeChange = { startDate, endDate ->
+                onDateRangeChange(startDate.toString(), endDate.toString())
+            })
 
-                AccountBookList(
-                    accountBooks = state.accountBooks,
-                    onPageChange = onPageChange,
-                    currentPage = state.page
-                )
-            }
+            AccountBookList(
+                accountBooks = state.accountBooks,
+                onPageChange = onPageChange,
+                onItemClicked = { id ->
+                    navigationToContent(id)
+
+                }
+            )
         }
     }
 }
@@ -242,7 +233,9 @@ private fun GraphSection(
 }
 
 @Composable
-private fun FilterSelector() {
+private fun FilterSelector(
+    onTransactionChange: (AccountBookEntity.TransactionType?) -> Unit
+) {
     var selectedOption by remember { mutableStateOf("전체") }
     Row(
         modifier = Modifier
@@ -254,27 +247,40 @@ private fun FilterSelector() {
             AccountBookOptionButton(
                 option = "전체",
                 isSelected = selectedOption == "전체",
-                onSelected = { selectedOption = it }
+                onSelected = {
+                    onTransactionChange(null)
+                    selectedOption = it
+                }
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             AccountBookOptionButton(
                 option = "지출",
                 isSelected = selectedOption == "지출",
-                onSelected = { selectedOption = it }
+                onSelected = {
+                    onTransactionChange(AccountBookEntity.TransactionType.EXPENSE)
+                    selectedOption = it
+                }
             )
             Spacer(modifier = Modifier.width(8.dp))
             AccountBookOptionButton(
                 option = "수입",
                 isSelected = selectedOption == "수입",
-                onSelected = { selectedOption = it }
+                onSelected = {
+                    onTransactionChange(AccountBookEntity.TransactionType.REVENUE)
+                    selectedOption = it
+                }
             )
         }
     }
 }
 
 @Composable
-private fun AccountBookOptionButton(option: String, isSelected: Boolean, onSelected: (String) -> Unit) {
+private fun AccountBookOptionButton(
+    option: String,
+    isSelected: Boolean,
+    onSelected: (String) -> Unit
+) {
     Box(
         modifier = Modifier
             .width(75.dp)
@@ -299,7 +305,8 @@ private fun SelectorSection(
     state: List<String>?,
     sortOrder: String,
     onCategoryChange: (String) -> Unit,
-    onSortOrderChange: (String) -> Unit
+    onSortOrderChange: (String) -> Unit,
+    onTransactionChange: (AccountBookEntity.TransactionType?) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -307,7 +314,7 @@ private fun SelectorSection(
             .padding(start = 16.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FilterSelector()
+        FilterSelector(onTransactionChange)
     }
     Row(
         modifier = Modifier
@@ -382,23 +389,48 @@ private fun SortOrderSelector(sortOrder: String, onSortOrderChange: (String) -> 
 @Composable
 private fun AccountBookList(
     accountBooks: List<AccountBookViewModel.State.AccountBook>,
-    onPageChange: (Int) -> Unit,
-    currentPage: Int
+    onPageChange: (Long) -> Unit,
+    onItemClicked: (Long) -> Unit,
 ) {
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .collect { visibleItems ->
+                if (visibleItems.isNotEmpty() && visibleItems.lastOrNull()?.index == accountBooks.size - 1) {
+                    val lastItemId = accountBooks.last().id
+                    coroutineScope.launch {
+                        onPageChange(lastItemId)
+                    }
+                }
+            }
+    }
+
     LazyColumn {
         items(accountBooks) { accountBook ->
-            AccountBookItem(accountBook)
+            AccountBookItem(
+                accountBook = accountBook,
+                onItemClicked = {
+                    onItemClicked(it)
+                })
         }
     }
-    // TODO 페이징
+
 }
 
 @Composable
-private fun AccountBookItem(accountBook: AccountBookViewModel.State.AccountBook) {
+private fun AccountBookItem(
+    accountBook: AccountBookViewModel.State.AccountBook,
+    onItemClicked: (Long) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable {
+                onItemClicked(accountBook.id)
+            },
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Column(modifier = Modifier.weight(1f)) {

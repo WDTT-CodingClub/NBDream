@@ -6,6 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.ui.base.BaseViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,30 +19,27 @@ internal class AccountBookContentViewModel @Inject constructor(
 
     fun deleteAccountBookById() {
         state.value.id.let { id ->
-            updateState { copy(error = null) }
             loadingScope {
                 repository.deleteAccountBook(id)
             }
         }
     }
 
-    fun fetchAccountBookById(id: String) {
+    fun fetchAccountBookById(id: Long) {
         loadingScope {
-            updateState { copy(isLoading = true, error = null) }
             val accountBookDetail = repository.getAccountBookDetail(id)
             updateState {
-                copy(
-                    id = accountBookDetail.id,
-                    title = accountBookDetail.title,
-                    category = accountBookDetail.category,
-                    year = accountBookDetail.year ?: 0,
-                    month = accountBookDetail.month ?: 0,
-                    day = accountBookDetail.day ?: 0,
-                    transactionType = accountBookDetail.transactionType ?: AccountBookEntity.TransactionType.EXPENSE,
-                    amount = accountBookDetail.amount ?: 0,
-                    isLoading = false,
-                    error = null
-                )
+                accountBookDetail.id?.let {
+                    copy(
+                        id = it,
+                        title = accountBookDetail.title,
+                        category = accountBookDetail.category,
+                        transactionType = accountBookDetail.transactionType ?: AccountBookEntity.TransactionType.EXPENSE,
+                        amount = accountBookDetail.amount ?: 0,
+                        registerDateTime = state.value.registerDateTime,
+                        imageUrls = state.value.imageUrls
+                    )
+                }!!
             }
         }
     }
@@ -47,15 +47,15 @@ internal class AccountBookContentViewModel @Inject constructor(
     override fun createInitialState(savedState: Parcelable?): State = State()
 
     data class State(
-        val id: String = "",
+        val id: Long = 0,
         val title: String = "",
         val category: AccountBookEntity.Category = AccountBookEntity.Category.OTHER,
-        val year: Int = 0,
-        val month: Int = 0,
-        val day: Int = 0,
         val transactionType: AccountBookEntity.TransactionType = AccountBookEntity.TransactionType.EXPENSE,
         val amount: Long = 0,
-        val isLoading: Boolean = false,
-        val error: String? = null
+        val registerDateTime: String = SimpleDateFormat(
+            "yyyy-MM-dd HH:mm",
+            Locale.getDefault()
+        ).format(Date()),
+        val imageUrls: List<String> = listOf()
     ) : BaseViewModel.State
 }

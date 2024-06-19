@@ -1,6 +1,5 @@
 package kr.co.main.accountbook.content
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.main.accountbook.main.formatNumber
+import kr.co.main.accountbook.model.CategoryDisplayMapper
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
@@ -52,15 +52,15 @@ import kr.co.ui.widget.DreamCenterTopAppBar
 
 @Composable
 internal fun AccountBookContentScreen(
+    popBackStack: () -> Unit,
     viewModel: AccountBookContentViewModel = hiltViewModel(),
-    id: String
+    id: Long
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(key1 = id) {
         viewModel.fetchAccountBookById(id)
     }
 
-    val writingImages by remember { mutableStateOf(listOf<Uri>()) }
     var showDropDownMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -69,7 +69,7 @@ internal fun AccountBookContentScreen(
             DreamCenterTopAppBar(
                 title = "장부 상세",
                 navigationIcon = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = popBackStack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "뒤로가기",
@@ -128,141 +128,124 @@ internal fun AccountBookContentScreen(
             )
         },
         content = { padding ->
-            if (state.isLoading) {
-                // TODO loading
-            } else {
-                if (state.error != null) {
-                    AlertDialog(
-                        onDismissRequest = {},
-                        title = { Text("Error") },
-                        text = { Text(state.error ?: "Unknown error") },
-                        confirmButton = {
-                            Button(onClick = {}) {
-                                Text("확인")
-                            }
-                        }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(padding)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "금액",
+                    style = MaterialTheme.typo.header2M
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = formatNumber(state.amount),
+                        style = MaterialTheme.typo.header2M,
+                        color = MaterialTheme.colors.black
                     )
-                } else {
-                    Column(
+                }
+
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "카테고리",
+                        modifier = Modifier.width(80.dp),
+                        style = MaterialTheme.typo.titleM
+                    )
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.White)
-                            .padding(padding)
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                            .width(75.dp)
+                            .height(32.dp)
+                            .background(MaterialTheme.colors.gray8)
                     ) {
                         Text(
-                            text = "금액",
-                            style = MaterialTheme.typo.header2M
+                            text = CategoryDisplayMapper.getDisplay(state.category),
+                            style = MaterialTheme.typo.bodyM,
+                            color = MaterialTheme.colors.black
                         )
+                    }
+                }
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "내역",
+                        modifier = Modifier.width(80.dp),
+                        style = MaterialTheme.typo.titleM
+                    )
+                    Text(
+                        text = state.title,
+                        color = MaterialTheme.colors.black,
+                        style = MaterialTheme.typo.bodyM
+                    )
+                }
+
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "날짜",
+                        modifier = Modifier.width(80.dp),
+                        style = MaterialTheme.typo.titleM
+                    )
+                    Text(
+                        text = state.registerDateTime,
+                        color = MaterialTheme.colors.black,
+                        style = MaterialTheme.typo.bodyM
+                    )
+                }
+
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "사진",
+                        modifier = Modifier.width(80.dp),
+                        style = MaterialTheme.typo.titleM
+                    )
+                }
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(state.imageUrls.size) { index ->
+                        val imageUri = state.imageUrls[index]
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color.LightGray),
+                            contentAlignment = Alignment.Center,
                         ) {
-                            Text(
-                                text = formatNumber(state.amount),
-                                style = MaterialTheme.typo.header2M,
-                                color = MaterialTheme.colors.black
+                            AsyncImage(
+                                model = imageUri,
+                                contentDescription = "image",
+                                contentScale = ContentScale.Crop,
                             )
-                        }
-
-                        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "카테고리",
-                                modifier = Modifier.width(80.dp),
-                                style = MaterialTheme.typo.titleM
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .width(75.dp)
-                                    .height(32.dp)
-                                    .background(MaterialTheme.colors.gray8)
-                            ) {
-                                Text(
-                                    text = state.category.name,
-                                    style = MaterialTheme.typo.bodyM,
-                                    color = MaterialTheme.colors.black
-                                )
-                            }
-                        }
-
-                        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "내역",
-                                modifier = Modifier.width(80.dp),
-                                style = MaterialTheme.typo.titleM
-                            )
-                            Text(
-                                text = state.title,
-                                color = MaterialTheme.colors.black,
-                                style = MaterialTheme.typo.bodyM
-                            )
-                        }
-
-                        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "날짜",
-                                modifier = Modifier.width(80.dp),
-                                style = MaterialTheme.typo.titleM
-                            )
-                            Text(
-                                text = "${state.year}년 ${state.month}월 ${state.day}일",
-                                color = MaterialTheme.colors.black,
-                                style = MaterialTheme.typo.bodyM
-                            )
-                        }
-
-                        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "사진",
-                                modifier = Modifier.width(80.dp),
-                                style = MaterialTheme.typo.titleM
-                            )
-                        }
-
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            items(writingImages.size) { index ->
-                                val imageUri = writingImages[index]
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(Color.LightGray),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    AsyncImage(
-                                        model = imageUri,
-                                        contentDescription = "image",
-                                        contentScale = ContentScale.Crop,
-                                    )
-                                }
-                            }
                         }
                     }
                 }
