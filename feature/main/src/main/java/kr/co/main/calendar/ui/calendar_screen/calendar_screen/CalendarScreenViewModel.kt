@@ -34,7 +34,7 @@ internal interface CalendarScreenEvent {
 }
 
 @HiltViewModel
-class CalendarScreenViewModel @Inject constructor(
+internal class CalendarScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getUserCrop: GetUserCropUseCase,
     private val getFarmWork: GetFarmWorkUseCase,
@@ -73,7 +73,7 @@ class CalendarScreenViewModel @Inject constructor(
         }
     }
 
-    val event = this@CalendarScreenViewModel
+    val event: CalendarScreenEvent = this@CalendarScreenViewModel
 
     override fun createInitialState(savedState: Parcelable?): CalendarScreenState =
         savedState?.let {

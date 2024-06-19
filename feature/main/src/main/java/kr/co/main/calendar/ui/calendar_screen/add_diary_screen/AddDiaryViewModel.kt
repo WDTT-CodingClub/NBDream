@@ -36,7 +36,7 @@ internal class AddDiaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AddDiaryViewModel.AddDiaryScreenState>(savedStateHandle), AddDiaryScreenEvent {
 
-    val event = this@AddDiaryViewModel
+    val event: AddDiaryScreenEvent = this@AddDiaryViewModel
 
     data class AddDiaryScreenState(
         val diaryId: String = "",

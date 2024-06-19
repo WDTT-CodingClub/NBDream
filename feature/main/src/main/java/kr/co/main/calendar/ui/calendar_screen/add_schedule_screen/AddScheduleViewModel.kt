@@ -9,31 +9,32 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
-internal interface AddScheduleScreenEvent{
+internal interface AddScheduleScreenEvent {
     fun onBackClick()
     fun onPostClick()
 
     fun onCategoryInput(category: ScheduleModel.Category)
-    fun onTitleInput(title:String)
+    fun onTitleInput(title: String)
 
     fun onStartDateInput(startDate: LocalDate)
     fun onEndDateInput(endDate: LocalDate)
 
-    fun onSetAlarmInput(setAlarm:Boolean)
+    fun onSetAlarmInput(setAlarm: Boolean)
     fun onAlarmDateTimeInput(alarmDateTime: LocalDateTime)
 
-    fun onMemoInput(memo:String)
+    fun onMemoInput(memo: String)
 }
 
 @HiltViewModel
-class AddScheduleViewModel @Inject constructor(
+internal class AddScheduleViewModel @Inject constructor(
     stateHandle: SavedStateHandle
-) : BaseViewModel<AddScheduleViewModel.AddScheduleScreenState>(stateHandle), AddScheduleScreenEvent {
-    val event = this@AddScheduleViewModel
+) : BaseViewModel<AddScheduleViewModel.AddScheduleScreenState>(stateHandle),
+    AddScheduleScreenEvent {
+    val event: AddScheduleScreenEvent = this@AddScheduleViewModel
 
     data class AddScheduleScreenState(
         val category: ScheduleModel.Category = ScheduleModel.Category.All
-    ) : BaseViewModel.State{
+    ) : State {
         override fun toParcelable(): Parcelable? {
             // TODO ("serialize")
             return null
@@ -41,10 +42,10 @@ class AddScheduleViewModel @Inject constructor(
     }
 
     override fun createInitialState(savedState: Parcelable?): AddScheduleScreenState =
-        savedState?.let{
+        savedState?.let {
             // TODO ("deserialize")
             AddScheduleScreenState()
-        }?: AddScheduleScreenState()
+        } ?: AddScheduleScreenState()
 
     override fun onBackClick() {
         TODO("Not yet implemented")
