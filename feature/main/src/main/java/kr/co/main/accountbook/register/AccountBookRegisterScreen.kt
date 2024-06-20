@@ -76,8 +76,10 @@ import java.util.Date
 import java.util.Locale
 
 
+
+
 @Composable
-internal fun AccountBookRegister(
+internal fun AccountBookRegisterScreen(
     popBackStack: () -> Unit,
     viewModel: AccountBookRegisterViewModel = hiltViewModel()
 ) {
