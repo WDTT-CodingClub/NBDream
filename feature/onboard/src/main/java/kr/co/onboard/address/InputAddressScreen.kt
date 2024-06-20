@@ -76,8 +76,14 @@ internal fun InputAddressScreen(
         Column(
             modifier = modifier.padding(paddingValues)
         ) {
-            DynamicStepProgressBars(modifier, colors = listOf(MaterialTheme.colors.green2, Color.Transparent))
-            StepText(stringResource(id = R.string.feature_onboard_step_bar_first), modifier = modifier)
+            DynamicStepProgressBars(
+                modifier,
+                colors = listOf(MaterialTheme.colors.green2, Color.Transparent)
+            )
+            StepText(
+                stringResource(id = R.string.feature_onboard_step_bar_first),
+                modifier = modifier
+            )
             DescriptionText(stringResource(id = R.string.feature_onboard_my_farm_address_description))
             Address(
                 modifier,
@@ -94,7 +100,10 @@ internal fun InputAddressScreen(
                 }
             )
             KakaoMapScreen(modifier) //padding 없애야 함
-            NextButton(skipId = R.string.feature_onboard_my_farm_skip_input, nextId = R.string.feature_onboard_my_farm_next)
+            NextButton(
+                skipId = R.string.feature_onboard_my_farm_skip_input,
+                nextId = R.string.feature_onboard_my_farm_next
+            )
         }
     }
 }
@@ -144,12 +153,13 @@ fun DynamicStepProgressBars(
 @Composable
 fun DescriptionText(
     text: String
-){
+) {
     Text(
         text,
         style = MaterialTheme.typo.titleSB,
     )
 }
+
 @Composable
 private fun Address(
     modifier: Modifier,
@@ -190,7 +200,11 @@ private fun Address(
                     .height(35.dp)
 
             ) {
-                Text(stringResource(id = R.string.feature_onboard_my_farm_address_find), style = MaterialTheme.typo.body1, color = MaterialTheme.colors.secondary)
+                Text(
+                    stringResource(id = R.string.feature_onboard_my_farm_address_find),
+                    style = MaterialTheme.typo.body1,
+                    color = MaterialTheme.colors.secondary
+                )
             }
         }
     }
@@ -306,7 +320,10 @@ private fun CustomTextField(
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     if (value.isEmpty()) {
-                        Text(text = placeholder, style = TextStyle(color = Color.Gray, fontSize = 16.sp))
+                        Text(
+                            text = placeholder,
+                            style = TextStyle(color = Color.Gray, fontSize = 16.sp)
+                        )
                     }
                     innerTextField()
                 }
@@ -331,24 +348,42 @@ private fun InputAddressScreenPreview() {
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 private fun DynamicStepProgressBarsPreview() {
     Column(modifier = Modifier.fillMaxWidth()) {
-        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2)) // 한 개의 StepProgressBar
+        DynamicStepProgressBars(
+            Modifier,
+            colors = listOf(lightColors.green2)
+        ) // 한 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
-        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2, Color.Transparent)) // 두 개의 StepProgressBar
+        DynamicStepProgressBars(
+            Modifier,
+            colors = listOf(lightColors.green2, Color.Transparent)
+        ) // 두 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
-        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2, lightColors.green2)) // 두 개의 StepProgressBar
+        DynamicStepProgressBars(
+            Modifier,
+            colors = listOf(lightColors.green2, lightColors.green2)
+        ) // 두 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
-        DynamicStepProgressBars(Modifier, colors = listOf(lightColors.green2, lightColors.green2, lightColors.green3)) // 세 개의 StepProgressBar
+        DynamicStepProgressBars(
+            Modifier,
+            colors = listOf(lightColors.green2, lightColors.green2, lightColors.green3)
+        ) // 세 개의 StepProgressBar
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun AddressPreview(){
-    Address(Modifier, fullRoadAddr = "허리도 가늘군 만지면 부서지리", jibunAddr = "jibunAddr", onFullRoadAddrChange = {}, onJubunAddrChange = {}) {
+private fun AddressPreview() {
+    Address(
+        Modifier,
+        fullRoadAddr = "허리도 가늘군 만지면 부서지리",
+        jibunAddr = "jibunAddr",
+        onFullRoadAddrChange = {},
+        onJubunAddrChange = {}) {
 
     }
 }
