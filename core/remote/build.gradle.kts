@@ -23,7 +23,7 @@ android {
 
         create("prod") {
             dimension = "environment"
-            buildConfigField("String", "BASE_URL", "\"https://api..com/\"")
+            buildConfigField("String", "BASE_URL", "\"http://34.47.73.18/\"")
         }
     }
 
