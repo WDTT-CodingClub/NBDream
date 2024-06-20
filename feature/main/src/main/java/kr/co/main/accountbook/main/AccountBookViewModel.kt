@@ -2,9 +2,7 @@ package kr.co.main.accountbook.main
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.entity.SortOrder
 import kr.co.domain.repository.AccountBookRepository
@@ -19,12 +17,13 @@ internal class AccountBookViewModel @Inject constructor(
 ) : BaseViewModel<AccountBookViewModel.State>(
     savedStateHandle = savedStateHandle
 ) {
+
     init {
         fetchAccountBooks()
     }
 
     private fun fetchAccountBooks(lastContentsId: Long? = null) {
-        viewModelScope.launch {
+        loadingScope {
             val (totalEntity, accountBooks) = repository.getAccountBooks(
                 lastContentsId = lastContentsId,
                 category = currentState.category,
@@ -36,17 +35,16 @@ internal class AccountBookViewModel @Inject constructor(
             updateState {
                 copy(
                     accountBooks = accountBooks.map {
-                            State.AccountBook(
-                                id = it.id,
-                                title = it.title,
-                                day = it.day,
-                                dayName = it.dayName,
-                                category = it.category.toString(),
-                                transactionType = it.transactionType
-                                    ?: AccountBookEntity.TransactionType.REVENUE,
-                                amount = it.amount ?: 0,
-                                imageUrl = it.imageUrl
-                            )
+                        State.AccountBook(
+                            id = it.id,
+                            title = it.title,
+                            day = it.day,
+                            dayName = it.dayName,
+                            category = it.category?.name,
+                            transactionType = it.transactionType,
+                            amount = it.amount ?: 0,
+                            imageUrl = it.imageUrl
+                        )
                     },
                     totalCost = totalEntity.totalCost,
                     totalExpense = totalEntity.totalExpense,
@@ -56,6 +54,7 @@ internal class AccountBookViewModel @Inject constructor(
             }
         }
     }
+
 
     fun updatePage(lastContentsId: Long) {
         updateState { copy(lastContentsId = lastContentsId) }
@@ -85,7 +84,7 @@ internal class AccountBookViewModel @Inject constructor(
     override fun createInitialState(savedState: Parcelable?): State = State()
 
     data class State(
-        val lastContentsId: Long = 0,
+        val lastContentsId: Long? = null,
         val category: String = "",
         val sort: String = SortOrder.EARLIEST.name.lowercase(),
         val start: String = LocalDate.now().withDayOfMonth(1).toString(),
@@ -99,12 +98,12 @@ internal class AccountBookViewModel @Inject constructor(
     ) : BaseViewModel.State {
         data class AccountBook(
             val id: Long,
-            val title: String,
+            val title: String?,
             val day: Int?,
             val dayName: String?,
-            val category: String,
-            val transactionType: AccountBookEntity.TransactionType,
-            val amount: Long,
+            val category: String?,
+            val transactionType: AccountBookEntity.TransactionType?,
+            val amount: Long? = 0,
             val imageUrl: List<String>
         )
     }

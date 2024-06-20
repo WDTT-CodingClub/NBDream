@@ -6,8 +6,8 @@ import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentScreen
-import kr.co.main.accountbook.main.AccountBookRoute
-import kr.co.main.accountbook.register.AccountBookRegister
+import kr.co.main.accountbook.main.AccountBookScreen
+import kr.co.main.accountbook.register.AccountBookRegisterScreen
 import kr.co.main.community.BulletinDetailScreen
 import kr.co.main.community.BulletinWritingRoute
 import kr.co.main.community.CommunityRoute
@@ -22,7 +22,7 @@ import timber.log.Timber
 const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
 internal const val NOTIFICATION_ROUTE = "notificationRoute"
-internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
+internal const val ACCOUNT_BOOK_ROUTE = "accountBookScreen"
 internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
 
 internal const val MY_PAGE_EDIT_ROUTE = "myPageProfileEditRoute"
@@ -64,7 +64,7 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.ACCOUNT.route
                 ) {
-                    AccountBookRoute(
+                    AccountBookScreen(
                         navigationToRegister = {
                             navController.navigate(ACCOUNT_BOOK_ROUTE)
                         },
@@ -116,7 +116,7 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = ACCOUNT_BOOK_ROUTE
     ) {
-        AccountBookRegister(
+        AccountBookRegisterScreen(
             popBackStack = navController::popBackStack
         )
     }
