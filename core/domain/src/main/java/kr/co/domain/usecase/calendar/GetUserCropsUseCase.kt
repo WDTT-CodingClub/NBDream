@@ -6,8 +6,10 @@ import kr.co.domain.entity.CropEntity
 import kr.co.domain.repository.UserRepository
 import kr.co.domain.usecase.FlowUseCase
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class GetUserCropUseCase @Inject constructor(
+@Singleton
+class GetUserCropsUseCase @Inject constructor(
     private val repository: UserRepository
 ) : FlowUseCase<Unit, List<CropEntity>>() {
     override fun build(params: Unit?): Flow<List<CropEntity>> =
