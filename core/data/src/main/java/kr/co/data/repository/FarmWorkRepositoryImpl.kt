@@ -1,14 +1,16 @@
 package kr.co.data.repository
 
-import kotlinx.coroutines.flow.Flow
+import kr.co.data.mapper.FarmWorkMapper
+import kr.co.data.source.remote.FarmWorkRemoteDataSource
 import kr.co.domain.entity.FarmWorkEntity
 import kr.co.domain.repository.FarmWorkRepository
 import javax.inject.Inject
 
 internal class FarmWorkRepositoryImpl @Inject constructor(
-    //remoteDataSource: FarmWorkRemoteDataSource,
-) : FarmWorkRepository{
-    override fun getFarmWorks(crop: String, year: Int, month: Int): Flow<List<FarmWorkEntity>> {
-        TODO("Not yet implemented")
-    }
+    private val remoteDataSource: FarmWorkRemoteDataSource,
+) : FarmWorkRepository {
+    override suspend fun getFarmWorks(crop: String, month: Int): List<FarmWorkEntity> =
+        remoteDataSource.fetch(crop, month).map {
+            FarmWorkMapper.convert(it)
+        }
 }
