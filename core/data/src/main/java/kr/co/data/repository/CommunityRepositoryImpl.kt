@@ -27,6 +27,12 @@ internal class CommunityRepositoryImpl @Inject constructor(
         return result.data ?: -1
     }
 
+    override suspend fun deleteBulletin(
+        id: Long,
+    ): Boolean = remote.deleteBulletin(
+        id = id,
+    )
+
     override suspend fun getBulletins(
         keyword: String?,
         bulletinCategory: BulletinEntity.BulletinCategory,

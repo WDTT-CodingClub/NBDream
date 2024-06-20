@@ -13,6 +13,8 @@ interface CommunityRemoteDataSource {
         imageUrls: List<String>,
     ): PostBulletinResult
 
+    suspend fun deleteBulletin(id: Long): Boolean
+
     suspend fun getBulletins(
         keyword: String?,
         bulletinCategory: String,

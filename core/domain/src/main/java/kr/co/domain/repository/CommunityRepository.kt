@@ -12,6 +12,8 @@ interface CommunityRepository {
         imageUrls: List<String>,
     ): Long
 
+    suspend fun deleteBulletin(id: Long): Boolean
+
     suspend fun getBulletins(
         keyword: String?,
         bulletinCategory: BulletinEntity.BulletinCategory,
