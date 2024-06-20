@@ -164,7 +164,7 @@ internal class CommunityViewModel @Inject constructor(
         }
     }
 
-    private val _currentDetailBulletinId = MutableStateFlow(10L)
+    private val _currentDetailBulletinId = MutableStateFlow(0L)
     val currentDetailBulletinId = _currentDetailBulletinId.asStateFlow()
     private fun setCurrentDetailBulletinId(id: Long) {
         _currentDetailBulletinId.value = id
