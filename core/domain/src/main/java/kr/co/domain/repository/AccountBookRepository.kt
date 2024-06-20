@@ -5,7 +5,7 @@ import kr.co.domain.entity.AccountBookTotalEntity
 
 interface AccountBookRepository {
     suspend fun getAccountBooks(
-        page: Int,
+        lastContentsId: Long?,
         category: String,
         sort: String,
         start: String,
@@ -23,7 +23,7 @@ interface AccountBookRepository {
     )
 
     suspend fun updateAccountBook(
-        id: String,
+        id: Long,
         transactionType: String,
         amount: Long,
         category: String,
@@ -32,8 +32,8 @@ interface AccountBookRepository {
         imageUrls: List<String>
     )
 
-    suspend fun getAccountBookDetail(id: String): AccountBookEntity
+    suspend fun getAccountBookDetail(id: Long): AccountBookEntity
 
-    suspend fun deleteAccountBook(id: String)
+    suspend fun deleteAccountBook(id: Long)
 
 }

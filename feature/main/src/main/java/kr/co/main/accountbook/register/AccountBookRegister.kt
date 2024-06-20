@@ -1,6 +1,5 @@
 package kr.co.main.accountbook.register
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -37,12 +36,15 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,15 +54,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
+import kr.co.main.accountbook.main.formatNumber
+import kr.co.main.accountbook.model.CategoryDisplayMapper.getDisplay
+import kr.co.main.community.temp.UriUtil
 import kr.co.nbdream.core.ui.R
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -69,42 +75,43 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@Preview
-@Composable
-private fun PreviewAccountBookRegister() {
-    MaterialTheme {
-        AccountBookRegister()
-    }
-}
 
 @Composable
-internal fun AccountBookRegister() {
-    var selectedCategory by remember { mutableStateOf("지출") }
+internal fun AccountBookRegister(
+    popBackStack: () -> Unit,
+    viewModel: AccountBookRegisterViewModel = hiltViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     var showBottomSheet by remember { mutableStateOf(false) }
-    var selectedCategoryText by remember { mutableStateOf("선택하세요") }
-    var amount by remember { mutableStateOf(TextFieldValue("")) }
-    var writingImages by remember { mutableStateOf(listOf<Uri>()) }
-    var description by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
-    var currentDateTime by remember {
-        mutableStateOf(SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault()).format(Date()))
-    }
-
+    val context = LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             uri?.let {
-                writingImages = writingImages + it
+                val file = UriUtil.toPngFile(context, it)
+                viewModel.uploadImage(file)
             }
         }
     )
+    var amountText by remember { mutableStateOf(formatNumber(state.amount)) }
+    val snackBarHostState = remember { SnackbarHostState() }
+    val snackBarMessage by viewModel.snackBarMessage.collectAsState()
+
+    LaunchedEffect(snackBarMessage) {
+        snackBarMessage?.let {
+            snackBarHostState.showSnackbar(it)
+            viewModel.resetSnackBarState()
+        }
+    }
 
     Scaffold(
         topBar = {
             DreamCenterTopAppBar(
                 title = "장부 작성하기",
                 navigationIcon = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = popBackStack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "뒤로가기",
@@ -114,13 +121,18 @@ internal fun AccountBookRegister() {
                 },
                 actions = {
                     Button(
-                        onClick = { },
+                        onClick = {
+                            viewModel.validationCreateAccountBook()
+                        },
                         colors = ButtonDefaults.buttonColors(Color.Transparent)
                     ) {
                         Text("등록", color = MaterialTheme.colors.black)
                     }
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState)
         },
         content = { padding ->
             Column(
@@ -142,10 +154,13 @@ internal fun AccountBookRegister() {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     TextField(
-                        value = amount,
-                        onValueChange = { newValue ->
-                            if (newValue.text.all { it.isDigit() }) {
-                                amount = newValue
+                        value = amountText,
+                        onValueChange = { newText ->
+                            val cleanedText = newText.replace(",", "")
+                            if (cleanedText.all { it.isDigit() }) {
+                                val newAmount = cleanedText.toLongOrNull() ?: 0L
+                                amountText = formatNumber(newAmount)
+                                viewModel.updateAmount(newAmount)
                             }
                         },
                         modifier = Modifier.weight(1f),
@@ -157,6 +172,7 @@ internal fun AccountBookRegister() {
                             focusedContainerColor = Color.Transparent,
                         )
                     )
+
                     Text(
                         text = "원",
                         style = MaterialTheme.typo.header2B
@@ -182,13 +198,15 @@ internal fun AccountBookRegister() {
                     )
 
                     Button(
-                        onClick = { selectedCategory = "지출" },
+                        onClick = { viewModel.updateTransactionType(AccountBookEntity.TransactionType.EXPENSE) },
                         modifier = Modifier
                             .width(85.dp)
                             .height(42.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedCategory == "지출") MaterialTheme.colors.primary else MaterialTheme.colors.white,
-                            contentColor = if (selectedCategory == "지출") MaterialTheme.colors.white else MaterialTheme.colors.primary,
+                            containerColor = if (state.transactionType == AccountBookEntity.TransactionType.EXPENSE)
+                                MaterialTheme.colors.primary else MaterialTheme.colors.white,
+                            contentColor = if (state.transactionType == AccountBookEntity.TransactionType.EXPENSE)
+                                MaterialTheme.colors.white else MaterialTheme.colors.primary,
                         ),
                         border = BorderStroke(1.dp, MaterialTheme.colors.primary)
                     ) {
@@ -197,14 +215,17 @@ internal fun AccountBookRegister() {
                             style = MaterialTheme.typo.bodyM
                         )
                     }
+
                     Button(
-                        onClick = { selectedCategory = "수입" },
+                        onClick = { viewModel.updateTransactionType(AccountBookEntity.TransactionType.REVENUE) },
                         modifier = Modifier
                             .width(85.dp)
                             .height(42.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedCategory == "수입") MaterialTheme.colors.primary else MaterialTheme.colors.white,
-                            contentColor = if (selectedCategory == "수입") MaterialTheme.colors.white else MaterialTheme.colors.primary,
+                            containerColor = if (state.transactionType == AccountBookEntity.TransactionType.REVENUE)
+                                MaterialTheme.colors.primary else MaterialTheme.colors.white,
+                            contentColor = if (state.transactionType == AccountBookEntity.TransactionType.REVENUE)
+                                MaterialTheme.colors.white else MaterialTheme.colors.primary,
                         ),
                         border = BorderStroke(1.dp, MaterialTheme.colors.primary)
                     ) {
@@ -232,8 +253,8 @@ internal fun AccountBookRegister() {
                         colors = ButtonDefaults.buttonColors(Color.Transparent),
                     ) {
                         Text(
-                            text = selectedCategoryText,
-                            color = MaterialTheme.colors.black,
+                            text = state.category?.let { getDisplay(it) } ?: "선택하세요",
+                            color = if (state.category == null) MaterialTheme.colors.grey6 else MaterialTheme.colors.black,
                             style = MaterialTheme.typo.bodyM
                         )
                     }
@@ -253,9 +274,9 @@ internal fun AccountBookRegister() {
                     )
 
                     TextField(
-                        value = description,
+                        value = state.title,
                         onValueChange = { newValue ->
-                            description = newValue
+                            viewModel.updateTitle(newValue)
                         },
                         placeholder = {
                             Text(
@@ -291,7 +312,7 @@ internal fun AccountBookRegister() {
                         colors = ButtonDefaults.buttonColors(Color.Transparent),
                     ) {
                         Text(
-                            text = currentDateTime,
+                            text = state.registerDateTime,
                             color = MaterialTheme.colors.black,
                             style = MaterialTheme.typo.bodyM
                         )
@@ -315,8 +336,8 @@ internal fun AccountBookRegister() {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(writingImages.size) { index ->
-                        val imageUri = writingImages[index]
+                    items(state.imageUrls.size) { index ->
+                        val imageUri = state.imageUrls[index]
                         Box(
                             modifier = Modifier
                                 .size(120.dp)
@@ -331,8 +352,7 @@ internal fun AccountBookRegister() {
                             )
                             IconButton(
                                 onClick = {
-                                    writingImages =
-                                        writingImages.toMutableList().apply { removeAt(index) }
+                                    viewModel.removeImageUrl(imageUri)
                                 },
                                 modifier = Modifier.align(Alignment.TopEnd),
                                 colors = IconButtonDefaults.iconButtonColors(
@@ -372,21 +392,19 @@ internal fun AccountBookRegister() {
     if (showDatePicker) {
         AccountBookDatePickerDialog(
             onClickCancel = { showDatePicker = false },
-            onClickConfirm = {selectedDate ->
-                currentDateTime = selectedDate
+            onClickConfirm = { selectedDate ->
+                viewModel.updateRegisterDateTime(selectedDate)
                 showDatePicker = false
             }
         )
     }
 
-
     if (showBottomSheet) {
         AccountBookCategoryBottomSheet(
             onSelectedListener = { category ->
-                selectedCategoryText = category
+                viewModel.updateCategory(category)
                 showBottomSheet = false
             },
-            categories = AccountBookEntity.Category.entries.map { it.display },
             dismissBottomSheet = { showBottomSheet = false }
         )
     }

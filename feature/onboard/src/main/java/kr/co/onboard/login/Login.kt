@@ -1,6 +1,7 @@
 package kr.co.onboard.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.*
@@ -15,23 +16,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import kr.co.onboard.R
 import kr.co.domain.model.AuthType
-import kr.co.ui.theme.NBDreamTheme
+import kr.co.onboard.navigation.MAIN_ROUTE
+import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.kakaoYellow
 import kr.co.ui.theme.naverGreen
 import kr.co.ui.theme.typo
 
 @Composable
-internal fun Login() {
+internal fun Login(
+    onSocialLoginClick: (AuthType) -> Unit,
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
     Box(
-        modifier = Modifier.padding(16.dp)
+        modifier
+            .background(color = Color.White)
+            .padding(Paddings.xlarge),
     ) {
         Logo()
-        SocialLoginButtons {}
+        SocialLoginButtons(
+            onSocialLoginClick = onSocialLoginClick,
+            navController = navController
+        )
     }
 }
 
@@ -41,7 +52,8 @@ internal fun Logo() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
     ) {
         Image(
             painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_logo),
@@ -57,6 +69,7 @@ internal fun Logo() {
 @Composable
 internal fun SocialLoginButtons(
     onSocialLoginClick: (AuthType) -> Unit,
+    navController: NavController
 ) {
     Box(
         modifier = Modifier
@@ -64,7 +77,7 @@ internal fun SocialLoginButtons(
         contentAlignment = Alignment.BottomCenter
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(Paddings.xlarge)
         ) {
             LoginButton(
                 image = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_kakao_login),
@@ -82,13 +95,18 @@ internal fun SocialLoginButtons(
                 onClick = { onSocialLoginClick(AuthType.NAVER) }
             )
             Spacer(modifier = Modifier.height(8.dp))
-            LoginButton(
-                image = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_google_login),
-                text = stringResource(R.string.feature_onboard_login_google_login),
-                backgroundColor = Color.White,
-                textColor = Color.Black,
-                onClick = { onSocialLoginClick(AuthType.GOOGLE) }
-            )
+            Button(onClick = {
+                navController.navigate(MAIN_ROUTE)
+            }) {
+                Text(text = "메인화면으로 이동")
+            }
+//            LoginButton(
+//                image = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_google_login),
+//                text = stringResource(R.string.feature_onboard_login_google_login),
+//                backgroundColor = Color.White,
+//                textColor = Color.Black,
+//                onClick = { onSocialLoginClick(AuthType.GOOGLE) }
+//            )
         }
     }
 }
@@ -140,10 +158,10 @@ private fun LoginButton(
     }
 }
 
-@Composable
-@Preview(showSystemUi = true)
-private fun loginPreview() {
-    NBDreamTheme {
-        Login()
-    }
-}
+//@Composable
+//@Preview(showSystemUi = true)
+//private fun loginPreview() {
+//    NBDreamTheme {
+//        Login()
+//    }
+//}

@@ -34,7 +34,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +48,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import kr.co.domain.entity.AccountBookEntity
+import kr.co.main.accountbook.model.CategoryDisplayMapper
 import kr.co.ui.theme.colors
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -59,11 +60,10 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountBookCategoryBottomSheet(
-    onSelectedListener: (String) -> Unit,
-    categories: List<String>,
+    onSelectedListener: (AccountBookEntity.Category) -> Unit,
     dismissBottomSheet: () -> Unit,
 ) {
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
+    var selectedCategory by remember { mutableStateOf<AccountBookEntity.Category?>(null) }
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
@@ -90,11 +90,12 @@ internal fun AccountBookCategoryBottomSheet(
                 modifier = Modifier.padding(bottom = 12.dp),
                 color = Color.Black
             )
-            categories.forEach { category ->
+            AccountBookEntity.Category.entries.forEach { category ->
+                val categoryName = CategoryDisplayMapper.getDisplay(category)
                 val backgroundColor =
                     if (category == selectedCategory) MaterialTheme.colors.primary else Color.Transparent
                 Text(
-                    text = category,
+                    text = categoryName,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
@@ -115,16 +116,15 @@ internal fun AccountBookCategoryBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountBookCalendarBottomSheet(
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
     onSelectedListener: (String, String) -> Unit,
     dismissBottomSheet: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState()
     val options = listOf("당일", "1주일", "1개월", "3개월", "6개월")
-    var selectedOption by remember { mutableStateOf("1개월") }
 
-    val startDate = remember { mutableStateOf(LocalDate.now().withDayOfMonth(1)) }
-    val endDate =
-        remember { mutableStateOf(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth())) }
+    var (startDate, endDate) = updateDatesForOption(selectedOption)
 
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickerType by remember { mutableStateOf("start") }
@@ -159,11 +159,14 @@ internal fun AccountBookCalendarBottomSheet(
                 options.forEach { option ->
                     OptionBox(
                         option = option,
-                        selectedOption = selectedOption
-                    ) {
-                        updateDatesForOption(option, startDate, endDate)
-                        selectedOption = option
-                    }
+                        selectedOption = selectedOption,
+                        onOptionSelected = { newOption ->
+                            onOptionSelected(newOption)
+                            val (newStartDate, newEndDate) = updateDatesForOption(newOption)
+                            startDate = newStartDate
+                            endDate = newEndDate
+                        }
+                    )
                 }
             }
             Row(
@@ -175,7 +178,7 @@ internal fun AccountBookCalendarBottomSheet(
             ) {
                 Column(modifier = Modifier.weight(2f)) {
                     DateRow(
-                        date = startDate.value.format(DateTimeFormatter.ISO_DATE),
+                        date = startDate.format(DateTimeFormatter.ISO_DATE),
                         onClick = {
                             datePickerType = "start"
                             showDatePicker = true
@@ -198,7 +201,7 @@ internal fun AccountBookCalendarBottomSheet(
                 }
                 Column(modifier = Modifier.weight(2f)) {
                     DateRow(
-                        date = endDate.value.format(DateTimeFormatter.ISO_DATE),
+                        date = endDate.format(DateTimeFormatter.ISO_DATE),
                         onClick = {
                             datePickerType = "end"
                             showDatePicker = true
@@ -209,8 +212,8 @@ internal fun AccountBookCalendarBottomSheet(
             Button(
                 onClick = {
                     onSelectedListener(
-                        startDate.value.format(DateTimeFormatter.ISO_DATE),
-                        endDate.value.format(DateTimeFormatter.ISO_DATE)
+                        startDate.format(DateTimeFormatter.ISO_DATE),
+                        endDate.format(DateTimeFormatter.ISO_DATE)
                     )
                 },
                 modifier = Modifier
@@ -231,18 +234,16 @@ internal fun AccountBookCalendarBottomSheet(
 
     if (showDatePicker) {
         CustomDatePickerDialog(
-            startDate = startDate,
-            endDate = endDate,
             datePickerType = datePickerType,
             onClickCancel = {
                 showDatePicker = false
             },
             onClickConfirm = { selectedDate ->
+                val selectedLocalDate = LocalDate.parse(selectedDate, DateTimeFormatter.BASIC_ISO_DATE)
                 if (datePickerType == "start") {
-                    startDate.value =
-                        LocalDate.parse(selectedDate, DateTimeFormatter.BASIC_ISO_DATE)
+                    startDate = selectedLocalDate
                 } else {
-                    endDate.value = LocalDate.parse(selectedDate, DateTimeFormatter.BASIC_ISO_DATE)
+                    endDate = selectedLocalDate
                 }
                 showDatePicker = false
             }
@@ -281,28 +282,24 @@ private fun DateRow(
 }
 
 
-private fun updateDatesForOption(
-    option: String,
-    startDate: MutableState<LocalDate>,
-    endDate: MutableState<LocalDate>
-) {
+private fun updateDatesForOption(option: String): Pair<LocalDate, LocalDate> {
     val today = LocalDate.now()
-    startDate.value = when (option) {
+    val startDate = when (option) {
         "당일" -> today
         "1주일" -> today.minusWeeks(1)
         "1개월" -> today.minusMonths(1)
         "3개월" -> today.minusMonths(3)
         "6개월" -> today.minusMonths(6)
-        else -> startDate.value
+        else -> today.minusMonths(1)
     }
-    endDate.value = today
+    return startDate to today
 }
 
 @Composable
 private fun OptionBox(
     option: String,
     selectedOption: String,
-    onClick: () -> Unit
+    onOptionSelected: (String) -> Unit
 ) {
     val isSelected = option == selectedOption
     val borderColor = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.grey1
@@ -312,7 +309,9 @@ private fun OptionBox(
         modifier = Modifier
             .height(32.dp)
             .border(BorderStroke(1.dp, borderColor), shape = RoundedCornerShape(16.dp))
-            .clickable(onClick = onClick),
+            .clickable(onClick = {
+                onOptionSelected(option)
+            }),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -327,12 +326,13 @@ private fun OptionBox(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CustomDatePickerDialog(
-    startDate: MutableState<LocalDate>,
-    endDate: MutableState<LocalDate>,
     datePickerType: String,
     onClickCancel: () -> Unit,
     onClickConfirm: (yyyyMMdd: String) -> Unit
 ) {
+    val startDate = remember { mutableStateOf(LocalDate.now()) }
+    val endDate = remember { mutableStateOf(LocalDate.now()) }
+
     val datePickerState = rememberDatePickerState(
         yearRange = IntRange(1900, 2100),
         initialDisplayMode = DisplayMode.Picker,
@@ -366,6 +366,7 @@ private fun CustomDatePickerDialog(
                         onClickCancel()
                         return@LaunchedEffect
                     }
+                    startDate.value = selectedStartDate
                 } else {
                     val selectedEndDate =
                         LocalDate.parse(formattedDate, DateTimeFormatter.BASIC_ISO_DATE)
@@ -378,6 +379,7 @@ private fun CustomDatePickerDialog(
                         onClickCancel()
                         return@LaunchedEffect
                     }
+                    endDate.value = selectedEndDate
                 }
 
                 onClickConfirm(formattedDate)

@@ -1,11 +1,11 @@
 package kr.co.data.model.data
 
 data class AccountBookData(
-    val id: String,
+    val id: Long,
     val title: String,
     val category: String,
     val transactionType: String,
     val amount: Long,
-    val imageUrls: List<String>,
-    val registerDateTime: String
+    val registerDateTime: String,
+    val imageUrls: List<String>
 )

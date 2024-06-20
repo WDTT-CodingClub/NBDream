@@ -11,7 +11,7 @@ internal data class GetAccountBookDetailResponse(
 ) {
     @Serializable
     data class Data(
-        val id: String,
+        val id: Long,
         val title: String,
         val category: String,
         val transactionType: String,

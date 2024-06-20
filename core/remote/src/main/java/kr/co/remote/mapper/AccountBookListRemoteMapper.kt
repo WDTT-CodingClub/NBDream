@@ -12,6 +12,7 @@ internal object AccountBookListRemoteMapper : Mapper<GetAccountBookListResponse,
                 totalRevenue = totalRevenue,
                 totalExpense = totalExpense,
                 totalCost = totalCost,
+                hasNext = hasNext,
                 items = items.map {
                     AccountBookListData.Item(
                         id = it.id,
@@ -22,8 +23,8 @@ internal object AccountBookListRemoteMapper : Mapper<GetAccountBookListResponse,
                         day = it.day,
                         dayName = it.dayName,
                         transactionType = it.transactionType,
-                        amount = it.amount ?: 0L,
-                        thumbnail = it.thumbnail,
+                        amount = it.amount,
+                        thumbnail = it.thumbnail ?: "",
                         imageSize = it.imageSize
                     )
                 }
