@@ -4,7 +4,8 @@ import kr.co.common.mapper.Mapper
 import kr.co.data.model.data.AccountBookListData
 import kr.co.remote.model.response.GetAccountBookListResponse
 
-internal object AccountBookListRemoteMapper : Mapper<GetAccountBookListResponse, AccountBookListData> {
+internal object AccountBookListRemoteMapper :
+    Mapper<GetAccountBookListResponse, AccountBookListData> {
     override fun convert(param: GetAccountBookListResponse): AccountBookListData =
         with(param.data) {
             AccountBookListData(
