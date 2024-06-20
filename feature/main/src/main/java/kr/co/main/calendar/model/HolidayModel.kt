@@ -1,6 +1,5 @@
 package kr.co.main.calendar.model
 
-import android.util.Range
 import kr.co.domain.entity.HolidayEntity
 import java.time.LocalDate
 
@@ -27,7 +26,7 @@ internal fun HolidayModel.convert() = HolidayEntity(
 
 internal fun filterAndSortHolidays(
     holidays: List<HolidayModel>,
-    dateRange: Range<LocalDate>
+    dateRange: ClosedRange<LocalDate>
 ) = holidays
     .filter { it.date in dateRange }
     .filter { it.isHoliday }
