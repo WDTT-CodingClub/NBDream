@@ -10,6 +10,7 @@ import kr.co.main.accountbook.register.AccountBookRegister
 import kr.co.main.calendar.ui.calendar_screen.add_diary_screen.AddDiaryRoute
 import kr.co.main.calendar.ui.calendar_screen.add_schedule_screen.AddScheduleRoute
 import kr.co.main.calendar.ui.calendar_screen.calendar_screen.CalendarRoute
+import kr.co.main.calendar.ui.calendar_screen.search_diary_screen.SearchDiaryRoute
 import kr.co.main.community.BulletinDetailScreen
 import kr.co.main.community.BulletinWritingRoute
 import kr.co.main.community.CommunityRoute
@@ -142,7 +143,7 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = CalendarRoute.SEARCH_DIARY_ROUTE
     ) {
-
+        SearchDiaryRoute()
     }
 
     composable(
