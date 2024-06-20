@@ -14,14 +14,14 @@ internal class CommunityRepositoryImpl @Inject constructor(
 
     override suspend fun postBulletin(
         content: String,
-        dreamCrop: String,
-        bulletinCategory: String,
+        crop: CropEntity.Name,
+        bulletinCategory: BulletinEntity.BulletinCategory,
         imageUrls: List<String>,
     ): Long {
         val result = remote.postBulletin(
             content = content,
-            dreamCrop = dreamCrop,
-            bulletinCategory = bulletinCategory,
+            crop = crop.koreanName,
+            bulletinCategory = bulletinCategory.queryName,
             imageUrls = imageUrls,
         )
         return result.data ?: -1

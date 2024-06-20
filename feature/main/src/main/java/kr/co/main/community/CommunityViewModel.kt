@@ -128,8 +128,8 @@ internal class CommunityViewModel @Inject constructor(
             try {
                 val uploadedBulletinId = communityRepository.postBulletin(
                     content = bulletinWritingInput.value,
-                    dreamCrop = currentBoard.value.name,
-                    bulletinCategory = currentCategory.value.name,
+                    crop = currentBoard.value,
+                    bulletinCategory = currentCategory.value,
 //                    imageUrls = writingImages.value.map { it.url.toString() },
                     imageUrls = emptyList(),  // temp
                 )

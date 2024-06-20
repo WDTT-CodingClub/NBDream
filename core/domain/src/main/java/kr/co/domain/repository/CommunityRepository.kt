@@ -7,8 +7,8 @@ interface CommunityRepository {
 
     suspend fun postBulletin(
         content: String,
-        dreamCrop: String,
-        bulletinCategory: String,
+        crop: CropEntity.Name,
+        bulletinCategory: BulletinEntity.BulletinCategory,
         imageUrls: List<String>,
     ): Long
 

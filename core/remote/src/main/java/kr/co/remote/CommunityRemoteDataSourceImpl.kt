@@ -27,14 +27,14 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun postBulletin(
         content: String,
-        dreamCrop: String,
+        crop: String,
         bulletinCategory: String,
         imageUrls: List<String>,
     ) = client.post(POST_BULLETIN_URL) {
         setBody(
             PostBulletinRequest(
                 content = content,
-                dreamCrop = dreamCrop,
+                dreamCrop = crop,
                 bulletinCategory = bulletinCategory,
                 imageUrls = imageUrls,
             )

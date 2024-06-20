@@ -8,7 +8,7 @@ interface CommunityRemoteDataSource {
 
     suspend fun postBulletin(
         content: String,
-        dreamCrop: String,
+        crop: String,
         bulletinCategory: String,
         imageUrls: List<String>,
     ): PostBulletinResult
