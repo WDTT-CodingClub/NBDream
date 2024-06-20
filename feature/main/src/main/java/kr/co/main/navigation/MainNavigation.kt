@@ -11,7 +11,7 @@ import kr.co.main.accountbook.register.AccountBookRegister
 import kr.co.main.calendar.ui.calendar_screen.add_diary_screen.AddDiaryRoute
 import kr.co.main.calendar.ui.calendar_screen.add_schedule_screen.AddScheduleRoute
 import kr.co.main.calendar.ui.calendar_screen.calendar_screen.CalendarRoute
-import kr.co.main.community.BulletinDetailScreen
+import kr.co.main.community.BulletinDetailRoute
 import kr.co.main.community.BulletinWritingRoute
 import kr.co.main.community.CommunityRoute
 import kr.co.main.home.HomeRoute
@@ -184,7 +184,7 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = CommunityRoute.BULLETIN_DETAIL_ROUTE
     ) {
-        BulletinDetailScreen(popBackStack = navController::popBackStack)
+        BulletinDetailRoute(popBackStack = navController::popBackStack)
     }
 
     composable(
