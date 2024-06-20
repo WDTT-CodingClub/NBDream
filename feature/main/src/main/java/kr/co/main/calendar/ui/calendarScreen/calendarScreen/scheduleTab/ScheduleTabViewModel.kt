@@ -1,0 +1,120 @@
+package kr.co.main.calendar.ui.calendarScreen.calendarScreen.scheduleTab
+
+import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kr.co.domain.usecase.calendar.GetFarmWorksUseCase
+import kr.co.domain.usecase.calendar.GetHolidaysUseCase
+import kr.co.main.calendar.mapper.CropModelMapper
+import kr.co.main.calendar.mapper.FarmWorkModelMapper
+import kr.co.main.calendar.model.CropModel
+import kr.co.main.calendar.model.FarmWorkModel
+import kr.co.main.calendar.model.HolidayModel
+import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.calendar.model.convert
+import kr.co.ui.base.BaseViewModel
+import timber.log.Timber
+import java.time.LocalDate
+import javax.inject.Inject
+
+internal interface ScheduleTabEvent {
+    fun setCalendarCrop(crop: CropModel)
+    fun setCalendarYear(year: Int)
+    fun setCalendarMonth(month: Int)
+
+    fun onSelectDate(date: LocalDate)
+}
+
+
+@HiltViewModel
+internal class ScheduleTabViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val getFarmWork: GetFarmWorksUseCase,
+    private val getHoliday: GetHolidaysUseCase,
+    //private val getSchedule: GetSchedulesUseCase
+) : BaseViewModel<ScheduleTabViewModel.ScheduleTabState>(savedStateHandle),
+    ScheduleTabEvent {
+
+    private val _calendarCrop = MutableStateFlow<CropModel?>(null)
+    private val _calendarYear = MutableStateFlow(LocalDate.now().year)
+    private val _calendarMonth = MutableStateFlow(LocalDate.now().monthValue)
+
+    data class ScheduleTabState(
+        val calendarCrop: CropModel? = null,
+        val calendarYear: Int = LocalDate.now().year,
+        val calendarMonth: Int = LocalDate.now().monthValue,
+        val selectedDate: LocalDate = LocalDate.now(),
+
+        val farmWorks: List<FarmWorkModel> = emptyList(),
+        val holidays: List<HolidayModel> = emptyList(),
+        val schedules: List<ScheduleModel> = emptyList()
+    ) : State
+
+    val event: ScheduleTabEvent = this@ScheduleTabViewModel
+
+    override fun createInitialState(savedState: Parcelable?): ScheduleTabState {
+        //TODO("Not yet implemented")
+        return ScheduleTabState()
+    }
+
+    init {
+        state.select { it.calendarCrop }.bindState(_calendarCrop)
+        state.select { it.calendarYear }.bindState(_calendarYear)
+        state.select { it.calendarMonth }.bindState(_calendarMonth)
+        combine(_calendarCrop, _calendarYear, _calendarMonth) { crop, year, month ->
+            getHoliday(
+                GetHolidaysUseCase.Params(
+                    year = currentState.calendarYear,
+                    month = currentState.calendarMonth
+                )
+            ).collect { holidays ->
+                updateState {
+                    currentState.copy(holidays = holidays.map { it.convert() })
+                }
+                Timber.d("holidays: $holidays")
+            }
+            crop?.let { crop ->
+                Timber.d("crop: $crop, call getFarmWork")
+                getFarmWork(
+                    GetFarmWorksUseCase.Params(
+                        crop = CropModelMapper.toLeft(crop).name.koreanName,
+                        month = month
+                    )
+                ).let {
+                    updateState {
+                        copy(farmWorks = it.map { FarmWorkModelMapper.convert(it) })
+                    }
+                    Timber.d("farmWorks: $it")
+                }
+//                getSchedule(
+//                    GetSchedulesUseCase.Params.Monthly(
+//                        crop = CropModelMapper.toLeft(crop).name.koreanName,
+//                        year = year,
+//                        month = month
+//                    )
+//                ).collect { schedules ->
+//                    updateState {
+//                        copy(schedules = schedules.map { ScheduleModelMapper.toRight(it) })
+//                    }
+//                }
+            }
+        }.launchIn(viewModelScopeEH)
+
+    }
+
+    override fun setCalendarCrop(crop: CropModel) =
+        updateState { copy(calendarCrop = crop) }
+
+    override fun setCalendarYear(year: Int) =
+        updateState { copy(calendarYear = year) }
+
+    override fun setCalendarMonth(month: Int) =
+        updateState { copy(calendarMonth = month) }
+
+    override fun onSelectDate(date: LocalDate) =
+        updateState { copy(selectedDate = date) }
+
+}
