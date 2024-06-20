@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
-import kotlinx.coroutines.launch
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.entity.SortOrder
 import kr.co.ui.theme.colors
@@ -43,36 +40,13 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 @Composable
-internal fun AccountBookRoute(
+internal fun AccountBookScreen(
     viewModel: AccountBookViewModel = hiltViewModel(),
     navigationToRegister: () -> Unit,
     navigationToContent: (Long?) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    AccountBookScreen(
-        state = state,
-        navigationToRegister = navigationToRegister,
-        navigationToContent = navigationToContent,
-        onPageChange = { viewModel.updatePage(it) },
-        onCategoryChange = { viewModel.updateCategory(it) },
-        onSortOrderChange = { viewModel.updateSortOrder(it) },
-        onDateRangeChange = { start, end -> viewModel.updateDateRange(start, end) },
-        onTransactionChange = { viewModel.updateTransactionType(it) }
-    )
-}
-
-@Composable
-private fun AccountBookScreen(
-    state: AccountBookViewModel.State = AccountBookViewModel.State(),
-    navigationToRegister: () -> Unit,
-    navigationToContent: (Long?) -> Unit,
-    onPageChange: (Long) -> Unit,
-    onCategoryChange: (String) -> Unit,
-    onSortOrderChange: (String) -> Unit,
-    onDateRangeChange: (String, String) -> Unit,
-    onTransactionChange: (AccountBookEntity.TransactionType?) -> Unit
-) {
     Scaffold(
         topBar = {},
         modifier = Modifier.fillMaxSize(),
@@ -99,18 +73,18 @@ private fun AccountBookScreen(
             SelectorSection(
                 state = state.categories,
                 sortOrder = state.sort,
-                onCategoryChange = onCategoryChange,
-                onSortOrderChange = onSortOrderChange,
-                onTransactionChange = onTransactionChange
+                onCategoryChange = { viewModel.updateCategory(it) },
+                onSortOrderChange = { viewModel.updateSortOrder(it) },
+                onTransactionChange = { viewModel.updateTransactionType(it) }
             )
 
             CalendarSection(onDaysInRangeChange = { startDate, endDate ->
-                onDateRangeChange(startDate.toString(), endDate.toString())
+                viewModel.updateDateRange(startDate.toString(), endDate.toString())
             })
 
             AccountBookList(
                 accountBooks = state.accountBooks,
-                onPageChange = onPageChange,
+                onPageChange = { viewModel.updatePage(it) },
                 onItemClicked = { id ->
                     navigationToContent(id)
 
@@ -122,6 +96,7 @@ private fun AccountBookScreen(
 
 @Composable
 private fun CalendarSection(onDaysInRangeChange: (LocalDate, LocalDate) -> Unit) {
+    // TODO 제거
     val currentDate = LocalDate.now()
     val currentYearMonth = YearMonth.from(currentDate)
     val firstDayOfMonth = currentYearMonth.atDay(1)
@@ -130,8 +105,7 @@ private fun CalendarSection(onDaysInRangeChange: (LocalDate, LocalDate) -> Unit)
     val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
     val startDate = remember { mutableStateOf(firstDayOfMonth) }
     val endDate = remember { mutableStateOf(lastDayOfMonth) }
-
-    onDaysInRangeChange(startDate.value, endDate.value)
+    // TODO 여기까지~
 
     var bottomSheetState by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("1개월") }
@@ -188,12 +162,12 @@ private fun GraphSection(
         data = if (totalExpense > 0) listOf(totalExpense.toFloat()) else emptyList()
         categories = state.accountBooks
             .filter { it.transactionType == AccountBookEntity.TransactionType.EXPENSE }
-            .map { it.category }
+            .map { it.category.toString() }
     } else {
         data = if (totalRevenue > 0) listOf(totalRevenue.toFloat()) else emptyList()
         categories = state.accountBooks
             .filter { it.transactionType == AccountBookEntity.TransactionType.REVENUE }
-            .map { it.category }
+            .map { it.category.toString() }
     }
     Row(
         modifier = Modifier
@@ -392,21 +366,6 @@ private fun AccountBookList(
     onPageChange: (Long) -> Unit,
     onItemClicked: (Long) -> Unit,
 ) {
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
-            .collect { visibleItems ->
-                if (visibleItems.isNotEmpty() && visibleItems.lastOrNull()?.index == accountBooks.size - 1) {
-                    val lastItemId = accountBooks.last().id
-                    coroutineScope.launch {
-                        onPageChange(lastItemId)
-                    }
-                }
-            }
-    }
-
     LazyColumn {
         items(accountBooks) { accountBook ->
             AccountBookItem(
@@ -438,13 +397,13 @@ private fun AccountBookItem(
             Text(text = accountBook.dayName ?: "")
         }
         Column(modifier = Modifier.weight(2f)) {
-            Text(text = accountBook.title)
+            Text(text = accountBook.title ?: "")
             Text(
                 text = "${accountBook.amount}원",
                 style = MaterialTheme.typography.bodyMedium
             )
         }
-        Text(text = accountBook.category)
+        Text(text = accountBook.category ?: "")
         val imageUrl = accountBook.imageUrl.firstOrNull()
         if (imageUrl != null) {
             Image(

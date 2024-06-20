@@ -18,4 +18,13 @@ object CategoryDisplayMapper {
             AccountBookEntity.Category.OTHER -> "기타"
         }
     }
+
+    fun getTransactionType(transactionType: AccountBookEntity.TransactionType?): String {
+        return when (transactionType?.name) {
+            AccountBookEntity.TransactionType.EXPENSE.name.lowercase() -> "수익"
+            AccountBookEntity.TransactionType.REVENUE.name.lowercase() -> "지출"
+            else -> ""
+        }
+    }
 }
+
