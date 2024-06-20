@@ -5,16 +5,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
-import kr.co.main.accountbook.content.AccountBookContentScreen
-import kr.co.main.accountbook.main.AccountBookRoute
-import kr.co.main.accountbook.register.AccountBookRegister
+import kr.co.main.accountbook.content.AccountBookContentRoute
 import kr.co.main.calendar.ui.calendar_screen.add_diary_screen.AddDiaryRoute
 import kr.co.main.calendar.ui.calendar_screen.add_schedule_screen.AddScheduleRoute
 import kr.co.main.calendar.ui.calendar_screen.calendar_screen.CalendarRoute
 import kr.co.main.community.BulletinDetailRoute
-import kr.co.main.accountbook.main.AccountBookScreen
-import kr.co.main.accountbook.register.AccountBookRegisterScreen
-import kr.co.main.community.BulletinDetailScreen
+import kr.co.main.accountbook.main.AccountBookRoute
+import kr.co.main.accountbook.register.AccountBookRegisterRoute
 import kr.co.main.community.BulletinWritingRoute
 import kr.co.main.community.CommunityRoute
 import kr.co.main.home.HomeRoute
@@ -39,7 +36,6 @@ internal data object CalendarRoute {
 }
 
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
-internal const val ACCOUNT_BOOK_ROUTE = "accountBookScreen"
 internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
 
 internal data object CommunityRoute {
@@ -90,7 +86,7 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.ACCOUNT.route
                 ) {
-                    AccountBookScreen(
+                    AccountBookRoute(
                         navigationToRegister = {
                             navController.navigate(ACCOUNT_BOOK_ROUTE)
                         },
@@ -158,7 +154,7 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = ACCOUNT_BOOK_ROUTE
     ) {
-        AccountBookRegisterScreen(
+        AccountBookRegisterRoute(
             popBackStack = navController::popBackStack
         )
     }
@@ -170,7 +166,7 @@ fun NavGraphBuilder.mainNavGraph(
         val id = idString?.toLongOrNull()
 
         if (id != null) {
-            AccountBookContentScreen(
+            AccountBookContentRoute(
                 popBackStack = navController::popBackStack,
                 id = id
             )

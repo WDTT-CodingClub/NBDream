@@ -40,7 +40,7 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 @Composable
-internal fun AccountBookScreen(
+internal fun AccountBookRoute(
     viewModel: AccountBookViewModel = hiltViewModel(),
     navigationToRegister: () -> Unit,
     navigationToContent: (Long?) -> Unit

@@ -79,7 +79,7 @@ import java.util.Locale
 
 
 @Composable
-internal fun AccountBookRegisterScreen(
+internal fun AccountBookRegisterRoute(
     popBackStack: () -> Unit,
     viewModel: AccountBookRegisterViewModel = hiltViewModel()
 ) {
