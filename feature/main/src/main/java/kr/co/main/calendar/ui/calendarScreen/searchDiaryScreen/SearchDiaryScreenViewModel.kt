@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendar_screen.search_diary_screen
+package kr.co.main.calendar.ui.calendarScreen.searchDiaryScreen
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kr.co.domain.entity.CropEntity
 import kr.co.domain.usecase.calendar.SearchDiariesUseCase
+import kr.co.main.calendar.mapper.DiaryModelMapper
 import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.DiaryModel
-import kr.co.main.calendar.model.convert
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import javax.inject.Inject
@@ -23,7 +23,7 @@ internal interface SearchDiaryScreenEvent {
 @HiltViewModel
 internal class SearchDiaryScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val searchDiaries: SearchDiariesUseCase
+    //private val searchDiaries: SearchDiariesUseCase
 ) : BaseViewModel<SearchDiaryScreenViewModel.SearchDiaryScreenState>(savedStateHandle),
     SearchDiaryScreenEvent {
     private val _query = MutableStateFlow("")
@@ -50,43 +50,48 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
     val event: SearchDiaryScreenEvent = this@SearchDiaryScreenViewModel
 
     init {
-        loadingScope {
-            currentState.calendarCrop?.let {
-                searchDiaries(
-                    SearchDiariesUseCase.Params(
-                        crop = CropEntity.getCropEntity(it.name).name.koreanName,
-                        query = currentState.query,
-                        startDate = currentState.searchDateRange.start.toString(),
-                        endDate = currentState.searchDateRange.endInclusive.toString()
-                    )
-                ).collect { diaries ->
-                    updateState {
-                        copy(diaries = diaries.map { diaryEntity -> diaryEntity.convert() })
-                    }
-                }
-            }
-        }
-
-        state.select { it.query }.bindState(_query)
-        state.select { it.searchDateRange }.bindState(_searchDateRange)
-        loadingScope {
-            currentState.calendarCrop?.let {
-                combine(_query, _searchDateRange) { query, searchDateRange ->
-                    searchDiaries(
-                        SearchDiariesUseCase.Params(
-                            crop = CropEntity.getCropEntity(it.name).name.koreanName,
-                            query = query,
-                            startDate = searchDateRange.start.toString(),
-                            endDate = searchDateRange.endInclusive.toString()
-                        )
-                    ).collect {
-                        updateState {
-                            copy(diaries = it.map { diaryEntity -> diaryEntity.convert() })
-                        }
-                    }
-                }
-            }
-        }
+//        loadingScope {
+//            currentState.calendarCrop?.let {
+//                searchDiaries(
+//                    SearchDiariesUseCase.Params(
+//                        crop = CropEntity.getCropEntity(it.name).name.koreanName,
+//                        query = currentState.query,
+//                        startDate = currentState.searchDateRange.start.toString(),
+//                        endDate = currentState.searchDateRange.endInclusive.toString()
+//                    )
+//                ).collect { diaries ->
+//                    updateState {
+//                        copy(diaries = diaries.map { diaryEntity ->
+//                            DiaryModelMapper.toRight(diaryEntity)
+//                        }
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//
+//        state.select { it.query }.bindState(_query)
+//        state.select { it.searchDateRange }.bindState(_searchDateRange)
+//        loadingScope {
+//            currentState.calendarCrop?.let {
+//                combine(_query, _searchDateRange) { query, searchDateRange ->
+//                    searchDiaries(
+//                        SearchDiariesUseCase.Params(
+//                            crop = CropEntity.getCropEntity(it.name).name.koreanName,
+//                            query = query,
+//                            startDate = searchDateRange.start.toString(),
+//                            endDate = searchDateRange.endInclusive.toString()
+//                        )
+//                    ).collect { diaries ->
+//                        updateState {
+//                            copy(diaries = diaries.map { diaryEntity ->
+//                                DiaryModelMapper.toRight(diaryEntity)
+//                            })
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     override fun createInitialState(savedState: Parcelable?): SearchDiaryScreenState =

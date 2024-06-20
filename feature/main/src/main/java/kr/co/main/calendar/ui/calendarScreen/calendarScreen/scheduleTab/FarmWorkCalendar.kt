@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,33 +25,89 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 
+internal class FarmWorkCalendarStateHolder(
+    private val calendarMonth: Int,
+    private val farmWorks: List<FarmWorkModel>
+) {
+    val farmWorkEraInfo = listOf(
+        R.string.feature_main_calendar_farm_work_era_early,
+        R.string.feature_main_calendar_farm_work_era_mid,
+        R.string.feature_main_calendar_farm_work_era_late,
+    )
+
+    val farmWorkCategoryInfo =
+        listOf(
+            Pair(R.string.feature_main_calendar_farm_work_growth, FarmWorkEntity.Category.GROWTH),
+            Pair(R.string.feature_main_calendar_farm_work_climate, FarmWorkEntity.Category.CLIMATE),
+            Pair(R.string.feature_main_calendar_farm_work_pest, FarmWorkEntity.Category.PEST)
+        )
+
+    fun getFilteredFarmWorks(category: FarmWorkEntity.Category) =
+        farmWorks
+            .filter { it.category == category }
+            .map {
+                if (it.startMonth < calendarMonth)
+                    it.copy(
+                        startMonth = calendarMonth,
+                        startEra = FarmWorkEntity.Era.EARLY
+                    )
+                else it
+            }
+            .map {
+                if (it.endMonth > calendarMonth)
+                    it.copy(
+                        endMonth = calendarMonth,
+                        endEra = FarmWorkEntity.Era.LATE
+                    )
+                else it
+            }
+}
+
+
 @Composable
 internal fun FarmWorkCalendar(
+    calendarMonth: Int,
     farmWorks: List<FarmWorkModel>,
     modifier: Modifier = Modifier
 ) {
+    val stateHolder = rememberFarmWorkCalendarStateHolder(
+        calendarMonth = calendarMonth,
+        farmWorks = farmWorks
+    )
+
     Column(
         modifier = modifier
     ) {
         FarmWorkEraRow(
-            modifier = Modifier.padding(vertical = Paddings.medium)
+            modifier = Modifier.padding(vertical = Paddings.medium),
+            farmWorkEraInfo = stateHolder.farmWorkEraInfo
         )
         FarmWorkCalendarContent(
-            farmWorks = farmWorks
+            farmWorkCategoryInfo = stateHolder.farmWorkCategoryInfo,
+            getFilteredFarmWorks = stateHolder::getFilteredFarmWorks
         )
     }
 }
 
 @Composable
+private fun rememberFarmWorkCalendarStateHolder(
+    calendarMonth: Int,
+    farmWorks: List<FarmWorkModel>,
+) = remember {
+    FarmWorkCalendarStateHolder(
+        calendarMonth = calendarMonth,
+        farmWorks = farmWorks
+    )
+}
+
+
+@Composable
 private fun FarmWorkEraRow(
+    farmWorkEraInfo: List<Int>,
     modifier: Modifier = Modifier
 ) {
     Row(modifier) {
-        listOf(
-            R.string.feature_main_calendar_farm_work_era_early,
-            R.string.feature_main_calendar_farm_work_era_mid,
-            R.string.feature_main_calendar_farm_work_era_late,
-        ).forEach {
+        farmWorkEraInfo.forEach {
             Text(
                 modifier = Modifier.weight(1f),
                 text = stringResource(id = it),
@@ -64,23 +121,23 @@ private fun FarmWorkEraRow(
 
 @Composable
 private fun FarmWorkCalendarContent(
-    farmWorks: List<FarmWorkModel>,
+    farmWorkCategoryInfo: List<Pair<Int, FarmWorkEntity.Category>>,
+    getFilteredFarmWorks: (FarmWorkEntity.Category) -> List<FarmWorkModel>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        listOf(
-            Pair(R.string.feature_main_calendar_farm_work_growth, FarmWorkEntity.Category.GROWTH),
-            Pair(R.string.feature_main_calendar_farm_work_climate, FarmWorkEntity.Category.CLIMATE),
-            Pair(R.string.feature_main_calendar_farm_work_pest, FarmWorkEntity.Category.PEST)
-        ).forEach { graphCategory ->
+        for(categoryInfo in farmWorkCategoryInfo){
+            if(getFilteredFarmWorks(categoryInfo.second).isEmpty())
+                continue
+
             Text(
                 modifier = Modifier.padding(vertical = Paddings.medium),
-                text = stringResource(id = graphCategory.first),
+                text = stringResource(id = categoryInfo.first),
                 style = MaterialTheme.typo.labelSB
             )
             FarmWorkCalendarRow(
                 modifier = Modifier.fillMaxWidth(),
-                farmWorks = farmWorks.filter { it.category == graphCategory.second },
+                farmWorks = getFilteredFarmWorks(categoryInfo.second)
             )
         }
     }
@@ -113,7 +170,6 @@ private fun FarmWorkCalendarRow(
                 )
             }
 
-            // TODO farm work list empty 일 때 UI
             layout(
                 width = constraints.maxWidth,
                 height = placeables.first().height * placeables.size

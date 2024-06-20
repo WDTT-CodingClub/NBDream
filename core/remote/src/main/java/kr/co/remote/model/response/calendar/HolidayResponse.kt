@@ -1,4 +1,4 @@
-package kr.co.remote.model.response
+package kr.co.remote.model.response.calendar
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

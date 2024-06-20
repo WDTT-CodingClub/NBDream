@@ -1,5 +1,6 @@
-package kr.co.main.calendar.ui.calendar_screen.add_schedule_screen
+package kr.co.main.calendar.ui.calendarScreen.addScheduleScreen
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -7,13 +8,16 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import kr.co.main.calendar.model.CropModel
 
 @Composable
 internal fun AddScheduleRoute(
+    @StringRes calendarCropNameId: Int,
     viewModel: AddScheduleViewModel = hiltViewModel()
 ){
     AddScheduleScreen(
         modifier = Modifier.fillMaxSize(),
+        calendarCrop = CropModel.getCropModel(calendarCropNameId),
         state = viewModel.state.collectAsState(),
         event = viewModel.event
     )
@@ -21,6 +25,7 @@ internal fun AddScheduleRoute(
 
 @Composable
 private fun AddScheduleScreen(
+    calendarCrop: CropModel,
     state: State<AddScheduleViewModel.AddScheduleScreenState>,
     event: AddScheduleScreenEvent,
     modifier: Modifier = Modifier

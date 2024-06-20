@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendar_screen.calendar_screen.diary_tab
+package kr.co.main.calendar.ui.calendarScreen.calendarScreen.diaryTab
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,24 +13,34 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
+import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.main.calendar.ui.common.content.CalendarContent
 import kr.co.main.calendar.ui.common.content.CalendarContentWrapper
-import kr.co.main.calendar.ui.common.inner_calendar.InnerCalendar
+import kr.co.main.calendar.ui.common.innerCalendar.InnerCalendar
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
+import java.time.LocalDate
 
 @Composable
 internal fun DiaryTab(
+    calendarCrop: CropModel?,
+    calendarYear: Int,
+    calendarMonth: Int,
+    navToSearchDiary: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DiaryTabViewModel = hiltViewModel(),
 ) {
+    val state = viewModel.state.collectAsState()
+    val event = viewModel.event
+
     Surface(
         modifier = modifier,
         color = MaterialTheme.colors.gray9
@@ -46,8 +56,10 @@ internal fun DiaryTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = Paddings.xlarge),
-                    calendarYear = 2024,
-                    calendarMonth = 6
+                    selectedDate = LocalDate.now(), //TODO use state
+                    calendarYear = LocalDate.now().year, //TODO use state
+                    calendarMonth = LocalDate.now().monthValue, //TODO use state
+                    onSelectDate = event::onSelectDate
                 )
             }
         }

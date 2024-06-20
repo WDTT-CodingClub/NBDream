@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendar_screen.calendar_screen
+package kr.co.main.calendar.ui.calendarScreen.calendarScreen
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -46,12 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
 import kr.co.main.calendar.model.CropModel
-import kr.co.main.calendar.model.FarmWorkModel
-import kr.co.main.calendar.model.HolidayModel
-import kr.co.main.calendar.model.ScheduleModel
-import kr.co.main.calendar.ui.calendar_screen.calendar_screen.diary_tab.DiaryTab
-import kr.co.main.calendar.ui.calendar_screen.calendar_screen.schedule_tab.ScheduleTab
-import kr.co.main.calendar.ui.calendar_screen.calendar_screen.schedule_tab.ScheduleTabStateHolder
+import kr.co.main.calendar.ui.calendarScreen.calendarScreen.diaryTab.DiaryTab
+import kr.co.main.calendar.ui.calendarScreen.calendarScreen.scheduleTab.ScheduleTab
 import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Bell
@@ -64,8 +60,9 @@ import kr.co.ui.widget.DreamTopAppBar
 
 @Composable
 internal fun CalendarRoute(
-    navToAddSchedule: () -> Unit,
-    navToAddDiary: () -> Unit,
+    navToAddSchedule: (Int) -> Unit,
+    navToAddDiary: (Int) -> Unit,
+    navToSearchDiary: (Int, Int, Int) -> Unit,
     navToNotification: () -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
 ) {
@@ -73,6 +70,7 @@ internal fun CalendarRoute(
         modifier = Modifier.fillMaxSize(),
         navToAddSchedule = navToAddSchedule,
         navToAddDiary = navToAddDiary,
+        navToSearchDiary = navToSearchDiary,
         navToNotification = navToNotification,
         state = viewModel.state.collectAsState(),
         event = viewModel.event
@@ -81,8 +79,9 @@ internal fun CalendarRoute(
 
 @Composable
 private fun CalendarScreen(
-    navToAddSchedule: () -> Unit,
-    navToAddDiary: () -> Unit,
+    navToAddSchedule: (Int) -> Unit,
+    navToAddDiary: (Int) -> Unit,
+    navToSearchDiary: (Int, Int, Int) -> Unit,
     navToNotification: () -> Unit,
     state: State<CalendarScreenViewModel.CalendarScreenState>,
     event: CalendarScreenEvent,
@@ -98,8 +97,8 @@ private fun CalendarScreen(
                     .padding(horizontal = Paddings.large),
                 selectedTab = state.value.selectedTab,
                 onSelectTab = event::onSelectTab,
-                navToAddSchedule = navToAddSchedule,
-                navToAddDiary = navToAddDiary,
+                navToAddSchedule = { navToAddSchedule(state.value.calendarCrop!!.nameId) },
+                navToAddDiary = { navToAddDiary(state.value.calendarCrop!!.nameId) },
                 navToNotification = navToNotification
             )
         }
@@ -131,38 +130,29 @@ private fun CalendarScreen(
                     when (state.value.selectedTab) {
                         CalendarScreenViewModel.CalendarScreenState.CalendarTab.SCHEDULE ->
                             ScheduleTab(
-                                state = rememberScheduleStateHolder(
-                                    calendarCrop = state.value.calendarCrop!!,
-                                    farmWorks = state.value.farmWorks,
-                                    holidays = state.value.holidays,
-                                    schedules = state.value.schedules
-                                )
+                                calendarCrop = state.value.calendarCrop,
+                                calendarYear = state.value.calendarYear,
+                                calendarMonth = state.value.calendarMonth
                             )
 
                         CalendarScreenViewModel.CalendarScreenState.CalendarTab.DIARY ->
-                            DiaryTab()
+                            DiaryTab(
+                                calendarCrop = state.value.calendarCrop,
+                                calendarYear = state.value.calendarYear,
+                                calendarMonth = state.value.calendarMonth,
+                                navToSearchDiary = {
+                                    navToSearchDiary(
+                                        state.value.calendarCrop!!.nameId,
+                                        state.value.calendarYear,
+                                        state.value.calendarMonth
+                                    )
+                                }
+                            )
                     }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun rememberScheduleStateHolder(
-    calendarCrop: CropModel,
-    farmWorks: List<FarmWorkModel>,
-    holidays: List<HolidayModel>,
-    schedules: List<ScheduleModel>
-) = remember {
-    mutableStateOf(
-        ScheduleTabStateHolder(
-            calendarCrop = calendarCrop,
-            farmWorks = farmWorks,
-            holidays = holidays,
-            schedules = schedules
-        )
-    )
 }
 
 @Composable

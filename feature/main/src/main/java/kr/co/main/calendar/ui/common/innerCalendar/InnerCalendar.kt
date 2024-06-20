@@ -1,6 +1,5 @@
-package kr.co.main.calendar.ui.common.inner_calendar
+package kr.co.main.calendar.ui.common.innerCalendar
 
-import android.util.Range
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,11 +8,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -24,61 +26,56 @@ import androidx.compose.ui.unit.dp
 import kr.co.common.util.iterator
 import kr.co.main.R
 import kr.co.main.calendar.model.HolidayModel
-import kr.co.main.calendar.model.filterAndSortHolidays
 import kr.co.main.calendar.ui.common.CalendarDesignToken
-import kr.co.main.calendar.ui.common.content.CalendarContent
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-internal data class InnerCalendarData(
-    val startDate: LocalDate,
-    val endDate: LocalDate,
-    val calendarContent: CalendarContent
-)
-
 @Composable
 internal fun InnerCalendar(
     calendarYear: Int,
     calendarMonth: Int,
+    selectedDate: LocalDate,
+    onSelectDate: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
-    selectedDate: LocalDate = LocalDate.now(),
-    holidayList: List<HolidayModel> = emptyList(),
-    dataList: List<InnerCalendarData> = emptyList()
+    holidays: List<HolidayModel> = emptyList(),
+    items: List<InnerCalendarItem> = emptyList()
 ) {
-    val stateHolder = rememberInnerCalendarStateHolder(calendarYear, calendarMonth)
+    val innerCalendarStateHolder = rememberInnerCalendarStateHolder(
+        calendarYear, calendarMonth, selectedDate, holidays, items
+    )
 
-    InnerCalendarContent(
+    StatelessInnerCalendar(
         modifier = modifier,
-        calendarYear = calendarYear,
-        calendarMonth = calendarMonth,
-        startWeekNum = stateHolder.startWeekNumber,
-        endWeekNum = stateHolder.endWeekNumber,
-        getWeekRange = stateHolder::getWeekRange,
-        holidayList = holidayList,
-        dataList = dataList
+        onSelectDate = onSelectDate,
+        innerCalendarStateHolder = innerCalendarStateHolder
     )
 }
 
 @Composable
-private fun rememberInnerCalendarStateHolder(year: Int, month: Int) = remember {
-    InnerCalendarStateHolder(year, month)
+private fun rememberInnerCalendarStateHolder(
+    year: Int,
+    month: Int,
+    selectedDate: LocalDate,
+    holidays: List<HolidayModel>,
+    items: List<InnerCalendarItem>
+) = remember {
+    InnerCalendarStateHolder(year, month, selectedDate, holidays, items)
 }
 
 
 @Composable
-private fun InnerCalendarContent(
-    calendarYear: Int,
-    calendarMonth: Int,
-    startWeekNum: Int,
-    endWeekNum: Int,
-    getWeekRange: (Int, Int) -> Pair<LocalDate, LocalDate>,
-    holidayList: List<HolidayModel>,
-    dataList: List<InnerCalendarData>,
+private fun StatelessInnerCalendar(
+    innerCalendarStateHolder: InnerCalendarStateHolder,
+    onSelectDate: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val monthWeekRange = remember(innerCalendarStateHolder.year, innerCalendarStateHolder.month) {
+        innerCalendarStateHolder.getMonthWeekRange()
+    }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Paddings.xlarge)
@@ -86,22 +83,21 @@ private fun InnerCalendarContent(
         InnerCalendarDayOfWeekRow(
             modifier = Modifier.fillMaxWidth()
         )
-
-        for (weekNum in startWeekNum..endWeekNum) {
-            val (weekStartDate, weekEndDate) = getWeekRange(calendarYear, weekNum)
-            InnerCalendarRow(
-                calendarMonth = calendarMonth,
-                weekStartDate = weekStartDate,
-                weekEndDate = weekEndDate,
-                holidayList = filterAndSortHolidays(
-                    holidays = holidayList,
-                    dateRange = Range(weekStartDate, weekEndDate)
-                ),
-                dataList = filterAndSortDatas(
-                    datas= dataList,
-                    dateRange = Range(weekStartDate, weekEndDate)
+        for (weekNum in monthWeekRange.start..monthWeekRange.endInclusive) {
+            val weekDateRange = innerCalendarStateHolder.getWeekDateRange(weekNum)
+            Box{
+                InnerCalendarDateRow(
+                    calendarMonth = innerCalendarStateHolder.month,
+                    selectedDate = innerCalendarStateHolder.selectedDate,
+                    weekDateRange = weekDateRange,
+                    holidays = innerCalendarStateHolder.holidays
                 )
-            )
+                InnerCalendarItemRow(
+                    onSelectDate = onSelectDate,
+                    weekDateRange = weekDateRange,
+                    items = innerCalendarStateHolder.items
+                )
+            }
         }
     }
 }
@@ -150,47 +146,22 @@ private fun InnerCalendarDayOfWeekItem(
 }
 
 @Composable
-internal fun InnerCalendarRow(
-    calendarMonth: Int,
-    weekStartDate: LocalDate,
-    weekEndDate: LocalDate,
-    holidayList: List<HolidayModel>,
-    dataList: List<InnerCalendarData>,
-    modifier: Modifier = Modifier
-) {
-    Box(modifier = modifier) {
-        InnerCalendarDateRow(
-            calendarMonth = calendarMonth,
-            weekStartDate = weekStartDate,
-            weekEndDate = weekEndDate,
-            holidayList = holidayList
-        )
-        InnerCalendarDataRow(
-            weekStartDate = weekStartDate,
-            weekEndDate = weekEndDate,
-            dataList = dataList
-        )
-    }
-}
-
-@Composable
 private fun InnerCalendarDateRow(
     calendarMonth: Int,
-    weekStartDate: LocalDate,
-    weekEndDate: LocalDate,
-    holidayList: List<HolidayModel>,
+    selectedDate: LocalDate,
+    weekDateRange: ClosedRange<LocalDate>,
+    holidays: List<HolidayModel>,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
-        for (date in weekStartDate..weekEndDate) {
+        for (date in weekDateRange) {
             InnerCalendarDateItem(
                 modifier = Modifier
                     .weight(1f)
-                    .alpha(
-                        if (date.monthValue == calendarMonth) 1f else 0.5f
-                    ),
+                    .alpha( if (date.monthValue == calendarMonth) 1f else 0.3f),
                 date = date,
-                isHoliday = holidayList.any { it.date == date } or (date.dayOfWeek == DayOfWeek.SUNDAY)
+                isSelected = (date == selectedDate),
+                isHoliday = holidays.any { it.date == date } or (date.dayOfWeek == DayOfWeek.SUNDAY)
             )
         }
     }
@@ -199,35 +170,51 @@ private fun InnerCalendarDateRow(
 @Composable
 private fun InnerCalendarDateItem(
     date: LocalDate,
+    isSelected: Boolean,
     isHoliday: Boolean,
     modifier: Modifier = Modifier
 ) {
     val textColor =
         if (isHoliday) MaterialTheme.colors.red1
+        else if (isSelected) Color.White
         else MaterialTheme.colors.text1
 
-    Text(
-        modifier = modifier,
-        text = date.dayOfMonth.toString(),
-        style = MaterialTheme.typo.bodyR,
-        color = textColor,
-        textAlign = TextAlign.Center
-    )
+    val backgroundColor =
+        if (isSelected) Color.Black else Color.Transparent
+
+    Box(
+        modifier = modifier
+            .clip(shape = CircleShape)
+            .background(backgroundColor)
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(Paddings.small),
+            text = date.dayOfMonth.toString(),
+            style = MaterialTheme.typo.bodyR,
+            color = textColor,
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
+
 @Composable
-private fun InnerCalendarDataRow(
-    weekStartDate: LocalDate,
-    weekEndDate: LocalDate,
-    dataList: List<InnerCalendarData>,
+private fun InnerCalendarItemRow(
+    onSelectDate: (LocalDate) -> Unit,
+    weekDateRange: ClosedRange<LocalDate>,
+    items: List<InnerCalendarItem>,
     modifier: Modifier = Modifier
 ) {
-
+    val contents: @Composable () -> Unit = {
+        filterAndSortItems(items, weekDateRange)
+    }
 }
 
 @Composable
-private fun InnerCalendarDataItem(
-    data: InnerCalendarData,
+private fun InnerCalendarItem(
+    data: InnerCalendarItem,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -239,13 +226,5 @@ private fun InnerCalendarDataItem(
     )
 }
 
-private fun filterAndSortDatas(
-    datas: List<InnerCalendarData>,
-    dateRange: Range<LocalDate>
-) = datas
-    .filter {
-        (it.startDate in dateRange) or (it.endDate in dateRange)
-    }
-    .sortedWith(compareBy({ it.startDate }, { it.endDate }))
 
 

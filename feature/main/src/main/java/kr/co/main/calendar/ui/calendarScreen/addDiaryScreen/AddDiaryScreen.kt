@@ -1,5 +1,6 @@
-package kr.co.main.calendar.ui.calendar_screen.add_diary_screen
+package kr.co.main.calendar.ui.calendarScreen.addDiaryScreen
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -7,15 +8,18 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import kr.co.main.calendar.model.CropModel
 
 @Composable
 internal fun AddDiaryRoute(
+    @StringRes calendarCropNameId: Int,
     viewModel: AddDiaryViewModel = hiltViewModel()
 ){
     AddDiaryScreen(
         modifier = Modifier.fillMaxSize(),
         state = viewModel.state.collectAsState(),
-        event = viewModel.event
+        event = viewModel.event,
+        calendarCrop = CropModel.getCropModel(calendarCropNameId)
     )
 }
 
@@ -23,6 +27,7 @@ internal fun AddDiaryRoute(
 private fun AddDiaryScreen(
     state: State<AddDiaryViewModel.AddDiaryScreenState>,
     event: AddDiaryScreenEvent,
+    calendarCrop: CropModel,
     modifier: Modifier = Modifier
 ) {
 

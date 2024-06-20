@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendar_screen.add_diary_screen
+package kr.co.main.calendar.ui.calendarScreen.addDiaryScreen
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
