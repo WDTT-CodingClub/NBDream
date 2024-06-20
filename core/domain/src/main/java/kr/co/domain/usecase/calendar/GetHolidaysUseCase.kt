@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class GetHolidaysUseCase @Inject constructor(
-    private val repository: HolidayRepository
+   //private val repository: HolidayRepository
 ):FlowUseCase<GetHolidaysUseCase.Params, List<HolidayEntity>>(){
     data class Params(
         val year: Int,
