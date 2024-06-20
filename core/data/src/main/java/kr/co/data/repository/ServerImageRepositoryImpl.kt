@@ -14,6 +14,7 @@ internal class ServerImageRepositoryImpl @Inject constructor(
     override suspend fun upload(domain: String, image: File): ServerImageEntity? =
         remote.upload(domain, image).let(ServerImageMapper::convert)
 
-    override suspend fun delete(imageUrl: String) = remote.delete(imageUrl)
-
+    override suspend fun delete(url: String) {
+        remote.delete(url)
+    }
 }

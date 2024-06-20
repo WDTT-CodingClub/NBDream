@@ -13,10 +13,8 @@ import kr.co.remote.model.response.community.convertToResult
 import javax.inject.Inject
 
 internal class CommunityRemoteDataSourceImpl @Inject constructor(
-    client: HttpClient
+    private val client: HttpClient
 ) : CommunityRemoteDataSource {
-    private val client = tempCreateHttpClient()
-
     companion object {
         private const val POST_BULLETIN_URL = "api/bulletins"
         private const val DELETE_BULLETIN_URL = "api/bulletins/{bulletin-id}"
