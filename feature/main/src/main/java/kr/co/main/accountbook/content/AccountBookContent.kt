@@ -1,6 +1,5 @@
 package kr.co.main.accountbook.content
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +18,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -29,7 +30,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,8 +40,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.main.accountbook.main.formatNumber
+import kr.co.main.accountbook.model.CategoryDisplayMapper
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
@@ -49,23 +52,24 @@ import kr.co.ui.widget.DreamCenterTopAppBar
 
 @Composable
 internal fun AccountBookContentScreen(
-    viewModel: AccountBookContentViewModel,
-    id: String
+    popBackStack: () -> Unit,
+    viewModel: AccountBookContentViewModel = hiltViewModel(),
+    id: Long
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(key1 = id) {
         viewModel.fetchAccountBookById(id)
     }
 
-    val writingImages by remember { mutableStateOf(listOf<Uri>()) }
     var showDropDownMenu by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             DreamCenterTopAppBar(
                 title = "장부 상세",
                 navigationIcon = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = popBackStack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "뒤로가기",
@@ -115,7 +119,7 @@ internal fun AccountBookContentScreen(
                                 }
                             },
                             onClick = {
-                                // TODO 삭제하기
+                                showDeleteDialog = true
                                 showDropDownMenu = false
                             }
                         )
@@ -167,7 +171,7 @@ internal fun AccountBookContentScreen(
                             .background(MaterialTheme.colors.gray8)
                     ) {
                         Text(
-                            text = state.category.name,
+                            text = CategoryDisplayMapper.getDisplay(state.category),
                             style = MaterialTheme.typo.bodyM,
                             color = MaterialTheme.colors.black
                         )
@@ -205,7 +209,7 @@ internal fun AccountBookContentScreen(
                         style = MaterialTheme.typo.titleM
                     )
                     Text(
-                        text = "${state.year}년 ${state.month}월 ${state.day}일",
+                        text = state.registerDateTime,
                         color = MaterialTheme.colors.black,
                         style = MaterialTheme.typo.bodyM
                     )
@@ -228,8 +232,8 @@ internal fun AccountBookContentScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(writingImages.size) { index ->
-                        val imageUri = writingImages[index]
+                    items(state.imageUrls.size) { index ->
+                        val imageUri = state.imageUrls[index]
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -248,4 +252,27 @@ internal fun AccountBookContentScreen(
             }
         }
     )
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("장부 내역 삭제") },
+            text = { Text("장부 내역을 삭제하겠습니까?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.deleteAccountBookById()
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("확인")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDeleteDialog = false }) {
+                    Text("취소")
+                }
+            }
+        )
+    }
 }

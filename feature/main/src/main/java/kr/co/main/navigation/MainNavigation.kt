@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
+import kr.co.main.accountbook.content.AccountBookContentScreen
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.register.AccountBookRegister
 import kr.co.main.calendar.ui.calendar_screen.add_diary_screen.AddDiaryRoute
@@ -19,6 +20,7 @@ import kr.co.main.my.MyPageRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
 import kr.co.main.my.setting.MyPageSettingRoute
 import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
+import timber.log.Timber
 
 
 const val MAIN_ROUTE = "mainRoute"
@@ -34,6 +36,7 @@ internal data object CalendarRoute {
 }
 
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
+internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
 
 internal data object CommunityRoute {
     const val WRITING_ROUTE = "community_writing_route"
@@ -83,11 +86,14 @@ fun NavGraphBuilder.mainNavGraph(
                 composable(
                     route = MainBottomRoute.ACCOUNT.route
                 ) {
-                    AccountBookRoute(navigationToRegister = {
-                        navController.navigate(
-                            ACCOUNT_BOOK_ROUTE
-                        )
-                    })
+                    AccountBookRoute(
+                        navigationToRegister = {
+                            navController.navigate(ACCOUNT_BOOK_ROUTE)
+                        },
+                        navigationToContent = { id ->
+                            navController.navigate("$ACCOUNT_BOOK_CONTENT_ROUTE/$id")
+                        }
+                    )
                 }
 
                 composable(
@@ -148,7 +154,25 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = ACCOUNT_BOOK_ROUTE
     ) {
-        AccountBookRegister()
+        AccountBookRegister(
+            popBackStack = navController::popBackStack
+        )
+    }
+
+    composable(
+        route = "$ACCOUNT_BOOK_CONTENT_ROUTE/{id}"
+    ) { backStackEntry ->
+        val idString = backStackEntry.arguments?.getString("id")
+        val id = idString?.toLongOrNull()
+
+        if (id != null) {
+            AccountBookContentScreen(
+                popBackStack = navController::popBackStack,
+                id = id
+            )
+        } else {
+            Timber.e("Invalid id")
+        }
     }
 
     composable(

@@ -6,6 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.ui.base.BaseViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -14,28 +17,29 @@ internal class AccountBookContentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AccountBookContentViewModel.State>(savedStateHandle) {
 
-    init {
-
+    fun deleteAccountBookById() {
+        state.value.id.let { id ->
+            loadingScope {
+                repository.deleteAccountBook(id)
+            }
+        }
     }
 
-    fun fetchAccountBookById(id: String) {
+    fun fetchAccountBookById(id: Long) {
         loadingScope {
-            try {
-                val accountBookDetail = repository.getAccountBookDetail(id)
-                updateState {
+            val accountBookDetail = repository.getAccountBookDetail(id)
+            updateState {
+                accountBookDetail.id?.let {
                     copy(
-                        id = accountBookDetail.id,
+                        id = it,
                         title = accountBookDetail.title,
                         category = accountBookDetail.category,
-                        year = accountBookDetail.year ?: 0,
-                        month = accountBookDetail.month ?: 0,
-                        day = accountBookDetail.day ?: 0,
                         transactionType = accountBookDetail.transactionType ?: AccountBookEntity.TransactionType.EXPENSE,
-                        amount = accountBookDetail.amount ?: 0
+                        amount = accountBookDetail.amount ?: 0,
+                        registerDateTime = state.value.registerDateTime,
+                        imageUrls = state.value.imageUrls
                     )
-                }
-            } catch (e: Exception) {
-                // TODO Error
+                }!!
             }
         }
     }
@@ -43,13 +47,15 @@ internal class AccountBookContentViewModel @Inject constructor(
     override fun createInitialState(savedState: Parcelable?): State = State()
 
     data class State(
-        val id: String = "",
+        val id: Long = 0,
         val title: String = "",
         val category: AccountBookEntity.Category = AccountBookEntity.Category.OTHER,
-        val year: Int = 0,
-        val month: Int = 0,
-        val day: Int = 0,
         val transactionType: AccountBookEntity.TransactionType = AccountBookEntity.TransactionType.EXPENSE,
-        val amount: Long = 0
+        val amount: Long = 0,
+        val registerDateTime: String = SimpleDateFormat(
+            "yyyy-MM-dd HH:mm",
+            Locale.getDefault()
+        ).format(Date()),
+        val imageUrls: List<String> = listOf()
     ) : BaseViewModel.State
 }

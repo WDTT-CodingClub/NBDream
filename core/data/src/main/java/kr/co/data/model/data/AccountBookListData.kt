@@ -5,10 +5,11 @@ data class AccountBookListData(
     val totalRevenue: Long,
     val totalExpense: Long,
     val totalCost: Long,
+    val hasNext: Boolean,
     val items: List<Item>
 ) {
     data class Item(
-        val id: String,
+        val id: Long,
         val title: String,
         val category: String,
         val year: Int,
