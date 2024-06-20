@@ -8,8 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GetSchedulesUseCase @Inject constructor(
-    private val repository: ScheduleRepository
+class GetSchedulesUseCase @Inject constructor(private val repository: ScheduleRepository
 ) : FlowUseCase<GetSchedulesUseCase.Params, List<ScheduleEntity>>() {
 
     sealed class Params {
