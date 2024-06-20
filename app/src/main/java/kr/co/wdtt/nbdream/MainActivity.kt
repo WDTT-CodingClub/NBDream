@@ -11,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
 import kr.co.common.ContextManager
+import kr.co.common.util.FileUtil
 import kr.co.wdtt.nbdream.ui.DreamApp
 import kr.co.ui.theme.NBDreamTheme
 import timber.log.Timber
@@ -23,6 +24,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         ContextManager.setContext(this)
+        FileUtil.initialize(this)
 
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(
