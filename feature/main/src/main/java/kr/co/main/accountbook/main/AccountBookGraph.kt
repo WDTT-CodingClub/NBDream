@@ -18,7 +18,6 @@ import kotlin.random.Random
 internal fun AccountBookGraph(
     data: List<Float>,
     categories: List<String>,
-    label: String,
     modifier: Modifier = Modifier
 ) {
     val total = data.sum().toInt()
@@ -29,7 +28,6 @@ internal fun AccountBookGraph(
     Canvas(modifier = modifier) {
         drawGraph(angles, colors, data, total, angleInterval)
         drawCategoryText(categories, colors)
-        drawCenterText(label)
     }
 }
 
@@ -110,7 +108,6 @@ private fun DrawScope.drawCategoryText(categories: List<String>, colors: List<Co
     val graphTopY = size.height / 2 - size.minDimension / 2
     val textStartY = graphTopY + 20.dp.toPx() / 2
     val verticalInterval = 4.dp.toPx()
-
     categories.forEachIndexed { index, category ->
         val textY = textStartY + index * (20f + verticalInterval)
 
@@ -132,20 +129,5 @@ private fun DrawScope.drawCategoryText(categories: List<String>, colors: List<Co
                 }
             )
         }
-    }
-}
-
-private fun DrawScope.drawCenterText(label: String) {
-    drawIntoCanvas {
-        it.nativeCanvas.drawText(
-            label,
-            size.width / 2,
-            size.height / 2,
-            Paint().apply {
-                color = Color.Black.toArgb()
-                textSize = 32f
-                textAlign = Paint.Align.CENTER
-            }
-        )
     }
 }
