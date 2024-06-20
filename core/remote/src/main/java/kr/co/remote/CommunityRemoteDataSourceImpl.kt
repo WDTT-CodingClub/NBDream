@@ -7,7 +7,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import kr.co.data.source.remote.CommunityRemoteDataSource
-import kr.co.remote.model.request.community.PostBulletinRequest
+import kr.co.remote.model.request.community.BulletinReqDto
 import kr.co.remote.model.response.community.DeleteBulletinResponse
 import kr.co.remote.model.response.community.GetBulletinDetailResponse
 import kr.co.remote.model.response.community.GetBulletinsResponse
@@ -34,7 +34,7 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
         imageUrls: List<String>,
     ) = client.post(POST_BULLETIN_URL) {
         setBody(
-            PostBulletinRequest(
+            BulletinReqDto(
                 content = content,
                 dreamCrop = crop,
                 bulletinCategory = bulletinCategory,
