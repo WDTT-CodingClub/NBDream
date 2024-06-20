@@ -9,13 +9,25 @@ plugins {
 android {
     namespace = "kr.co.nbdream.core.oauth"
 
-    defaultConfig {
-        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = project.findProperty("KAKAO_NATIVE_APP_KEY") ?: ""
-    }
-
     buildFeatures {
         buildConfig = true
     }
+
+    flavorDimensions.add("environment")
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"0b14005c847047e9a5cbb49c55ad231b\"")
+            manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = "0b14005c847047e9a5cbb49c55ad231b"
+        }
+
+        create("prod") {
+            dimension = "environment"
+            buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"4379ea24dc9518852cfd141b48a9ff5e\"")
+            manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = "4379ea24dc9518852cfd141b48a9ff5e"
+        }
+    }
+
 }
 
 secrets {
