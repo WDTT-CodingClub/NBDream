@@ -9,7 +9,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SearchDiariesUseCase @Inject constructor(
-    private val repository: DiaryRepository
+    //private val repository: DiaryRepository
 ): FlowUseCase<SearchDiariesUseCase.Params, List<DiaryEntity>>() {
     data class Params(
         val crop: String,
@@ -19,7 +19,8 @@ class SearchDiariesUseCase @Inject constructor(
     )
 
     override fun build(params: Params?): Flow<List<DiaryEntity>> {
-        if(params == null) throw IllegalArgumentException("params cannot be null")
-        return repository.searchDiaries(params.crop, params.query, params.startDate, params.endDate)
+        TODO ("not yet implemented")
+        //if(params == null) throw IllegalArgumentException("params cannot be null")
+        //return repository.searchDiaries(params.crop, params.query, params.startDate, params.endDate)
     }
 }
