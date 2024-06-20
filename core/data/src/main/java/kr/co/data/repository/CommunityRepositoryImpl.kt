@@ -1,6 +1,7 @@
 package kr.co.data.repository
 
-import kr.co.data.model.data.community.convertToEntityList
+import kr.co.data.model.data.community.convertToEntities
+import kr.co.data.model.data.community.convertToEntity
 import kr.co.data.source.remote.CommunityRemoteDataSource
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.CropEntity
@@ -36,6 +37,12 @@ internal class CommunityRepositoryImpl @Inject constructor(
         bulletinCategory = bulletinCategory.queryName,
         crop = crop.koreanName,
         lastBulletinId = lastBulletinId,
-    ).convertToEntityList()
+    ).convertToEntities()
+
+    override suspend fun getBulletinDetail(
+        bulletinId: Long,
+    ): BulletinEntity? = remote.getBulletinDetail(
+        bulletinId = bulletinId,
+    ).data?.convertToEntity()
 
 }

@@ -19,4 +19,6 @@ interface CommunityRepository {
         lastBulletinId: Long?,
     ): List<BulletinEntity>
 
+    suspend fun getBulletinDetail(bulletinId: Long): BulletinEntity?
+
 }

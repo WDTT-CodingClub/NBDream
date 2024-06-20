@@ -11,7 +11,7 @@ data class BulletinEntity(
     val bulletinCategory: BulletinCategory,
     val createdTime: String,
     val comments: List<CommentEntity>,
-    val bookmarkedCount: Long,
+    val bookmarkedCount: Int,
 ) {
     companion object {
         fun dummy(idx: Int = 0) = BulletinEntity(
@@ -25,7 +25,7 @@ data class BulletinEntity(
             bulletinCategory = BulletinCategory.entries[(idx) % BulletinCategory.entries.size],
             createdTime = "createdTime${idx}",
             comments = emptyList(),
-            bookmarkedCount = 220 + (idx).toLong(),
+            bookmarkedCount = 220 + idx,
         )
     }
 

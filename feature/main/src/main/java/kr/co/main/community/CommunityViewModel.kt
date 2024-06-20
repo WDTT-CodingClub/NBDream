@@ -164,6 +164,47 @@ internal class CommunityViewModel @Inject constructor(
         }
     }
 
+    private val _currentDetailBulletinId = MutableStateFlow(10L)
+    val currentDetailBulletinId = _currentDetailBulletinId.asStateFlow()
+    private fun setCurrentDetailBulletinId(id: Long) {
+        _currentDetailBulletinId.value = id
+    }
+
+    private val _currentDetailBulletin = MutableStateFlow(BulletinEntity.dummy())
+    val currentDetailBulletin = _currentDetailBulletin.asStateFlow()
+    private fun setCurrentDetailBulletin(entity: BulletinEntity) {
+        _currentDetailBulletin.value = entity
+    }
+
+    private val _isLoadDetailSuccessful = MutableStateFlow(false)
+    val isLoadDetailSuccessful = _isLoadDetailSuccessful.asStateFlow()
+
+    fun onBulletinClick(id: Long) {
+        setCurrentDetailBulletinId(id)
+        loadBulletin(id)
+    }
+
+    private fun loadBulletin(id: Long) {
+        viewModelScope.launch {
+            Timber.d("loadBulletin 코루틴 시작, id: $id")
+            Timber.d("loadBulletin 코루틴 시작, id: ${_currentDetailBulletinId.value}")
+            Timber.d("loadBulletin 코루틴 시작, id: ${currentDetailBulletinId.value}")
+            try {
+                val entity = communityRepository.getBulletinDetail(id)
+                if (entity == null) {
+                    _isLoadDetailSuccessful.emit(false)
+                } else {
+                    _isLoadDetailSuccessful.emit(true)
+                    setCurrentDetailBulletin(entity)
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "loadBulletin 코루틴 에러, id: $id")
+                _isLoadDetailSuccessful.emit(false)
+            }
+            Timber.d("loadBulletin 코루틴 끝, id: $id")
+        }
+    }
+
     init {
         _bulletinEntities.value = List(10) { i -> BulletinEntity.dummy(i) }
     }
