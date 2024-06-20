@@ -39,8 +39,9 @@ internal class AccountBookViewModel @Inject constructor(
                             id = it.id,
                             title = it.title,
                             day = it.day,
+                            month = it.month,
                             dayName = it.dayName,
-                            category = it.category?.name,
+                            category = it.category,
                             transactionType = it.transactionType,
                             amount = it.amount ?: 0,
                             imageUrl = it.imageUrl
@@ -94,14 +95,15 @@ internal class AccountBookViewModel @Inject constructor(
         val totalCost: Long? = null,
         val totalExpense: Long? = null,
         val totalRevenue: Long? = null,
-        val categories: List<String>? = null
+        val categories: List<String>? = null,
     ) : BaseViewModel.State {
         data class AccountBook(
             val id: Long,
             val title: String?,
             val day: Int?,
+            val month: Int?,
             val dayName: String?,
-            val category: String?,
+            val category:  AccountBookEntity.Category?,
             val transactionType: AccountBookEntity.TransactionType?,
             val amount: Long? = 0,
             val imageUrl: List<String>

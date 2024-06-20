@@ -3,27 +3,23 @@ package kr.co.main.accountbook.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -32,11 +28,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.entity.SortOrder
+import kr.co.main.accountbook.model.CategoryDisplayMapper
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Edit
+import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import kr.co.ui.widget.DreamTopAppBar
 import java.text.NumberFormat
 import java.time.LocalDate
-import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -47,84 +47,118 @@ internal fun AccountBookRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    Scaffold(
-        topBar = {},
-        modifier = Modifier.fillMaxSize(),
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = navigationToRegister,
-                shape = CircleShape,
-                containerColor = MaterialTheme.colors.green1
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Create,
-                    contentDescription = null,
-                    tint = Color.White
+    Surface(
+        color = MaterialTheme.colors.gray9
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Paddings.xlarge),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            item {
+                DreamTopAppBar(
+                    title = "내 장부",
+                    actions = {
+                        IconButton(onClick = {}) {
+                            Icon(
+                                imageVector = DreamIcon.Edit,
+                                contentDescription = "AccountBook Register"
+                            )
+                        }
+                    }
                 )
             }
-        },
-        floatingActionButtonPosition = FabPosition.End
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            SelectorSection(
-                state = state.categories,
-                sortOrder = state.sort,
-                onCategoryChange = { viewModel.updateCategory(it) },
-                onSortOrderChange = { viewModel.updateSortOrder(it) },
-                onTransactionChange = { viewModel.updateTransactionType(it) }
-            )
 
-            CalendarSection(onDaysInRangeChange = { startDate, endDate ->
-                viewModel.updateDateRange(startDate.toString(), endDate.toString())
-            })
+            item {
+                CalendarSection(
+                    start = state.start,
+                    end = state.end,
+                    onDaysInRangeChange = { startDate, endDate ->
+                        viewModel.updateDateRange(startDate.toString(), endDate.toString())
+                    })
+            }
 
-            AccountBookList(
-                accountBooks = state.accountBooks,
-                onPageChange = { viewModel.updatePage(it) },
-                onItemClicked = { id ->
-                    navigationToContent(id)
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = Color.White, shape = RoundedCornerShape(12.dp))
+                        .padding(Paddings.extra)
+                ) {
+                    GraphSection(
+                        state = state,
+                        showingExpenses = true
+                    ) {
 
+                    }
                 }
-            )
+            }
+
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = Color.White, shape = RoundedCornerShape(12.dp))
+                        .padding(Paddings.extra)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        SelectorSection(
+                            state = state.categories,
+                            sortOrder = state.sort,
+                            onCategoryChange = { viewModel.updateCategory(it) },
+                            onSortOrderChange = { viewModel.updateSortOrder(it) },
+                            onTransactionChange = { viewModel.updateTransactionType(it) }
+                        )
+
+                        AccountBookList(
+                            accountBooks = state.accountBooks,
+                            onPageChange = { viewModel.updatePage(it) },
+                            onItemClicked = { id ->
+                                navigationToContent(id)
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
+
 @Composable
-private fun CalendarSection(onDaysInRangeChange: (LocalDate, LocalDate) -> Unit) {
-    // TODO 제거
-    val currentDate = LocalDate.now()
-    val currentYearMonth = YearMonth.from(currentDate)
-    val firstDayOfMonth = currentYearMonth.atDay(1)
-    val lastDayOfMonth = currentYearMonth.atEndOfMonth()
-
-    val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-    val startDate = remember { mutableStateOf(firstDayOfMonth) }
-    val endDate = remember { mutableStateOf(lastDayOfMonth) }
-    // TODO 여기까지~
-
+private fun CalendarSection(
+    start: String,
+    end: String,
+    onDaysInRangeChange: (LocalDate, LocalDate) -> Unit
+) {
     var bottomSheetState by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("1개월") }
+
+    val startDate = LocalDate.parse(start)
+    val endDate = LocalDate.parse(end)
+    val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(16.dp)
+            .padding(
+                horizontal = Paddings.xlarge
+            )
             .clickable { bottomSheetState = true }
     ) {
         Text(
-            text = "${startDate.value.format(formatter)} - ${endDate.value.format(formatter)}",
-            modifier = Modifier.padding(start = 8.dp, end = 4.dp),
-            style = MaterialTheme.typo.header2M
+            text = "${startDate.format(formatter)} ~ ${endDate.format(formatter)}",
+            modifier = Modifier.padding(end = Paddings.xlarge),
+            style = MaterialTheme.typo.pageName, // TODO style 변경
+            color = MaterialTheme.colors.gray1
         )
         Icon(
-            imageVector = Icons.Default.DateRange,
+            imageVector = Icons.Filled.DateRange,
             contentDescription = null,
-            tint = Color.Black
+            tint = MaterialTheme.colors.gray4
         )
     }
 
@@ -135,10 +169,10 @@ private fun CalendarSection(onDaysInRangeChange: (LocalDate, LocalDate) -> Unit)
                 selectedOption = newOption
             },
             onSelectedListener = { selectedStartDate, selectedEndDate ->
-                startDate.value = LocalDate.parse(selectedStartDate)
-                endDate.value = LocalDate.parse(selectedEndDate)
+                val newStartDate = LocalDate.parse(selectedStartDate)
+                val newEndDate = LocalDate.parse(selectedEndDate)
                 bottomSheetState = false
-                onDaysInRangeChange(startDate.value, endDate.value)
+                onDaysInRangeChange(newStartDate, newEndDate)
             },
             dismissBottomSheet = { bottomSheetState = false }
         )
@@ -148,47 +182,26 @@ private fun CalendarSection(onDaysInRangeChange: (LocalDate, LocalDate) -> Unit)
 @Composable
 private fun GraphSection(
     state: AccountBookViewModel.State,
-    daysInRange: Long,
     showingExpenses: Boolean,
     onToggleTypeClick: () -> Unit
 ) {
-    val data: List<Float>
-    val categories: List<String>
-
-    val totalExpense = state.totalExpense ?: 0L
-    val totalRevenue = state.totalRevenue ?: 0L
-
-    if (showingExpenses) {
-        data = if (totalExpense > 0) listOf(totalExpense.toFloat()) else emptyList()
-        categories = state.accountBooks
-            .filter { it.transactionType == AccountBookEntity.TransactionType.EXPENSE }
-            .map { it.category.toString() }
+    val transactionType = if (showingExpenses) {
+        AccountBookEntity.TransactionType.EXPENSE
     } else {
-        data = if (totalRevenue > 0) listOf(totalRevenue.toFloat()) else emptyList()
-        categories = state.accountBooks
-            .filter { it.transactionType == AccountBookEntity.TransactionType.REVENUE }
-            .map { it.category.toString() }
+        AccountBookEntity.TransactionType.REVENUE
     }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Box(
-            modifier = Modifier.size(100.dp)
-        ) {
-            AccountBookGraph(
-                data = data,
-                categories = categories,
-                label = "${daysInRange}일",
-                modifier = Modifier.size(100.dp)
-            )
-        }
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.End
-        ) {
+
+    val filteredData = state.accountBooks.filter { it.transactionType == transactionType }
+    val groupedData = filteredData.groupBy { it.category }
+
+    val data = groupedData.values.map { group ->
+        group.sumOf { it.amount?.toDouble() ?: 0.0 }.toFloat()
+    }
+
+    val categories = groupedData.keys.map { CategoryDisplayMapper.getDisplay(it) }
+
+    Column {
+        Row {
             ClickableTotalText(
                 text = "지출",
                 onClick = { onToggleTypeClick() },
@@ -198,6 +211,24 @@ private fun GraphSection(
                 text = "수입",
                 onClick = { onToggleTypeClick() },
                 isSelected = !showingExpenses
+            )
+        }
+        Box(
+            modifier = Modifier.size(100.dp)
+        ) {
+            AccountBookGraph(
+                data = data,
+                categories = categories,
+                modifier = Modifier.size(100.dp)
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(
+                text = "합계: ${state.totalCost?.let { formatNumber(it) }}원"
             )
             Text(
                 text = "합계: ${state.totalCost?.let { formatNumber(it) }}원"
@@ -213,6 +244,7 @@ private fun FilterSelector(
     var selectedOption by remember { mutableStateOf("전체") }
     Row(
         modifier = Modifier
+            .padding(vertical = Paddings.xextra)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -226,8 +258,7 @@ private fun FilterSelector(
                     selectedOption = it
                 }
             )
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.width(8.dp))
             AccountBookOptionButton(
                 option = "지출",
                 isSelected = selectedOption == "지출",
@@ -257,19 +288,19 @@ private fun AccountBookOptionButton(
 ) {
     Box(
         modifier = Modifier
-            .width(75.dp)
+            .width(80.dp)
             .height(32.dp)
             .background(
-                color = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.grey1,
-                shape = RoundedCornerShape(16.dp)
+                color = if (isSelected) MaterialTheme.colors.gray4 else MaterialTheme.colors.gray9,
+                shape = RoundedCornerShape(12.dp)
             )
             .clickable { onSelected(option) },
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = option,
-            color = if (isSelected) Color.White else MaterialTheme.colors.grey6,
-            style = MaterialTheme.typo.bodyM
+            color = if (isSelected) MaterialTheme.colors.white else MaterialTheme.colors.gray4,
+            style = MaterialTheme.typo.h3
         )
     }
 }
@@ -282,22 +313,9 @@ private fun SelectorSection(
     onSortOrderChange: (String) -> Unit,
     onTransactionChange: (AccountBookEntity.TransactionType?) -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        FilterSelector(onTransactionChange)
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
+    Column {
         CategorySelector(state, onCategoryChange = onCategoryChange)
+        FilterSelector(onTransactionChange)
         SortOrderSelector(sortOrder, onSortOrderChange)
     }
 }
@@ -308,18 +326,27 @@ private fun CategorySelector(state: List<String>?, onCategoryChange: (String) ->
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
         modifier = Modifier
+            .width(120.dp)
+            .height(32.dp)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colors.gray6,
+                shape = RoundedCornerShape(12.dp)
+            )
             .clickable { bottomSheetState = true }
     ) {
         Text(
             text = "카테고리",
-            modifier = Modifier.padding(end = 4.dp),
-            style = MaterialTheme.typography.bodyMedium
+            modifier = Modifier.padding(end = Paddings.xlarge),
+            style = MaterialTheme.typo.body1,
+            color = MaterialTheme.colors.gray2
         )
         Icon(
             imageVector = Icons.Default.ArrowDropDown,
             contentDescription = null,
-            tint = Color.Black
+            tint = MaterialTheme.colors.gray1
         )
     }
 
@@ -340,23 +367,31 @@ private fun CategorySelector(state: List<String>?, onCategoryChange: (String) ->
 @Composable
 private fun SortOrderSelector(sortOrder: String, onSortOrderChange: (String) -> Unit) {
     Row(
-        horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp, bottom = 16.dp)
     ) {
-        ClickableText(
-            text = "최신순",
-            isSelected = sortOrder == SortOrder.EARLIEST.name,
-            onClick = { onSortOrderChange(SortOrder.EARLIEST.name) }
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable(onClick = { onSortOrderChange(SortOrder.EARLIEST.name) })
+        ) {
+            Text(
+                text = "최신순",
+                style = MaterialTheme.typo.body2,
+                color = if (sortOrder == SortOrder.EARLIEST.name) MaterialTheme.colors.primary else MaterialTheme.colors.gray4,
+            )
+        }
         Spacer(modifier = Modifier.width(16.dp))
-        ClickableText(
-            text = "과거순",
-            isSelected = sortOrder == SortOrder.OLDEST.name,
-            onClick = { onSortOrderChange(SortOrder.OLDEST.name) }
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable(onClick = { onSortOrderChange(SortOrder.OLDEST.name) })
+        ) {
+            Text(
+                text = "과거순",
+                style = MaterialTheme.typo.body2,
+                color = if (sortOrder == SortOrder.OLDEST.name) MaterialTheme.colors.primary else MaterialTheme.colors.gray4,
+            )
+        }
     }
 }
 
@@ -366,16 +401,13 @@ private fun AccountBookList(
     onPageChange: (Long) -> Unit,
     onItemClicked: (Long) -> Unit,
 ) {
-    LazyColumn {
-        items(accountBooks) { accountBook ->
-            AccountBookItem(
-                accountBook = accountBook,
-                onItemClicked = {
-                    onItemClicked(it)
-                })
-        }
+    accountBooks.forEachIndexed { index, value ->
+        AccountBookItem(
+            accountBook = value,
+            onItemClicked = {
+                onItemClicked(it)
+            })
     }
-
 }
 
 @Composable
@@ -384,69 +416,67 @@ private fun AccountBookItem(
     onItemClicked: (Long) -> Unit
 ) {
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(vertical = Paddings.xlarge)
             .clickable {
                 onItemClicked(accountBook.id)
-            },
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+            }
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = accountBook.day?.toString() ?: "")
-            Text(text = accountBook.dayName ?: "")
-        }
-        Column(modifier = Modifier.weight(2f)) {
-            Text(text = accountBook.title ?: "")
             Text(
-                text = "${accountBook.amount}원",
-                style = MaterialTheme.typography.bodyMedium
+                text = "${accountBook.month ?: 0}월 ${accountBook.day ?: 0}일",
+                style = MaterialTheme.typo.body2,
+                color = MaterialTheme.colors.gray1
+            )
+            Text(
+                text = accountBook.dayName ?: "",
+                style = MaterialTheme.typo.body2,
+                color = MaterialTheme.colors.gray1
             )
         }
-        Text(text = accountBook.category ?: "")
+        Column(modifier = Modifier.weight(2f)) {
+            Text(
+                text = accountBook.title ?: "",
+                style = MaterialTheme.typo.body1,
+                color = MaterialTheme.colors.gray1
+            )
+            Text(
+                text = "${formatNumber(accountBook.amount ?: 0)}원",
+                style = MaterialTheme.typo.body1,
+                color = MaterialTheme.colors.gray1
+            )
+        }
+        Text(
+            text = CategoryDisplayMapper.getDisplay(accountBook.category),
+            style = MaterialTheme.typo.label,
+            color = MaterialTheme.colors.gray5
+        )
+
         val imageUrl = accountBook.imageUrl.firstOrNull()
         if (imageUrl != null) {
             Image(
                 painter = rememberAsyncImagePainter(imageUrl),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .size(56.dp),
                 contentScale = ContentScale.Crop
             )
         } else {
             Spacer(
                 modifier = Modifier
-                    .size(64.dp)
+                    .size(56.dp)
                     .weight(2f)
             )
         }
     }
-}
-
-@Composable
-private fun ClickableText(
-    text: String,
-    onClick: () -> Unit,
-    isSelected: Boolean
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable(onClick = onClick)
-    ) {
-        if (isSelected) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = null,
-                tint = MaterialTheme.colors.primary
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-        }
-        Text(
-            text = text,
-            color = if (isSelected) MaterialTheme.colors.primary else Color.Black,
-        )
-    }
+    HorizontalDivider(
+        modifier = Modifier
+            .fillMaxWidth(),
+        thickness = 1.dp,
+        color = MaterialTheme.colors.gray8
+    )
 }
 
 @Composable
