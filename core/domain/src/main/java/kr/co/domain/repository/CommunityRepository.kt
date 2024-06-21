@@ -14,6 +14,14 @@ interface CommunityRepository {
 
     suspend fun deleteBulletin(id: Long): Boolean
 
+    suspend fun putBulletin(
+        id: Long,
+        content: String,
+        crop: CropEntity.Name,
+        bulletinCategory: BulletinEntity.BulletinCategory,
+        imageUrls: List<String>
+    ): Long
+
     suspend fun getBulletins(
         keyword: String?,
         bulletinCategory: BulletinEntity.BulletinCategory,

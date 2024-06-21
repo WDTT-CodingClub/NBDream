@@ -33,6 +33,20 @@ internal class CommunityRepositoryImpl @Inject constructor(
         id = id,
     )
 
+    override suspend fun putBulletin(
+        id: Long,
+        content: String,
+        crop: CropEntity.Name,
+        bulletinCategory: BulletinEntity.BulletinCategory,
+        imageUrls: List<String>,
+    ): Long = remote.putBulletin(
+        id = id,
+        content = content,
+        crop = crop.koreanName,
+        bulletinCategory = bulletinCategory.queryName,
+        imageUrls = imageUrls,
+    ).data ?: -1
+
     override suspend fun getBulletins(
         keyword: String?,
         bulletinCategory: BulletinEntity.BulletinCategory,
