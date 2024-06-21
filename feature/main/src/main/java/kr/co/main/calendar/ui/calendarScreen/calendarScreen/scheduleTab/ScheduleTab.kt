@@ -4,10 +4,12 @@ import FarmWorkCalendar
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +44,7 @@ internal fun ScheduleTab(
     calendarCrop: CropModel?,
     calendarYear: Int,
     calendarMonth: Int,
+    navToSearchDiary: (Int, Int, Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScheduleTabViewModel = hiltViewModel()
 ) {
@@ -73,7 +76,14 @@ internal fun ScheduleTab(
                 calendarYear = state.value.calendarYear,
                 calendarMonth = state.value.calendarMonth,
                 selectedDate = state.value.selectedDate,
-                onSelectDate = event::onSelectDate
+                onSelectDate = event::onSelectDate,
+                navToDiary = {
+                    navToSearchDiary(
+                        state.value.calendarCrop!!.nameId,
+                        state.value.calendarYear,
+                        state.value.calendarMonth
+                    )
+                }
             )
 
             ScheduleCard(
@@ -119,6 +129,7 @@ private fun InnerCalendarCard(
     calendarMonth: Int,
     selectedDate: LocalDate,
     onSelectDate: (LocalDate) -> Unit,
+    navToDiary: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -132,12 +143,21 @@ private fun InnerCalendarCard(
                 .fillMaxWidth()
                 .padding(vertical = Paddings.xlarge)
         ) {
-            CategoryIndicatorList(
+            Box(
                 modifier = Modifier
                     .padding(horizontal = Paddings.large)
-                    .padding(bottom = Paddings.large),
-                crop = calendarCrop
-            )
+                    .padding(bottom = Paddings.large)
+            ) {
+                CategoryIndicatorList(
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    crop = calendarCrop
+                )
+                SearchDiaryButton(
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    onClick = navToDiary
+                )
+            }
+
             InnerCalendar(
                 calendarYear = calendarYear,
                 calendarMonth = calendarMonth,
@@ -192,6 +212,20 @@ private fun CategoryIndicatorListItem(
         )
     }
 }
+
+@Composable
+private fun SearchDiaryButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // TODO 영농일지 검색 화면 이동을 위한 임시 버튼
+    Button(
+        onClick = onClick
+    ) {
+        Text("영농일지 검색 화면")
+    }
+}
+
 
 @Composable
 private fun ScheduleCard(

@@ -3,6 +3,7 @@ package kr.co.main.calendar.ui.calendarScreen.addDiaryScreen
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
@@ -39,6 +40,7 @@ internal class AddDiaryViewModel @Inject constructor(
     val event: AddDiaryScreenEvent = this@AddDiaryViewModel
 
     data class AddDiaryScreenState(
+        val calendarCrop: CropModel? = null,
         val diaryId: String = "",
         val registerDate: LocalDate = LocalDate.now(),
         val weatherForecast: String = "",
@@ -48,7 +50,7 @@ internal class AddDiaryViewModel @Inject constructor(
         val workDescriptions: List<DiaryModel.WorkDescriptionModel> = emptyList(),
         val images: List<String> = emptyList(),
         val memo: String = ""
-    ) : BaseViewModel.State{
+    ) : State{
         override fun toParcelable(): Parcelable? {
             // TODO("serialize")
             return null
@@ -60,6 +62,14 @@ internal class AddDiaryViewModel @Inject constructor(
             // TODO("deserialize")
             AddDiaryScreenState()
         }?: AddDiaryScreenState()
+
+    init{
+        savedStateHandle.get<Int>("cropNameId")?.let { cropNameId ->
+            updateState {
+                copy(calendarCrop = CropModel.getCropModel(cropNameId))
+            }
+        }
+    }
 
     override fun onBackClick() {
         TODO("Not yet implemented")

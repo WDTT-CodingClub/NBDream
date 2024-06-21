@@ -132,7 +132,8 @@ private fun CalendarScreen(
                             ScheduleTab(
                                 calendarCrop = state.value.calendarCrop,
                                 calendarYear = state.value.calendarYear,
-                                calendarMonth = state.value.calendarMonth
+                                calendarMonth = state.value.calendarMonth,
+                                navToSearchDiary = navToSearchDiary
                             )
 
                         CalendarScreenViewModel.CalendarScreenState.CalendarTab.DIARY ->

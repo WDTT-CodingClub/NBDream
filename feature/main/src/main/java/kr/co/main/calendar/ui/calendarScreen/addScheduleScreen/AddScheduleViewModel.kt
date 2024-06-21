@@ -3,6 +3,7 @@ package kr.co.main.calendar.ui.calendarScreen.addScheduleScreen
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.ScheduleModel
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
@@ -27,13 +28,14 @@ internal interface AddScheduleScreenEvent {
 
 @HiltViewModel
 internal class AddScheduleViewModel @Inject constructor(
-    stateHandle: SavedStateHandle
-) : BaseViewModel<AddScheduleViewModel.AddScheduleScreenState>(stateHandle),
+    savedStateHandle: SavedStateHandle
+) : BaseViewModel<AddScheduleViewModel.AddScheduleScreenState>(savedStateHandle),
     AddScheduleScreenEvent {
     val event: AddScheduleScreenEvent = this@AddScheduleViewModel
 
     data class AddScheduleScreenState(
-        val category: ScheduleModel.Category = ScheduleModel.Category.All
+        val calendarCrop: CropModel? = null,
+        val scheduleCategory: ScheduleModel.Category = ScheduleModel.Category.All
     ) : State {
         override fun toParcelable(): Parcelable? {
             // TODO ("serialize")
@@ -46,6 +48,14 @@ internal class AddScheduleViewModel @Inject constructor(
             // TODO ("deserialize")
             AddScheduleScreenState()
         } ?: AddScheduleScreenState()
+
+    init {
+        savedStateHandle.get<Int>("cropNameId")?.let { cropNameId ->
+            updateState {
+                copy(calendarCrop = CropModel.getCropModel(cropNameId))
+            }
+        }
+    }
 
     override fun onBackClick() {
         TODO("Not yet implemented")

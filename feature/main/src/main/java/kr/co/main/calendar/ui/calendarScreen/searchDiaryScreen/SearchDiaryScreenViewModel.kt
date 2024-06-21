@@ -4,10 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kr.co.domain.entity.CropEntity
-import kr.co.domain.usecase.calendar.SearchDiariesUseCase
-import kr.co.main.calendar.mapper.DiaryModelMapper
 import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.ui.base.BaseViewModel
@@ -35,6 +31,8 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
 
     data class SearchDiaryScreenState(
         val calendarCrop: CropModel? = null,
+        val calendarYear: Int = LocalDate.now().year,
+        val calendarMonth: Int = LocalDate.now().monthValue,
         val query: String = "",
         val searchDateRange: ClosedRange<LocalDate> = with(LocalDate.now()) {
             (LocalDate.of(year, monthValue, 1)..LocalDate.of(year, monthValue, lengthOfMonth()))
@@ -50,6 +48,18 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
     val event: SearchDiaryScreenEvent = this@SearchDiaryScreenViewModel
 
     init {
+        with(savedStateHandle) {
+            get<Int>("cropNameId")?.let { cropNameId ->
+                updateState { copy(calendarCrop = CropModel.getCropModel(cropNameId)) }
+            }
+            get<Int>("year")?.let { year ->
+                updateState { copy(calendarYear = year) }
+            }
+            get<Int>("month")?.let { month ->
+                updateState { copy(calendarMonth = month) }
+            }
+        }
+
 //        loadingScope {
 //            currentState.calendarCrop?.let {
 //                searchDiaries(

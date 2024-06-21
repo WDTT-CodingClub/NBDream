@@ -1,16 +1,14 @@
 package kr.co.main.navigation
 
-import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentScreen
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.register.AccountBookRegister
+import kr.co.main.calendar.ui.CalendarNavGraph
 import kr.co.main.calendar.ui.calendarScreen.addDiaryScreen.AddDiaryRoute
 import kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarRoute
@@ -51,51 +49,6 @@ internal data object MyPageRoute {
     const val SETTING_DELETE_ACCOUNT_ROUTE = "myPageSettingDeleteAccountRoute"
 }
 
-internal sealed class CalendarRoute {
-    protected abstract val baseRoute: String
-    abstract val arguments: List<NamedNavArgument>
-
-    val route: String
-        get() = StringBuilder()
-            .append(baseRoute)
-            .apply {
-                for (arg in arguments) append("/{${arg.name}}")
-            }
-            .toString()
-
-    open fun buildRoute(args: Any): String = baseRoute
-
-    data object AddScheduleRoute : CalendarRoute() {
-        override val baseRoute = "add_schedule_route"
-        override val arguments = listOf(
-            navArgument("cropNameId") { type = NavType.IntType }
-        )
-
-        override fun buildRoute(args: Any): String = "$baseRoute/${args as Int}"
-    }
-
-    data object AddDiaryRoute : CalendarRoute() {
-        override val baseRoute = "add_diary_route"
-        override val arguments = listOf(
-            navArgument("cropNameId") { type = NavType.IntType }
-        )
-
-        override fun buildRoute(args: Any): String = "$baseRoute/${args as Int}"
-    }
-
-    data object SearchDiaryRoute : CalendarRoute() {
-        override val baseRoute = "search_diary_route"
-        override val arguments = listOf(
-            navArgument("cropNameId") { type = NavType.IntType },
-            navArgument("year") { type = NavType.IntType },
-            navArgument("month") { type = NavType.IntType }
-        )
-
-        override fun buildRoute(args: Any): String = with(args as List<*>) {
-            "${baseRoute}/${this[0] as Int}/${this[1] as Int}/${this[2] as Int}"
-        }
-    }
-}
 
 fun NavGraphBuilder.mainNavGraph(
     navController: NavController
@@ -122,21 +75,21 @@ fun NavGraphBuilder.mainNavGraph(
                     CalendarRoute(
                         navToAddSchedule = { cropNameId ->
                             navController.navigate(
-                                CalendarRoute.AddScheduleRoute.buildRoute(
+                                CalendarNavGraph.AddScheduleRoute.buildRoute(
                                     cropNameId
                                 )
                             )
                         },
                         navToAddDiary = { cropNameId ->
                             navController.navigate(
-                                CalendarRoute.AddDiaryRoute.buildRoute(
+                                CalendarNavGraph.AddDiaryRoute.buildRoute(
                                     cropNameId
                                 )
                             )
                         },
                         navToSearchDiary = { cropNameId, year, month ->
                             navController.navigate(
-                                CalendarRoute.SearchDiaryRoute.buildRoute(
+                                CalendarNavGraph.SearchDiaryRoute.buildRoute(
                                     listOf(cropNameId, year, month)
                                 )
                             )
@@ -198,35 +151,22 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = CalendarRoute.AddScheduleRoute.route,
-        arguments = CalendarRoute.AddScheduleRoute.arguments
-    ) { backStackEntry ->
-        AddScheduleRoute(
-            calendarCropNameId = backStackEntry.arguments?.getInt("cropNameId")
-                ?: throw IllegalArgumentException("cropNameId can't be null")
-        )
+        route = CalendarNavGraph.AddScheduleRoute.route,
+        arguments = CalendarNavGraph.AddScheduleRoute.arguments
+    ) {
+        AddScheduleRoute()
     }
     composable(
-        route = CalendarRoute.AddDiaryRoute.route,
-        arguments = CalendarRoute.AddDiaryRoute.arguments
-    ) { backStackEntry ->
-        AddDiaryRoute(
-            calendarCropNameId = backStackEntry.arguments?.getInt("cropNameId")
-                ?: throw IllegalArgumentException("cropNameId can't be null")
-        )
+        route = CalendarNavGraph.AddDiaryRoute.route,
+        arguments = CalendarNavGraph.AddDiaryRoute.arguments
+    ) {
+        AddDiaryRoute()
     }
     composable(
-        route = CalendarRoute.SearchDiaryRoute.route,
-        arguments = CalendarRoute.SearchDiaryRoute.arguments
-    ) { backStackEntry ->
-        SearchDiaryRoute(
-            calendarCropNameId = backStackEntry.arguments?.getInt("cropNameId")
-                ?: throw IllegalArgumentException("cropNameId can't be null"),
-            calendarYear = backStackEntry.arguments?.getInt("year")
-                ?: throw IllegalArgumentException("year can't be null"),
-            calendarMonth = backStackEntry.arguments?.getInt("month")
-                ?: throw IllegalArgumentException("month can't be null")
-        )
+        route = CalendarNavGraph.SearchDiaryRoute.route,
+        arguments = CalendarNavGraph.SearchDiaryRoute.arguments
+    ) {
+        SearchDiaryRoute()
     }
 
     composable(
