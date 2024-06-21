@@ -86,12 +86,12 @@ internal fun AccountBookRoute(
                         .background(color = Color.White, shape = RoundedCornerShape(12.dp))
                         .padding(Paddings.extra)
                 ) {
-                    GraphSection(
-                        state = state,
-                        showingExpenses = true
-                    ) {
-
-                    }
+//                    GraphSection(
+//                        state = state,
+//                        showingExpenses = true
+//                    ) {
+//
+//                    }
                 }
             }
 
