@@ -3,8 +3,8 @@ package kr.co.domain.entity
 
 data class AccountBookEntity(
     val id: Long,
-    val title: String,
-    val category: Category = Category.OTHER,
+    val title: String? = null,
+    val category: Category? = Category.OTHER,
     val imageUrl: List<String> = emptyList(),
     val registerDateTime: String? = null,
     val year: Int? = null,

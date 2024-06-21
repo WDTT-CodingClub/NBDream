@@ -2,6 +2,7 @@ package kr.co.main.accountbook.main
 
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -12,13 +13,12 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
-import kotlin.random.Random
+import kr.co.ui.theme.colors
 
 @Composable
 internal fun AccountBookGraph(
     data: List<Float>,
     categories: List<String>,
-    label: String,
     modifier: Modifier = Modifier
 ) {
     val total = data.sum().toInt()
@@ -29,26 +29,25 @@ internal fun AccountBookGraph(
     Canvas(modifier = modifier) {
         drawGraph(angles, colors, data, total, angleInterval)
         drawCategoryText(categories, colors)
-        drawCenterText(label)
     }
 }
 
+@Composable
 private fun getColorList(size: Int): List<Color> {
-    return List(size) {
-        val baseColor = Color(
-            red = Random.nextFloat(),
-            green = Random.nextFloat(),
-            blue = Random.nextFloat(),
-            alpha = 1.0f
-        )
-
-        val factor = 0.5f
-        baseColor.copy(
-            red = baseColor.red * factor + (1 - factor),
-            green = baseColor.green * factor + (1 - factor),
-            blue = baseColor.blue * factor + (1 - factor)
-        )
-    }
+    val predefinedColors = listOf(
+        MaterialTheme.colors.graph1,
+        MaterialTheme.colors.graph2,
+        MaterialTheme.colors.graph3,
+        MaterialTheme.colors.graph4,
+        MaterialTheme.colors.graph5,
+        MaterialTheme.colors.graph6,
+        MaterialTheme.colors.graph7,
+        MaterialTheme.colors.graph8,
+        MaterialTheme.colors.graph9,
+        MaterialTheme.colors.graph10,
+        MaterialTheme.colors.graph11
+    )
+    return List(size) { index -> predefinedColors[index % predefinedColors.size] }
 }
 
 private fun DrawScope.drawGraph(
@@ -110,7 +109,6 @@ private fun DrawScope.drawCategoryText(categories: List<String>, colors: List<Co
     val graphTopY = size.height / 2 - size.minDimension / 2
     val textStartY = graphTopY + 20.dp.toPx() / 2
     val verticalInterval = 4.dp.toPx()
-
     categories.forEachIndexed { index, category ->
         val textY = textStartY + index * (20f + verticalInterval)
 
@@ -132,20 +130,5 @@ private fun DrawScope.drawCategoryText(categories: List<String>, colors: List<Co
                 }
             )
         }
-    }
-}
-
-private fun DrawScope.drawCenterText(label: String) {
-    drawIntoCanvas {
-        it.nativeCanvas.drawText(
-            label,
-            size.width / 2,
-            size.height / 2,
-            Paint().apply {
-                color = Color.Black.toArgb()
-                textSize = 32f
-                textAlign = Paint.Align.CENTER
-            }
-        )
     }
 }

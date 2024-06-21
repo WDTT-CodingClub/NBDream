@@ -13,7 +13,13 @@ import kr.co.main.calendar.ui.calendarScreen.addDiaryScreen.AddDiaryRoute
 import kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarRoute
 import kr.co.main.calendar.ui.calendarScreen.searchDiaryScreen.SearchDiaryRoute
+import kr.co.main.accountbook.content.AccountBookContentRoute
+import kr.co.main.calendar.ui.calendar_screen.add_diary_screen.AddDiaryRoute
+import kr.co.main.calendar.ui.calendar_screen.add_schedule_screen.AddScheduleRoute
+import kr.co.main.calendar.ui.calendar_screen.calendar_screen.CalendarRoute
 import kr.co.main.community.BulletinDetailRoute
+import kr.co.main.accountbook.main.AccountBookRoute
+import kr.co.main.accountbook.register.AccountBookRegisterRoute
 import kr.co.main.community.BulletinWritingRoute
 import kr.co.main.community.CommunityRoute
 import kr.co.main.home.HomeRoute
@@ -172,7 +178,7 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = ACCOUNT_BOOK_ROUTE
     ) {
-        AccountBookRegister(
+        AccountBookRegisterRoute(
             popBackStack = navController::popBackStack
         )
     }
@@ -184,7 +190,7 @@ fun NavGraphBuilder.mainNavGraph(
         val id = idString?.toLongOrNull()
 
         if (id != null) {
-            AccountBookContentScreen(
+            AccountBookContentRoute(
                 popBackStack = navController::popBackStack,
                 id = id
             )
