@@ -15,14 +15,14 @@ internal class FarmWorkRemoteDataSourceImpl @Inject constructor(
     private val client: HttpClient
 ) : FarmWorkRemoteDataSource {
 
-    override suspend fun fetch(crop: String, month: Int): List<FarmWorkData> =
+    override suspend fun fetchList(crop: String, month: Int): List<FarmWorkData> =
         client.get(FARM_WORK) {
             parameter("crop", crop)
             parameter("month", month)
         }
             .body<Dto<FarmWorkListResponse>>()
-            .let { farmWorkListResponse ->
-                farmWorkListResponse.data.farmWorkResponse.map {
+            .let { farmWorkListResponseDto ->
+                farmWorkListResponseDto.data.farmWorkResponse.map {
                     FarmWorkRemoteMapper.convert(it)
                 }
             }
