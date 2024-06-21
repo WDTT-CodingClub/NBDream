@@ -20,6 +20,7 @@ import kr.co.main.my.MyPageRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
 import kr.co.main.my.setting.MyPageSettingRoute
 import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
+import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
 import timber.log.Timber
 
 
@@ -245,7 +246,9 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE
     ) {
-
+        MyPageSettingPrivacyPolicyRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(

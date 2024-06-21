@@ -76,6 +76,7 @@ private fun MyPageSettingDeleteSocialVerifyScreen(
                 navigationIcon = {
                     IconButton(onClick = popBackStack) {
                         Icon(
+                            modifier = Modifier.size(32.dp),
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = stringResource(id = R.string.feature_main_pop_back_stack)
                         )

@@ -66,8 +66,6 @@ private fun MyPageSettingScreen(
                 title = "설정",
                 navigationIcon = {
                     IconButton(
-                        modifier = Modifier
-                            /*.minimumInteractiveComponentSize() 기본적으로 보장*/,
                         onClick = popBackStack
                     ) {
                         Icon(
