@@ -11,6 +11,10 @@ import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentScreen
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.register.AccountBookRegister
+import kr.co.main.calendar.ui.calendar_screen.add_diary_screen.AddDiaryRoute
+import kr.co.main.calendar.ui.calendar_screen.add_schedule_screen.AddScheduleRoute
+import kr.co.main.calendar.ui.calendar_screen.calendar_screen.CalendarRoute
+import kr.co.main.community.BulletinDetailRoute
 import kr.co.main.calendar.ui.calendarScreen.addDiaryScreen.AddDiaryRoute
 import kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarRoute
@@ -262,7 +266,7 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = CommunityRoute.BULLETIN_DETAIL_ROUTE
     ) {
-        BulletinDetailScreen(popBackStack = navController::popBackStack)
+        BulletinDetailRoute(popBackStack = navController::popBackStack)
     }
 
     composable(

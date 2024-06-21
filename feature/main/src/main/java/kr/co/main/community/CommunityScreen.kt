@@ -45,7 +45,7 @@ import kr.co.domain.entity.BulletinEntity
 internal fun CommunityRoute(
     navigateToWriting: () -> Unit,
     navigateToNotification: () -> Unit,
-    navigateToBulletinDetail: (String) -> Unit,
+    navigateToBulletinDetail: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {
@@ -60,6 +60,7 @@ internal fun CommunityRoute(
         searchInput = searchInput,
         onSearchInputChanged = viewModel::onSearchInputChanged,
         onFreeCategoryClick = viewModel::onFreeCategoryClick,
+        onBulletinClick = viewModel::onBulletinClick,
     )
 }
 
@@ -69,11 +70,12 @@ internal fun CommunityScreen(
     modifier: Modifier = Modifier,
     navigateToWriting: () -> Unit = {},
     navigateToNotification: () -> Unit = {},
-    navigateToBulletinDetail: (String) -> Unit = {},
+    navigateToBulletinDetail: () -> Unit = {},
     bulletinEntities: List<BulletinEntity> = emptyList(),
     searchInput: String = "",
     onSearchInputChanged: (String) -> Unit = {},
     onFreeCategoryClick: () -> Unit = {},
+    onBulletinClick: (Long) -> Unit = {},
 ) {
 //    var tempTextFieldValue by remember {
 //        mutableStateOf(TextFieldValue())
@@ -165,7 +167,10 @@ internal fun CommunityScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .clickable { navigateToBulletinDetail("") },
+                        .clickable {
+                            onBulletinClick(bulletin.bulletinId)
+                            navigateToBulletinDetail()
+                        },
                     colors = CardDefaults.cardColors(),
                     elevation = CardDefaults.elevatedCardElevation(
                         defaultElevation = 4.dp,
