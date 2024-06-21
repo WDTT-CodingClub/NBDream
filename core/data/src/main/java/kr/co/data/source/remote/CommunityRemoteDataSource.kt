@@ -2,7 +2,7 @@ package kr.co.data.source.remote
 
 import kr.co.data.model.data.community.GetBulletinDetailData
 import kr.co.data.model.data.community.GetBulletinsResult
-import kr.co.data.model.data.community.PostBulletinResult
+import kr.co.data.model.data.community.ApiResponseLongData
 
 interface CommunityRemoteDataSource {
 
@@ -11,7 +11,7 @@ interface CommunityRemoteDataSource {
         crop: String,
         bulletinCategory: String,
         imageUrls: List<String>,
-    ): PostBulletinResult
+    ): ApiResponseLongData
 
     suspend fun deleteBulletin(id: Long): Boolean
 

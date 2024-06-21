@@ -11,7 +11,7 @@ import kr.co.remote.model.request.community.BulletinReqDto
 import kr.co.remote.model.response.community.DeleteBulletinResponse
 import kr.co.remote.model.response.community.GetBulletinDetailResponse
 import kr.co.remote.model.response.community.GetBulletinsResponse
-import kr.co.remote.model.response.community.PostBulletinResponse
+import kr.co.remote.model.response.community.ApiResponseLong
 import kr.co.remote.model.response.community.convertToData
 import kr.co.remote.model.response.community.convertToResult
 import javax.inject.Inject
@@ -41,7 +41,7 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
                 imageUrls = imageUrls,
             )
         )
-    }.body<PostBulletinResponse>().convertToResult()
+    }.body<ApiResponseLong>().convertToData()
 
     override suspend fun deleteBulletin(
         id: Long,
