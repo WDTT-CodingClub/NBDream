@@ -3,11 +3,13 @@ package kr.co.main.accountbook.register
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
-import kr.co.domain.repository.ServerImageRepository
+import kr.co.domain.usecase.image.UploadImageUseCase
+import kr.co.main.accountbook.main.formatNumber
 import kr.co.ui.base.BaseViewModel
 import java.io.File
 import java.text.SimpleDateFormat
@@ -18,15 +20,13 @@ import javax.inject.Inject
 @HiltViewModel
 internal class AccountBookRegisterViewModel @Inject constructor(
     private val accountBookRepository: AccountBookRepository,
-    private val serverImageRepository: ServerImageRepository,
+    private val uploadImageUseCase: UploadImageUseCase,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AccountBookRegisterViewModel.State>(savedStateHandle) {
-
-    private val _snackBarMessage = MutableStateFlow<String?>(null)
-    val snackBarMessage: StateFlow<String?> get() = _snackBarMessage
-
-    fun resetSnackBarState() {
-        _snackBarMessage.value = null
+    private val _complete: MutableSharedFlow<Unit> = MutableSharedFlow()
+    val complete = _complete.asSharedFlow()
+    fun updateAmountText(newAmountText: String) {
+        updateState { copy(amountText = newAmountText) }
     }
 
     fun updateAmount(amount: Long) {
@@ -53,45 +53,36 @@ internal class AccountBookRegisterViewModel @Inject constructor(
         updateState { copy(imageUrls = imageUrls - uri) }
     }
 
-    fun uploadImage(file: File) {
-        // TODO isLoading 관찰
-        loadingScope {
-            val imageUrl = serverImageRepository.upload("accountbook", file)?.url
-                ?: throw Exception("Image upload failed")
-            updateState { copy(imageUrls = imageUrls + imageUrl) }
-        }
+    private fun updateImageUrl(url: String) {
+        updateState { copy(imageUrls = imageUrls + url) }
     }
 
-    fun validationCreateAccountBook() {
-        when {
-            state.value.amount == 0L -> {
-                _snackBarMessage.value = "금액을 입력하세요"
-            }
-
-            state.value.transactionType == null -> {
-                _snackBarMessage.value = "분류를 선택하세요"
-            }
-
-            state.value.category == null -> {
-                _snackBarMessage.value = "카테고리를 선택하세요"
-            }
-
-            else -> {
-                createAccountBook()
+    fun uploadImage(image: File) =
+        loadingScope {
+            uploadImageUseCase(
+                UploadImageUseCase.Params(
+                    domain = DOMAIN,
+                    file = image
+                )
+            ).let { url ->
+                updateImageUrl(url)
             }
         }
-    }
 
-    private fun createAccountBook() {
-        loadingScope {
-            accountBookRepository.createAccountBook(
-                transactionType = state.value.transactionType!!.name.lowercase(),
-                amount = state.value.amount,
-                category = state.value.category!!.name.lowercase(),
-                title = state.value.title,
-                registerDateTime = state.value.registerDateTime,
-                imageUrls = state.value.imageUrls.map { it }
-            )
+    fun createAccountBook() = loadingScope {
+        accountBookRepository.createAccountBook(
+            transactionType = state.value.transactionType!!.name.lowercase(),
+            amount = state.value.amount,
+            category = state.value.category!!.name.lowercase(),
+            title = state.value.title,
+            registerDateTime = "${state.value.registerDateTime} 00:00",
+            imageUrls = state.value.imageUrls.map { it }
+        )
+    }.invokeOnCompletion {
+        if (it == null) {
+            viewModelScopeEH.launch {
+                _complete.emit(Unit)
+            }
         }
     }
 
@@ -99,14 +90,19 @@ internal class AccountBookRegisterViewModel @Inject constructor(
 
     data class State(
         val amount: Long = 0,
+        val amountText: String = formatNumber(amount),
         val transactionType: AccountBookEntity.TransactionType? =
             AccountBookEntity.TransactionType.EXPENSE,
         val category: AccountBookEntity.Category? = null,
         val title: String = "",
         val registerDateTime: String = SimpleDateFormat(
-            "yyyy-MM-dd HH:mm",
+            "yyyy.MM.dd",
             Locale.getDefault()
         ).format(Date()),
         val imageUrls: List<String> = listOf()
     ) : BaseViewModel.State
+
+    private companion object {
+        const val DOMAIN = "accountbook"
+    }
 }
