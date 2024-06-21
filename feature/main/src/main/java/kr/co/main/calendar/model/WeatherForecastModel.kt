@@ -56,7 +56,10 @@ internal fun WeatherForecastModel.convert() = WeatherForecastEntity(
     probability = 0, //meaningless
     humidity = 0, //meaningless,
     temperature = 0.0f, //meaningless
-    windSpeed = 0, //meaningless
+    windSpeed = 0, //meaningless\
+    minTemperature = 0.0f,
+    maxTemperature = 0.0f,
+    day = "",
     weather = listOf(
         WeatherForecastEntity.Weather(
             weather = when(sky){

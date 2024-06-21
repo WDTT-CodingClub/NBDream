@@ -28,7 +28,7 @@ internal class HomeViewModel @Inject constructor(
 
     init {
         viewModelScopeEH.launch {
-            weatherUseCase().let {
+            weatherUseCase.invoke().also {
                 onTodayWeather(
                     State.WeatherDetail(
                         probability = it.probability,

@@ -7,12 +7,15 @@ import kr.co.remote.model.response.GetWeatherForecastResponse
 internal object WeatherRemoteMapper :
     Mapper<GetWeatherForecastResponse, WeatherForecastData> {
     override fun convert(param: GetWeatherForecastResponse): WeatherForecastData =
-        with(param.resultData) {
+        with(param) {
             WeatherForecastData(
                 precipitation = precipitation,
                 precipitationProbability = probability,
                 humidity = humidity,
                 windSpeed = windSpeed,
+                day = day,
+                minTemp = minTemp,
+                maxTemp = maxTemp,
                 temp = temp,
                 items = items.map {
                     WeatherForecastData.Item(

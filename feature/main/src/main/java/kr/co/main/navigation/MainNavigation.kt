@@ -169,8 +169,9 @@ fun NavGraphBuilder.mainNavGraph(
         MyPageProfileEditRoute(
             popBackStack = navController::popBackStack,
             navigateToMyPage = {
-                navController.navigate(MainBottomRoute.MY_PAGE.route) {
-                    popUpTo(MainBottomRoute.MY_PAGE.route) { inclusive = true }
+                navController.navigate(MAIN_ROUTE) {
+                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    launchSingleTop = true
                 }
             }
         )

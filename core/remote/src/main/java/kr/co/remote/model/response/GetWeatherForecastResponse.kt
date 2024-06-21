@@ -5,25 +5,45 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class GetWeatherForecastResponse(
-    val resultCode: Int,
-    val resultMessage: String,
-    val resultData: ResultData
+    @SerialName("precipitationProbability")
+    val probability: Int,
+
+    @SerialName("precipitationAmount")
+    val precipitation: Int,
+
+    @SerialName("humidity")
+    val humidity: Int,
+
+    @SerialName("windSpeed")
+    val windSpeed: Int,
+
+    @SerialName("date")
+    val day: String,
+
+    @SerialName("currentTemperature")
+    val temp: Float,
+
+    @SerialName("lowestTemperature")
+    val minTemp: Float,
+
+    @SerialName("highestTemperature")
+    val maxTemp: Float,
+
+    @SerialName("longTermWeatherRes")
+    val items: List<Item>,
 ) {
     @Serializable
-    data class ResultData(
-        val probability: Int,
-        val precipitation: Int,
-        val humidity: Int,
-        val windSpeed: Int,
-        val temp: Float,
-        val items: List<Item>
-    ) {
-        @Serializable
-        data class Item(
-            val weather: String,
-            val minTemp: Float,
-            val maxTemp: Float,
-            val day: String
-        )
-    }
+    data class Item(
+        @SerialName("sky")
+        val weather: String,
+
+        @SerialName("lowestTemperature")
+        val minTemp: Float,
+
+        @SerialName("highestTemperature")
+        val maxTemp: Float,
+
+        @SerialName("date")
+        val day: String,
+    )
 }

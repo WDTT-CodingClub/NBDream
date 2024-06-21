@@ -100,7 +100,7 @@ internal class MyPageProfileEditViewModel @Inject constructor(
 
     data class State(
         val name: String? = null,
-        val nameValid: Boolean = false,
+        val nameValid: Boolean = true,
         val profileImageUrl: String? = null,
         val address: String? = null,
     ) : BaseViewModel.State {

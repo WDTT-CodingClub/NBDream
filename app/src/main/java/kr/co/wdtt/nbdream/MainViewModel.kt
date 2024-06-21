@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kr.co.ui.base.BaseViewModel
 import kr.co.domain.usecase.auth.FetchAuthUseCase
@@ -23,9 +24,9 @@ internal class MainViewModel @Inject constructor(
     init {
         viewModelScopeEH.launch {
             fetchAuthUseCase()
+                .onStart { delay(SPLASH_DURATION) }
                 .distinctUntilChanged()
                 .collectLatest {
-                    delay(SPLASH_DURATION)
                     _isAuthorized.emit(it != null)
                 }
         }
