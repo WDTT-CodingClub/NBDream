@@ -5,7 +5,7 @@ import kr.co.data.model.data.AccountBookListData
 
 interface AccountBookRemoteDataSource {
     suspend fun fetchList(
-        page: Int,
+        lastContentsId: Long?,
         category: String,
         sort: String,
         start: String,
@@ -23,7 +23,7 @@ interface AccountBookRemoteDataSource {
     )
 
     suspend fun update(
-        id: String,
+        id: Long,
         transactionType: String,
         amount: Long,
         category: String,
@@ -32,7 +32,7 @@ interface AccountBookRemoteDataSource {
         imageUrls: List<String>
     )
 
-    suspend fun fetchDetail(id: String): AccountBookData
+    suspend fun fetchDetail(id: Long): AccountBookData
 
-    suspend fun delete(id: String)
+    suspend fun delete(id: Long)
 }

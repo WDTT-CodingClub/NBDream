@@ -14,28 +14,27 @@ internal class AccountBookContentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AccountBookContentViewModel.State>(savedStateHandle) {
 
-    init {
-
+    fun deleteAccountBookById() {
+        state.value.id.let { id ->
+            loadingScope {
+                repository.deleteAccountBook(id)
+            }
+        }
     }
 
-    fun fetchAccountBookById(id: String) {
+    fun fetchAccountBookById(id: Long) {
         loadingScope {
-            try {
-                val accountBookDetail = repository.getAccountBookDetail(id)
-                updateState {
-                    copy(
-                        id = accountBookDetail.id,
-                        title = accountBookDetail.title,
-                        category = accountBookDetail.category,
-                        year = accountBookDetail.year ?: 0,
-                        month = accountBookDetail.month ?: 0,
-                        day = accountBookDetail.day ?: 0,
-                        transactionType = accountBookDetail.transactionType ?: AccountBookEntity.TransactionType.EXPENSE,
-                        amount = accountBookDetail.amount ?: 0
-                    )
-                }
-            } catch (e: Exception) {
-                // TODO Error
+            val accountBookDetail = repository.getAccountBookDetail(id)
+            updateState {
+                copy(
+                    id = accountBookDetail.id,
+                    title = accountBookDetail.title,
+                    category = accountBookDetail.category,
+                    transactionType = accountBookDetail.transactionType,
+                    amount = accountBookDetail.amount ?: 0,
+                    registerDateTime = state.value.registerDateTime,
+                    imageUrls = state.value.imageUrls
+                )
             }
         }
     }
@@ -43,13 +42,12 @@ internal class AccountBookContentViewModel @Inject constructor(
     override fun createInitialState(savedState: Parcelable?): State = State()
 
     data class State(
-        val id: String = "",
-        val title: String = "",
-        val category: AccountBookEntity.Category = AccountBookEntity.Category.OTHER,
-        val year: Int = 0,
-        val month: Int = 0,
-        val day: Int = 0,
-        val transactionType: AccountBookEntity.TransactionType = AccountBookEntity.TransactionType.EXPENSE,
-        val amount: Long = 0
+        val id: Long = 0,
+        val title: String? = null,
+        val category: AccountBookEntity.Category? = null,
+        val transactionType: AccountBookEntity.TransactionType? = null,
+        val amount: Long = 0,
+        val registerDateTime: String? = null,
+        val imageUrls: List<String> = listOf()
     ) : BaseViewModel.State
 }

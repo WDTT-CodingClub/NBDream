@@ -10,6 +10,7 @@ import kr.co.onboard.mapview.AddressSelectionListener
 import kr.co.onboard.mapview.LocationSearchWebViewScreen
 
 const val ONBOARD_ROUTE = "onboardRoute"
+internal const val MAIN_ROUTE = "mainRoute"
 internal const val ADDRESS_ROUTE = "addressRoute"
 internal const val ADDRESS_FIND_ROUTE = "addressFindRoute"
 internal const val CROP_ROUTE = "cropRoute"
@@ -21,7 +22,7 @@ fun NavGraphBuilder.onboardNavGraph(
     composable(
         route = ONBOARD_ROUTE
     ) {
-        OnBoardRoute()
+        OnBoardRoute(navController = navController)
     }
 
     composable(
