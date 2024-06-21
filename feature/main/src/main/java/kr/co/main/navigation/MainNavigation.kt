@@ -11,15 +11,11 @@ import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentScreen
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.register.AccountBookRegister
-import kr.co.main.calendar.ui.calendar_screen.add_diary_screen.AddDiaryRoute
-import kr.co.main.calendar.ui.calendar_screen.add_schedule_screen.AddScheduleRoute
-import kr.co.main.calendar.ui.calendar_screen.calendar_screen.CalendarRoute
-import kr.co.main.community.BulletinDetailRoute
 import kr.co.main.calendar.ui.calendarScreen.addDiaryScreen.AddDiaryRoute
 import kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarRoute
 import kr.co.main.calendar.ui.calendarScreen.searchDiaryScreen.SearchDiaryRoute
-import kr.co.main.community.BulletinDetailScreen
+import kr.co.main.community.BulletinDetailRoute
 import kr.co.main.community.BulletinWritingRoute
 import kr.co.main.community.CommunityRoute
 import kr.co.main.home.HomeRoute
@@ -63,7 +59,7 @@ internal sealed class CalendarRoute {
         get() = StringBuilder()
             .append(baseRoute)
             .apply {
-                for (arg in arguments) append("/${arg.name}")
+                for (arg in arguments) append("/{${arg.name}}")
             }
             .toString()
 
@@ -79,7 +75,7 @@ internal sealed class CalendarRoute {
     }
 
     data object AddDiaryRoute : CalendarRoute() {
-        override val baseRoute = "add_diary_route/{cropNameId}"
+        override val baseRoute = "add_diary_route"
         override val arguments = listOf(
             navArgument("cropNameId") { type = NavType.IntType }
         )
@@ -230,7 +226,7 @@ fun NavGraphBuilder.mainNavGraph(
                 ?: throw IllegalArgumentException("year can't be null"),
             calendarMonth = backStackEntry.arguments?.getInt("month")
                 ?: throw IllegalArgumentException("month can't be null")
-            )
+        )
     }
 
     composable(
