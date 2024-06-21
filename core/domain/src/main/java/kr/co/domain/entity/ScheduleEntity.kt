@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class ScheduleEntity(
-    val id: String? = null,
+    val id: Int,
     val category: Category,
     val title: String,
     val startDate: LocalDate,
@@ -13,9 +13,9 @@ data class ScheduleEntity(
     val isAlarmOn: Boolean = false,
     val alarmDateTime: LocalDateTime? = null
 ){
-    sealed class Category{
-        data object All : Category()
-        data class Crop(val crop: CropEntity): Category()
+    sealed class Category(val koreanName:String){
+        data object All : Category("전체")
+        data class Crop(val crop: CropEntity): Category(crop.name.koreanName)
     }
 }
 
