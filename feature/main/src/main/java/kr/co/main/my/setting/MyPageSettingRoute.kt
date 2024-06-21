@@ -34,19 +34,31 @@ import kr.co.ui.widget.DreamCenterTopAppBar
 @Composable
 internal fun MyPageSettingRoute(
     popBackStack: () -> Unit,
-    navigateTo: (String) -> Unit,
+    navigateToNotification: () -> Unit = {},
+    navigateToPrivacyPolicy: () -> Unit = {},
+    navigateToLogout: () -> Unit = {},
+    navigateToAppInfo: () -> Unit = {},
+    navigateToDeleteAccount: () -> Unit = {},
 ) {
 
     MyPageSettingScreen(
         popBackStack = popBackStack,
-        navigateTo = navigateTo
+        navigateToNotification = navigateToNotification,
+        navigateToPrivacyPolicy = navigateToPrivacyPolicy,
+        navigateToLogout = navigateToLogout,
+        navigateToAppInfo = navigateToAppInfo,
+        navigateToDeleteAccount = navigateToDeleteAccount
     )
 }
 
 @Composable
 private fun MyPageSettingScreen(
-    popBackStack: () -> Unit,
-    navigateTo: (String) -> Unit,
+    popBackStack: () -> Unit = {},
+    navigateToNotification: () -> Unit = {},
+    navigateToPrivacyPolicy: () -> Unit = {},
+    navigateToLogout: () -> Unit = {},
+    navigateToAppInfo: () -> Unit = {},
+    navigateToDeleteAccount: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -80,7 +92,13 @@ private fun MyPageSettingScreen(
             MyPageSetting.entries.forEachIndexed { index, myPageSetting ->
                 SettingRow(
                     type = myPageSetting,
-                    navigateTo = navigateTo
+                    navigateTo = when(myPageSetting){
+                        MyPageSetting.NOTIFICATION -> navigateToNotification
+                        MyPageSetting.PRIVACY_POLICY -> navigateToPrivacyPolicy
+                        MyPageSetting.LOGOUT -> navigateToLogout
+                        MyPageSetting.APP_INFO -> navigateToAppInfo
+                        MyPageSetting.DELETE_ACCOUNT -> navigateToDeleteAccount
+                    }
                 )
 
                 if(index != MyPageSetting.entries.lastIndex){
@@ -105,12 +123,12 @@ private fun MyPageSettingScreen(
 @Composable
 private fun SettingRow(
     type: MyPageSetting,
-    navigateTo: (String) -> Unit,
+    navigateTo: () -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .noRippleClickable { navigateTo(type.route) },
+            .noRippleClickable(onClick = navigateTo),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

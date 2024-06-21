@@ -12,9 +12,6 @@ import java.nio.file.Path
 import kotlin.io.path.name
 
 object FileUtil: BaseUtil() {
-    override fun initialize(context: Context) {
-        super.initialize(context)
-    }
 
     fun getFileFromUri(uri: Uri): File? {
         val fileName = getFileName(uri)

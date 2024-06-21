@@ -22,7 +22,7 @@ fun NavGraphBuilder.onboardNavGraph(
     composable(
         route = ONBOARD_ROUTE
     ) {
-        OnBoardRoute(navController = navController)
+        OnBoardRoute()
     }
 
     composable(

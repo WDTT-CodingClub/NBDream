@@ -114,6 +114,18 @@ fun NavGraphBuilder.mainNavGraph(
                     MyPageRoute(
                         navigateToProfileEdit = {
                             navController.navigate(MyPageRoute.EDIT_ROUTE)
+                        },
+                        navigateToSetting = {
+                            navController.navigate(MyPageRoute.SETTING_ROUTE)
+                        },
+                        navigateToBookmark = {
+
+                        },
+                        navigateToWrite = {
+
+                        },
+                        navigateToComment = {
+
                         }
                     )
                 }
@@ -206,8 +218,20 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         MyPageSettingRoute(
             popBackStack = navController::popBackStack,
-            navigateTo = { route ->
-                navController.navigate(route)
+            navigateToNotification = {
+                navController.navigate(NOTIFICATION_ROUTE)
+            },
+            navigateToPrivacyPolicy = {
+                navController.navigate(MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE)
+            },
+            navigateToLogout = {
+
+            },
+            navigateToAppInfo = {
+                navController.navigate(MyPageRoute.SETTING_APP_INFO_ROUTE)
+            },
+            navigateToDeleteAccount = {
+                navController.navigate(MyPageRoute.SETTING_DELETE_ACCOUNT_ROUTE)
             }
         )
     }
@@ -240,7 +264,10 @@ fun NavGraphBuilder.mainNavGraph(
         route = MyPageRoute.SETTING_DELETE_ACCOUNT_ROUTE
     ) {
         MyPageSettingDeleteAccountRoute(
-            popBackStack = navController::popBackStack
+            popBackStack = navController::popBackStack,
+            navigateToSocialVerify = {
+
+            }
         )
     }
 }

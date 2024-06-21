@@ -16,19 +16,18 @@ internal class MyPageViewModel @Inject constructor(
     private val fetchUserUseCase: FetchUserUseCase,
 ) : BaseViewModel<MyPageViewModel.State>(savedStateHandle) {
 
-    private fun onState(user: UserEntity) = updateState {
-        copy(
-            name = user.name,
-            profileImageUrl = user.profileImage,
-            address = user.address,
-            crops = user.crops
-        )
-    }
 
     init {
         viewModelScopeEH.launch {
             fetchUserUseCase().collectLatest {
-                onState(it)
+                updateState {
+                    copy(
+                        name = it.name,
+                        profileImageUrl = it.profileImage,
+                        address = it.address,
+                        crops = it.crops
+                    )
+                }
             }
         }
     }

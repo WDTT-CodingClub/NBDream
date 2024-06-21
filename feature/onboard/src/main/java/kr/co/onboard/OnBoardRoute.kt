@@ -14,18 +14,15 @@ import kr.co.ui.ext.scaffoldBackground
 @Composable
 internal fun OnBoardRoute(
     viewModel: OnBoardViewModel = hiltViewModel(),
-    navController: NavController
 ) {
    OnBoardScreen(
        onSocialLoginClick = viewModel::onSocialLoginClick,
-       navController = navController
    )
 }
 
 @Composable
 private fun OnBoardScreen(
     onSocialLoginClick: (AuthType) -> Unit,
-    navController: NavController
 ) {
     Scaffold(
         topBar = {
@@ -42,7 +39,6 @@ private fun OnBoardScreen(
         ) {
             Login(
                 onSocialLoginClick = onSocialLoginClick,
-                navController = navController
             )
         }
     }

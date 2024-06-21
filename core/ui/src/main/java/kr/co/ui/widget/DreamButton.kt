@@ -21,6 +21,7 @@ fun DreamButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     colors : ButtonColors = ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colors.primary,
         contentColor = MaterialTheme.colors.gray10
@@ -32,6 +33,7 @@ fun DreamButton(
             .height(60.dp),
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
+        enabled = enabled,
         colors = colors
     ) {
         Text(

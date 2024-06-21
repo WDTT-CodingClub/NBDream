@@ -11,10 +11,22 @@ internal class MyPageSettingDeleteAccountViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<MyPageSettingDeleteAccountViewModel.State>(savedStateHandle) {
 
+    fun onSelectChange(e: Int?) = updateState {
+        copy(select = e)
+    }
+
+    fun onReasonChange(e: String) = updateState {
+        copy(reason = e)
+    }
+
     override fun createInitialState(savedState: Parcelable?) = State()
 
     data class State (
-        val state: Any? = null
-    ) : BaseViewModel.State
+        val select: Int? = null,
+        val reason: String? = null
+    ) : BaseViewModel.State {
+        val isSelectValid: Boolean
+            get() = select != null
+    }
 
 }

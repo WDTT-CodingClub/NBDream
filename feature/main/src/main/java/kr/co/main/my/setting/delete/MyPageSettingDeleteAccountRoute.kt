@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -52,37 +53,28 @@ import kr.co.ui.widget.DreamCheckIcon
 
 @Composable
 internal fun MyPageSettingDeleteAccountRoute(
-    popBackStack: () -> Unit,
     viewModel: MyPageSettingDeleteAccountViewModel = hiltViewModel(),
+    popBackStack: () -> Unit = {},
+    navigateToSocialVerify: () -> Unit = {}
 ) {
-    val state = viewModel.state.collectAsStateWithLifecycle()
-    
-    val (selected, setSelected) = rememberSaveable {
-        mutableStateOf<Int?>(null)
-    }
-
-    val (reason, setReason) = rememberSaveable {
-        mutableStateOf("")
-    }
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     MyPageSettingDeleteAccountScreen(
-        state = state.value,
-        selected = selected,
-        setSelected = setSelected,
-        reason = reason,
-        setReason = setReason,
-        popBackStack = popBackStack
+        state = state,
+        setSelected = viewModel::onSelectChange,
+        setReason = viewModel::onReasonChange,
+        popBackStack = popBackStack,
+        navigateToSocialVerify = navigateToSocialVerify
     )
 }
 
 @Composable
 private fun MyPageSettingDeleteAccountScreen(
-    popBackStack: () -> Unit,
-    selected: Int? = null,
-    setSelected: (Int?) -> Unit = {},
-    reason: String = "",
-    setReason: (String) -> Unit = {},
     state: MyPageSettingDeleteAccountViewModel.State = MyPageSettingDeleteAccountViewModel.State(),
+    setReason: (String) -> Unit = {},
+    setSelected: (Int?) -> Unit = {},
+    popBackStack: () -> Unit = {},
+    navigateToSocialVerify: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -100,8 +92,9 @@ private fun MyPageSettingDeleteAccountScreen(
         },
         bottomBar = {
             DreamButton(
+                enabled = state.isSelectValid,
                 text = "탈퇴하기",
-                onClick = { /*TODO*/ },
+                onClick = navigateToSocialVerify,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colors.gray2,
                     contentColor = MaterialTheme.colors.gray10
@@ -154,7 +147,7 @@ private fun MyPageSettingDeleteAccountScreen(
                     ) {
                         DreamCheckIcon(
                             modifier = Modifier.size(24.dp),
-                            state = selected == reason.ordinal,
+                            state = state.select == reason.ordinal,
                             leftIcon = DreamIcon.OutLineCircle,
                             rightIcon = DreamIcon.Checkcircle,
                             contentDescription = "check reason",
@@ -178,7 +171,7 @@ private fun MyPageSettingDeleteAccountScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .sizeIn(minHeight = 144.dp),
-                value = reason,
+                value = state.reason?: "",
                 onValueChange = {
                     if (it.length <= 200) setReason(it)
                 },
@@ -194,7 +187,7 @@ private fun MyPageSettingDeleteAccountScreen(
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .align(Alignment.End),
-                text = "${reason.length}/200",
+                text = "${state.reason?.length}/200",
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
@@ -219,9 +212,7 @@ private fun Preview() {
     NBDreamTheme {
         MyPageSettingDeleteAccountScreen(
             popBackStack = {},
-            selected = selected,
             setSelected = setSelected,
-            reason = reason,
             setReason = setReason
 
         )
