@@ -67,6 +67,18 @@ val naverGreen = Color(0xFF03C75A)
 
 val background = Color(0xFFF5F5F5)
 
+val graph1 = Color(0xFFF4EEDB)
+val graph2 = Color(0xFF9B99C9)
+val graph3 = Color(0xFF3267B2)
+val graph4 = Color(0xFFF8DA8E)
+val graph5 = Color(0xFF7F9876)
+val graph6 = Color(0xFF2F4858)
+val graph7 = Color(0xFF5C9AAC)
+val graph8 = Color(0xFFC87F5E)
+val graph9 = Color(0xFFCF7881)
+val graph10 = Color(0xFFA3AF9E)
+val graph11 = Color(0xFF877555)
+
 sealed class ColorSet {
     open lateinit var lightColors: DreamColor
     open lateinit var darkColors: DreamColor
@@ -127,7 +139,18 @@ sealed class ColorSet {
             blue1 = blue1,
             orange1 = orange1,
             yellow1 = yellow1,
-            background = background
+            background = background,
+            graph1 = graph1,
+            graph2 = graph2,
+            graph3 = graph3,
+            graph4 = graph4,
+            graph5 = graph5,
+            graph6 = graph6,
+            graph7 = graph7,
+            graph8 = graph8,
+            graph9 = graph9,
+            graph10 = graph10,
+            graph11 = graph11,
         )
         override var darkColors = DreamColor(
             material = darkColorScheme(),
@@ -187,5 +210,16 @@ data class DreamColor(
     val blue1: Color = Color.Blue,
     val orange1: Color = Color.Yellow,
     val yellow1: Color = Color.Yellow,
-    val background: Color = Color.Unspecified
+    val background: Color = Color.Unspecified,
+    val graph1: Color = kr.co.ui.theme.graph1,
+    val graph2: Color = kr.co.ui.theme.graph2,
+    val graph3: Color = kr.co.ui.theme.graph3,
+    val graph4: Color = kr.co.ui.theme.graph4,
+    val graph5: Color = kr.co.ui.theme.graph5,
+    val graph6: Color = kr.co.ui.theme.graph6,
+    val graph7: Color = kr.co.ui.theme.graph7,
+    val graph8: Color = kr.co.ui.theme.graph8,
+    val graph9: Color = kr.co.ui.theme.graph9,
+    val graph10: Color = kr.co.ui.theme.graph10,
+    val graph11: Color = kr.co.ui.theme.graph11,
 )

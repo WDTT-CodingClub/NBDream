@@ -2,6 +2,7 @@ package kr.co.main.accountbook.main
 
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -12,7 +13,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
-import kotlin.random.Random
+import kr.co.ui.theme.colors
 
 @Composable
 internal fun AccountBookGraph(
@@ -31,22 +32,22 @@ internal fun AccountBookGraph(
     }
 }
 
+@Composable
 private fun getColorList(size: Int): List<Color> {
-    return List(size) {
-        val baseColor = Color(
-            red = Random.nextFloat(),
-            green = Random.nextFloat(),
-            blue = Random.nextFloat(),
-            alpha = 1.0f
-        )
-
-        val factor = 0.5f
-        baseColor.copy(
-            red = baseColor.red * factor + (1 - factor),
-            green = baseColor.green * factor + (1 - factor),
-            blue = baseColor.blue * factor + (1 - factor)
-        )
-    }
+    val predefinedColors = listOf(
+        MaterialTheme.colors.graph1,
+        MaterialTheme.colors.graph2,
+        MaterialTheme.colors.graph3,
+        MaterialTheme.colors.graph4,
+        MaterialTheme.colors.graph5,
+        MaterialTheme.colors.graph6,
+        MaterialTheme.colors.graph7,
+        MaterialTheme.colors.graph8,
+        MaterialTheme.colors.graph9,
+        MaterialTheme.colors.graph10,
+        MaterialTheme.colors.graph11
+    )
+    return List(size) { index -> predefinedColors[index % predefinedColors.size] }
 }
 
 private fun DrawScope.drawGraph(
