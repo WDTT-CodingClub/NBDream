@@ -1,4 +1,4 @@
-package kr.co.remote.model.response.community
+package kr.co.remote.model.response
 
 import kotlinx.serialization.Serializable
 import kr.co.data.model.data.community.ApiResponseLongData
