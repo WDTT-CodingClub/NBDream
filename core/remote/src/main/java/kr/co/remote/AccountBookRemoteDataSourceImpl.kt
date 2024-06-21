@@ -17,7 +17,6 @@ import kr.co.remote.model.request.account.PostAccountBookRequest
 import kr.co.remote.model.request.account.UpdateAccountBookRequest
 import kr.co.remote.model.response.GetAccountBookDetailResponse
 import kr.co.remote.model.response.GetAccountBookListResponse
-import kr.co.remote.model.response.account.GetAccountBookDetailResponse
 import javax.inject.Inject
 
 internal class AccountBookRemoteDataSourceImpl @Inject constructor(
