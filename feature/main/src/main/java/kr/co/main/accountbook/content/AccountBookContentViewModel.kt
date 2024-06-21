@@ -6,9 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.ui.base.BaseViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,17 +26,15 @@ internal class AccountBookContentViewModel @Inject constructor(
         loadingScope {
             val accountBookDetail = repository.getAccountBookDetail(id)
             updateState {
-                accountBookDetail.id?.let {
-                    copy(
-                        id = it,
-                        title = accountBookDetail.title,
-                        category = accountBookDetail.category,
-                        transactionType = accountBookDetail.transactionType ?: AccountBookEntity.TransactionType.EXPENSE,
-                        amount = accountBookDetail.amount ?: 0,
-                        registerDateTime = state.value.registerDateTime,
-                        imageUrls = state.value.imageUrls
-                    )
-                }!!
+                copy(
+                    id = accountBookDetail.id,
+                    title = accountBookDetail.title,
+                    category = accountBookDetail.category,
+                    transactionType = accountBookDetail.transactionType,
+                    amount = accountBookDetail.amount ?: 0,
+                    registerDateTime = state.value.registerDateTime,
+                    imageUrls = state.value.imageUrls
+                )
             }
         }
     }
@@ -48,14 +43,11 @@ internal class AccountBookContentViewModel @Inject constructor(
 
     data class State(
         val id: Long = 0,
-        val title: String = "",
-        val category: AccountBookEntity.Category = AccountBookEntity.Category.OTHER,
-        val transactionType: AccountBookEntity.TransactionType = AccountBookEntity.TransactionType.EXPENSE,
+        val title: String? = null,
+        val category: AccountBookEntity.Category? = null,
+        val transactionType: AccountBookEntity.TransactionType? = null,
         val amount: Long = 0,
-        val registerDateTime: String = SimpleDateFormat(
-            "yyyy-MM-dd HH:mm",
-            Locale.getDefault()
-        ).format(Date()),
+        val registerDateTime: String? = null,
         val imageUrls: List<String> = listOf()
     ) : BaseViewModel.State
 }
