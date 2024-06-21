@@ -10,7 +10,6 @@ internal object FarmWorkModelMapper
         with(param) {
             FarmWorkModel(
                 id = id,
-                //crop = CropModelMapper.toRight(crop),
                 startMonth = startMonth,
                 startEra = startEra,
                 endMonth = endMonth,

@@ -3,7 +3,6 @@ package kr.co.domain.entity
 
 data class FarmWorkEntity(
     val id: Int,
-    //val crop: CropEntity,
     val startMonth: Int,
     val startEra: Era,
     val endMonth: Int,
@@ -20,8 +19,8 @@ data class FarmWorkEntity(
         MID(2, "중"),
         LATE(3, "하");
 
-        companion object{
-            fun getEra(koreanName: String) =  when(koreanName){
+        companion object {
+            fun getEra(koreanName: String) = when (koreanName) {
                 "상" -> EARLY
                 "중" -> MID
                 "하" -> LATE
@@ -35,8 +34,8 @@ data class FarmWorkEntity(
         PEST("병해충방제"),
         CLIMATE("기상재해 및 예상되는 문제점");
 
-        companion object{
-            fun getCategory(koreanName: String) = when(koreanName){
+        companion object {
+            fun getCategory(koreanName: String) = when (koreanName) {
                 "생육과정(주요농작업)" -> GROWTH
                 "병해충방제" -> PEST
                 "기상재해 및 예상되는 문제점" -> CLIMATE

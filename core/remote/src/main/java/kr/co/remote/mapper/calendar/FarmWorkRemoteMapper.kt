@@ -10,7 +10,6 @@ internal object FarmWorkRemoteMapper:
         with(param){
             FarmWorkData(
                 id = id,
-                //crop = crop,
                 startMonth = startMonth,
                 startEra = startEra,
                 endMonth = endMonth,
