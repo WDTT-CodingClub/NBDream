@@ -145,6 +145,7 @@ private fun InnerCalendarCard(
         ) {
             Box(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = Paddings.large)
                     .padding(bottom = Paddings.large)
             ) {

@@ -4,7 +4,7 @@ import kr.co.domain.entity.FarmWorkEntity
 
 data class FarmWorkModel(
     val id:Int,
-    val crop: CropModel,
+    //val crop: CropModel,
     val startMonth: Int,
     val startEra: FarmWorkEntity.Era,
     val endMonth: Int,

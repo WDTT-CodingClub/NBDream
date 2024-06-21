@@ -11,7 +11,7 @@ internal object FarmWorkMapper
         with(param) {
             FarmWorkEntity(
                 id = id,
-                crop = CropEntity.getCropEntity(crop),
+                //crop = CropEntity.getCropEntity(crop),
                 startMonth = startMonth,
                 startEra = FarmWorkEntity.Era.getEra(startEra),
                 endMonth = endMonth,

@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.update
 import kr.co.domain.usecase.calendar.GetFarmWorksUseCase
 import kr.co.domain.usecase.calendar.GetHolidaysUseCase
 import kr.co.main.calendar.mapper.CropModelMapper
@@ -61,10 +62,8 @@ internal class ScheduleTabViewModel @Inject constructor(
     }
 
     init {
-        state.select { it.calendarCrop }.bindState(_calendarCrop)
-        state.select { it.calendarYear }.bindState(_calendarYear)
-        state.select { it.calendarMonth }.bindState(_calendarMonth)
         combine(_calendarCrop, _calendarYear, _calendarMonth) { crop, year, month ->
+            Timber.d("crop: $crop, year: $year, month: $month")
             getHoliday(
                 GetHolidaysUseCase.Params(
                     year = currentState.calendarYear,
@@ -102,11 +101,12 @@ internal class ScheduleTabViewModel @Inject constructor(
 //                }
             }
         }.launchIn(viewModelScopeEH)
-
     }
 
-    override fun setCalendarCrop(crop: CropModel) =
+    override fun setCalendarCrop(crop: CropModel) {
         updateState { copy(calendarCrop = crop) }
+        _calendarCrop.update { crop }
+    }
 
     override fun setCalendarYear(year: Int) =
         updateState { copy(calendarYear = year) }

@@ -3,7 +3,7 @@ package kr.co.domain.entity
 
 data class FarmWorkEntity(
     val id: Int,
-    val crop: CropEntity,
+    //val crop: CropEntity,
     val startMonth: Int,
     val startEra: Era,
     val endMonth: Int,

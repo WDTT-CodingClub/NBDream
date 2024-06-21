@@ -12,7 +12,7 @@ internal data class FarmWorkListResponse(
     @Serializable
     data class FarmWorkResponse(
         val id: Int,
-        val crop:String,
+        //val crop:String,
         val startMonth: Int,
         val startEra: String,
         val endMonth: Int,
