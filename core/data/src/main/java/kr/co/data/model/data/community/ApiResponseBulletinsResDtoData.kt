@@ -1,6 +1,6 @@
 package kr.co.data.model.data.community
 
-data class GetBulletinsResult(
+data class ApiResponseBulletinsResDtoData(
     val code: Int? = null,
     val status: String? = null,
     val message: String? = null,
@@ -13,5 +13,5 @@ data class GetBulletinsResult(
 }
 
 
-internal fun GetBulletinsResult.convertToEntities() =
+internal fun ApiResponseBulletinsResDtoData.convertToEntities() =
     data?.bulletins?.convertToEntities() ?: emptyList()

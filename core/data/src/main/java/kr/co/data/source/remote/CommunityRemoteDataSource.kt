@@ -1,8 +1,8 @@
 package kr.co.data.source.remote
 
+import kr.co.data.model.data.community.ApiResponseBulletinsResDtoData
 import kr.co.data.model.data.community.ApiResponseLongData
 import kr.co.data.model.data.community.GetBulletinDetailData
-import kr.co.data.model.data.community.GetBulletinsResult
 
 interface CommunityRemoteDataSource {
 
@@ -28,7 +28,7 @@ interface CommunityRemoteDataSource {
         bulletinCategory: String,
         crop: String,
         lastBulletinId: Long?,
-    ): GetBulletinsResult
+    ): ApiResponseBulletinsResDtoData
 
     suspend fun getBulletinDetail(bulletinId: Long): GetBulletinDetailData
 

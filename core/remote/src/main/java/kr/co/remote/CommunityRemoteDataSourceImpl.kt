@@ -10,11 +10,10 @@ import io.ktor.client.request.setBody
 import kr.co.data.source.remote.CommunityRemoteDataSource
 import kr.co.remote.model.request.community.BulletinReqDto
 import kr.co.remote.model.response.ApiResponseLong
+import kr.co.remote.model.response.community.ApiResponseBulletinsResDto
 import kr.co.remote.model.response.community.DeleteBulletinResponse
 import kr.co.remote.model.response.community.GetBulletinDetailResponse
-import kr.co.remote.model.response.community.GetBulletinsResponse
 import kr.co.remote.model.response.community.convertToData
-import kr.co.remote.model.response.community.convertToResult
 import kr.co.remote.model.response.convertToData
 import javax.inject.Inject
 
@@ -79,7 +78,7 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
             parameters.append("crop", crop)
             keyword?.let { parameters.append("lastBulletinId", it) }
         }
-    }.body<GetBulletinsResponse>().convertToResult()
+    }.body<ApiResponseBulletinsResDto>().convertToData()
 
     override suspend fun getBulletinDetail(
         bulletinId: Long,

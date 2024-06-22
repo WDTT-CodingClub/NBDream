@@ -11,4 +11,4 @@ internal data class DeleteImageResponse(
 )
 
 
-internal fun DeleteImageResponse.convertToResult() = this.code == 200
+internal fun DeleteImageResponse.convertToData() = this.code == 200
