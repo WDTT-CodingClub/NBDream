@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -93,6 +94,8 @@ private fun MyPageSettingDeleteAccountScreen(
         },
         bottomBar = {
             DreamButton(
+                modifier = Modifier
+                    .navigationBarsPadding(),
                 enabled = state.isSelectValid,
                 text = "탈퇴하기",
                 onClick = navigateToSocialVerify,

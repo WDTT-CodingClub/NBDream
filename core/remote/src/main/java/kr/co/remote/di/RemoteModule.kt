@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import kr.co.data.source.remote.AccountBookRemoteDataSource
+import kr.co.data.source.remote.AiRemoteDataSource
 import kr.co.data.source.remote.AuthRemoteDataSource
 import kr.co.data.source.remote.CommunityRemoteDataSource
 import kr.co.data.source.remote.HolidayRemoteDataSource
@@ -13,6 +14,7 @@ import kr.co.data.source.remote.ServerImageRemoteDataSource
 import kr.co.data.source.remote.UserRemoteDataSource
 import kr.co.data.source.remote.WeatherRemoteDataSource
 import kr.co.remote.AccountBookRemoteDataSourceImpl
+import kr.co.remote.AiRemoteDataSourceImpl
 import kr.co.remote.AuthRemoteDataSourceImpl
 import kr.co.remote.CommunityRemoteDataSourceImpl
 import kr.co.remote.HolidayRemoteDataSourceImpl
@@ -66,4 +68,10 @@ internal class RemoteModule {
     fun provideUserApi(
         client: HttpClient
     ): UserRemoteDataSource = UserRemoteDataSourceImpl(client)
+
+    @Singleton
+    @Provides
+    fun provideAiApi(
+        client: HttpClient
+    ): AiRemoteDataSource = AiRemoteDataSourceImpl(client)
 }

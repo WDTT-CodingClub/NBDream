@@ -1,6 +1,7 @@
-package kr.co.domain.usecase
+package kr.co.domain.usecase.auth
 
 import kr.co.domain.repository.AuthRepository
+import kr.co.domain.usecase.SuspendUseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 

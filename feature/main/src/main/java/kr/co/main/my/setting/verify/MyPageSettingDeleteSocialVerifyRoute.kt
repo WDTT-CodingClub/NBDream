@@ -115,7 +115,7 @@ private fun MyPageSettingDeleteSocialVerifyScreen(
                 DreamSocialButton(
                     type = AuthType.KAKAO.ordinal,
                     isLogin = false,
-                    onClick = {}
+                    onClick = onVerifyClick
                 )
 
                 Row(

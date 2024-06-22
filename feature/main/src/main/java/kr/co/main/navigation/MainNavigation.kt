@@ -20,7 +20,9 @@ import kr.co.main.my.MyPageRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
 import kr.co.main.my.setting.MyPageSettingRoute
 import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
+import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
+import kr.co.main.my.setting.verify.MyPageSettingDeleteSocialVerifyRoute
 import timber.log.Timber
 
 
@@ -52,6 +54,7 @@ internal data object MyPageRoute {
     const val SETTING_LOGOUT_ROUTE = "myPageSettingLogoutRoute"
     const val SETTING_APP_INFO_ROUTE = "myPageSettingAppInfoRoute"
     const val SETTING_DELETE_ACCOUNT_ROUTE = "myPageSettingDeleteAccountRoute"
+    const val SETTING_DELETE_VERIFY_ROUTE = "myPageSettingDeleteVerifyRoute"
 }
 
 
@@ -220,7 +223,7 @@ fun NavGraphBuilder.mainNavGraph(
         MyPageSettingRoute(
             popBackStack = navController::popBackStack,
             navigateToNotification = {
-                navController.navigate(NOTIFICATION_ROUTE)
+                navController.navigate(MyPageRoute.SETTING_NOTIFICATION_ROUTE)
             },
             navigateToPrivacyPolicy = {
                 navController.navigate(MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE)
@@ -240,7 +243,9 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = MyPageRoute.SETTING_NOTIFICATION_ROUTE
     ) {
-
+        MyPageSettingNotificationRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(
@@ -269,6 +274,20 @@ fun NavGraphBuilder.mainNavGraph(
         MyPageSettingDeleteAccountRoute(
             popBackStack = navController::popBackStack,
             navigateToSocialVerify = {
+                navController.navigate(MyPageRoute.SETTING_DELETE_VERIFY_ROUTE)
+            }
+        )
+    }
+
+    composable(
+        route = MyPageRoute.SETTING_DELETE_VERIFY_ROUTE
+    ) {
+        MyPageSettingDeleteSocialVerifyRoute(
+            popBackStack = navController::popBackStack,
+            navigateToPrivacyPolicy = {
+                navController.navigate(MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE)
+            },
+            navigateToOnBoard = {
 
             }
         )

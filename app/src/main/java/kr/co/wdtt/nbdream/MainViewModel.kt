@@ -3,14 +3,12 @@ package kr.co.wdtt.nbdream
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import kr.co.domain.usecase.CheckLoginUseCase
+import kr.co.domain.usecase.auth.CheckLoginUseCase
 import kr.co.ui.base.BaseViewModel
 import kr.co.domain.usecase.auth.FetchAuthUseCase
 import javax.inject.Inject
