@@ -167,8 +167,7 @@ fun NavGraphBuilder.mainNavGraph(
 
         if (id != null) {
             AccountBookContentRoute(
-                popBackStack = navController::popBackStack,
-                id = id
+                popBackStack = navController::popBackStack
             )
         } else {
             Timber.e("Invalid id")

@@ -2,7 +2,7 @@ package kr.co.main.accountbook.model
 
 import kr.co.domain.entity.AccountBookEntity
 
-object CategoryDisplayMapper {
+internal object CategoryDisplayMapper {
     fun getDisplay(category: AccountBookEntity.Category?): String {
         return when (category) {
             AccountBookEntity.Category.FARM_PRODUCT_SALES -> "농산물 판매"
@@ -22,7 +22,7 @@ object CategoryDisplayMapper {
 
     fun getTransactionType(transactionType: AccountBookEntity.TransactionType?): String {
         return when (transactionType) {
-            AccountBookEntity.TransactionType.EXPENSE -> "수익"
+            AccountBookEntity.TransactionType.EXPENSE -> "수입"
             AccountBookEntity.TransactionType.REVENUE -> "지출"
             else -> ""
         }
