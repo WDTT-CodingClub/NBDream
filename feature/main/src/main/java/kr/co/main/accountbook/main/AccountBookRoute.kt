@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,7 +61,7 @@ internal fun AccountBookRoute(
                 DreamTopAppBar(
                     title = "내 장부",
                     actions = {
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = navigationToRegister) {
                             Icon(
                                 imageVector = DreamIcon.Edit,
                                 contentDescription = "AccountBook Register"
@@ -86,12 +87,12 @@ internal fun AccountBookRoute(
                         .background(color = Color.White, shape = RoundedCornerShape(12.dp))
                         .padding(Paddings.extra)
                 ) {
-//                    GraphSection(
-//                        state = state,
-//                        showingExpenses = true
-//                    ) {
-//
-//                    }
+                    GraphSection(
+                        state = state,
+                        showingExpenses = true
+                    ) {
+
+                    }
                 }
             }
 
@@ -190,52 +191,76 @@ private fun GraphSection(
     } else {
         AccountBookEntity.TransactionType.REVENUE
     }
-
     val filteredData = state.accountBooks.filter { it.transactionType == transactionType }
     val groupedData = filteredData.groupBy { it.category }
-
     val data = groupedData.values.map { group ->
         group.sumOf { it.amount?.toDouble() ?: 0.0 }.toFloat()
     }
-
     val categories = groupedData.keys.map { CategoryDisplayMapper.getDisplay(it) }
+    val totalAmount = if (transactionType == AccountBookEntity.TransactionType.EXPENSE) {
+        formatNumber(state.totalExpense ?: 0)
+    } else {
+        "-${formatNumber(state.totalRevenue ?: 0)}"
+    }
 
-    Column {
-        Row {
-            ClickableTotalText(
-                text = "지출",
-                onClick = { onToggleTypeClick() },
-                isSelected = showingExpenses
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            AccountBookOptionButton(
+                option = "지출",
+                isSelected = showingExpenses,
+                onSelected = {
+                    onToggleTypeClick()
+                }
             )
-            ClickableTotalText(
-                text = "수입",
-                onClick = { onToggleTypeClick() },
-                isSelected = !showingExpenses
+            Spacer(modifier = Modifier.width(8.dp))
+            AccountBookOptionButton(
+                option = "수입",
+                isSelected = !showingExpenses,
+                onSelected = {
+                    onToggleTypeClick()
+                }
             )
         }
         Box(
-            modifier = Modifier.size(100.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .padding(top = Paddings.extra),
         ) {
             AccountBookGraph(
                 data = data,
                 categories = categories,
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.fillMaxSize(),
+                graphHeight = 150
             )
         }
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+                .padding(top = Paddings.extra),
             horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = "합계: ${state.totalCost?.let { formatNumber(it) }}원"
+                text = "${totalAmount}원",
+                style = MaterialTheme.typo.h3,
+                color = MaterialTheme.colors.gray1
             )
             Text(
-                text = "합계: ${state.totalCost?.let { formatNumber(it) }}원"
+                text = "합계: ${formatNumber(state.totalCost ?: 0L)}원",
+                style = MaterialTheme.typo.h3,
+                color = MaterialTheme.colors.gray1
             )
         }
     }
 }
+
+
 
 @Composable
 private fun FilterSelector(
@@ -281,15 +306,17 @@ private fun FilterSelector(
 }
 
 @Composable
-private fun AccountBookOptionButton(
+fun AccountBookOptionButton(
+    width: Dp = 80.dp,
+    height: Dp = 32.dp,
     option: String,
     isSelected: Boolean,
     onSelected: (String) -> Unit
 ) {
     Box(
         modifier = Modifier
-            .width(80.dp)
-            .height(32.dp)
+            .width(width)
+            .height(height)
             .background(
                 color = if (isSelected) MaterialTheme.colors.gray4 else MaterialTheme.colors.gray9,
                 shape = RoundedCornerShape(12.dp)
