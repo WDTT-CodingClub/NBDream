@@ -6,12 +6,14 @@ import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentRoute
-import kr.co.main.calendar.ui.calendar_screen.add_diary_screen.AddDiaryRoute
-import kr.co.main.calendar.ui.calendar_screen.add_schedule_screen.AddScheduleRoute
-import kr.co.main.calendar.ui.calendar_screen.calendar_screen.CalendarRoute
-import kr.co.main.community.BulletinDetailRoute
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.register.AccountBookRegisterRoute
+import kr.co.main.calendar.ui.CalendarNavGraph
+import kr.co.main.calendar.ui.calendarScreen.addDiaryScreen.AddDiaryRoute
+import kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.AddScheduleRoute
+import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarRoute
+import kr.co.main.calendar.ui.calendarScreen.searchDiaryScreen.SearchDiaryRoute
+import kr.co.main.community.BulletinDetailRoute
 import kr.co.main.community.BulletinWritingRoute
 import kr.co.main.community.CommunityRoute
 import kr.co.main.home.HomeRoute
@@ -28,12 +30,6 @@ const val MAIN_ROUTE = "mainRoute"
 internal const val CHAT_ROUTE = "chatRoute"
 
 internal const val NOTIFICATION_ROUTE = "notificationRoute"
-
-internal data object CalendarRoute {
-    const val ADD_SCHEDULE_ROUTE = "add_schedule_route"
-    const val ADD_DIARY_ROUTE = "add_diary_route"
-    const val SEARCH_DIARY_ROUTE = "search_diary_route"
-}
 
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
 internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
@@ -77,8 +73,27 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.CALENDAR.route
                 ) {
                     CalendarRoute(
-                        navToAddSchedule = { navController.navigate(CalendarRoute.ADD_SCHEDULE_ROUTE) },
-                        navToAddDiary = { navController.navigate(CalendarRoute.ADD_DIARY_ROUTE) },
+                        navToAddSchedule = { cropNameId ->
+                            navController.navigate(
+                                CalendarNavGraph.AddScheduleRoute.buildRoute(
+                                    cropNameId
+                                )
+                            )
+                        },
+                        navToAddDiary = { cropNameId ->
+                            navController.navigate(
+                                CalendarNavGraph.AddDiaryRoute.buildRoute(
+                                    cropNameId
+                                )
+                            )
+                        },
+                        navToSearchDiary = { cropNameId, year, month ->
+                            navController.navigate(
+                                CalendarNavGraph.SearchDiaryRoute.buildRoute(
+                                    listOf(cropNameId, year, month)
+                                )
+                            )
+                        },
                         navToNotification = { navController.navigate(NOTIFICATION_ROUTE) }
                     )
                 }
@@ -136,19 +151,22 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = CalendarRoute.ADD_SCHEDULE_ROUTE
+        route = CalendarNavGraph.AddScheduleRoute.route,
+        arguments = CalendarNavGraph.AddScheduleRoute.arguments
     ) {
         AddScheduleRoute()
     }
     composable(
-        route = CalendarRoute.ADD_DIARY_ROUTE
+        route = CalendarNavGraph.AddDiaryRoute.route,
+        arguments = CalendarNavGraph.AddDiaryRoute.arguments
     ) {
         AddDiaryRoute()
     }
     composable(
-        route = CalendarRoute.SEARCH_DIARY_ROUTE
+        route = CalendarNavGraph.SearchDiaryRoute.route,
+        arguments = CalendarNavGraph.SearchDiaryRoute.arguments
     ) {
-
+        SearchDiaryRoute()
     }
 
     composable(

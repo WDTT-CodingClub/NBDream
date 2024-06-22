@@ -1,6 +1,5 @@
 package kr.co.remote.di
 
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,14 +37,10 @@ import kr.co.data.source.local.SessionLocalDataSource
 import kr.co.nbdream.core.remote.BuildConfig
 import kr.co.remote.model.request.auth.PostAuthRefreshTokenRequest
 import kr.co.remote.model.response.auth.PostAuthRefreshResponse
-import kr.co.remote.retrofit.api.HolidayApi
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
-import retrofit2.Retrofit
 import timber.log.Timber
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -141,7 +136,8 @@ internal class NetworkModule {
 
                         CustomException(
                             message = error,
-                            customError = CustomErrorType.customError[response.status.value] ?: CustomErrorType.UNKNOWN
+                            customError = CustomErrorType.customError[response.status.value]
+                                ?: CustomErrorType.UNKNOWN
                         )
                     }
                 }
@@ -164,6 +160,7 @@ internal class NetworkModule {
             level = HttpLoggingInterceptor.Level.BODY
         }
     }
+
     @Singleton
     @Provides
     fun provideOkHttpClient(
@@ -171,22 +168,4 @@ internal class NetworkModule {
     ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(interceptor)
         .build()
-
-    @Singleton
-    @Provides
-    @Named("holiday")
-    fun provideHolidayRetrofit(
-        okHttpClient: OkHttpClient,
-    ) : Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-            .build()
-    }
-    @Singleton
-    @Provides
-    fun provideHolidayService(
-        @Named("holiday") retrofit: Retrofit
-    ) = retrofit.create(HolidayApi::class.java)
 }
