@@ -7,10 +7,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,81 +51,73 @@ internal fun AccountBookRoute(
     navigationToContent: (Long?) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     Surface(
         color = MaterialTheme.colors.gray9
     ) {
-        LazyColumn(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Paddings.xlarge),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .fillMaxSize()
+                .padding(horizontal = Paddings.xlarge)
         ) {
-            item {
-                DreamTopAppBar(
-                    title = "내 장부",
-                    actions = {
-                        IconButton(onClick = navigationToRegister) {
-                            Icon(
-                                imageVector = DreamIcon.Edit,
-                                contentDescription = "AccountBook Register"
-                            )
-                        }
+            DreamTopAppBar(
+                title = "내 장부",
+                actions = {
+                    IconButton(onClick = navigationToRegister) {
+                        Icon(
+                            imageVector = DreamIcon.Edit,
+                            contentDescription = "AccountBook Register"
+                        )
                     }
-                )
+                }
+            )
+
+            CalendarSection(
+                start = state.start,
+                end = state.end
+            ) { startDate, endDate ->
+                viewModel.updateDateRange(startDate.toString(), endDate.toString())
             }
 
-            item {
-                CalendarSection(
-                    start = state.start,
-                    end = state.end,
-                    onDaysInRangeChange = { startDate, endDate ->
-                        viewModel.updateDateRange(startDate.toString(), endDate.toString())
-                    })
-            }
-
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = Color.White, shape = RoundedCornerShape(12.dp))
-                        .padding(Paddings.extra)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.White, shape = RoundedCornerShape(12.dp))
+                    .padding(Paddings.extra)
+            ) {
+                GraphSection(
+                    state = state,
+                    showingExpenses = true
                 ) {
-                    GraphSection(
-                        state = state,
-                        showingExpenses = true
-                    ) {
 
-                    }
                 }
             }
 
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = Color.White, shape = RoundedCornerShape(12.dp))
-                        .padding(Paddings.extra)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.White, shape = RoundedCornerShape(12.dp))
+                    .padding(Paddings.extra)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        SelectorSection(
-                            state = state.categories,
-                            sortOrder = state.sort,
-                            onCategoryChange = { viewModel.updateCategory(it) },
-                            onSortOrderChange = { viewModel.updateSortOrder(it) },
-                            onTransactionChange = { viewModel.updateTransactionType(it) }
-                        )
+                    SelectorSection(
+                        state = state.categories,
+                        sortOrder = state.sort,
+                        onCategoryChange = { viewModel.updateCategory(it) },
+                        onSortOrderChange = { viewModel.updateSortOrder(it) },
+                        onTransactionChange = { viewModel.updateTransactionType(it) }
+                    )
 
-                        AccountBookList(
-                            accountBooks = state.accountBooks,
-                            onPageChange = { viewModel.updatePage(it) },
-                            onItemClicked = { id ->
-                                navigationToContent(id)
-                            }
-                        )
-                    }
+                    AccountBookList(
+                        hasNext = state.hasNext ?: false,
+                        accountBooks = state.accountBooks,
+                        onPageChange = { id -> viewModel.updatePage(id) },
+                        onItemClicked = { id -> navigationToContent(id) },
+                        isLoading = isLoading
+                    )
                 }
             }
         }
@@ -145,9 +141,7 @@ private fun CalendarSection(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(
-                horizontal = Paddings.xlarge
-            )
+            .padding(top = Paddings.xlarge)
             .clickable { bottomSheetState = true }
     ) {
         Text(
@@ -242,7 +236,8 @@ private fun GraphSection(
             )
         }
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = Paddings.extra),
             horizontalAlignment = Alignment.End
         ) {
@@ -259,7 +254,6 @@ private fun GraphSection(
         }
     }
 }
-
 
 
 @Composable
@@ -424,18 +418,45 @@ private fun SortOrderSelector(sortOrder: String, onSortOrderChange: (String) -> 
 
 @Composable
 private fun AccountBookList(
+    hasNext: Boolean,
     accountBooks: List<AccountBookViewModel.State.AccountBook>,
     onPageChange: (Long) -> Unit,
     onItemClicked: (Long) -> Unit,
+    isLoading: Boolean
 ) {
-    accountBooks.forEachIndexed { index, value ->
-        AccountBookItem(
-            accountBook = value,
-            onItemClicked = {
-                onItemClicked(it)
-            })
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        itemsIndexed(accountBooks) { index, accountBook ->
+            AccountBookItem(
+                accountBook = accountBook,
+                onItemClicked = onItemClicked
+            )
+
+            if (index == accountBooks.lastIndex && hasNext && !isLoading) {
+                LaunchedEffect(index) {
+                    onPageChange(accountBook.id)
+                }
+            }
+        }
+
+        item {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colors.primary2
+                    )
+                }
+            }
+        }
     }
 }
+
 
 @Composable
 private fun AccountBookItem(
@@ -505,6 +526,7 @@ private fun AccountBookItem(
         color = MaterialTheme.colors.gray8
     )
 }
+
 
 @Composable
 private fun ClickableTotalText(
