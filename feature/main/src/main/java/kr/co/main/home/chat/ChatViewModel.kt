@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kr.co.common.model.CustomException
 import kr.co.domain.usecase.SendAiChatUseCase
@@ -72,7 +73,7 @@ internal class ChatViewModel @Inject constructor(
 
     init {
         loadingScope {
-            fetchUserUseCase().collectLatest {
+            fetchUserUseCase().first().also {
                 updateState {
                     copy(
                         userName = it.name,
