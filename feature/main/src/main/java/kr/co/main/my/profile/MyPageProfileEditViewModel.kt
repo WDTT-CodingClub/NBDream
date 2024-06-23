@@ -38,6 +38,13 @@ internal class MyPageProfileEditViewModel @Inject constructor(
         copy(profileImageUrl = url)
     }
 
+    fun onCoordinateChanged(latitude: Double, longitude: Double) = updateState {
+        copy(
+            latitude = latitude,
+            longitude = longitude
+        )
+    }
+
     fun uploadImage(image: File) = loadingScope {
         uploadImageUseCase(
             UploadImageUseCase.Params(
@@ -59,7 +66,9 @@ internal class MyPageProfileEditViewModel @Inject constructor(
                     UserEntity(
                         name = currentState.name!!,
                         profileImage = currentState.profileImageUrl,
-                        address = currentState.address
+                        address = currentState.address,
+                        latitude = currentState.latitude,
+                        longitude = currentState.longitude
                     )
                 )
             } else {
@@ -92,6 +101,8 @@ internal class MyPageProfileEditViewModel @Inject constructor(
         val nameValid: Boolean = true,
         val profileImageUrl: String? = null,
         val address: String? = null,
+        val latitude: Double? = null,
+        val longitude: Double? = null,
     ) : BaseViewModel.State {
         val nameGuide: String?
             get() = when {

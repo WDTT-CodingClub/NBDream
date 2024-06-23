@@ -1,5 +1,7 @@
 package kr.co.onboard.address
 
+import android.location.Geocoder
+import android.os.Build
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,40 +51,32 @@ import com.kakao.vectormap.MapView
 import kr.co.onboard.BuildConfig
 import kr.co.onboard.R
 import kr.co.onboard.crop.StepText
-import kr.co.onboard.navigation.CROP_ROUTE
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import kr.co.ui.widget.DreamLocationSearchScreen
 import kr.co.ui.widget.NextButton
 import timber.log.Timber
+import java.util.Locale
 
 @Composable
 internal fun InputAddressScreen(
-    navController: NavController,
     modifier: Modifier,
     viewModel: InputAddressViewModel = hiltViewModel(),
     navigateToCrop: () -> Unit = {},
     navigateToWelcome: () -> Unit = {},
 ) {
-    Timber.d("ViewModel initialized: $viewModel")
     val state by viewModel.state.collectAsState()
 
-    // 네비게이션 결과에서 업데이트된 주소를 가져옴
-    val fullRoadAddr = navController.currentBackStackEntry?.savedStateHandle?.get<String>("fullRoadAddr")
-    val jibunAddr = navController.currentBackStackEntry?.savedStateHandle?.get<String>("jibunAddr")
-    val bcode = navController.currentBackStackEntry?.savedStateHandle?.get<String>("bcode")
-    Timber.d(bcode)
+    val geocoder = Geocoder(LocalContext.current, Locale.KOREA)
 
-    // 주소가 변경되었을 때 ViewModel을 업데이트
-    LaunchedEffect(fullRoadAddr, jibunAddr) {
-        if (fullRoadAddr != null && jibunAddr != null) {
-            viewModel.updateAddresses(fullRoadAddr, jibunAddr)
-        }
+    val (locationSearchVisible, setLocationSearchVisible) = remember {
+        mutableStateOf(false)
     }
-    
+
     LaunchedEffect(Unit) {
         viewModel.showCropScreen.collect {
             navigateToCrop()
@@ -110,17 +104,12 @@ internal fun InputAddressScreen(
 
             Address(
                 modifier,
-                fullRoadAddr = state.fullRoadAddr,
-                jibunAddr = state.jibunAddr,
+                fullRoadAddr = state.fullRoadAddress,
                 onFullRoadAddrChange = {
                     Timber.d("onFullRoadAddrChange called with: $it")
                 },
-                onJubunAddrChange = {
-                    Timber.d("onJubunAddrChange called with: $it")
-                },
                 onSearchClick = {
-                    Timber.d("onSearchClick called")
-                    navController.navigate("ADDRESS_FIND_ROUTE")
+                    setLocationSearchVisible(true)
                 }
             )
 
@@ -134,15 +123,31 @@ internal fun InputAddressScreen(
             )
         }
     }
+
+    if (locationSearchVisible) {
+        DreamLocationSearchScreen { full, jibunAddress ->
+            viewModel.updateAddresses(full, jibunAddress)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                geocoder.getFromLocationName(jibunAddress, 1) {
+                    if (it.isNotEmpty()) {
+                        viewModel.onCoordinateChanged(
+                            latitude = it[0].latitude,
+                            longitude = it[0].longitude
+                        )
+                    }
+                }
+            }
+            setLocationSearchVisible(false)
+        }
+    }
 }
+
 @Composable
 private fun Address(
     modifier: Modifier,
     fullRoadAddr: String,
-    jibunAddr: String,
     onFullRoadAddrChange: (String) -> Unit,
-    onJubunAddrChange: (String) -> Unit,
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -190,7 +195,7 @@ private fun Address(
 @Composable
 private fun StepProgressBar(
     modifier: Modifier,
-    color: Color
+    color: Color,
 ) {
     Box(
         modifier = modifier
@@ -212,7 +217,7 @@ private fun StepProgressBar(
 @Composable
 fun DynamicStepProgressBars(
     modifier: Modifier,
-    colors: List<Color>
+    colors: List<Color>,
 ) {
     Row(
         modifier = modifier
@@ -231,7 +236,7 @@ fun DynamicStepProgressBars(
 
 @Composable
 fun DescriptionText(
-    text: String
+    text: String,
 ) {
     Text(
         text,
@@ -241,7 +246,7 @@ fun DescriptionText(
 
 @Composable
 fun KakaoMapScreen(
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     val context = LocalContext.current
     val apiKey = BuildConfig.KAKAO_API_KEY
@@ -331,7 +336,7 @@ private fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = ""
+    placeholder: String = "",
 ) {
     BasicTextField(
         value = value,
@@ -373,7 +378,6 @@ private fun InputAddressScreenPreview() {
     NBDreamTheme {
         InputAddressScreen(
             modifier = Modifier,
-            navController = NavController(LocalContext.current)
         )
     }
 }

@@ -14,10 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import kr.co.onboard.R
 import kr.co.onboard.login.Logo
-import kr.co.onboard.navigation.MAIN_ROUTE
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.InputCompleteButton

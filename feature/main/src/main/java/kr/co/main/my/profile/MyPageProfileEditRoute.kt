@@ -1,6 +1,8 @@
 package kr.co.main.my.profile
 
+import android.location.Geocoder
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -43,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,6 +66,7 @@ import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamButton
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.DreamLocationSearchScreen
+import java.util.Locale
 
 @Composable
 internal fun MyPageProfileEditRoute(
@@ -71,6 +75,8 @@ internal fun MyPageProfileEditRoute(
     viewModel: MyPageProfileEditViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val geocoder = Geocoder(LocalContext.current, Locale.KOREA)
 
     val (addressVisible, setAddressVisible) = rememberSaveable {
         mutableStateOf(false)
@@ -105,6 +111,16 @@ internal fun MyPageProfileEditRoute(
     if (addressVisible) {
         DreamLocationSearchScreen { _, jibunAddress ->
             viewModel.onAddressChanged(jibunAddress)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                geocoder.getFromLocationName(jibunAddress, 1) {
+                    if (it.isNotEmpty()) {
+                        viewModel.onCoordinateChanged(
+                            latitude = it[0].latitude,
+                            longitude = it[0].longitude
+                        )
+                    }
+                }
+            }
             setAddressVisible(false)
         }
     }

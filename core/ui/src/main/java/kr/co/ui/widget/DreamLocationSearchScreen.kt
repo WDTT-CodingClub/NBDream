@@ -54,7 +54,6 @@ class WebAppInterface(private val onAddressSelected: (String, String) -> Unit) {
     fun processDATA(fullRoadAddr: String, jibunAddr: String) {
         handler.post {
             try {
-                Timber.tag("WebAppInterface").d("fullRoadAddr: $fullRoadAddr, jibunAddr: $jibunAddr")
                 onAddressSelected(fullRoadAddr, jibunAddr)
             } catch (e: Exception) {
                 Timber.tag("WebAppInterface").e(e, "Error processing data")

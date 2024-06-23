@@ -11,7 +11,6 @@ android {
 
     defaultConfig {
         buildConfigField("String", "KAKAO_API_KEY", "\"kakaoApiKey\"")
-        buildConfigField("String", "DATASTORE_NAME", "\"data_store\"")
     }
     buildFeatures {
         buildConfig = true
@@ -20,8 +19,4 @@ android {
 
 dependencies {
     api(libs.kakao.maps)
-
-    implementation(projects.core.data)
-    implementation(libs.kotlinx.serialization.json)
-    Local()
 }
