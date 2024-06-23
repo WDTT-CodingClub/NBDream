@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kr.co.onboard.R
 import kr.co.domain.model.AuthType
-import kr.co.onboard.navigation.MAIN_ROUTE
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.kakaoYellow
 import kr.co.ui.theme.naverGreen
@@ -95,11 +94,6 @@ internal fun SocialLoginButtons(
                 onClick = { onSocialLoginClick(AuthType.NAVER) }
             )
             Spacer(modifier = Modifier.height(8.dp))
-//            Button(onClick = {
-//                navController.navigate(MAIN_ROUTE)
-//            }) {
-//                Text(text = "메인화면으로 이동")
-//            }
 //            LoginButton(
 //                image = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_google_login),
 //                text = stringResource(R.string.feature_onboard_login_google_login),
