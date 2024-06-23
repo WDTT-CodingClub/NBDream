@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.domain.entity.AccountBookEntity
-import kr.co.domain.entity.SortOrder
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
@@ -28,7 +27,7 @@ internal class AccountBookViewModel @Inject constructor(
             val (totalEntity, newAccountBooks) = repository.getAccountBooks(
                 lastContentsId = lastContentsId,
                 category = currentState.category,
-                sort = currentState.sort,
+                sort = currentState.sort.name,
                 start = currentState.start,
                 end = currentState.end,
                 transactionType = currentState.transactionType?.name ?: ""
@@ -88,7 +87,7 @@ internal class AccountBookViewModel @Inject constructor(
         fetchAccountBooks()
     }
 
-    fun updateSortOrder(newSort: String) {
+    fun updateSortOrder(newSort: AccountBookEntity.SortOrder) {
         updateState { copy(sort = newSort) }
         fetchAccountBooks()
     }
@@ -108,7 +107,7 @@ internal class AccountBookViewModel @Inject constructor(
     data class State(
         val lastContentsId: Long? = null,
         val category: String = "",
-        val sort: String = SortOrder.EARLIEST.name.lowercase(),
+        val sort: AccountBookEntity.SortOrder = AccountBookEntity.SortOrder.EARLIEST,
         val start: String = LocalDate.now().withDayOfMonth(1).toString(),
         val end: String = LocalDate.now().toString(),
         val transactionType: AccountBookEntity.TransactionType? = null,

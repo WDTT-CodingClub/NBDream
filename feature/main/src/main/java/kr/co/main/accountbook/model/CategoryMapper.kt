@@ -28,4 +28,3 @@ internal object CategoryDisplayMapper {
         }
     }
 }
-
