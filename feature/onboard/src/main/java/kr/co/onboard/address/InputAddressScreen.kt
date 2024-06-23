@@ -249,7 +249,7 @@ fun KakaoMapScreen(
     modifier: Modifier,
 ) {
     val context = LocalContext.current
-    val apiKey = BuildConfig.KAKAO_API_KEY
+    val apiKey = BuildConfig.KAKAO_NATIVE_APP_KEY
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var kakaoMap by remember { mutableStateOf<KakaoMap?>(null) }
     var isSdkInitialized by remember { mutableStateOf(false) }
