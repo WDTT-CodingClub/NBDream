@@ -49,6 +49,8 @@ import com.kakao.vectormap.MapView
 import kr.co.onboard.BuildConfig
 import kr.co.onboard.R
 import kr.co.onboard.crop.StepText
+import kr.co.onboard.navigation.CROP_ROUTE
+import kr.co.onboard.navigation.MAIN_ROUTE
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Paddings
@@ -64,8 +66,21 @@ internal fun InputAddressScreen(
     modifier: Modifier,
     viewModel: InputAddressViewModel = hiltViewModel()
 ) {
-
+    Timber.d("ViewModel initialized: $viewModel")
     val state by viewModel.state.collectAsState()
+
+    // 네비게이션 결과에서 업데이트된 주소를 가져옴
+    val fullRoadAddr = navController.currentBackStackEntry?.savedStateHandle?.get<String>("fullRoadAddr")
+    val jibunAddr = navController.currentBackStackEntry?.savedStateHandle?.get<String>("jibunAddr")
+    Timber.d("fullRoadAddr: $fullRoadAddr")
+    Timber.d("jibunAddr: $jibunAddr")
+
+    // 주소가 변경되었을 때 ViewModel을 업데이트
+    LaunchedEffect(fullRoadAddr, jibunAddr) {
+        if (fullRoadAddr != null && jibunAddr != null) {
+            viewModel.updateAddresses(fullRoadAddr, jibunAddr)
+        }
+    }
 
     Scaffold(
         modifier = modifier.padding(Paddings.xlarge),
@@ -90,20 +105,76 @@ internal fun InputAddressScreen(
                 fullRoadAddr = state.fullRoadAddr,
                 jibunAddr = state.jibunAddr,
                 onFullRoadAddrChange = {
-                    viewModel.onFullRoadAddrChange(it)
+                    Timber.d("onFullRoadAddrChange called with: $it")
+//                    viewModel.onFullRoadAddrChange(it)
                 },
                 onJubunAddrChange = {
-                    viewModel.onJibunAddrChange(it)
+                    Timber.d("onJubunAddrChange called with: $it")
+//                    viewModel.onJibunAddrChange(it)
                 },
                 onSearchClick = {
+                    Timber.d("onSearchClick called")
                     navController.navigate("ADDRESS_FIND_ROUTE")
                 }
             )
             KakaoMapScreen(modifier) //padding 없애야 함
             NextButton(
                 skipId = R.string.feature_onboard_my_farm_skip_input,
-                nextId = R.string.feature_onboard_my_farm_next
+                nextId = R.string.feature_onboard_my_farm_next,
+                onNextClick = { navController.navigate(CROP_ROUTE) },
+                onSkipClick = { navController.navigate(CROP_ROUTE) }
             )
+        }
+    }
+}
+@Composable
+private fun Address(
+    modifier: Modifier,
+    fullRoadAddr: String,
+    jibunAddr: String,
+    onFullRoadAddrChange: (String) -> Unit,
+    onJubunAddrChange: (String) -> Unit,
+    onSearchClick: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .padding()
+    ) {
+        Row(
+            modifier = modifier
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CustomTextField(
+                value = fullRoadAddr,
+                onValueChange = {
+                    onFullRoadAddrChange(it)
+                },
+                modifier = modifier
+                    .weight(3f),
+                placeholder = stringResource(id = R.string.feature_onboard_my_farm_address_placeholder)
+            )
+            Button(
+                onClick = onSearchClick,
+                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = lightColors.secondary
+                ),
+                modifier = modifier
+                    .padding(start = 8.dp)
+                    .border(1.dp, lightColors.secondary, RoundedCornerShape(12.dp))
+                    .weight(1f)
+                    .height(35.dp)
+
+            ) {
+                Text(
+                    stringResource(id = R.string.feature_onboard_my_farm_address_find),
+                    style = MaterialTheme.typo.body1,
+                    color = MaterialTheme.colors.secondary
+                )
+            }
         }
     }
 }
@@ -158,56 +229,6 @@ fun DescriptionText(
         text,
         style = MaterialTheme.typo.titleSB,
     )
-}
-
-@Composable
-private fun Address(
-    modifier: Modifier,
-    fullRoadAddr: String,
-    jibunAddr: String,
-    onFullRoadAddrChange: (String) -> Unit,
-    onJubunAddrChange: (String) -> Unit,
-    onSearchClick: () -> Unit
-) {
-    Column(
-        modifier = modifier
-            .padding()
-    ) {
-        Row(
-            modifier = modifier
-                .height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CustomTextField(
-                fullRoadAddr,
-                onFullRoadAddrChange,
-                modifier = modifier
-                    .weight(3f),
-                placeholder = stringResource(id = R.string.feature_onboard_my_farm_address_placeholder)
-            )
-            Button(
-                onClick = onSearchClick,
-                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = lightColors.secondary
-                ),
-                modifier = modifier
-                    .padding(start = 8.dp)
-                    .border(1.dp, lightColors.secondary, RoundedCornerShape(12.dp))
-                    .weight(1f)
-                    .height(35.dp)
-
-            ) {
-                Text(
-                    stringResource(id = R.string.feature_onboard_my_farm_address_find),
-                    style = MaterialTheme.typo.body1,
-                    color = MaterialTheme.colors.secondary
-                )
-            }
-        }
-    }
 }
 
 @Composable
@@ -375,15 +396,15 @@ private fun DynamicStepProgressBarsPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun AddressPreview() {
-    Address(
-        Modifier,
-        fullRoadAddr = "허리도 가늘군 만지면 부서지리",
-        jibunAddr = "jibunAddr",
-        onFullRoadAddrChange = {},
-        onJubunAddrChange = {}) {
-
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun AddressPreview() {
+//    Address(
+//        Modifier,
+//        fullRoadAddr = "허리도 가늘군 만지면 부서지리",
+//        jibunAddr = "jibunAddr",
+//        onFullRoadAddrChange = {},
+//        onJibunAddrChange = {},
+//        onSearchClick = {}
+//    )
+//}

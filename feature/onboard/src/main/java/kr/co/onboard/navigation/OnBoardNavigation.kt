@@ -6,8 +6,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.onboard.address.InputAddressScreen
 import kr.co.onboard.OnBoardRoute
-import kr.co.onboard.mapview.AddressSelectionListener
+import kr.co.onboard.crop.SelectCropScreen
 import kr.co.onboard.mapview.LocationSearchWebViewScreen
+import kr.co.onboard.welcome.WelcomeScreen
+import timber.log.Timber
 
 const val ONBOARD_ROUTE = "onboardRoute"
 internal const val MAIN_ROUTE = "mainRoute"
@@ -38,32 +40,31 @@ fun NavGraphBuilder.onboardNavGraph(
         route = ADDRESS_FIND_ROUTE
     ) {
         LocationSearchWebViewScreen(
-            Modifier,
-            addressSelectionListener = object : AddressSelectionListener {
-                override fun onAddressSelected(fullRoadAddr: String, jibunAddr: String) {
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "fullRoadAddr",
-                        fullRoadAddr
-                    )
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "jibunAddr",
-                        jibunAddr
-                    )
-                    navController.popBackStack()
-                }
-            })
+            modifier = Modifier,
+            onAddressSelected = { fullRoadAddr, jibunAddr ->
+                Timber.d("fullRoadAddr : $fullRoadAddr")
+                Timber.d("jibunAddr : $jibunAddr")
+                navController.previousBackStackEntry?.savedStateHandle?.set("fullRoadAddr", fullRoadAddr)
+                navController.previousBackStackEntry?.savedStateHandle?.set("jibunAddr", jibunAddr)
+                navController.popBackStack()
+            }
+        )
     }
 
     composable(
         route = CROP_ROUTE
     ) {
-
+        SelectCropScreen(
+            navController = navController
+        )
     }
 
     composable(
         route = WELCOME_ROUTE
     ) {
-
+        WelcomeScreen(
+            navController = navController
+        )
     }
 
     composable("ADDRESS_ROUTE") {
@@ -83,19 +84,12 @@ fun NavGraphBuilder.onboardNavGraph(
 
     composable("ADDRESS_FIND_ROUTE") {
         LocationSearchWebViewScreen(
-            Modifier,
-            addressSelectionListener = object : AddressSelectionListener {
-                override fun onAddressSelected(fullRoadAddr: String, jibunAddr: String) {
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "fullRoadAddr",
-                        fullRoadAddr
-                    )
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "jibunAddr",
-                        jibunAddr
-                    )
-                    navController.popBackStack()
-                }
-            })
+            modifier = Modifier,
+            onAddressSelected = { fullRoadAddr, jibunAddr ->
+                navController.previousBackStackEntry?.savedStateHandle?.set("fullRoadAddr", fullRoadAddr)
+                navController.previousBackStackEntry?.savedStateHandle?.set("jibunAddr", jibunAddr)
+                navController.popBackStack()
+            }
+        )
     }
 }

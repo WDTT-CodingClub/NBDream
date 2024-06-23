@@ -102,8 +102,14 @@ fun NextButton(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SkipButton(text = stringResource(id = skipId))
-            InputCompleteButton(text = stringResource(id = nextId))
+            SkipButton(
+                text = stringResource(id = skipId),
+                onSkipClick = onSkipClick
+            )
+            InputCompleteButton(
+                text = stringResource(id = nextId),
+                onNextClick = onNextClick
+            )
         }
     }
 }
