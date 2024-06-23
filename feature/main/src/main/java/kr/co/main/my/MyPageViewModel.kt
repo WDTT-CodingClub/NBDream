@@ -24,7 +24,7 @@ internal class MyPageViewModel @Inject constructor(
                     copy(
                         name = it.name,
                         profileImageUrl = it.profileImage,
-                        address = it.address,
+                        address = it.address.let { if (it.isNullOrBlank()) "주소를 설정해 주세요" else it },
                         crops = it.crops
                     )
                 }

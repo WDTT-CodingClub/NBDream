@@ -26,6 +26,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,19 +58,25 @@ internal fun MyPageRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val (isCropModalVisible, showCropModal) = remember {
+        mutableStateOf(false)
+    }
+
     MyPageScreen(
         state = state,
         navigateToProfileEdit = navigateToProfileEdit,
         navigateToSetting = navigateToSetting,
         navigateToBookmark = navigateToBookmark,
         navigateToWrite = navigateToWrite,
-        navigateToComment = navigateToComment
+        navigateToComment = navigateToComment,
+        showCropModal = { showCropModal.invoke(true) }
     )
 }
 
 @Composable
 private fun MyPageScreen(
     state: MyPageViewModel.State = MyPageViewModel.State(),
+    showCropModal: () -> Unit = {},
     navigateToProfileEdit: () -> Unit = {},
     navigateToSetting: () -> Unit = {},
     navigateToBookmark: () -> Unit = {},
@@ -117,7 +125,8 @@ private fun MyPageScreen(
             item {
                 Spacer(modifier = Modifier.height(48.dp))
                 BulletinCard(
-                    crops = state.crops.orEmpty().ifEmpty { listOf("작물을 등록해 보세요") }
+                    crops = state.crops.orEmpty().ifEmpty { listOf("작물을 등록해 보세요") },
+                    showCropModal = showCropModal
                 )
             }
 
@@ -204,6 +213,7 @@ private fun CommunityCard(
 @Composable
 private fun BulletinCard(
     crops: List<String> = listOf(),
+    showCropModal: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -228,7 +238,7 @@ private fun BulletinCard(
             Icon(
                 modifier = Modifier
                     .size(24.dp)
-                    .noRippleClickable {  },
+                    .noRippleClickable(onClick = showCropModal),
                 imageVector = Icons.Filled.Add,
                 contentDescription = "add crop button"
             )

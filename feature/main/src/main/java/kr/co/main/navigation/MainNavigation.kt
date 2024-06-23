@@ -25,6 +25,7 @@ import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
 import kr.co.main.my.setting.verify.MyPageSettingDeleteSocialVerifyRoute
+import kr.co.main.notification.NotificationRoute
 import timber.log.Timber
 
 
@@ -163,7 +164,9 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = NOTIFICATION_ROUTE
     ) {
-
+        NotificationRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(
