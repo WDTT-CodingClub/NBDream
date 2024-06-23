@@ -1,6 +1,7 @@
 package kr.co.main.notification
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,7 +54,8 @@ internal fun NotificationRoute(
     NotificationScreen(
         state = state,
         onCheckedNotification = viewModel::onCheckedNotification,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        onTabSelected = viewModel::onTabSelected
     )
 }
 
@@ -59,6 +63,7 @@ internal fun NotificationRoute(
 private fun NotificationScreen(
     state: NotificationViewModel.State = NotificationViewModel.State(),
     onCheckedNotification: (Boolean) -> Unit = {},
+    onTabSelected: (Int) -> Unit = {},
     popBackStack: () -> Unit = {},
 ) {
     Scaffold(
@@ -121,7 +126,7 @@ private fun NotificationScreen(
                                 width = 48.dp,
                                 height = 24.dp
                             ),
-                        checked = true,
+                        checked = state.setting,
                         onCheckedChange = onCheckedNotification
                     )
                 }
@@ -136,6 +141,7 @@ private fun NotificationScreen(
                     items(NotificationTab.entries) {
                         Text(
                             modifier = Modifier
+                                .clickable{ onTabSelected(it.ordinal) }
                                 .background(
                                     color = if (state.selectedTab == it.ordinal) MaterialTheme.colors.gray4 else MaterialTheme.colors.gray8,
                                     shape = RoundedCornerShape(12.dp)
@@ -143,7 +149,10 @@ private fun NotificationScreen(
                                 .padding(
                                     horizontal = 16.dp,
                                     vertical = 6.dp
-                                ),
+                                )
+                                .semantics {
+                                    contentDescription = "${it.value} 알림 탭"
+                                },
                             text = it.value,
                             style = MaterialTheme.typo.body1,
                             color = if (state.selectedTab == it.ordinal) MaterialTheme.colors.white else MaterialTheme.colors.gray4
