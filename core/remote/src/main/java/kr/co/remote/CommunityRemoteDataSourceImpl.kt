@@ -10,12 +10,12 @@ import io.ktor.client.request.setBody
 import kr.co.data.source.remote.CommunityRemoteDataSource
 import kr.co.remote.model.request.community.BulletinReqDto
 import kr.co.remote.model.response.ApiResponseLong
+import kr.co.remote.model.response.ApiResponseVoid
 import kr.co.remote.model.response.community.ApiResponseBulletinsResDto
-import kr.co.remote.model.response.community.ApiResponseVoid
 import kr.co.remote.model.response.community.GetBulletinDetailResponse
 import kr.co.remote.model.response.community.convertToData
-import kr.co.remote.model.response.community.isCode200
 import kr.co.remote.model.response.convertToData
+import kr.co.remote.model.response.isCode200
 import javax.inject.Inject
 
 internal class CommunityRemoteDataSourceImpl @Inject constructor(
