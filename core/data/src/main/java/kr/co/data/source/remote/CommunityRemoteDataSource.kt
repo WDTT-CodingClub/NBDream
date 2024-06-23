@@ -30,6 +30,10 @@ interface CommunityRemoteDataSource {
         lastBulletinId: Long?,
     ): ApiResponseBulletinsResDtoData
 
+    suspend fun getMyBulletins(lastBulletinId: Long? = null): ApiResponseBulletinsResDtoData
+
+    suspend fun getBookmarks(lastBulletinId: Long? = null): ApiResponseBulletinsResDtoData
+
     suspend fun getBulletinDetail(bulletinId: Long): GetBulletinDetailData
 
 }

@@ -25,6 +25,8 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
         private const val DELETE_BULLETIN_URL = "api/bulletins/"
         private const val PUT_BULLETIN_URL = DELETE_BULLETIN_URL
         private const val GET_BULLETINS_URL = "api/bulletins"
+        private const val GET_BOOKMARKS_URL = "api/bulletins/bookmarks"
+        private const val GET_MY_BULLETINS_URL = "api/bulletins/my-bulletins"
         private const val GET_BULLETIN_DETAIL_URL = "api/bulletins/"
     }
 
@@ -76,7 +78,23 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
             keyword?.let { parameters.append("keyword", it) }
             parameters.append("bulletinCategory", bulletinCategory)
             parameters.append("crop", crop)
-            keyword?.let { parameters.append("lastBulletinId", it) }
+            lastBulletinId?.let { parameters.append("lastBulletinId", it.toString()) }
+        }
+    }.body<ApiResponseBulletinsResDto>().convertToData()
+
+    override suspend fun getMyBulletins(
+        lastBulletinId: Long?,
+    ) = client.get(GET_MY_BULLETINS_URL) {
+        url {
+            parameters.append("lastBulletinId", lastBulletinId.toString())
+        }
+    }.body<ApiResponseBulletinsResDto>().convertToData()
+
+    override suspend fun getBookmarks(
+        lastBulletinId: Long?,
+    ) = client.get(GET_BOOKMARKS_URL) {
+        url {
+            parameters.append("lastBulletinId", lastBulletinId.toString())
         }
     }.body<ApiResponseBulletinsResDto>().convertToData()
 

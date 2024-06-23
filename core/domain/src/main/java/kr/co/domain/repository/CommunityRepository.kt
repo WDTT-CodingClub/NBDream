@@ -29,6 +29,10 @@ interface CommunityRepository {
         lastBulletinId: Long?,
     ): List<BulletinEntity>
 
+    suspend fun getMyBulletins(lastBulletinId: Long? = null): List<BulletinEntity>
+
+    suspend fun getBookmarks(lastBulletinId: Long? = null): List<BulletinEntity>
+
     suspend fun getBulletinDetail(bulletinId: Long): BulletinEntity?
 
 }

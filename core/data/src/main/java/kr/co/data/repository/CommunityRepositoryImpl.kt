@@ -59,6 +59,18 @@ internal class CommunityRepositoryImpl @Inject constructor(
         lastBulletinId = lastBulletinId,
     ).convertToEntities()
 
+    override suspend fun getMyBulletins(
+        lastBulletinId: Long?,
+    ): List<BulletinEntity> = remote.getMyBulletins(
+        lastBulletinId = lastBulletinId,
+    ).convertToEntities()
+
+    override suspend fun getBookmarks(
+        lastBulletinId: Long?,
+    ): List<BulletinEntity> = remote.getBookmarks(
+        lastBulletinId = lastBulletinId,
+    ).convertToEntities()
+
     override suspend fun getBulletinDetail(
         bulletinId: Long,
     ): BulletinEntity? = remote.getBulletinDetail(
