@@ -74,10 +74,10 @@ internal class HomeViewModel @Inject constructor(
         )
 
         data class WeatherSimple(
-            val weather: String? = null,
-            val minTemperature: Float? = null,
-            val maxTemperature: Float? = null,
-            val day: String? = null,
+            val weather: String = "",
+            val minTemperature: Float = 0.0f,
+            val maxTemperature: Float = 0f,
+            val day: String = "월요일",
         )
     }
 

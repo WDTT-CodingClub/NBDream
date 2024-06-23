@@ -39,15 +39,19 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.main.home.HomeViewModel.State.WeatherDetail
 import kr.co.main.home.HomeViewModel.State.WeatherSimple
 import kr.co.main.model.home.WeatherMetrics
+import kr.co.main.model.home.toSky
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Bell
@@ -360,18 +364,54 @@ private fun WeatherCard(
         }
 
         if (expanded) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                listOf(1, 2, 3, 4, 5, 6, 7).forEach {
+            weatherList?.forEach {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = it.day,
+                        style = MaterialTheme.typo.body1.copy(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            lineHeight = 20.em,
+                        ),
+                        color = MaterialTheme.colors.gray1
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
                     Image(
-                        modifier = Modifier.width(32.dp),
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_sunny),
-                        contentDescription = "weather state"
+                        modifier = Modifier.size(36.dp),
+                        painter = toSky(it.weather),
+                        contentDescription = it.weather
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Text(
+                        text = "${it.maxTemperature}°",
+                        style = MaterialTheme.typo.body1.copy(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            lineHeight = 20.em,
+                        ),
+                        color = MaterialTheme.colors.red
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Text(
+                        text = "${it.minTemperature}°",
+                        style = MaterialTheme.typo.body1.copy(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            lineHeight = 20.em,
+                        ),
+                        color = MaterialTheme.colors.gray4
                     )
                 }
             }
