@@ -1,7 +1,7 @@
 package kr.co.main.accountbook.content
 
-import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,9 +19,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +30,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,35 +40,39 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.main.accountbook.main.formatNumber
+import kr.co.main.accountbook.model.CategoryDisplayMapper
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 
 
 @Composable
-internal fun AccountBookContentScreen(
-    viewModel: AccountBookContentViewModel,
-    id: String
+internal fun AccountBookContentRoute(
+    popBackStack: () -> Unit,
+    viewModel: AccountBookContentViewModel = hiltViewModel(),
+    id: Long
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(key1 = id) {
         viewModel.fetchAccountBookById(id)
     }
 
-    val writingImages by remember { mutableStateOf(listOf<Uri>()) }
     var showDropDownMenu by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             DreamCenterTopAppBar(
                 title = "장부 상세",
                 navigationIcon = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = popBackStack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "뒤로가기",
+                            contentDescription = null,
                             tint = Color.Black
                         )
                     }
@@ -115,7 +119,7 @@ internal fun AccountBookContentScreen(
                                 }
                             },
                             onClick = {
-                                // TODO 삭제하기
+                                showDeleteDialog = true
                                 showDropDownMenu = false
                             }
                         )
@@ -129,12 +133,10 @@ internal fun AccountBookContentScreen(
                     .fillMaxSize()
                     .background(Color.White)
                     .padding(padding)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "금액",
-                    style = MaterialTheme.typo.header2M
+                    text = CategoryDisplayMapper.getTransactionType(state.transactionType),
+                    style = MaterialTheme.typo.h4
                 )
 
                 Row(
@@ -143,13 +145,11 @@ internal fun AccountBookContentScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = formatNumber(state.amount),
-                        style = MaterialTheme.typo.header2M,
+                        text = "${formatNumber(state.amount)}원",
+                        style = MaterialTheme.typo.h2,
                         color = MaterialTheme.colors.black
                     )
                 }
-
-                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -158,23 +158,28 @@ internal fun AccountBookContentScreen(
                     Text(
                         text = "카테고리",
                         modifier = Modifier.width(80.dp),
-                        style = MaterialTheme.typo.titleM
+                        style = MaterialTheme.typo.h4
                     )
                     Box(
                         modifier = Modifier
-                            .width(75.dp)
+                            .width(74.dp)
                             .height(32.dp)
-                            .background(MaterialTheme.colors.gray8)
+                            .border(
+                                1.dp,
+                                MaterialTheme.colors.gray7,
+                                shape = RoundedCornerShape(12.dp)
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = state.category.name,
-                            style = MaterialTheme.typo.bodyM,
-                            color = MaterialTheme.colors.black
+                            text = if (state.category != null) CategoryDisplayMapper.getDisplay(
+                                state.category!!
+                            ) else "미정",
+                            style = MaterialTheme.typo.body1,
+                            color = MaterialTheme.colors.gray2
                         )
                     }
                 }
-
-                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -184,16 +189,14 @@ internal fun AccountBookContentScreen(
                     Text(
                         text = "내역",
                         modifier = Modifier.width(80.dp),
-                        style = MaterialTheme.typo.titleM
+                        style = MaterialTheme.typo.h4
                     )
                     Text(
-                        text = state.title,
-                        color = MaterialTheme.colors.black,
-                        style = MaterialTheme.typo.bodyM
+                        text = state.title ?: "",
+                        style = MaterialTheme.typo.body1,
+                        color = MaterialTheme.colors.gray2
                     )
                 }
-
-                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -202,16 +205,14 @@ internal fun AccountBookContentScreen(
                     Text(
                         text = "날짜",
                         modifier = Modifier.width(80.dp),
-                        style = MaterialTheme.typo.titleM
+                        style = MaterialTheme.typo.h4
                     )
                     Text(
-                        text = "${state.year}년 ${state.month}월 ${state.day}일",
-                        color = MaterialTheme.colors.black,
-                        style = MaterialTheme.typo.bodyM
+                        text = state.registerDateTime ?: "",
+                        style = MaterialTheme.typo.body1,
+                        color = MaterialTheme.colors.gray2
                     )
                 }
-
-                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey2)
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -220,7 +221,7 @@ internal fun AccountBookContentScreen(
                     Text(
                         text = "사진",
                         modifier = Modifier.width(80.dp),
-                        style = MaterialTheme.typo.titleM
+                        style = MaterialTheme.typo.h4
                     )
                 }
 
@@ -228,8 +229,8 @@ internal fun AccountBookContentScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(writingImages.size) { index ->
-                        val imageUri = writingImages[index]
+                    items(state.imageUrls.size) { index ->
+                        val imageUri = state.imageUrls[index]
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -248,4 +249,27 @@ internal fun AccountBookContentScreen(
             }
         }
     )
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("장부 내역 삭제") },
+            text = { Text("장부 내역을 삭제하겠습니까?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.deleteAccountBookById()
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("확인")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDeleteDialog = false }) {
+                    Text("취소")
+                }
+            }
+        )
+    }
 }

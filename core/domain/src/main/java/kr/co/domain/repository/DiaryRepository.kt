@@ -4,22 +4,18 @@ import kotlinx.coroutines.flow.Flow
 import kr.co.domain.entity.DiaryEntity
 
 interface DiaryRepository {
-    suspend fun getDiaries(
+    fun getDiaries(
         crop:String,
         year:Int,
         month:Int
     ): Flow<List<DiaryEntity>>
 
-    suspend fun searchDiaries(
+    fun searchDiaries(
         crop:String,
         query:String,
         startDate:String,
         endDate:String
     ): Flow<List<DiaryEntity>>
 
-    suspend fun getDiaryId(): String
-
-    suspend fun addDiary(diaryEntity: DiaryEntity)
-    suspend fun editDiary(diaryEntity: DiaryEntity)
-    suspend fun deleteDiary(diaryId:String)
+    // TODO 추가/편집/삭제
 }

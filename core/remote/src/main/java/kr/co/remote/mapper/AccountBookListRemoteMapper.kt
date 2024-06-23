@@ -4,7 +4,8 @@ import kr.co.common.mapper.Mapper
 import kr.co.data.model.data.AccountBookListData
 import kr.co.remote.model.response.GetAccountBookListResponse
 
-internal object AccountBookListRemoteMapper : Mapper<GetAccountBookListResponse, AccountBookListData> {
+internal object AccountBookListRemoteMapper :
+    Mapper<GetAccountBookListResponse, AccountBookListData> {
     override fun convert(param: GetAccountBookListResponse): AccountBookListData =
         with(param.data) {
             AccountBookListData(
@@ -12,6 +13,7 @@ internal object AccountBookListRemoteMapper : Mapper<GetAccountBookListResponse,
                 totalRevenue = totalRevenue,
                 totalExpense = totalExpense,
                 totalCost = totalCost,
+                hasNext = hasNext,
                 items = items.map {
                     AccountBookListData.Item(
                         id = it.id,
@@ -22,8 +24,8 @@ internal object AccountBookListRemoteMapper : Mapper<GetAccountBookListResponse,
                         day = it.day,
                         dayName = it.dayName,
                         transactionType = it.transactionType,
-                        amount = it.amount ?: 0L,
-                        thumbnail = it.thumbnail,
+                        amount = it.amount,
+                        thumbnail = it.thumbnail ?: "",
                         imageSize = it.imageSize
                     )
                 }

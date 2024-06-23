@@ -9,6 +9,5 @@ internal data class PostAccountBookRequest(
     val category: String,
     val title: String,
     val registerDateTime: String,
-    val imageUrls: List<String>,
-    val parsedRegisterDateTime: String
+    val imageUrls: List<String>
 )

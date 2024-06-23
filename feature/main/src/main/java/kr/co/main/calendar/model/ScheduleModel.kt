@@ -19,29 +19,3 @@ data class ScheduleModel(
         data class Crop(val crop: CropModel) : Category()
     }
 }
-
-internal fun ScheduleEntity.convert() = ScheduleModel(
-    id = id,
-    category = when (category) {
-        is ScheduleEntity.Category.All -> ScheduleModel.Category.All
-        is ScheduleEntity.Category.Crop -> {
-            ScheduleModel.Category.Crop((category as ScheduleEntity.Category.Crop).crop.convert())
-        }
-    },
-    title = title,
-    startDate = startDate,
-    endDate = endDate,
-)
-
-internal fun ScheduleModel.convert() = ScheduleEntity(
-    id = id,
-    category = when (category) {
-        is ScheduleModel.Category.All -> ScheduleEntity.Category.All
-        is ScheduleModel.Category.Crop -> {
-            ScheduleEntity.Category.Crop(category.crop.convert())
-        }
-    },
-    title = title,
-    startDate = startDate,
-    endDate = endDate,
-)

@@ -12,14 +12,14 @@ internal class AccountBookRepositoryImpl @Inject constructor(
     private val remote: AccountBookRemoteDataSource
 ) : AccountBookRepository {
     override suspend fun getAccountBooks(
-        page: Int,
+        lastContentsId: Long?,
         category: String,
         sort: String,
         start: String,
         end: String,
         transactionType: String
     ) = remote.fetchList(
-        page = page,
+        lastContentsId = lastContentsId,
         category = category,
         sort = sort,
         start = start,
@@ -46,7 +46,7 @@ internal class AccountBookRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateAccountBook(
-        id: String,
+        id: Long,
         transactionType: String,
         amount: Long,
         category: String,
@@ -65,11 +65,11 @@ internal class AccountBookRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getAccountBookDetail(id: String): AccountBookEntity {
+    override suspend fun getAccountBookDetail(id: Long): AccountBookEntity {
         return remote.fetchDetail(id).let(GetAccountBookMapper::convert)
     }
 
-    override suspend fun deleteAccountBook(id: String) {
+    override suspend fun deleteAccountBook(id: Long) {
         remote.delete(id)
     }
 }
