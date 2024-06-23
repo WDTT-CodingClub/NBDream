@@ -12,6 +12,7 @@ internal class FakeScheduleModelProvider : PreviewParameterProvider<ScheduleMode
     @RequiresApi(Build.VERSION_CODES.O)
     override val values = sequenceOf(
         ScheduleModel(
+            id = 1,
             category = ScheduleModel.Category.Crop(CropModel.POTATO),
             title = "감자 수확일",
             startDate = LocalDate.of(2024, 5, 21),
