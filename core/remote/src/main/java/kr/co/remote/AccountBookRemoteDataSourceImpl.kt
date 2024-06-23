@@ -97,7 +97,7 @@ internal class AccountBookRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun fetchDetail(id: Long): AccountBookData =
-         client.get("$GET_ACCOUNT_DETAIL/$id")
+        client.get("$GET_ACCOUNT_DETAIL/$id")
             .body<GetAccountBookDetailResponse>()
             .let(AccountBookRemoteMapper::convert)
 
