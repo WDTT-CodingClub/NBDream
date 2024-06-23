@@ -23,6 +23,8 @@ interface CommunityRemoteDataSource {
         imageUrls: List<String>,
     ): ApiResponseLongData
 
+    suspend fun bookmarkBulletin(id: Long): Boolean
+
     suspend fun getBulletins(
         keyword: String?,
         bulletinCategory: String,

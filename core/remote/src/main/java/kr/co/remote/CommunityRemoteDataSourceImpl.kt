@@ -69,6 +69,11 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
         )
     }.body<ApiResponseLong>().convertToData()
 
+    override suspend fun bookmarkBulletin(
+        id: Long,
+    ) = client.post("api/bulletins/$id/bookmark") {
+    }.body<ApiResponseVoid>().isCode200()
+
     override suspend fun getBulletins(
         keyword: String?,
         bulletinCategory: String,

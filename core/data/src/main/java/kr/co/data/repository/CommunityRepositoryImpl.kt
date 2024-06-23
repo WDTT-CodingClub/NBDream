@@ -47,6 +47,12 @@ internal class CommunityRepositoryImpl @Inject constructor(
         imageUrls = imageUrls,
     ).data ?: -1
 
+    override suspend fun bookmarkBulletin(
+        id: Long,
+    ): Boolean = remote.bookmarkBulletin(
+        id = id,
+    )
+
     override suspend fun getBulletins(
         keyword: String?,
         bulletinCategory: BulletinEntity.BulletinCategory,
