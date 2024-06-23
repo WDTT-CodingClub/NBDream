@@ -24,12 +24,12 @@ import coil.compose.AsyncImage
 import kr.co.common.util.toTitleDateString
 import kr.co.domain.entity.HolidayEntity
 import kr.co.main.R
-import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
+import kr.co.main.calendar.ui.common.CalendarDesignToken
 import kr.co.main.calendar.ui.common.CalendarWeather
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Sprout
+import kr.co.ui.icon.dreamicon.GreenIcon
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -133,7 +133,7 @@ private fun DiaryWorkDescription(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = DreamIcon.Sprout,
+            imageVector = DreamIcon.GreenIcon,
             contentDescription = ""
         )
         Row(
