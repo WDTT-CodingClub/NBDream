@@ -228,9 +228,6 @@ fun NavGraphBuilder.mainNavGraph(
             navigateToPrivacyPolicy = {
                 navController.navigate(MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE)
             },
-            navigateToLogout = {
-
-            },
             navigateToAppInfo = {
                 navController.navigate(MyPageRoute.SETTING_APP_INFO_ROUTE)
             },

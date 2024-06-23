@@ -17,11 +17,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
 import kr.co.main.model.my.MyPageSetting
 import kr.co.ui.ext.noRippleClickable
@@ -30,25 +34,43 @@ import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import kr.co.ui.widget.DreamDialog
 
 @Composable
 internal fun MyPageSettingRoute(
+    viewModel: MyPageSettingViewModel = hiltViewModel(),
     popBackStack: () -> Unit,
     navigateToNotification: () -> Unit = {},
     navigateToPrivacyPolicy: () -> Unit = {},
-    navigateToLogout: () -> Unit = {},
     navigateToAppInfo: () -> Unit = {},
     navigateToDeleteAccount: () -> Unit = {},
 ) {
+    val (isModalVisible, setModalVisible) = remember {
+        mutableStateOf(false)
+    }
 
     MyPageSettingScreen(
         popBackStack = popBackStack,
         navigateToNotification = navigateToNotification,
         navigateToPrivacyPolicy = navigateToPrivacyPolicy,
-        navigateToLogout = navigateToLogout,
+        navigateToLogout = { setModalVisible(true) },
         navigateToAppInfo = navigateToAppInfo,
         navigateToDeleteAccount = navigateToDeleteAccount
     )
+
+    if (isModalVisible) {
+        DreamDialog(
+            header = "로그아웃 하시겠어요?",
+            description = "언제든지 다시 로그인 하실 수 있어요.",
+            confirmText = "로그아웃",
+            dismissText = "다음에",
+            onConfirm = {
+                viewModel.onLogout()
+                setModalVisible(false)
+            },
+            onDismiss = { setModalVisible(false) }
+        )
+    }
 }
 
 @Composable
@@ -90,7 +112,7 @@ private fun MyPageSettingScreen(
             MyPageSetting.entries.forEachIndexed { index, myPageSetting ->
                 SettingRow(
                     type = myPageSetting,
-                    navigateTo = when(myPageSetting){
+                    navigateTo = when (myPageSetting) {
                         MyPageSetting.NOTIFICATION -> navigateToNotification
                         MyPageSetting.PRIVACY_POLICY -> navigateToPrivacyPolicy
                         MyPageSetting.LOGOUT -> navigateToLogout
@@ -99,7 +121,7 @@ private fun MyPageSettingScreen(
                     }
                 )
 
-                if(index != MyPageSetting.entries.lastIndex){
+                if (index != MyPageSetting.entries.lastIndex) {
                     HorizontalDivider(
                         thickness = 1.dp,
                         color = MaterialTheme.colors.gray8
@@ -149,7 +171,7 @@ private fun SettingRow(
 @Composable
 private fun Preview() {
     NBDreamTheme {
-        MyPageSettingScreen({}){
+        MyPageSettingScreen({}) {
 
         }
     }
