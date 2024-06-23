@@ -14,6 +14,7 @@ import kr.co.remote.model.response.community.ApiResponseBulletinsResDto
 import kr.co.remote.model.response.community.ApiResponseVoid
 import kr.co.remote.model.response.community.GetBulletinDetailResponse
 import kr.co.remote.model.response.community.convertToData
+import kr.co.remote.model.response.community.isCode200
 import kr.co.remote.model.response.convertToData
 import javax.inject.Inject
 
@@ -49,7 +50,7 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
     override suspend fun deleteBulletin(
         id: Long,
     ) = client.delete(DELETE_BULLETIN_URL + id) {
-    }.body<ApiResponseVoid>().convertToData()
+    }.body<ApiResponseVoid>().isCode200()
 
     override suspend fun putBulletin(
         id: Long,

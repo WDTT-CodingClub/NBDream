@@ -11,4 +11,4 @@ internal data class ApiResponseVoid(
 )
 
 
-internal fun ApiResponseVoid.convertToData() = this.code == 200
+internal fun ApiResponseVoid.isCode200() = this.code == 200
