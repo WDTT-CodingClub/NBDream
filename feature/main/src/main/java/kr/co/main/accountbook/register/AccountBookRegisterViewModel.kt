@@ -71,18 +71,20 @@ internal class AccountBookRegisterViewModel @Inject constructor(
 
     fun createAccountBook() = loadingScope {
         accountBookRepository.createAccountBook(
-            transactionType = state.value.transactionType!!.name.lowercase(),
-            amount = state.value.amount,
-            category = state.value.category!!.name.lowercase(),
-            title = state.value.title,
-            registerDateTime = "${state.value.registerDateTime} 00:00",
-            imageUrls = state.value.imageUrls.map { it }
+            transactionType = currentState.transactionType!!.name.lowercase(),
+            amount = currentState.amount,
+            category = currentState.category!!.name.lowercase(),
+            title = currentState.title,
+            registerDateTime = formatDateTime(currentState.registerDateTime),
+            imageUrls = currentState.imageUrls.map { it }
         )
     }.invokeOnCompletion {
         if (it == null) {
             viewModelScopeEH.launch {
                 _complete.emit(Unit)
             }
+        } else {
+            // TODO 작성 실패
         }
     }
 
@@ -104,5 +106,12 @@ internal class AccountBookRegisterViewModel @Inject constructor(
 
     private companion object {
         const val DOMAIN = "accountbook"
+    }
+
+    private fun formatDateTime(dateTime: String): String {
+        val inputFormat = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd 00:00", Locale.getDefault())
+        val date = inputFormat.parse(dateTime)
+        return outputFormat.format(date!!)
     }
 }
