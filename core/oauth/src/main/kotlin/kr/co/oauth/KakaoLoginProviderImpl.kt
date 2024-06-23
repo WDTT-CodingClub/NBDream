@@ -7,8 +7,8 @@ import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kr.co.common.ContextManager
 import kr.co.common.model.CustomException
-import kr.co.domain.model.AuthType
-import kr.co.domain.model.LoginResult
+import kr.co.domain.entity.type.AuthType
+import kr.co.domain.entity.LoginEntity
 import kr.co.domain.proivder.SocialLoginProvider
 import kr.co.nbdream.core.oauth.BuildConfig.KAKAO_NATIVE_APP_KEY
 import javax.inject.Inject
@@ -30,7 +30,7 @@ internal class KakaoLoginProviderImpl @Inject constructor(
         )
     }
 
-    override suspend fun login(type: AuthType): LoginResult {
+    override suspend fun login(type: AuthType): LoginEntity {
         runCatching { logout(type) }
 
         return accessTokenToResult(provider(context).accessToken)
@@ -70,7 +70,7 @@ internal class KakaoLoginProviderImpl @Inject constructor(
         }
 
 
-    private suspend fun accessTokenToResult(accessToken: String): LoginResult =
+    private suspend fun accessTokenToResult(accessToken: String): LoginEntity =
         suspendCancellableCoroutine { continuation ->
             client.me { _, error ->
                 error?.let {
@@ -78,7 +78,7 @@ internal class KakaoLoginProviderImpl @Inject constructor(
                 }
                 continuation.resumeWith(
                     Result.success(
-                        LoginResult(
+                        LoginEntity(
                             type = AuthType.KAKAO,
                             token = accessToken
                         )

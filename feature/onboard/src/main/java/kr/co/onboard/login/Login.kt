@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kr.co.onboard.R
-import kr.co.domain.model.AuthType
+import kr.co.domain.entity.type.AuthType
 import kr.co.onboard.navigation.MAIN_ROUTE
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.kakaoYellow

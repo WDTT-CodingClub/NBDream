@@ -1,6 +1,6 @@
 package kr.co.domain.usecase.auth
 
-import kr.co.domain.model.AuthType
+import kr.co.domain.entity.type.AuthType
 import kr.co.domain.repository.AuthRepository
 import kr.co.domain.repository.SessionRepository
 import kr.co.domain.repository.UserRepository

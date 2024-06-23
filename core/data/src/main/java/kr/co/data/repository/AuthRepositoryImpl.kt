@@ -3,7 +3,7 @@ package kr.co.data.repository
 import kr.co.data.mapper.type.AuthTypeDataMapper
 import kr.co.data.source.local.SessionLocalDataSource
 import kr.co.data.source.remote.AuthRemoteDataSource
-import kr.co.domain.model.AuthType
+import kr.co.domain.entity.type.AuthType
 import kr.co.domain.repository.AuthRepository
 import javax.inject.Inject
 

@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kr.co.domain.model.AuthType
+import kr.co.domain.entity.type.AuthType
 import kr.co.domain.proivder.SocialLoginProvider
 import kr.co.domain.usecase.auth.LoginUseCase
 import kr.co.ui.base.BaseViewModel

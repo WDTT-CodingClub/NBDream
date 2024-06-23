@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import kr.co.domain.model.AuthType
+import kr.co.domain.entity.type.AuthType
 import kr.co.onboard.login.Login
 import kr.co.ui.ext.scaffoldBackground
 

@@ -1,6 +1,6 @@
 package kr.co.domain.repository
 
-import kr.co.domain.model.AuthType
+import kr.co.domain.entity.type.AuthType
 
 interface AuthRepository {
 

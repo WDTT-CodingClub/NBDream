@@ -1,4 +1,4 @@
-package kr.co.domain.model
+package kr.co.domain.entity.type
 
 enum class AuthType {
     KAKAO,
