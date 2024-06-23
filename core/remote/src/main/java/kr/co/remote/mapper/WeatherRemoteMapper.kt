@@ -9,15 +9,15 @@ internal object WeatherRemoteMapper :
     override fun convert(param: GetWeatherForecastResponse): WeatherForecastData =
         with(param) {
             WeatherForecastData(
-                precipitation = precipitation,
-                precipitationProbability = probability,
-                humidity = humidity,
-                windSpeed = windSpeed,
-                day = day,
-                minTemp = minTemp,
-                maxTemp = maxTemp,
-                temp = temp,
-                items = items.map {
+                precipitation = shortTermWeather.precipitation,
+                precipitationProbability = shortTermWeather.probability,
+                humidity = shortTermWeather.humidity,
+                windSpeed = shortTermWeather.windSpeed,
+                day = shortTermWeather.day,
+                minTemp = shortTermWeather.minTemp,
+                maxTemp = shortTermWeather.maxTemp,
+                temp = shortTermWeather.temp,
+                items = longTermWeather.map {
                     WeatherForecastData.Item(
                         weather = it.weather,
                         minTemp = it.minTemp,

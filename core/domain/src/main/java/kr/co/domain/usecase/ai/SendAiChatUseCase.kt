@@ -1,6 +1,7 @@
-package kr.co.domain.usecase
+package kr.co.domain.usecase.ai
 
 import kr.co.domain.repository.AiRepository
+import kr.co.domain.usecase.SuspendUseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 

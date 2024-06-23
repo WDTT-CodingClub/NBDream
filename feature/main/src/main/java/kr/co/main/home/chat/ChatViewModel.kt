@@ -3,12 +3,9 @@ package kr.co.main.home.chat
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kr.co.common.model.CustomException
-import kr.co.domain.usecase.SendAiChatUseCase
+import kr.co.domain.usecase.ai.SendAiChatUseCase
 import kr.co.domain.usecase.user.FetchUserUseCase
 import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject

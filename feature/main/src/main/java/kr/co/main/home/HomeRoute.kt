@@ -93,7 +93,7 @@ private fun HomeScreen(
             item {
                 DreamTopAppBar(
                     title = "내 농장",
-                    description = "산 좋고 물 좋 나만의 농장 1번지",
+                    description = state.address ?: "산 좋고 물 좋 나만의 농장 1번지",
                     actions = {
                         IconButton(onClick = navigateToNotification) {
                             Icon(
@@ -295,7 +295,7 @@ private fun WeatherCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "${weatherList?.first()?.maxTemperature?: 0}°",
+                            text = "${todayWeather.maxTemperature}°",
                             style = MaterialTheme.typo.body2,
                             color = MaterialTheme.colors.red
                         )
@@ -310,7 +310,7 @@ private fun WeatherCard(
                         Spacer(modifier = Modifier.width(4.dp))
 
                         Text(
-                            text = "${weatherList?.first()?.minTemperature?: 23}°",
+                            text = "${todayWeather.minTemperature}°",
                             style = MaterialTheme.typo.body2,
                             color = MaterialTheme.colors.gray4
                         )
