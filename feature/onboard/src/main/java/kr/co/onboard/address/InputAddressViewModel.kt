@@ -18,7 +18,6 @@ class InputAddressViewModel @Inject constructor(
     val showCropScreen = _showCropScreen.asSharedFlow()
 
     fun onCoordinateChanged(latitude: Double, longitude: Double) = updateState {
-        Timber.d("$latitude, $longitude")
         copy(
             latitude = latitude,
             longitude = longitude

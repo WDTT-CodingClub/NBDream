@@ -42,12 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.KakaoMapSdk
+import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
+import com.kakao.vectormap.camera.CameraUpdateFactory
 import kr.co.onboard.BuildConfig
 import kr.co.onboard.R
 import kr.co.onboard.crop.StepText
@@ -83,37 +84,31 @@ internal fun InputAddressScreen(
         }
     }
 
-    Scaffold(
-        modifier = modifier.padding(Paddings.xlarge),
-        topBar = {
-            DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title))
-        }
-    ) { paddingValues ->
+    Scaffold(modifier = modifier.padding(Paddings.xlarge), topBar = {
+        DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title))
+    }) { paddingValues ->
         Column(
             modifier = modifier.padding(paddingValues)
         ) {
             DynamicStepProgressBars(
-                modifier,
-                colors = listOf(MaterialTheme.colors.green2, Color.Transparent)
+                modifier, colors = listOf(MaterialTheme.colors.green2, Color.Transparent)
             )
             StepText(
-                stringResource(id = R.string.feature_onboard_step_bar_first),
-                modifier = modifier
+                stringResource(id = R.string.feature_onboard_step_bar_first), modifier = modifier
             )
             DescriptionText(stringResource(id = R.string.feature_onboard_my_farm_address_description))
 
-            Address(
-                modifier,
-                fullRoadAddr = state.fullRoadAddress,
-                onFullRoadAddrChange = {
-                    Timber.d("onFullRoadAddrChange called with: $it")
-                },
-                onSearchClick = {
-                    setLocationSearchVisible(true)
-                }
-            )
+            Address(modifier, fullRoadAddr = state.fullRoadAddress, onFullRoadAddrChange = {
+                Timber.d("onFullRoadAddrChange called with: $it")
+            }, onSearchClick = {
+                setLocationSearchVisible(true)
+            })
 
-            KakaoMapScreen(modifier) //padding 없애야 함
+            KakaoMapScreen(
+                modifier = modifier,
+                latitude = state.latitude,
+                longitude = state.longitude
+            )
 
             NextButton(
                 skipId = R.string.feature_onboard_my_farm_skip_input,
@@ -131,8 +126,7 @@ internal fun InputAddressScreen(
                 geocoder.getFromLocationName(jibunAddress, 1) {
                     if (it.isNotEmpty()) {
                         viewModel.onCoordinateChanged(
-                            latitude = it[0].latitude,
-                            longitude = it[0].longitude
+                            latitude = it[0].latitude, longitude = it[0].longitude
                         )
                     }
                 }
@@ -150,12 +144,10 @@ private fun Address(
     onSearchClick: () -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .padding()
+        modifier = modifier.padding()
     ) {
         Row(
-            modifier = modifier
-                .height(IntrinsicSize.Min),
+            modifier = modifier.height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CustomTextField(
@@ -163,8 +155,7 @@ private fun Address(
                 onValueChange = {
                     onFullRoadAddrChange(it)
                 },
-                modifier = modifier
-                    .weight(3f),
+                modifier = modifier.weight(3f),
                 placeholder = stringResource(id = R.string.feature_onboard_my_farm_address_placeholder)
             )
             Button(
@@ -172,8 +163,7 @@ private fun Address(
                 contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = lightColors.secondary
+                    containerColor = Color.Transparent, contentColor = lightColors.secondary
                 ),
                 modifier = modifier
                     .padding(start = 8.dp)
@@ -201,14 +191,13 @@ private fun StepProgressBar(
         modifier = modifier
             .height(10.dp)
             .background(
-                color = color,
-                shape = RoundedCornerShape(4.dp)
+                color = color, shape = RoundedCornerShape(4.dp)
             )
             .then(
-                if (color == Color.Transparent)
-                    modifier.border(0.5.dp, Color.Gray, RoundedCornerShape(4.dp))
-                else
-                    modifier
+                if (color == Color.Transparent) modifier.border(
+                    0.5.dp, Color.Gray, RoundedCornerShape(4.dp)
+                )
+                else modifier
             )
 
     )
@@ -220,15 +209,13 @@ fun DynamicStepProgressBars(
     colors: List<Color>,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         colors.forEach { color ->
             StepProgressBar(
-                color = color,
-                modifier = modifier.weight(1f)
+                color = color, modifier = modifier.weight(1f)
             )
         }
     }
@@ -247,6 +234,8 @@ fun DescriptionText(
 @Composable
 fun KakaoMapScreen(
     modifier: Modifier,
+    latitude: Double?,
+    longitude: Double?,
 ) {
     val context = LocalContext.current
     val apiKey = BuildConfig.KAKAO_NATIVE_APP_KEY
@@ -278,6 +267,7 @@ fun KakaoMapScreen(
 
     //화면에 지도 표시
     if (isSdkInitialized) { //SDK 초기화 확인
+        Spacer(modifier = Modifier.height(52.dp))
         AndroidView(
             modifier = modifier
                 .fillMaxWidth()
@@ -286,27 +276,38 @@ fun KakaoMapScreen(
                 MapView(ctx).apply {
                     mapView = this
                     layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
                     )
 
                     if (!isMapReady) {
                         isMapReady = true
                         //지도 라이프사이클과 준비 상태를 처리
-                        start(MapLifeCycleCallbackImpl(), KakaoMapReadyCallbackImpl { map ->
-                            kakaoMap = map
-                            Timber.tag("KakaoMap").d("Map is ready")
-                        })
+                        start(
+                            MapLifeCycleCallbackImpl(),
+                            object : KakaoMapReadyCallback() {
+                                override fun onMapReady(map: KakaoMap) {
+                                    kakaoMap = map
+                                }
+                            }
+                        )
                     }
                 }
-            },
-            update = {
+            }, update = {
                 mapView?.resume()
-                Timber.tag("KakaoMap").d("Map resumed")
-            }
-        )
+                kakaoMap?.also {
+                    latitude?.let { latitude ->
+                        LatLng.from(latitude, longitude!!).let { position ->
+                            it.moveCamera(
+                                CameraUpdateFactory.newCenterPosition(
+                                    position,
+                                    17
+                                )
+                            )
+                        }
+                    }
+                }
+            })
     } else {
-        // 초기화가 완료되지 않았을 때 보여줄 로딩 UI 또는 메시지
         Text("Loading map...", modifier = modifier.padding(Paddings.xlarge))
     }
 }
@@ -323,14 +324,6 @@ class MapLifeCycleCallbackImpl : MapLifeCycleCallback() {
     }
 }
 
-class KakaoMapReadyCallbackImpl(val onMapReady: (KakaoMap) -> Unit) : KakaoMapReadyCallback() {
-    override fun onMapReady(map: KakaoMap) {
-        Timber.tag("KakaoMap").d("Map is ready")
-        // 인증 후 API가 정상적으로 실행될 때 호출됨
-//        onMapReady(map)
-    }
-}
-
 @Composable
 private fun CustomTextField(
     value: String,
@@ -338,8 +331,7 @@ private fun CustomTextField(
     modifier: Modifier = Modifier,
     placeholder: String = "",
 ) {
-    BasicTextField(
-        value = value,
+    BasicTextField(value = value,
         onValueChange = onValueChange,
         readOnly = true,
         textStyle = TextStyle(color = Color.Gray, fontSize = 16.sp),
@@ -368,8 +360,7 @@ private fun CustomTextField(
                         .background(Color.Gray)
                 )
             }
-        }
-    )
+        })
 }
 
 @Preview(showBackground = true)
@@ -387,23 +378,19 @@ private fun InputAddressScreenPreview() {
 private fun DynamicStepProgressBarsPreview() {
     Column(modifier = Modifier.fillMaxWidth()) {
         DynamicStepProgressBars(
-            Modifier,
-            colors = listOf(lightColors.green2)
+            Modifier, colors = listOf(lightColors.green2)
         ) // 한 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
         DynamicStepProgressBars(
-            Modifier,
-            colors = listOf(lightColors.green2, Color.Transparent)
+            Modifier, colors = listOf(lightColors.green2, Color.Transparent)
         ) // 두 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
         DynamicStepProgressBars(
-            Modifier,
-            colors = listOf(lightColors.green2, lightColors.green2)
+            Modifier, colors = listOf(lightColors.green2, lightColors.green2)
         ) // 두 개의 StepProgressBar
         Spacer(modifier = Modifier.height(16.dp))
         DynamicStepProgressBars(
-            Modifier,
-            colors = listOf(lightColors.green2, lightColors.green2, lightColors.green3)
+            Modifier, colors = listOf(lightColors.green2, lightColors.green2, lightColors.green3)
         ) // 세 개의 StepProgressBar
     }
 }
