@@ -8,6 +8,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
@@ -17,6 +19,10 @@ class InputAddressViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val dataStore: DataStore<Preferences>
 ): BaseViewModel<InputAddressViewModel.State>(savedStateHandle) {
+
+    private val _showCropScreen = MutableSharedFlow<Unit>()
+    val showCropScreen = _showCropScreen.asSharedFlow()
+
     data class State(
         val fullRoadAddr: String = "",
         val jibunAddr: String = ""
@@ -33,6 +39,10 @@ class InputAddressViewModel @Inject constructor(
         viewModelScope.launch {
             saveAddresses(fullRoadAddr, jibunAddr)
         }
+    }
+
+    fun saveAddress(){
+
     }
 
     private suspend fun saveAddresses(fullRoadAddr: String, jibunAddr: String) {

@@ -50,7 +50,6 @@ import kr.co.onboard.BuildConfig
 import kr.co.onboard.R
 import kr.co.onboard.crop.StepText
 import kr.co.onboard.navigation.CROP_ROUTE
-import kr.co.onboard.navigation.MAIN_ROUTE
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Paddings
@@ -64,7 +63,9 @@ import timber.log.Timber
 internal fun InputAddressScreen(
     navController: NavController,
     modifier: Modifier,
-    viewModel: InputAddressViewModel = hiltViewModel()
+    viewModel: InputAddressViewModel = hiltViewModel(),
+    navigateToCrop: () -> Unit = {},
+    navigateToWelcome: () -> Unit = {},
 ) {
     Timber.d("ViewModel initialized: $viewModel")
     val state by viewModel.state.collectAsState()
@@ -72,13 +73,19 @@ internal fun InputAddressScreen(
     // 네비게이션 결과에서 업데이트된 주소를 가져옴
     val fullRoadAddr = navController.currentBackStackEntry?.savedStateHandle?.get<String>("fullRoadAddr")
     val jibunAddr = navController.currentBackStackEntry?.savedStateHandle?.get<String>("jibunAddr")
-    Timber.d("fullRoadAddr: $fullRoadAddr")
-    Timber.d("jibunAddr: $jibunAddr")
+    val bcode = navController.currentBackStackEntry?.savedStateHandle?.get<String>("bcode")
+    Timber.d(bcode)
 
     // 주소가 변경되었을 때 ViewModel을 업데이트
     LaunchedEffect(fullRoadAddr, jibunAddr) {
         if (fullRoadAddr != null && jibunAddr != null) {
             viewModel.updateAddresses(fullRoadAddr, jibunAddr)
+        }
+    }
+    
+    LaunchedEffect(Unit) {
+        viewModel.showCropScreen.collect {
+            navigateToCrop()
         }
     }
 
@@ -100,29 +107,30 @@ internal fun InputAddressScreen(
                 modifier = modifier
             )
             DescriptionText(stringResource(id = R.string.feature_onboard_my_farm_address_description))
+
             Address(
                 modifier,
                 fullRoadAddr = state.fullRoadAddr,
                 jibunAddr = state.jibunAddr,
                 onFullRoadAddrChange = {
                     Timber.d("onFullRoadAddrChange called with: $it")
-//                    viewModel.onFullRoadAddrChange(it)
                 },
                 onJubunAddrChange = {
                     Timber.d("onJubunAddrChange called with: $it")
-//                    viewModel.onJibunAddrChange(it)
                 },
                 onSearchClick = {
                     Timber.d("onSearchClick called")
                     navController.navigate("ADDRESS_FIND_ROUTE")
                 }
             )
+
             KakaoMapScreen(modifier) //padding 없애야 함
+
             NextButton(
                 skipId = R.string.feature_onboard_my_farm_skip_input,
                 nextId = R.string.feature_onboard_my_farm_next,
-                onNextClick = { navController.navigate(CROP_ROUTE) },
-                onSkipClick = { navController.navigate(CROP_ROUTE) }
+                onNextClick = viewModel::saveAddress,
+                onSkipClick = navigateToWelcome
             )
         }
     }

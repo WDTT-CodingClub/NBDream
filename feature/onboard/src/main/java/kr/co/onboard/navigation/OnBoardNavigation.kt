@@ -24,7 +24,11 @@ fun NavGraphBuilder.onboardNavGraph(
     composable(
         route = ONBOARD_ROUTE
     ) {
-        OnBoardRoute()
+        OnBoardRoute(
+            navigateToAddress = {
+                navController.navigate(ADDRESS_ROUTE)
+            }
+        )
     }
 
     composable(
@@ -32,7 +36,13 @@ fun NavGraphBuilder.onboardNavGraph(
     ) {
         InputAddressScreen(
             modifier = Modifier,
-            navController = navController
+            navController = navController,
+            navigateToWelcome = {
+                navController.navigate(WELCOME_ROUTE)
+            },
+            navigateToCrop = {
+                navController.navigate(CROP_ROUTE)
+            }
         )
     }
 
@@ -55,41 +65,12 @@ fun NavGraphBuilder.onboardNavGraph(
         route = CROP_ROUTE
     ) {
         SelectCropScreen(
-            navController = navController
         )
     }
 
     composable(
         route = WELCOME_ROUTE
     ) {
-        WelcomeScreen(
-            navController = navController
-        )
-    }
-
-    composable("ADDRESS_ROUTE") {
-//        LocationSearchScreen(
-//            navController = navController,
-//            initialFullRoadAddr = "",
-//            initialJibunAddr = "",
-//            onAddressSelected = { roadAddr, jibun ->
-//
-//            }
-//        )
-        InputAddressScreen(
-            modifier = Modifier,
-            navController = navController
-        )
-    }
-
-    composable("ADDRESS_FIND_ROUTE") {
-        LocationSearchWebViewScreen(
-            modifier = Modifier,
-            onAddressSelected = { fullRoadAddr, jibunAddr ->
-                navController.previousBackStackEntry?.savedStateHandle?.set("fullRoadAddr", fullRoadAddr)
-                navController.previousBackStackEntry?.savedStateHandle?.set("jibunAddr", jibunAddr)
-                navController.popBackStack()
-            }
-        )
+        WelcomeScreen()
     }
 }

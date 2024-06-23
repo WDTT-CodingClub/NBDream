@@ -6,13 +6,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.UserEntity
 import kr.co.domain.usecase.image.UploadImageUseCase
 import kr.co.domain.usecase.user.FetchUserUseCase
 import kr.co.domain.usecase.user.RegisterUserUseCase
-import kr.co.domain.usecase.user.SaveUserLocalUseCase
 import kr.co.domain.usecase.validate.ValidateNameUseCase
 import kr.co.ui.base.BaseViewModel
 import java.io.File
@@ -23,7 +21,6 @@ internal class MyPageProfileEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchUserUseCase: FetchUserUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
-    private val saveUserLocalUseCase: SaveUserLocalUseCase,
     private val uploadImageUseCase: UploadImageUseCase,
     private val validateNameUseCase: ValidateNameUseCase
 ) : BaseViewModel<MyPageProfileEditViewModel.State>(savedStateHandle) {
@@ -72,14 +69,6 @@ internal class MyPageProfileEditViewModel @Inject constructor(
     }.invokeOnCompletion {
         if (it == null) {
             viewModelScopeEH.launch {
-                saveUserLocalUseCase(
-                    UserEntity(
-                        name = currentState.name!!,
-                        profileImage = currentState.profileImageUrl,
-                        address = currentState.address
-                    )
-                )
-
             _complete.emit(Unit)
             }
         }

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import kr.co.onboard.R
 import kr.co.onboard.login.Logo
@@ -24,7 +25,7 @@ import kr.co.ui.widget.InputCompleteButton
 @Composable
 internal fun WelcomeScreen(
     modifier: Modifier = Modifier,
-    navController: NavController
+    viewModel: WelcomeViewModel = hiltViewModel(),
 ) {
     Scaffold(
         modifier = modifier.padding(Paddings.xlarge),
@@ -48,7 +49,7 @@ internal fun WelcomeScreen(
             }
             InputCompleteButton(
                 text = stringResource(id = R.string.feature_onboard_my_farm_next),
-                onNextClick = { navController.navigate(MAIN_ROUTE) }
+                onNextClick = viewModel::onClickNext
             )
         }
     }

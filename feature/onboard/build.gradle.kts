@@ -22,7 +22,6 @@ dependencies {
     api(libs.kakao.maps)
 
     implementation(projects.core.data)
-    implementation(projects.core.common)
     implementation(libs.kotlinx.serialization.json)
     Local()
 }
