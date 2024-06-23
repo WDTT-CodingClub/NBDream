@@ -3,7 +3,7 @@ package kr.co.remote.model.response.community
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class DeleteBulletinResponse(
+internal data class ApiResponseVoid(
     val code: Int?,
     val status: String?,
     val message: String?,
@@ -11,4 +11,4 @@ internal data class DeleteBulletinResponse(
 )
 
 
-internal fun DeleteBulletinResponse.convertToData() = this.code == 200
+internal fun ApiResponseVoid.convertToData() = this.code == 200
