@@ -83,4 +83,37 @@ internal class CommunityRepositoryImpl @Inject constructor(
         bulletinId = bulletinId,
     ).data?.convertToEntity()
 
+    override suspend fun postComment(
+        id: Long,
+        commentDetail: String,
+    ): Long {
+        val result = remote.postComment(
+            id = id,
+            commentDetail = commentDetail,
+        )
+        return result.data ?: -1
+    }
+
+    override suspend fun deleteComment(
+        id: Long,
+    ): String? {
+        val result = remote.deleteComment(
+            id = id,
+        )
+        return result.data
+    }
+
+    override suspend fun patchComment(
+        id: Long,
+        commentDetail: String,
+    ): String? {
+        val result = remote.patchComment(
+            id = id,
+            commentDetail = commentDetail,
+        )
+        return result.data
+    }
+
+    override suspend fun getMyComments() = remote.getMyComments().convertToEntities()
+
 }
