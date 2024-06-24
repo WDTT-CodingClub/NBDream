@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -56,7 +57,7 @@ internal fun CommunityRoute(
         navigateToNotification = navigateToNotification,
         navigateToBulletinDetail = navigateToBulletinDetail,
         onSearchInputChanged = viewModel::onSearchInputChanged,
-        onFreeCategoryClick = viewModel::onFreeCategoryClick,
+        onCategoryClick = viewModel::onCategoryClick,
     )
 }
 
@@ -69,13 +70,14 @@ internal fun CommunityScreen(
     navigateToNotification: () -> Unit = {},
     navigateToBulletinDetail: (Long) -> Unit = {},
     onSearchInputChanged: (String) -> Unit = {},
-    onFreeCategoryClick: () -> Unit = {},
+    onCategoryClick: (BulletinEntity.BulletinCategory) -> Unit = {},
 ) {
 //    var tempTextFieldValue by remember {
 //        mutableStateOf(TextFieldValue())
 //    }
 
     Scaffold(
+        modifier = modifier,
         floatingActionButton = {
             FloatingActionButton(onClick = navigateToWriting) {
                 Icon(
@@ -93,7 +95,7 @@ internal fun CommunityScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item {
-                CenterAlignedTopAppBar(title = { Text("감자 게시판") })
+                CenterAlignedTopAppBar(title = { Text("${state.currentBoard.koreanName} 게시판") })
                 // 나중에 알림버튼 추가
             }
             item {
@@ -116,7 +118,14 @@ internal fun CommunityScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround,
                     ) {
-                        TextButton(onClick = onFreeCategoryClick) {
+                        TextButton(
+                            onClick = {
+                                onCategoryClick(BulletinEntity.BulletinCategory.Free)
+                            },
+                            colors = if (state.currentCategory == BulletinEntity.BulletinCategory.Free) ButtonDefaults.textButtonColors(
+                                containerColor = Color.Yellow,
+                            ) else ButtonDefaults.textButtonColors(),
+                        ) {
                             Text("자유 주제")
                         }
                         // TODO: 디바이더에도 여백이 붙는데...
@@ -124,12 +133,30 @@ internal fun CommunityScreen(
                             thickness = 1.dp,
                             color = Color.Red,
                         )
-                        Text("질문")
+                        TextButton(
+                            onClick = {
+                                onCategoryClick(BulletinEntity.BulletinCategory.Qna)
+                            },
+                            colors = if (state.currentCategory == BulletinEntity.BulletinCategory.Qna) ButtonDefaults.textButtonColors(
+                                containerColor = Color.Yellow,
+                            ) else ButtonDefaults.textButtonColors(),
+                        ) {
+                            Text("질문")
+                        }
                         VerticalDivider(
                             thickness = 1.dp,
                             color = Color.Red,
                         )
-                        Text("병해충")
+                        TextButton(
+                            onClick = {
+                                onCategoryClick(BulletinEntity.BulletinCategory.Disease)
+                            },
+                            colors = if (state.currentCategory == BulletinEntity.BulletinCategory.Disease) ButtonDefaults.textButtonColors(
+                                containerColor = Color.Yellow,
+                            ) else ButtonDefaults.textButtonColors(),
+                        ) {
+                            Text("병해충")
+                        }
                     }
                 }
             }
@@ -202,30 +229,53 @@ internal fun CommunityScreen(
                         "사진들 $idx",
                         modifier = Modifier.height(240.dp),
                     )
-                    Row {
-                        Icon(
-                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_comment_24),
-                            contentDescription = "댓글 아이콘",
-                        )
-                        Text("${bulletin.comments.size}")
-                    }
                     if (bulletin.comments.isNotEmpty()) {
-                        // 여기에 넣어야하는데 일단 표시용으로 밖에.
+                        Row {
+//                        Icon(
+//                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_comment_24),
+//                            contentDescription = "댓글 아이콘",
+//                        )
+                            Text("댓글 ${bulletin.comments.size}개")
+                        }
+                        Row {
+                            Image(
+                                painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+                                contentDescription = "댓글 프사",
+                                modifier = Modifier
+                                    .background(
+                                        color = Color.Gray,
+                                        shape = CircleShape,
+                                    )
+                                    .padding(4.dp),
+                            )
+                            Text("댓글닉네임$idx")
+                        }
+                        Text("댓글 내용 $idx")
                     }
-                    Row {
-                        Image(
-                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-                            contentDescription = "댓글 프사",
-                            modifier = Modifier
-                                .background(
-                                    color = Color.Gray,
-                                    shape = CircleShape,
-                                )
-                                .padding(4.dp),
-                        )
-                        Text("댓글닉네임$idx")
+                    // TODO: 확인용, 나중에 지울 것.
+                    else {
+                        Row {
+//                        Icon(
+//                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_comment_24),
+//                            contentDescription = "댓글 아이콘",
+//                        )
+                            Text("댓글 ${880 + idx}개")
+                        }
+                        Row {
+                            Image(
+                                painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+                                contentDescription = "댓글 프사",
+                                modifier = Modifier
+                                    .background(
+                                        color = Color.Gray,
+                                        shape = CircleShape,
+                                    )
+                                    .padding(4.dp),
+                            )
+                            Text("댓글닉네임$idx")
+                        }
+                        Text("댓글 내용 $idx")
                     }
-                    Text("댓글 내용 $idx")
                 }
             }
         }

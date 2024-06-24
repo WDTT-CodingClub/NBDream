@@ -8,7 +8,6 @@ import kotlinx.coroutines.launch
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.type.CropType
 import kr.co.domain.repository.CommunityRepository
-import kr.co.domain.repository.ServerImageRepository
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
 import javax.inject.Inject
@@ -26,23 +25,18 @@ internal interface SharingData {
 @HiltViewModel
 internal class CommunityViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val serverImageRepository: ServerImageRepository,
     private val communityRepository: CommunityRepository,
 ) : BaseViewModel<CommunityViewModel.State>(savedStateHandle), CommunityScreenEvent, SharingData {
 
     override fun createInitialState(savedState: Parcelable?) = State()
 
     data class State(
-        // TODO: currentBoard 초기값? 혹은 들어올 때 받아서.
         val currentBoard: CropType = CropType.PEPPER,
-        // TODO: currentCategory 초기값? 혹은 들어올 때 받아서.
         val currentCategory: BulletinEntity.BulletinCategory = BulletinEntity.BulletinCategory.Free,
         val searchInput: String = "",
         val bulletinWritingInput: String = "",
         val bulletinEntities: List<BulletinEntity> = emptyList(),
         val isLoadDetailSuccessful: Boolean = false,
-//        val aa = 22,
-//        val aa = 22,
     ) : BaseViewModel.State
 
     override val getCurrentBoard: () -> CropType
@@ -50,21 +44,22 @@ internal class CommunityViewModel @Inject constructor(
     override val getCurrentCategory: () -> BulletinEntity.BulletinCategory
         get() = { state.value.currentCategory }
 
-    override fun onSearchInputChanged(input: String) {
-        updateState { copy(searchInput = input) }
-    }
+    override fun onSearchInputChanged(input: String) = updateState { copy(searchInput = input) }
 
-    override fun setBulletinEntities(entities: List<BulletinEntity>) {
+    override fun setBulletinEntities(entities: List<BulletinEntity>) =
         updateState { copy(bulletinEntities = entities) }
-    }
+
+    private fun setCurrentCategory(category: BulletinEntity.BulletinCategory) =
+        updateState { copy(currentCategory = category) }
 
 
-    fun onFreeCategoryClick() {
+    fun onCategoryClick(category: BulletinEntity.BulletinCategory) {
         viewModelScope.launch {
             try {
+                setCurrentCategory(category)
                 val bulletins = communityRepository.getBulletins(
                     keyword = null,
-                    bulletinCategory = BulletinEntity.BulletinCategory.Free,
+                    bulletinCategory = category,
                     crop = state.value.currentBoard,
                     lastBulletinId = null,
                 )
