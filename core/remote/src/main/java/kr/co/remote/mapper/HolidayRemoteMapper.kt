@@ -1,25 +1,18 @@
 package kr.co.remote.mapper
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kr.co.common.mapper.Mapper
 import kr.co.data.model.data.HolidayData
-import kr.co.remote.model.response.calendar.HolidayResponse
+import kr.co.remote.model.response.calendar.HolidayListResponse
 
 internal object HolidayRemoteMapper
-    : Mapper<HolidayResponse, Flow<HolidayData>> {
-    override fun convert(param: HolidayResponse): Flow<HolidayData> = flow {
-        with(param.response.body.items.item) {
-            map {
-                emit(
-                    HolidayData(
-                        date = it.date,
-                        isHoliday = it.isHoliday == "Y",
-                        type = it.dateType,
-                        name = it.dateName
-                    )
-                )
-            }
+    : Mapper<HolidayListResponse.HolidayResponse, HolidayData> {
+    override fun convert(param: HolidayListResponse.HolidayResponse): HolidayData =
+        with(param) {
+            HolidayData(
+                date = date,
+                isHoliday = isHoliday,
+                type = type,
+                name = name
+            )
         }
-    }
 }

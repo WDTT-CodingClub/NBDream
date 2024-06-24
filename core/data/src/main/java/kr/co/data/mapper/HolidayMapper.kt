@@ -3,27 +3,23 @@ package kr.co.data.mapper
 import kr.co.common.mapper.Mapper
 import kr.co.data.model.data.HolidayData
 import kr.co.domain.entity.HolidayEntity
-import kr.co.domain.entity.HolidayEntity.Type
+import kr.co.domain.entity.type.HolidayType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 internal object HolidayMapper :
-    Mapper<List<HolidayData>, List<HolidayEntity>> {
-    override fun convert(param: List<HolidayData>): List<HolidayEntity> =
-        param.map {
+    Mapper<HolidayData, HolidayEntity> {
+    override fun convert(param: HolidayData): HolidayEntity =
+        with(param) {
             HolidayEntity(
-                date = LocalDate.parse(it.date.toString(), DateTimeFormatter.ofPattern("yyyyMMdd")),
-                isHoliday = it.isHoliday,
-                type = mapHolidayType(it.type, it.isHoliday),
-                name = it.name,
+                date = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd")),
+                isHoliday = when (isHoliday) {
+                    "Y" -> true
+                    "N" -> false
+                    else -> throw IllegalArgumentException("Unknown isHoliday")
+                },
+                type = HolidayType.ofValue(type),
+                name = name,
             )
-        }
-
-    private fun mapHolidayType(dateType: String, isHoliday: Boolean): Type =
-        when (dateType) {
-            "01" -> if (isHoliday) Type.NATIONAL_HOLIDAY else Type.CONSTITUTION_DAY
-            "02" -> Type.ANNIVERSARY
-            "03" -> Type.SOLAR_TERM
-            else -> Type.ETC
         }
 }

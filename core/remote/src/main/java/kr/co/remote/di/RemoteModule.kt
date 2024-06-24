@@ -9,6 +9,7 @@ import kr.co.data.source.remote.AccountBookRemoteDataSource
 import kr.co.data.source.remote.AuthRemoteDataSource
 import kr.co.data.source.remote.CommunityRemoteDataSource
 import kr.co.data.source.remote.FarmWorkRemoteDataSource
+import kr.co.data.source.remote.HolidayRemoteDataSource
 import kr.co.data.source.remote.ServerImageRemoteDataSource
 import kr.co.data.source.remote.UserRemoteDataSource
 import kr.co.data.source.remote.WeatherRemoteDataSource
@@ -16,6 +17,7 @@ import kr.co.remote.AccountBookRemoteDataSourceImpl
 import kr.co.remote.AuthRemoteDataSourceImpl
 import kr.co.remote.CommunityRemoteDataSourceImpl
 import kr.co.remote.FarmWorkRemoteDataSourceImpl
+import kr.co.remote.HolidayRemoteDataSourceImpl
 import kr.co.remote.ServerImageRemoteDataSourceImpl
 import kr.co.remote.UserRemoteDataSourceImpl
 import kr.co.remote.WeatherRemoteDataSourceImpl
@@ -47,6 +49,12 @@ internal class RemoteModule {
     fun provideFarmWorkApi(
         client: HttpClient
     ): FarmWorkRemoteDataSource = FarmWorkRemoteDataSourceImpl(client)
+
+    @Singleton
+    @Provides
+    fun providesHolidayApi(
+        client: HttpClient
+    ): HolidayRemoteDataSource = HolidayRemoteDataSourceImpl(client)
 
     @Singleton
     @Provides

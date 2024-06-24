@@ -1,27 +1,13 @@
-package kr.co.main.calendar.model
+package kr.co.main.model.calendar
 
-import kr.co.domain.entity.HolidayEntity
+import kr.co.domain.entity.type.HolidayType
 import java.time.LocalDate
 
-data class HolidayModel(
+internal data class HolidayModel(
     val date: LocalDate,
     val isHoliday: Boolean,
-    val type: HolidayEntity.Type,
+    val type: HolidayType,
     val name: String,
-)
-
-internal fun HolidayEntity.convert() = HolidayModel(
-    date = date,
-    isHoliday = isHoliday,
-    type = type,
-    name = name
-)
-
-internal fun HolidayModel.convert() = HolidayEntity(
-    date = date,
-    isHoliday = isHoliday,
-    type = type,
-    name = name
 )
 
 internal fun filterAndSortHolidays(
