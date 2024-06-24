@@ -7,7 +7,8 @@ import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentRoute
 import kr.co.main.accountbook.main.AccountBookRoute
-import kr.co.main.accountbook.register.AccountBookCreateRoute
+import kr.co.main.accountbook.create.AccountBookCreateRoute
+import kr.co.main.accountbook.model.EntryType
 import kr.co.main.calendar.ui.calendarScreen.addDiaryScreen.AddDiaryRoute
 import kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarRoute
@@ -113,8 +114,7 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     AccountBookRoute(
                         navigationToRegister = {
-                            navController.navigate(ACCOUNT_BOOK_ROUTE)
-                        },
+                            navController.navigate("$ACCOUNT_BOOK_ROUTE?entryType=${EntryType.CREATE.name}")                        },
                         navigationToContent = { id ->
                             navController.navigate("$ACCOUNT_BOOK_CONTENT_ROUTE/$id")
                         }
@@ -219,10 +219,7 @@ fun NavGraphBuilder.mainNavGraph(
             AccountBookContentRoute(
                 popBackStack = navController::popBackStack,
                 navigationToUpdate = {
-                    navController.navigate("$ACCOUNT_BOOK_UPDATE_ROUTE/$id") {
-                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                        launchSingleTop = true
-                    }
+                    navController.navigate("$ACCOUNT_BOOK_UPDATE_ROUTE/$id?entryType=${EntryType.UPDATE.name}")
                 }
             )
         } else {
