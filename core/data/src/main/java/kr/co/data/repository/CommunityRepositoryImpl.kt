@@ -27,6 +27,32 @@ internal class CommunityRepositoryImpl @Inject constructor(
         return result.data ?: -1
     }
 
+    override suspend fun deleteBulletin(
+        id: Long,
+    ): Boolean = remote.deleteBulletin(
+        id = id,
+    )
+
+    override suspend fun putBulletin(
+        id: Long,
+        content: String,
+        crop: CropEntity.Name,
+        bulletinCategory: BulletinEntity.BulletinCategory,
+        imageUrls: List<String>,
+    ): Long = remote.putBulletin(
+        id = id,
+        content = content,
+        crop = crop.koreanName,
+        bulletinCategory = bulletinCategory.queryName,
+        imageUrls = imageUrls,
+    ).data ?: -1
+
+    override suspend fun bookmarkBulletin(
+        id: Long,
+    ): Boolean = remote.bookmarkBulletin(
+        id = id,
+    )
+
     override suspend fun getBulletins(
         keyword: String?,
         bulletinCategory: BulletinEntity.BulletinCategory,
@@ -39,10 +65,55 @@ internal class CommunityRepositoryImpl @Inject constructor(
         lastBulletinId = lastBulletinId,
     ).convertToEntities()
 
+    override suspend fun getMyBulletins(
+        lastBulletinId: Long?,
+    ): List<BulletinEntity> = remote.getMyBulletins(
+        lastBulletinId = lastBulletinId,
+    ).convertToEntities()
+
+    override suspend fun getBookmarks(
+        lastBulletinId: Long?,
+    ): List<BulletinEntity> = remote.getBookmarks(
+        lastBulletinId = lastBulletinId,
+    ).convertToEntities()
+
     override suspend fun getBulletinDetail(
         bulletinId: Long,
     ): BulletinEntity? = remote.getBulletinDetail(
         bulletinId = bulletinId,
     ).data?.convertToEntity()
+
+    override suspend fun postComment(
+        id: Long,
+        commentDetail: String,
+    ): Long {
+        val result = remote.postComment(
+            id = id,
+            commentDetail = commentDetail,
+        )
+        return result.data ?: -1
+    }
+
+    override suspend fun deleteComment(
+        id: Long,
+    ): String? {
+        val result = remote.deleteComment(
+            id = id,
+        )
+        return result.data
+    }
+
+    override suspend fun patchComment(
+        id: Long,
+        commentDetail: String,
+    ): String? {
+        val result = remote.patchComment(
+            id = id,
+            commentDetail = commentDetail,
+        )
+        return result.data
+    }
+
+    override suspend fun getMyComments() = remote.getMyComments().convertToEntities()
 
 }

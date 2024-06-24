@@ -59,31 +59,21 @@ enum class CropModel(
         nameId = R.string.feature_main_crop_name_tomato,
         color = CropColorModel.localColors.tomato,
         ranking = 10
-    )
-}
+    );
 
-internal fun CropEntity.convert() = when(name){
-    CropEntity.Name.PEPPER -> CropModel.PEPPER
-    CropEntity.Name.RICE -> CropModel.RICE
-    CropEntity.Name.POTATO -> CropModel.POTATO
-    CropEntity.Name.SWEET_POTATO -> CropModel.SWEET_POTATO
-    CropEntity.Name.APPLE -> CropModel.APPLE
-    CropEntity.Name.STRAWBERRY -> CropModel.STRAWBERRY
-    CropEntity.Name.GARLIC -> CropModel.GARLIC
-    CropEntity.Name.LETTUCE -> CropModel.LETTUCE
-    CropEntity.Name.NAPPA_CABBAGE -> CropModel.NAPPA_CABBAGE
-    CropEntity.Name.TOMATO -> CropModel.TOMATO
-}
-
-internal fun CropModel.convert() = when(this){
-    CropModel.PEPPER -> CropEntity(name = CropEntity.Name.PEPPER)
-    CropModel.RICE -> CropEntity(name = CropEntity.Name.RICE)
-    CropModel.POTATO -> CropEntity(name = CropEntity.Name.POTATO)
-    CropModel.SWEET_POTATO -> CropEntity(name = CropEntity.Name.SWEET_POTATO)
-    CropModel.APPLE -> CropEntity(name = CropEntity.Name.APPLE)
-    CropModel.STRAWBERRY -> CropEntity(name = CropEntity.Name.STRAWBERRY)
-    CropModel.GARLIC -> CropEntity(name = CropEntity.Name.GARLIC)
-    CropModel.LETTUCE -> CropEntity(name = CropEntity.Name.LETTUCE)
-    CropModel.NAPPA_CABBAGE -> CropEntity(name = CropEntity.Name.NAPPA_CABBAGE)
-    CropModel.TOMATO -> CropEntity(name = CropEntity.Name.TOMATO)
+    companion object{
+        fun getCropModel(@StringRes nameId: Int) = when(nameId){
+            PEPPER.nameId -> PEPPER
+            RICE.nameId -> RICE
+            POTATO.nameId -> POTATO
+            SWEET_POTATO.nameId -> SWEET_POTATO
+            APPLE.nameId -> APPLE
+            STRAWBERRY.nameId -> STRAWBERRY
+            GARLIC.nameId -> GARLIC
+            LETTUCE.nameId -> LETTUCE
+            NAPPA_CABBAGE.nameId -> NAPPA_CABBAGE
+            TOMATO.nameId -> TOMATO
+            else -> throw IllegalArgumentException("Unknown nameId")
+        }
+    }
 }

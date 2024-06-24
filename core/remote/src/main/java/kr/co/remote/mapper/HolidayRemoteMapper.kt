@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kr.co.common.mapper.Mapper
 import kr.co.data.model.data.HolidayData
-import kr.co.remote.model.response.HolidayResponse
+import kr.co.remote.model.response.calendar.HolidayResponse
 
 internal object HolidayRemoteMapper
     : Mapper<HolidayResponse, Flow<HolidayData>> {
