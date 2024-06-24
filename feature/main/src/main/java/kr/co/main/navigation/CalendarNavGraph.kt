@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui
+package kr.co.main.navigation
 
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
@@ -45,7 +45,7 @@ internal sealed class CalendarNavGraph {
         )
 
         override fun buildRoute(args: Any): String = with(args as List<*>) {
-            "${baseRoute}/${this[0] as Int}/${this[1] as Int}/${this[2] as Int}"
+            "$baseRoute/${this[0] as Int}/${this[1] as Int}/${this[2] as Int}"
         }
     }
 }
