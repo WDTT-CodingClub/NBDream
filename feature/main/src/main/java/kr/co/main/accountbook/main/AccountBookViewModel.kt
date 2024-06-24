@@ -4,9 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.domain.entity.AccountBookEntity
-import kr.co.domain.entity.SortOrder
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.ui.base.BaseViewModel
+import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -24,42 +24,62 @@ internal class AccountBookViewModel @Inject constructor(
 
     private fun fetchAccountBooks(lastContentsId: Long? = null) {
         loadingScope {
-            val (totalEntity, accountBooks) = repository.getAccountBooks(
+            val (totalEntity, newAccountBooks) = repository.getAccountBooks(
                 lastContentsId = lastContentsId,
                 category = currentState.category,
-                sort = currentState.sort,
+                sort = currentState.sort.name,
                 start = currentState.start,
                 end = currentState.end,
                 transactionType = currentState.transactionType?.name ?: ""
             )
+
+            val updatedAccountBooks = if (lastContentsId != null) {
+                currentState.accountBooks + newAccountBooks.map {
+                    State.AccountBook(
+                        id = it.id,
+                        title = it.title,
+                        day = it.day,
+                        month = it.month,
+                        dayName = it.dayName,
+                        category = it.category,
+                        transactionType = it.transactionType,
+                        amount = it.amount ?: 0,
+                        imageUrl = it.imageUrl
+                    )
+                }
+            } else {
+                newAccountBooks.map {
+                    State.AccountBook(
+                        id = it.id,
+                        title = it.title,
+                        day = it.day,
+                        month = it.month,
+                        dayName = it.dayName,
+                        category = it.category,
+                        transactionType = it.transactionType,
+                        amount = it.amount ?: 0,
+                        imageUrl = it.imageUrl
+                    )
+                }
+            }
+
             updateState {
                 copy(
-                    accountBooks = accountBooks.map {
-                        State.AccountBook(
-                            id = it.id,
-                            title = it.title,
-                            day = it.day,
-                            month = it.month,
-                            dayName = it.dayName,
-                            category = it.category,
-                            transactionType = it.transactionType,
-                            amount = it.amount ?: 0,
-                            imageUrl = it.imageUrl
-                        )
-                    },
+                    accountBooks = updatedAccountBooks,
                     totalCost = totalEntity.totalCost,
                     totalExpense = totalEntity.totalExpense,
                     totalRevenue = totalEntity.totalRevenue,
                     categories = totalEntity.categories,
+                    hasNext = totalEntity.hasNext
                 )
             }
         }
     }
 
-
     fun updatePage(lastContentsId: Long) {
         updateState { copy(lastContentsId = lastContentsId) }
         fetchAccountBooks(lastContentsId)
+        Timber.d("$lastContentsId")
     }
 
     fun updateCategory(newCategory: String) {
@@ -67,7 +87,7 @@ internal class AccountBookViewModel @Inject constructor(
         fetchAccountBooks()
     }
 
-    fun updateSortOrder(newSort: String) {
+    fun updateSortOrder(newSort: AccountBookEntity.SortOrder) {
         updateState { copy(sort = newSort) }
         fetchAccountBooks()
     }
@@ -87,7 +107,7 @@ internal class AccountBookViewModel @Inject constructor(
     data class State(
         val lastContentsId: Long? = null,
         val category: String = "",
-        val sort: String = SortOrder.EARLIEST.name.lowercase(),
+        val sort: AccountBookEntity.SortOrder = AccountBookEntity.SortOrder.EARLIEST,
         val start: String = LocalDate.now().withDayOfMonth(1).toString(),
         val end: String = LocalDate.now().toString(),
         val transactionType: AccountBookEntity.TransactionType? = null,
@@ -96,6 +116,7 @@ internal class AccountBookViewModel @Inject constructor(
         val totalExpense: Long? = null,
         val totalRevenue: Long? = null,
         val categories: List<String>? = null,
+        val hasNext: Boolean? = null
     ) : BaseViewModel.State {
         data class AccountBook(
             val id: Long,

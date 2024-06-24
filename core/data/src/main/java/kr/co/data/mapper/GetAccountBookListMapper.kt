@@ -6,7 +6,7 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.entity.AccountBookTotalEntity
 
 internal object GetAccountBookListMapper
-    :Mapper<AccountBookListData, Pair<AccountBookTotalEntity, List<AccountBookEntity>>> {
+    : Mapper<AccountBookListData, Pair<AccountBookTotalEntity, List<AccountBookEntity>>> {
     override fun convert(param: AccountBookListData) =
         with(param) {
             AccountBookTotalEntity(
@@ -32,8 +32,9 @@ internal object GetAccountBookListMapper
         }
 
     fun toCategory(category: String) =
-        AccountBookEntity.Category.entries.find { it.name == category } ?: AccountBookEntity.Category.OTHER
+        AccountBookEntity.Category.entries.find { it.name.lowercase() == category }
+            ?: AccountBookEntity.Category.OTHER
 
     fun toTransactionType(transactionType: String) =
-        AccountBookEntity.TransactionType.entries.find { it.name == transactionType }
+        AccountBookEntity.TransactionType.entries.find { it.name.lowercase() == transactionType }
 }

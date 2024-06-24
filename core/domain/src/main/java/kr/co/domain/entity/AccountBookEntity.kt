@@ -32,9 +32,9 @@ data class AccountBookEntity(
         REVENUE,
         EXPENSE
     }
-}
 
-enum class SortOrder {
-    EARLIEST,
-    OLDEST
+    enum class SortOrder {
+        EARLIEST,
+        OLDEST
+    }
 }

@@ -37,6 +37,7 @@ internal const val NOTIFICATION_ROUTE = "notificationRoute"
 
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
 internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
+internal const val ACCOUNT_BOOK_UPDATE_ROUTE = "accountBookUpdateRoute"
 
 internal data object CommunityRoute {
     const val WRITING_ROUTE = "community_writing_route"
@@ -195,7 +196,15 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = ACCOUNT_BOOK_ROUTE
     ) {
-        AccountBookRegisterRoute(
+        AccountBookCreateRoute(
+            popBackStack = navController::popBackStack
+        )
+    }
+
+    composable(
+        route = "$ACCOUNT_BOOK_UPDATE_ROUTE/{id}"
+    ) {
+        AccountBookCreateRoute(
             popBackStack = navController::popBackStack
         )
     }
@@ -209,7 +218,12 @@ fun NavGraphBuilder.mainNavGraph(
         if (id != null) {
             AccountBookContentRoute(
                 popBackStack = navController::popBackStack,
-                id = id
+                navigationToUpdate = {
+                    navController.navigate("$ACCOUNT_BOOK_UPDATE_ROUTE/$id") {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         } else {
             Timber.e("Invalid id")

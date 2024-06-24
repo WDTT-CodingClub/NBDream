@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import kr.co.domain.entity.AccountBookEntity
-import kr.co.main.accountbook.model.CategoryDisplayMapper
+import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.theme.colors
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -91,7 +91,7 @@ internal fun AccountBookCategoryBottomSheet(
                 color = Color.Black
             )
             AccountBookEntity.Category.entries.forEach { category ->
-                val categoryName = CategoryDisplayMapper.getDisplay(category)
+                val categoryName = category.getDisplay()
                 val backgroundColor =
                     if (category == selectedCategory) MaterialTheme.colors.primary else Color.Transparent
                 Text(
