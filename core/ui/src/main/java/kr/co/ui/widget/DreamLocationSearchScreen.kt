@@ -1,8 +1,7 @@
-package kr.co.onboard.mapview
+package kr.co.ui.widget
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -14,20 +13,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import timber.log.Timber
 
 @Composable
-fun LocationSearchWebViewScreen(
-    modifier: Modifier,
-    addressSelectionListener: AddressSelectionListener
+fun DreamLocationSearchScreen(
+    modifier: Modifier = Modifier,
+    onAddressSelected: (String, String) -> Unit
 ) {
     Scaffold(
-        topBar = {
-
-        }
+        topBar = {}
     ) { paddingValues ->
         Box(
             modifier = modifier.padding(paddingValues)
-        ){
+        ) {
             AndroidView(
                 factory = { context ->
                     WebView(context).apply {
@@ -39,31 +37,26 @@ fun LocationSearchWebViewScreen(
                             }
                         }
                         webChromeClient = WebChromeClient()
-                        addJavascriptInterface(WebAppInterface(addressSelectionListener), "Android")
+                        addJavascriptInterface(WebAppInterface(onAddressSelected), "Android")
                         loadUrl("https://seulseul-35d52.web.app")
                     }
                 },
-                modifier = modifier
-                    .fillMaxSize()
+                modifier = modifier.fillMaxSize()
             )
         }
     }
 }
 
-interface AddressSelectionListener {
-    fun onAddressSelected(fullRoadAddr: String, jibunAddr: String)
-}
-class WebAppInterface(private val listener: AddressSelectionListener) {
+class WebAppInterface(private val onAddressSelected: (String, String) -> Unit) {
     private val handler = Handler(Looper.getMainLooper())
 
     @JavascriptInterface
     fun processDATA(fullRoadAddr: String, jibunAddr: String) {
         handler.post {
             try {
-                Log.d("WebAppInterface", "fullRoadAddr: $fullRoadAddr, jibunAddr: $jibunAddr")
-                listener.onAddressSelected(fullRoadAddr, jibunAddr)
+                onAddressSelected(fullRoadAddr, jibunAddr)
             } catch (e: Exception) {
-                Log.e("WebAppInterface", "Error processing data", e)
+                Timber.tag("WebAppInterface").e(e, "Error processing data")
             }
         }
     }

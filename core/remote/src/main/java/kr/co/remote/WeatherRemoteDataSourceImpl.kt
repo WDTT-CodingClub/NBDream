@@ -6,6 +6,7 @@ import io.ktor.client.request.get
 import kr.co.data.model.data.WeatherForecastData
 import kr.co.data.source.remote.WeatherRemoteDataSource
 import kr.co.remote.mapper.WeatherRemoteMapper
+import kr.co.remote.model.Dto
 import kr.co.remote.model.response.GetWeatherForecastResponse
 import javax.inject.Inject
 
@@ -14,12 +15,12 @@ internal class WeatherRemoteDataSourceImpl @Inject constructor(
 ) : WeatherRemoteDataSource {
 
     companion object {
-        private const val WEATHER_URL = "api/auth/weather"
+        private const val WEATHER_URL = "api/weather"
     }
 
     override suspend fun get(): WeatherForecastData {
         return client.get(WEATHER_URL)
-            .body<GetWeatherForecastResponse>()
+            .body<Dto<GetWeatherForecastResponse>>().data
             .let(WeatherRemoteMapper::convert)
     }
 }

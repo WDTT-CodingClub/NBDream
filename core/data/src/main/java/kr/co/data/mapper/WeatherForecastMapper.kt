@@ -12,6 +12,9 @@ internal object WeatherForecastMapper
                 precipitation = precipitation,
                 probability = precipitationProbability,
                 temperature = temp,
+                day = day,
+                minTemperature = minTemp,
+                maxTemperature = maxTemp,
                 humidity = humidity,
                 windSpeed = windSpeed,
                 weather = items.map {

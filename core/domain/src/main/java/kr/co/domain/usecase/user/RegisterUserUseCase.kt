@@ -14,16 +14,20 @@ class RegisterUserUseCase @Inject constructor(
     override suspend fun build(params: UserEntity?) {
         checkNotNull(params)
 
-        return userRepository.fetchLocal().first().let {
+        userRepository.fetchLocal().first().let {
             it.copy(
-                name = params.name?: it.name,
-                address = params.address?: it.address,
-                profileImage = params.profileImage?: it.profileImage,
-                longitude = params.longitude?: it.longitude,
-                latitude = params.latitude?: it.latitude,
+                name = params.name,
+                address = params.address ?: it.address,
+                profileImage = params.profileImage ?: it.profileImage,
+                longitude = params.longitude ?: it.longitude,
+                latitude = params.latitude ?: it.latitude,
                 crops = params.crops.ifEmpty { it.crops }
-            ).let { user ->
+            )
+        }.also { user ->
+            runCatching {
                 userRepository.update(user)
+            }.onSuccess {
+                userRepository.save(user)
             }
         }
     }
