@@ -22,7 +22,7 @@ internal class FarmWorkRemoteDataSourceImpl @Inject constructor(
         }
             .body<Dto<FarmWorkListResponse>>()
             .let { farmWorkListResponseDto ->
-                farmWorkListResponseDto.data.farmWorkResponse.map {
+                farmWorkListResponseDto.data.farmWorkList.map {
                     FarmWorkRemoteMapper.convert(it)
                 }
             }

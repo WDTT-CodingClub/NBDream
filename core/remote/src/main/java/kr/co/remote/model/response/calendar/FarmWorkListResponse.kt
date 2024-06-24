@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class FarmWorkListResponse(
     @SerialName("farmWorkResDtoList")
-    val farmWorkResponse: List<FarmWorkResponse>
+    val farmWorkList: List<FarmWorkResponse>
 ){
     @Serializable
     data class FarmWorkResponse(
