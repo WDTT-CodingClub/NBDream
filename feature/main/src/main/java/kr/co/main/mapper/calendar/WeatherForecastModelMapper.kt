@@ -1,8 +1,8 @@
-package kr.co.main.calendar.mapper
+package kr.co.main.mapper.calendar
 
 import kr.co.common.mapper.BaseMapper
 import kr.co.domain.entity.WeatherForecastEntity
-import kr.co.main.calendar.model.WeatherForecastModel
+import kr.co.main.model.calendar.WeatherForecastModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

@@ -1,17 +1,12 @@
-package kr.co.main.calendar.model
+package kr.co.main.model.calendar
 
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.vector.ImageVector
-import kr.co.domain.entity.WeatherForecastEntity
 import kr.co.main.R
-import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Edit
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
-data class WeatherForecastModel(
+internal data class WeatherForecastModel(
     val date: LocalDate,
-    val sky:Sky,
+    val sky: Sky,
     val maxTemp: String,
     val minTemp: String,
     val precipitation: Int
