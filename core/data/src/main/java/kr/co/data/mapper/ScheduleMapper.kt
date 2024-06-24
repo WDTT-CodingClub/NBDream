@@ -2,8 +2,8 @@ package kr.co.data.mapper
 
 import kr.co.common.mapper.Mapper
 import kr.co.data.model.data.calendar.ScheduleData
-import kr.co.domain.entity.CropEntity
 import kr.co.domain.entity.ScheduleEntity
+import kr.co.domain.entity.type.ScheduleType
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -13,7 +13,7 @@ internal object ScheduleMapper
         with(param) {
             ScheduleEntity(
                 id = id,
-                category = category.toCategory(),
+                type = ScheduleType.ofValue(category),
                 title = title,
                 startDate = LocalDate.parse(startDate),
                 endDate = LocalDate.parse(startDate),
@@ -23,9 +23,3 @@ internal object ScheduleMapper
             )
         }
 }
-
-private fun String.toCategory(): ScheduleEntity.Category =
-    ScheduleEntity.Category.All.let {
-        if (this == it.koreanName) it
-        else ScheduleEntity.Category.Crop(CropEntity.getCropEntity(this))
-    }
