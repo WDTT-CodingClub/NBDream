@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kr.co.domain.usecase.calendar.GetFarmWorksUseCase
 import kr.co.domain.usecase.calendar.GetHolidaysUseCase
-import kr.co.main.calendar.mapper.CropModelMapper
-import kr.co.main.calendar.mapper.FarmWorkModelMapper
-import kr.co.main.calendar.model.CropModel
-import kr.co.main.calendar.model.FarmWorkModel
-import kr.co.main.calendar.model.HolidayModel
-import kr.co.main.calendar.model.ScheduleModel
-import kr.co.main.calendar.model.convert
+import kr.co.main.mapper.calendar.CropModelMapper
+import kr.co.main.mapper.calendar.FarmWorkModelMapper
+import kr.co.main.mapper.calendar.HolidayModelMapper
+import kr.co.main.model.calendar.CropModel
+import kr.co.main.model.calendar.FarmWorkModel
+import kr.co.main.model.calendar.HolidayModel
+import kr.co.main.model.calendar.ScheduleModel
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
 import java.time.LocalDate
@@ -71,7 +71,7 @@ internal class ScheduleTabViewModel @Inject constructor(
                 )
             ).collect { holidays ->
                 updateState {
-                    currentState.copy(holidays = holidays.map { it.convert() })
+                    currentState.copy(holidays = holidays.map { HolidayModelMapper.toRight(it) })
                 }
                 Timber.d("holidays: $holidays")
             }
@@ -79,7 +79,7 @@ internal class ScheduleTabViewModel @Inject constructor(
                 Timber.d("crop: $crop, call getFarmWork")
                 getFarmWork(
                     GetFarmWorksUseCase.Params(
-                        crop = CropModelMapper.toLeft(crop).name.koreanName,
+                        crop = CropModelMapper.toLeft(crop).type.koreanName,
                         month = month
                     )
                 ).let {

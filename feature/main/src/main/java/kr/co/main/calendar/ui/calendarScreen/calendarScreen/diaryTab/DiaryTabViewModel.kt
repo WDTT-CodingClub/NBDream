@@ -3,7 +3,7 @@ package kr.co.main.calendar.ui.calendarScreen.calendarScreen.diaryTab
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.model.calendar.DiaryModel
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import javax.inject.Inject

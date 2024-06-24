@@ -10,7 +10,7 @@ internal class FarmWorkRepositoryImpl @Inject constructor(
     private val remoteDataSource: FarmWorkRemoteDataSource,
 ) : FarmWorkRepository {
     override suspend fun getFarmWorks(crop: String, month: Int): List<FarmWorkEntity> =
-        remoteDataSource.fetch(crop, month).map {
+        remoteDataSource.fetchList(crop, month).map {
             FarmWorkMapper.convert(it)
         }
 }

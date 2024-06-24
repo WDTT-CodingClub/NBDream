@@ -2,8 +2,9 @@ package kr.co.data.mapper
 
 import kr.co.common.mapper.Mapper
 import kr.co.data.model.data.calendar.FarmWorkData
-import kr.co.domain.entity.CropEntity
 import kr.co.domain.entity.FarmWorkEntity
+import kr.co.domain.entity.type.FarmWorkType
+import kr.co.domain.entity.type.FarmWorkEraType
 
 internal object FarmWorkMapper
     : Mapper<FarmWorkData, FarmWorkEntity> {
@@ -11,13 +12,12 @@ internal object FarmWorkMapper
         with(param) {
             FarmWorkEntity(
                 id = id,
-                //crop = CropEntity.getCropEntity(crop),
                 startMonth = startMonth,
-                startEra = FarmWorkEntity.Era.getEra(startEra),
+                startEra = FarmWorkEraType.ofValue(startEra),
                 endMonth = endMonth,
-                endEra = FarmWorkEntity.Era.valueOf(endEra),
-                category = FarmWorkEntity.Category.getCategory(farmWorkCategory),
+                endEra = FarmWorkEraType.ofValue(endEra),
+                type = FarmWorkType.ofValue(farmWorkCategory),
                 farmWork = farmWork
-                )
+            )
         }
 }

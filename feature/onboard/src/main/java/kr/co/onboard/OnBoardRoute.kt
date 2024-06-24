@@ -7,9 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import kotlinx.coroutines.flow.collect
-import kr.co.domain.model.AuthType
+import kr.co.domain.entity.type.AuthType
 import kr.co.onboard.login.Login
 import kr.co.ui.ext.scaffoldBackground
 
@@ -20,14 +18,14 @@ internal fun OnBoardRoute(
 ) {
 
     LaunchedEffect(Unit) {
-        viewModel.showAddressScreen.collect{
+        viewModel.showAddressScreen.collect {
             navigateToAddress()
         }
     }
 
-   OnBoardScreen(
-       onSocialLoginClick = viewModel::onSocialLoginClick,
-   )
+    OnBoardScreen(
+        onSocialLoginClick = viewModel::onSocialLoginClick,
+    )
 }
 
 @Composable

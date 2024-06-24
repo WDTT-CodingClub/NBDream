@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.CropEntity
+import kr.co.domain.entity.type.CropType
 import kr.co.nbdream.core.ui.R
 import kr.co.onboard.crop.model.CropItem
 import javax.inject.Inject
@@ -23,16 +24,16 @@ class SelectCropViewModel @Inject constructor(): ViewModel() {
     private fun loadCrops() {
         viewModelScope.launch {
             _crops.value = listOf(
-                CropItem(CropEntity.Name.PEPPER, R.drawable.img_logo),
-                CropItem(CropEntity.Name.RICE, R.drawable.img_logo),
-                CropItem(CropEntity.Name.POTATO, R.drawable.img_logo),
-                CropItem(CropEntity.Name.SWEET_POTATO, R.drawable.img_logo),
-                CropItem(CropEntity.Name.APPLE, R.drawable.img_logo),
-                CropItem(CropEntity.Name.STRAWBERRY, R.drawable.img_logo),
-                CropItem(CropEntity.Name.GARLIC, R.drawable.img_logo),
-                CropItem(CropEntity.Name.LETTUCE, R.drawable.img_logo),
-                CropItem(CropEntity.Name.NAPPA_CABBAGE, R.drawable.img_logo),
-                CropItem(CropEntity.Name.TOMATO, R.drawable.img_logo)
+                CropItem(CropType.PEPPER, R.drawable.img_logo),
+                CropItem(CropType.RICE, R.drawable.img_logo),
+                CropItem(CropType.POTATO, R.drawable.img_logo),
+                CropItem(CropType.SWEET_POTATO, R.drawable.img_logo),
+                CropItem(CropType.APPLE, R.drawable.img_logo),
+                CropItem(CropType.STRAWBERRY, R.drawable.img_logo),
+                CropItem(CropType.GARLIC, R.drawable.img_logo),
+                CropItem(CropType.LETTUCE, R.drawable.img_logo),
+                CropItem(CropType.NAPPA_CABBAGE, R.drawable.img_logo),
+                CropItem(CropType.TOMATO, R.drawable.img_logo)
             )
         }
     }

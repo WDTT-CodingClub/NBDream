@@ -31,11 +31,5 @@ private fun SearchDiaryScreen(
     Surface(
         modifier = modifier
     ) {
-        Column {
-            Text("SearchDiaryScreen")
-            Text("crop: ${state.value.calendarCrop?.name ?: null}")
-            Text("year: ${state.value.searchDateRange.start.year}")
-            Text("month: ${state.value.searchDateRange.start.monthValue}")
-        }
     }
 }

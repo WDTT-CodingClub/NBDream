@@ -16,7 +16,7 @@ class GetFarmWorksUseCase @Inject constructor(
     )
 
     override suspend fun build(params: Params?): List<FarmWorkEntity> {
-        if (params == null) throw IllegalArgumentException("params can't be null")
+        checkNotNull(params)
         return repository.getFarmWorks(params.crop, params.month)
     }
 }

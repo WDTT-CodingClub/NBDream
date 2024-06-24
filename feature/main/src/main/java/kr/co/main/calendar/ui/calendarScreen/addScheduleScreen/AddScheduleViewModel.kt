@@ -3,8 +3,9 @@ package kr.co.main.calendar.ui.calendarScreen.addScheduleScreen
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kr.co.main.calendar.model.CropModel
-import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.model.calendar.CropModel
+import kr.co.main.model.calendar.type.CropModelType
+import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -14,7 +15,7 @@ internal interface AddScheduleScreenEvent {
     fun onBackClick()
     fun onPostClick()
 
-    fun onCategoryInput(category: ScheduleModel.Category)
+    fun onTypeInput(type: ScheduleModelType)
     fun onTitleInput(title: String)
 
     fun onStartDateInput(startDate: LocalDate)
@@ -35,7 +36,7 @@ internal class AddScheduleViewModel @Inject constructor(
 
     data class AddScheduleScreenState(
         val calendarCrop: CropModel? = null,
-        val scheduleCategory: ScheduleModel.Category = ScheduleModel.Category.All
+        val scheduleType: ScheduleModelType = ScheduleModelType.All
     ) : State {
         override fun toParcelable(): Parcelable? {
             // TODO ("serialize")
@@ -52,7 +53,7 @@ internal class AddScheduleViewModel @Inject constructor(
     init {
         savedStateHandle.get<Int>("cropNameId")?.let { cropNameId ->
             updateState {
-                copy(calendarCrop = CropModel.getCropModel(cropNameId))
+                copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
             }
         }
     }
@@ -65,7 +66,7 @@ internal class AddScheduleViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun onCategoryInput(category: ScheduleModel.Category) {
+    override fun onTypeInput(category: ScheduleModelType) {
         TODO("Not yet implemented")
     }
 

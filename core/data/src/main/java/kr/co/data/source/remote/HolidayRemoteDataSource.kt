@@ -4,5 +4,5 @@ import kotlinx.coroutines.flow.Flow
 import kr.co.data.model.data.HolidayData
 
 interface HolidayRemoteDataSource {
-    suspend fun get(year: Int, month: Int): Flow<List<HolidayData>>
+    suspend fun fetchList(year: String, month: String): Flow<List<HolidayData>>
 }

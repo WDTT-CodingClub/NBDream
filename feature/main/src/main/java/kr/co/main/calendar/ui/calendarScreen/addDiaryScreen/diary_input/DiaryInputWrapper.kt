@@ -9,8 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import kr.co.main.calendar.adddiary.diaryinput.DiaryWorkInput
-import kr.co.main.calendar.model.DiaryModel
-import kr.co.main.calendar.model.WeatherForecastModel
+import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.model.calendar.WeatherForecastModel
+import kr.co.main.model.calendar.type.WorkDescriptionModelType
 import kr.co.ui.theme.typo
 import java.time.LocalDate
 
@@ -36,8 +37,8 @@ internal sealed class DiaryInputContent(
     data class WorkInputContent(
         @StringRes override val headerId: Int,
         val workDescriptions: List<DiaryModel.WorkDescriptionModel>,
-        val onAddWorkDescription: (DiaryModel.WorkDescriptionModel.TypeId, String) -> Unit,
-        val onDeleteDescription: (String) -> Unit
+        val onAddWorkDescription: (WorkDescriptionModelType, String) -> Unit,
+        val onDeleteDescription: (Int) -> Unit
     ) : DiaryInputContent()
 
     data class ImageInputContent(

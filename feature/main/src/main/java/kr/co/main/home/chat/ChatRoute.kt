@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.domain.entity.CropEntity
+import kr.co.domain.entity.type.CropType
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
@@ -343,7 +344,7 @@ private fun BalloonTail(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CropSelector(
-    onClick: (CropEntity.Name) -> Unit = {},
+    onClick: (CropType) -> Unit = {},
 ) {
     FlowRow(
         modifier = Modifier
@@ -351,7 +352,7 @@ private fun CropSelector(
         horizontalArrangement = Arrangement.Center,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        CropEntity.Name.entries.forEach {
+        CropType.entries.forEach {
             Text(
                 modifier = Modifier
                     .background(
