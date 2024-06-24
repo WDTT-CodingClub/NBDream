@@ -44,7 +44,7 @@ import kr.co.ui.theme.NBDreamTheme
 internal fun CommunityRoute(
     navigateToWriting: () -> Unit,
     navigateToNotification: () -> Unit,
-    navigateToBulletinDetail: () -> Unit,
+    navigateToBulletinDetail: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {
@@ -57,7 +57,6 @@ internal fun CommunityRoute(
         navigateToBulletinDetail = navigateToBulletinDetail,
         onSearchInputChanged = viewModel::onSearchInputChanged,
         onFreeCategoryClick = viewModel::onFreeCategoryClick,
-        onBulletinClick = viewModel::onBulletinClick,
     )
 }
 
@@ -68,10 +67,9 @@ internal fun CommunityScreen(
     state: CommunityViewModel.State = CommunityViewModel.State(),
     navigateToWriting: () -> Unit = {},
     navigateToNotification: () -> Unit = {},
-    navigateToBulletinDetail: () -> Unit = {},
+    navigateToBulletinDetail: (Long) -> Unit = {},
     onSearchInputChanged: (String) -> Unit = {},
     onFreeCategoryClick: () -> Unit = {},
-    onBulletinClick: (Long) -> Unit = {},
 ) {
 //    var tempTextFieldValue by remember {
 //        mutableStateOf(TextFieldValue())
@@ -164,8 +162,7 @@ internal fun CommunityScreen(
                         .fillMaxWidth()
                         .padding(8.dp)
                         .clickable {
-                            onBulletinClick(bulletin.bulletinId)
-                            navigateToBulletinDetail()
+                            navigateToBulletinDetail(bulletin.bulletinId)
                         },
                     colors = CardDefaults.cardColors(),
                     elevation = CardDefaults.elevatedCardElevation(

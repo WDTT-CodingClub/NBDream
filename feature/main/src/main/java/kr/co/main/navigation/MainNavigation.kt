@@ -1,21 +1,24 @@
 package kr.co.main.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentRoute
-import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.create.AccountBookCreateRoute
+import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.model.EntryType
 import kr.co.main.calendar.screen.addDiaryScreen.AddDiaryRoute
 import kr.co.main.calendar.screen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.screen.calendarScreen.CalendarRoute
 import kr.co.main.calendar.screen.searchDiaryScreen.SearchDiaryRoute
-import kr.co.main.community.BulletinDetailRoute
-import kr.co.main.community.BulletinWritingRoute
 import kr.co.main.community.CommunityRoute
+import kr.co.main.community.CommunityViewModel
+import kr.co.main.community.SharingData
+import kr.co.main.community.detail.BulletinDetailRoute
+import kr.co.main.community.writing.BulletinWritingRoute
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
@@ -114,7 +117,8 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     AccountBookRoute(
                         navigationToRegister = {
-                            navController.navigate("$ACCOUNT_BOOK_ROUTE?entryType=${EntryType.CREATE.name}")                        },
+                            navController.navigate("$ACCOUNT_BOOK_ROUTE?entryType=${EntryType.CREATE.name}")
+                        },
                         navigationToContent = { id ->
                             navController.navigate("$ACCOUNT_BOOK_CONTENT_ROUTE/$id")
                         }
@@ -127,8 +131,8 @@ fun NavGraphBuilder.mainNavGraph(
                     CommunityRoute(
                         navigateToWriting = { navController.navigate(CommunityRoute.WRITING_ROUTE) },
                         navigateToNotification = {},
-                        navigateToBulletinDetail = {
-                            navController.navigate(CommunityRoute.BULLETIN_DETAIL_ROUTE)
+                        navigateToBulletinDetail = { id ->
+                            navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$id")
                         },
                     )
                 }
@@ -236,13 +240,25 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = CommunityRoute.WRITING_ROUTE
     ) {
-        BulletinWritingRoute(popBackStack = navController::popBackStack)
+        BulletinWritingRoute(
+            popBackStack = navController::popBackStack,
+            sharingData = hiltViewModel<CommunityViewModel>(it) as SharingData,
+        )
     }
 
     composable(
-        route = CommunityRoute.BULLETIN_DETAIL_ROUTE
-    ) {
-        BulletinDetailRoute(popBackStack = navController::popBackStack)
+        route = "${CommunityRoute.BULLETIN_DETAIL_ROUTE}/{id}"
+    ) { backStackEntry ->
+        val idString = backStackEntry.arguments?.getString("id")
+        val id = idString?.toLongOrNull()
+        if (id != null) {
+            BulletinDetailRoute(
+                popBackStack = navController::popBackStack,
+                id = id,
+            )
+        } else {
+            Timber.e("Invalid id")
+        }
     }
 
     composable(

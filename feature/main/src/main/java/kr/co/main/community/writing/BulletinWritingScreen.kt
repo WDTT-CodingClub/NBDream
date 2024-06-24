@@ -1,4 +1,4 @@
-package kr.co.main.community
+package kr.co.main.community.writing
 
 import android.content.Context
 import android.net.Uri
@@ -33,6 +33,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kr.co.main.community.SharingData
 import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.theme.NBDreamTheme
@@ -55,9 +57,13 @@ import java.io.File
 @Composable
 internal fun BulletinWritingRoute(
     popBackStack: () -> Unit,
+    sharingData: SharingData,
     modifier: Modifier = Modifier,
-    viewModel: CommunityViewModel = hiltViewModel(),
+    viewModel: BulletinWritingViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(key1 = sharingData) {
+        viewModel.setSharingData(sharingData)
+    }
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     BulletinWritingScreen(
@@ -76,7 +82,7 @@ internal fun BulletinWritingRoute(
 @Composable
 internal fun BulletinWritingScreen(
     modifier: Modifier = Modifier,
-    state: CommunityViewModel.State = CommunityViewModel.State(),
+    state: BulletinWritingViewModel.State = BulletinWritingViewModel.State(),
     context: Context = LocalContext.current,
     popBackStack: () -> Unit = {},
     onAddImagesClick: (uris: List<Uri>, (Uri) -> File) -> Unit = { _, _ -> },
@@ -108,7 +114,7 @@ internal fun BulletinWritingScreen(
                     )
                 }
                 Text(
-                    "감자 글쓰기",
+                    "${state.currentBoard.koreanName} 글쓰기",
                     modifier = Modifier.weight(1f),
                 )
                 TextButton(onClick = {

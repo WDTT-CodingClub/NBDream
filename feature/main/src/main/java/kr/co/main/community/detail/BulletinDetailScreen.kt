@@ -1,4 +1,4 @@
-package kr.co.main.community
+package kr.co.main.community.detail
 
 import android.icu.text.DecimalFormat
 import androidx.compose.foundation.Image
@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,14 +38,19 @@ import timber.log.Timber
 @Composable
 internal fun BulletinDetailRoute(
     popBackStack: () -> Unit,
+    id: Long,
     modifier: Modifier = Modifier,
-    viewModel: CommunityViewModel = hiltViewModel(),
+    viewModel: BulletinDetailViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(key1 = id) {
+        viewModel.loadBulletin(id)
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
     BulletinDetailScreen(
         modifier = modifier,
         state = state,
         popBackStack = popBackStack,
+        id = id,
         onCommentWritingInput = viewModel::onCommentWritingInput,
     )
 }
@@ -52,11 +58,12 @@ internal fun BulletinDetailRoute(
 @Composable
 internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
-    state: CommunityViewModel.State = CommunityViewModel.State(),
+    state: BulletinDetailViewModel.State = BulletinDetailViewModel.State(),
     popBackStack: () -> Unit = {},
+    id: Long = 0L,
     onCommentWritingInput: (String) -> Unit = {},
 ) {
-    Timber.d("currentDetailBulletinId: ${state.currentDetailBulletinId}")
+//    Timber.d("currentDetailBulletinId: ${state.currentDetailBulletinId}")
     Timber.d("isLoadDetailSuccessful: ${state.isLoadDetailSuccessful}")
     if (!state.isLoadDetailSuccessful) {
         NoBulletinScreen(
