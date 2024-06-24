@@ -1,5 +1,7 @@
 package kr.co.domain.entity
 
+import kr.co.domain.entity.type.CropType
+
 data class BulletinEntity(
     val authorId: Long,
     val bulletinId: Long,
@@ -20,7 +22,7 @@ data class BulletinEntity(
             nickname = "nickname${idx}",
             profileImageUrl = "https://profileImageUrl.com/${idx}",
             content = "content${idx}",
-            crop = CropEntity(CropEntity.Name.entries[(idx) % CropEntity.Name.entries.size]),
+            crop = CropEntity(CropType.entries[(idx) % CropType.entries.size]),
             imageUrls = emptyList(),
             bulletinCategory = BulletinCategory.entries[(idx) % BulletinCategory.entries.size],
             createdTime = "createdTime${idx}",

@@ -4,7 +4,7 @@ import kr.co.data.model.data.community.convertToEntities
 import kr.co.data.model.data.community.convertToEntity
 import kr.co.data.source.remote.CommunityRemoteDataSource
 import kr.co.domain.entity.BulletinEntity
-import kr.co.domain.entity.CropEntity
+import kr.co.domain.entity.type.CropType
 import kr.co.domain.repository.CommunityRepository
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ internal class CommunityRepositoryImpl @Inject constructor(
 
     override suspend fun postBulletin(
         content: String,
-        crop: CropEntity.Name,
+        crop: CropType,
         bulletinCategory: BulletinEntity.BulletinCategory,
         imageUrls: List<String>,
     ): Long {
@@ -30,7 +30,7 @@ internal class CommunityRepositoryImpl @Inject constructor(
     override suspend fun getBulletins(
         keyword: String?,
         bulletinCategory: BulletinEntity.BulletinCategory,
-        crop: CropEntity.Name,
+        crop: CropType,
         lastBulletinId: Long?,
     ): List<BulletinEntity> = remote.getBulletins(
         keyword = keyword,

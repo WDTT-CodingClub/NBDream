@@ -2,6 +2,7 @@ package kr.co.data.model.data.community
 
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.CropEntity
+import kr.co.domain.entity.type.CropType
 
 data class BulletinResData(
     val authorId: Long? = null,
@@ -48,9 +49,10 @@ internal fun BulletinResData.convertToEntity(): BulletinEntity? {
 }
 
 private fun String.toCropEntity(): CropEntity {
-    for (name in CropEntity.Name.entries)
-        if (this == name.koreanName) return CropEntity(name)
-    return CropEntity(CropEntity.Name.PEPPER)
+//    for (type in CropType.entries)
+//        if (this == type.koreanName) return CropEntity(type)
+//    return CropEntity(CropType.PEPPER)
+    return CropEntity(CropType.ofValue(this))
 }
 
 private fun String.toBulletinCategory(): BulletinEntity.BulletinCategory {
