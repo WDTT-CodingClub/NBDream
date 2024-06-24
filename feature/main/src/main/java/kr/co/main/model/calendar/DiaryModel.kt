@@ -5,10 +5,9 @@ import java.time.LocalDate
 
 internal data class DiaryModel(
     val id: Int,
-    val crop: CropModel,
-    val registerDate: LocalDate,
+    val date: LocalDate,
     val holidays: List<HolidayModel> = emptyList(),
-    val weatherForecast: WeatherForecastModel,
+    val weatherInfo: String,
     val workLaborer: Int = 0,
     val workHours: Int = 0,
     val workArea: Int = 0,

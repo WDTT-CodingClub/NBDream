@@ -9,10 +9,10 @@ import kr.co.main.accountbook.content.AccountBookContentRoute
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.create.AccountBookCreateRoute
 import kr.co.main.accountbook.model.EntryType
-import kr.co.main.calendar.ui.calendarScreen.addDiaryScreen.AddDiaryRoute
-import kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.AddScheduleRoute
-import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarRoute
-import kr.co.main.calendar.ui.calendarScreen.searchDiaryScreen.SearchDiaryRoute
+import kr.co.main.calendar.screen.addDiaryScreen.AddDiaryRoute
+import kr.co.main.calendar.screen.addScheduleScreen.AddScheduleRoute
+import kr.co.main.calendar.screen.calendarScreen.CalendarRoute
+import kr.co.main.calendar.screen.searchDiaryScreen.SearchDiaryRoute
 import kr.co.main.community.BulletinDetailRoute
 import kr.co.main.community.BulletinWritingRoute
 import kr.co.main.community.CommunityRoute

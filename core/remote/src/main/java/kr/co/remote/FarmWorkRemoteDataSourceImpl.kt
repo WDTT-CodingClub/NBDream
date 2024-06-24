@@ -21,11 +21,10 @@ internal class FarmWorkRemoteDataSourceImpl @Inject constructor(
             parameter("month", month)
         }
             .body<Dto<FarmWorkListResponse>>()
-            .let { farmWorkListResponseDto ->
-                farmWorkListResponseDto.data.farmWorkList.map {
-                    FarmWorkRemoteMapper.convert(it)
-                }
+            .data.farmWorkList.map {
+                FarmWorkRemoteMapper.convert(it)
             }
+
 
     companion object {
         private const val FARM_WORK = "/api/calendar/farm-work"
