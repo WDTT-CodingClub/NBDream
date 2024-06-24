@@ -1,10 +1,10 @@
-package kr.co.remote.model.response.community
+package kr.co.remote.model.response
 
 import kotlinx.serialization.Serializable
-import kr.co.data.model.data.community.PostBulletinResult
+import kr.co.data.model.data.community.ApiResponseLongData
 
 @Serializable
-internal data class PostBulletinResponse(
+internal data class ApiResponseLong(
     val code: Int?,
     val status: String?,
     val message: String?,
@@ -12,7 +12,7 @@ internal data class PostBulletinResponse(
 )
 
 
-internal fun PostBulletinResponse.convertToResult() = PostBulletinResult(
+internal fun ApiResponseLong.convertToData() = ApiResponseLongData(
     code = code,
     status = status,
     message = message,
