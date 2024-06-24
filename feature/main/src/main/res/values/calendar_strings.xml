@@ -1,29 +1,10 @@
 <resources>
-    <!--    캘린더 화면 탭 이름    -->
+<!--    calendar screen-->
     <string name="feature_main_calendar_tab_title_schedule">일정</string>
     <string name="feature_main_calendar_tab_title_diary">영농일지</string>
 
-
-    <!--    캘린더 제목    -->
-    <string name="feature_main_calendar_title">%s 캘린더</string>
-    <string name="feature_main_calendar_no_title">재배 작물을 추가해 주세요</string>
     <string name="feature_main_calendar_year_month">%d년 %d월</string>
 
-
-    <!--    작물 이름    -->
-    <string name="feature_main_crop_name_pepper">고추</string>
-    <string name="feature_main_crop_name_rice">벼</string>
-    <string name="feature_main_crop_name_potato">감자</string>
-    <string name="feature_main_crop_name_sweet_potato">고구마</string>
-    <string name="feature_main_crop_name_apple">사과</string>
-    <string name="feature_main_crop_name_strawberry">딸기</string>
-    <string name="feature_main_crop_name_garlic">마늘</string>
-    <string name="feature_main_crop_name_lettuce">상추</string>
-    <string name="feature_main_crop_name_nappa_cabbage">배추</string>
-    <string name="feature_main_crop_name_tomato">토마토</string>
-
-    <!--    일정 캘린더  -->
-    <string name="feature_main_calendar_category_all">전체</string>
     <string name="feature_main_calendar_day_of_week_sun">일</string>
     <string name="feature_main_calendar_day_of_week_mon">월</string>
     <string name="feature_main_calendar_day_of_week_tue">화</string>
@@ -32,57 +13,20 @@
     <string name="feature_main_calendar_day_of_week_fri">금</string>
     <string name="feature_main_calendar_day_of_week_sat">토</string>
 
-    <!--    농작업일정    -->
-    <string name="feature_main_calendar_farm_work_era_early">상순</string>
-    <string name="feature_main_calendar_farm_work_era_mid">중순</string>
-    <string name="feature_main_calendar_farm_work_era_late">하순</string>
+<!-- top app bar-->
+    <string name="feature_main_calendar_top_app_bar_add_schedule">일정 추가</string>
+    <string name="feature_main_calendar_top_app_bar_add_diary">영농일지 추가</string>
+    <string name="feature_main_calendar_top_app_bar_search_diary">영농일지 검색</string>
+    <string name="feature_main_calendar_top_app_bar_post">등록</string>
+    <string name="feature_main_calendar_top_app_bar_edit">수정</string>
 
-    <string name="feature_main_calendar_farm_work_growth">주요 농작업 일정</string>
-    <string name="feature_main_calendar_farm_work_climate">기상 재해 및 문제점</string>
-    <string name="feature_main_calendar_farm_work_pest">병해충 방제</string>"
-
-    <!--    영농일지    -->
-    <string name="feature_main_calendar_diary_overview">%d명\/%d시간\/%d평</string>
-
-    <!--    영농일지 하늘   -->
-    <string name="feature_main_calendar_sky_sunny">맑음</string>
-    <string name="feature_main_calendar_sky_partly_cloudy">구름 많음</string>
-    <string name="feature_main_calendar_sky_mostly_cloudy">흐림</string>
-
-    <!--    영농일지 작업 분류    -->
-    <string name="feature_main_calendar_work_type_seed_prep">종자 예조 및 소독</string>
-    <string name="feature_main_calendar_work_type_seedbed_prep">묘상 준비 및 설치</string>
-    <string name="feature_main_calendar_work_type_sow">파종</string>
-    <string name="feature_main_calendar_work_type_graft">접목</string>
-    <string name="feature_main_calendar_work_type_bury_seedling">가식</string>
-    <string name="feature_main_calendar_work_type_seedbed_manage">묘판 관리</string>
-    <string name="feature_main_calendar_work_type_stop_tillage">경운 정지</string>
-    <string name="feature_main_calendar_work_type_initial_fertil">퇴비/기비 살포</string>
-    <string name="feature_main_calendar_work_type_plant_seedling">정식</string>
-    <string name="feature_main_calendar_work_type_stilts_nets">지주, 네트 세우기</string>
-    <string name="feature_main_calendar_work_type_additional_fertil">추비 살포</string>
-    <string name="feature_main_calendar_work_type_pest_control">병충해 방제</string>
-    <string name="feature_main_calendar_work_type_weed">제초</string>
-    <string name="feature_main_calendar_work_type_soil_cover">비닐 및 흙 덮기</string>
-    <string name="feature_main_calendar_work_type_trimming">적심 적아</string>
-    <string name="feature_main_calendar_work_type_water_manage">물 관리</string>
-    <string name="feature_main_calendar_work_type_house_manage">하우스 설치 및 관리</string>
-    <string name="feature_main_calendar_work_type_temp_manage">온도 관리</string>
-    <string name="feature_main_calendar_work_type_harvest">수확</string>
-    <string name="feature_main_calendar_work_type_pack">선별 및 포장</string>
-    <string name="feature_main_calendar_work_type_ship">운반 및 저장</string>
-    <string name="feature_main_calendar_work_type_etc">기타</string>
-
-    <!--   영농일지 추가 화면 & 일정 추가 화면 상단 앱바  -->
-    <string name="feature_main_calendar_add_diary_title">영농일지 추가</string>
-    <string name="feature_main_calendar_add_schedule_title">일정 추가</string>
-    <string name="feature_main_calendar_post">등록</string>
-
-    <!--    영농일지 추가 화면    -->
+<!--    add diary screen-->
     <string name="feature_main_calendar_add_diary_header_date">일자</string>
     <string name="feature_main_calendar_add_diary_header_work">작업</string>
     <string name="feature_main_calendar_add_diary_header_image">사진</string>
     <string name="feature_main_calendar_add_diary_header_memo">메모</string>
+
+    <string name="feature_main_calendar_diary_overview">%d명\/%d시간\/%d평</string>
 
     <string name="feature_main_calendar_add_diary_work_laborer">작업 인원</string>
     <string name="feature_main_calendar_add_diary_work_hour">작업 시간</string>
@@ -93,24 +37,21 @@
     <string name="feature_main_calendar_add_diary_work_area_digit">평</string>
 
     <string name="feature_main_calendar_add_diary_input_work_category">분류 선택</string>
-    <string name="feature_main_calendar_add_diary_input_work_description">작업 내용을 입력해 주세요.</string>
-    <string name="feature_main_calendar_add_diary_add">추가</string>
-    <string name="feature_main_calendar_add_diary_input_image">사진 추가</string>
-    <string name="feature_main_calendar_add_diary_input_memo">메모를 입력해 주세요.</string>
+    <string name="feature_main_calendar_add_diary_add_work">추가</string>
 
-    <!--    일정 추가 화면    -->
-    <string name="feature_main_calendar_add_schedule_header_general">일정</string>
-    <string name="feature_main_calendar_add_schedule_header_alarm">알람</string>
+    <string name="feature_main_calendar_add_diary_input_image">사진 추가</string>
+
+    <string name="feature_main_calendar_add_diary_input_hint_work_description">작업 내용을 입력해 주세요.</string>
+    <string name="feature_main_calendar_add_diary_input_hint_memo">메모를 입력해 주세요.</string>
+
+<!--add schedule screen-->
+    <string name="feature_main_calendar_add_schedule_header_category">분류</string>
+    <string name="feature_main_calendar_add_schedule_header_title">제목</string>
+    <string name="feature_main_calendar_add_schedule_header_start_date">시작일</string>
+    <string name="feature_main_calendar_add_schedule_header_end_date">종료일</string>
     <string name="feature_main_calendar_add_schedule_header_memo">메모</string>
 
-    <string name="feature_main_calendar_add_schedule_general_category">분류</string>
-    <string name="feature_main_calendar_add_schedule_general_title">제목</string>
-    <string name="feature_main_calendar_add_schedule_general_start_date">시작일</string>
-    <string name="feature_main_calendar_add_schedule_general_end_date">종료일</string>
-
-    <string name="feature_main_calendar_add_schedule_set_alarm">알람 울리기</string>
-
-    <string name="feature_main_calendar_add_schedule_input_general_title">일정 제목을 입력해 주세요.</string>
-    <string name="feature_main_calendar_add_schedule_input_memo">메모를 입력해 주세요.</string>
+    <string name="feature_main_calendar_add_schedule_input_hint_title">일정 제목을 입력해 주세요.</string>
+    <string name="feature_main_calendar_add_schedule_input_hint_memo">메모를 입력해 주세요.</string>
 
 </resources>

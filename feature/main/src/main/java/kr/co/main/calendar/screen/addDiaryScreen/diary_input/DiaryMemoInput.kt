@@ -49,7 +49,7 @@ private fun MemoTextField(
         onValueChange = onMemoInput,
         placeHolder = {
             Text(
-                text = stringResource(id = R.string.feature_main_calendar_add_diary_input_memo),
+                text = stringResource(id = R.string.feature_main_calendar_add_diary_input_hint_memo),
                 style = MaterialTheme.typo.bodyM,
                 color = MaterialTheme.colors.text1
             )

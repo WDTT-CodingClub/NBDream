@@ -259,7 +259,7 @@ private fun WorkDescriptionTextField(
         onValueChange = onDescriptionInput,
         placeHolder = {
             Text(
-                text = stringResource(id = R.string.feature_main_calendar_add_diary_input_work_description),
+                text = stringResource(id = R.string.feature_main_calendar_add_diary_input_hint_work_description),
                 style = MaterialTheme.typo.bodyM,
                 color = MaterialTheme.colors.text1
             )
@@ -284,7 +284,7 @@ private fun AddWorkDescriptionButton(
         contentPadding = PaddingValues(Paddings.small)
     ) {
         Text(
-            text = stringResource(id = R.string.feature_main_calendar_add_diary_add),
+            text = stringResource(id = R.string.feature_main_calendar_add_diary_add_work),
             style = MaterialTheme.typo.bodyM
         )
     }
