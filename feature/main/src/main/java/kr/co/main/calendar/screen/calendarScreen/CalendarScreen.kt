@@ -45,11 +45,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
-import kr.co.main.model.calendar.CropModel
 import kr.co.main.calendar.screen.calendarScreen.diaryTab.DiaryTab
 import kr.co.main.calendar.screen.calendarScreen.scheduleTab.ScheduleTab
+import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.CropModelColorType
 import kr.co.main.model.calendar.type.CropModelType
+import kr.co.main.model.calendar.type.ScreenModeType
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Bell
 import kr.co.ui.icon.dreamicon.Edit
@@ -61,8 +62,8 @@ import kr.co.ui.widget.DreamTopAppBar
 
 @Composable
 internal fun CalendarRoute(
-    navToAddSchedule: (Int) -> Unit,
-    navToAddDiary: (Int) -> Unit,
+    navToAddSchedule: (Int, Int) -> Unit,
+    navToAddDiary: (Int, Int) -> Unit,
     navToSearchDiary: (Int, Int, Int) -> Unit,
     navToNotification: () -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
@@ -80,8 +81,8 @@ internal fun CalendarRoute(
 
 @Composable
 private fun CalendarScreen(
-    navToAddSchedule: (Int) -> Unit,
-    navToAddDiary: (Int) -> Unit,
+    navToAddSchedule: (Int, Int) -> Unit,
+    navToAddDiary: (Int, Int) -> Unit,
     navToSearchDiary: (Int, Int, Int) -> Unit,
     navToNotification: () -> Unit,
     state: State<CalendarScreenViewModel.CalendarScreenState>,
@@ -98,8 +99,18 @@ private fun CalendarScreen(
                     .padding(horizontal = Paddings.large),
                 selectedTab = state.value.selectedTab,
                 onSelectTab = event::onSelectTab,
-                navToAddSchedule = { navToAddSchedule(state.value.calendarCrop!!.type.nameId) },
-                navToAddDiary = { navToAddDiary(state.value.calendarCrop!!.type.nameId) },
+                navToAddSchedule = {
+                    navToAddSchedule(
+                        state.value.calendarCrop!!.type.nameId,
+                        ScreenModeType.POST_MODE.id
+                    )
+                },
+                navToAddDiary = {
+                    navToAddDiary(
+                        state.value.calendarCrop!!.type.nameId,
+                        ScreenModeType.POST_MODE.id
+                    )
+                },
                 navToNotification = navToNotification
             )
         }
@@ -129,7 +140,7 @@ private fun CalendarScreen(
                         onSelectCrop = event::onSelectCrop
                     )
                     when (state.value.selectedTab) {
-                        CalendarScreenViewModel.CalendarScreenState.CalendarTab.SCHEDULE ->
+                        CalendarScreenViewModel.CalendarScreenState.CalendarTabType.SCHEDULE ->
                             ScheduleTab(
                                 calendarCrop = state.value.calendarCrop,
                                 calendarYear = state.value.calendarYear,
@@ -137,7 +148,7 @@ private fun CalendarScreen(
                                 navToSearchDiary = navToSearchDiary
                             )
 
-                        CalendarScreenViewModel.CalendarScreenState.CalendarTab.DIARY ->
+                        CalendarScreenViewModel.CalendarScreenState.CalendarTabType.DIARY ->
                             DiaryTab(
                                 calendarCrop = state.value.calendarCrop,
                                 calendarYear = state.value.calendarYear,
@@ -159,8 +170,8 @@ private fun CalendarScreen(
 
 @Composable
 private fun CalendarScreenTopAppBar(
-    selectedTab: CalendarScreenViewModel.CalendarScreenState.CalendarTab,
-    onSelectTab: (CalendarScreenViewModel.CalendarScreenState.CalendarTab) -> Unit,
+    selectedTab: CalendarScreenViewModel.CalendarScreenState.CalendarTabType,
+    onSelectTab: (CalendarScreenViewModel.CalendarScreenState.CalendarTabType) -> Unit,
     navToAddSchedule: () -> Unit,
     navToAddDiary: () -> Unit,
     navToNotification: () -> Unit,
@@ -178,8 +189,8 @@ private fun CalendarScreenTopAppBar(
         actions = {
             CalendarScreenTopAppBarActions(
                 navToAddScreen = when (selectedTab) {
-                    CalendarScreenViewModel.CalendarScreenState.CalendarTab.SCHEDULE -> navToAddSchedule
-                    CalendarScreenViewModel.CalendarScreenState.CalendarTab.DIARY -> navToAddDiary
+                    CalendarScreenViewModel.CalendarScreenState.CalendarTabType.SCHEDULE -> navToAddSchedule
+                    CalendarScreenViewModel.CalendarScreenState.CalendarTabType.DIARY -> navToAddDiary
                 },
                 navToNotification = navToNotification,
                 modifier = Modifier
@@ -190,15 +201,15 @@ private fun CalendarScreenTopAppBar(
 
 @Composable
 private fun CalendarScreenTopAppBarTitle(
-    selectedTab: CalendarScreenViewModel.CalendarScreenState.CalendarTab,
-    onSelectTab: (CalendarScreenViewModel.CalendarScreenState.CalendarTab) -> Unit,
+    selectedTab: CalendarScreenViewModel.CalendarScreenState.CalendarTabType,
+    onSelectTab: (CalendarScreenViewModel.CalendarScreenState.CalendarTabType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(Paddings.medium)
     ) {
-        CalendarScreenViewModel.CalendarScreenState.CalendarTab.entries.forEach {
+        CalendarScreenViewModel.CalendarScreenState.CalendarTabType.entries.forEach {
             CalendarScreenTopAppBarTitleItem(
                 modifier = Modifier
                     .wrapContentSize()
@@ -446,15 +457,15 @@ private fun CalendarCropPickerDropDownItem(
 private fun CalendarCropPickerPreview() {
     val calendarCrop = remember {
         mutableStateOf(
-            CropModel(type = CropModelType.POTATO, color = CropModelColorType.POTATO )
+            CropModel(type = CropModelType.POTATO, color = CropModelColorType.POTATO)
         )
     }
 
     CalendarCropPicker(
         userCrops = listOf(
-            CropModel(type = CropModelType.POTATO, color = CropModelColorType.POTATO ),
-            CropModel(type = CropModelType.SWEET_POTATO, color = CropModelColorType.SWEET_POTATO ),
-            CropModel(type = CropModelType.APPLE, color = CropModelColorType.APPLE )
+            CropModel(type = CropModelType.POTATO, color = CropModelColorType.POTATO),
+            CropModel(type = CropModelType.SWEET_POTATO, color = CropModelColorType.SWEET_POTATO),
+            CropModel(type = CropModelType.APPLE, color = CropModelColorType.APPLE)
         ),
         calendarCrop = calendarCrop.value,
         onSelectCrop = {
