@@ -23,8 +23,8 @@ import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.main.calendar.ui.common.content.CalendarContent
 import kr.co.main.calendar.ui.common.content.CalendarContentWrapper
 import kr.co.main.calendar.ui.common.innerCalendar.InnerCalendar
-import kr.co.main.model.calendar.CropModel
-import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.calendar.model.CropModel
+import kr.co.main.calendar.model.DiaryModel
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import java.time.LocalDate

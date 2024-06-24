@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import kr.co.domain.entity.type.FarmWorkEraType
 import kr.co.domain.entity.type.FarmWorkType
 import kr.co.main.R
-import kr.co.main.model.calendar.FarmWorkModel
+import kr.co.main.calendar.model.FarmWorkModel
 import kr.co.main.calendar.ui.CalendarDesignToken
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors

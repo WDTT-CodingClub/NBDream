@@ -2,7 +2,7 @@ package kr.co.main.mapper.calendar
 
 import kr.co.common.mapper.Mapper
 import kr.co.domain.entity.FarmWorkEntity
-import kr.co.main.model.calendar.FarmWorkModel
+import kr.co.main.calendar.model.FarmWorkModel
 
 internal object FarmWorkModelMapper
     : Mapper<FarmWorkEntity, FarmWorkModel> {

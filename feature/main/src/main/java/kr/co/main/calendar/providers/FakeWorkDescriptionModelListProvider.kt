@@ -1,8 +1,8 @@
 package kr.co.main.calendar.providers
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import kr.co.main.model.calendar.DiaryModel
-import kr.co.main.model.calendar.type.WorkDescriptionModelType
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.type.WorkDescriptionModelType
 
 internal class FakeWorkDescriptionModelListProvider :
     PreviewParameterProvider<List<DiaryModel.WorkDescriptionModel>> {

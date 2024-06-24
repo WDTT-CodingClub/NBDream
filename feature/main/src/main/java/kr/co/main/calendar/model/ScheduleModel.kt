@@ -1,6 +1,6 @@
-package kr.co.main.model.calendar
+package kr.co.main.calendar.model
 
-import kr.co.main.model.calendar.type.ScheduleModelType
+import kr.co.main.calendar.model.type.ScheduleModelType
 import java.time.LocalDate
 
 internal data class ScheduleModel(

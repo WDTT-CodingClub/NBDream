@@ -1,7 +1,7 @@
-package kr.co.main.model.calendar
+package kr.co.main.calendar.model
 
-import kr.co.main.model.calendar.type.CropModelColorType
-import kr.co.main.model.calendar.type.CropModelType
+import kr.co.main.calendar.model.type.CropModelColorType
+import kr.co.main.calendar.model.type.CropModelType
 
 internal data class CropModel(
     val type: CropModelType,

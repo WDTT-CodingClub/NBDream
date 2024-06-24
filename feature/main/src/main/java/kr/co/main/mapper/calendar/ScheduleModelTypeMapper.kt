@@ -2,8 +2,8 @@ package kr.co.main.mapper.calendar
 
 import kr.co.common.mapper.BaseMapper
 import kr.co.domain.entity.type.ScheduleType
-import kr.co.main.model.calendar.CropModel
-import kr.co.main.model.calendar.type.ScheduleModelType
+import kr.co.main.calendar.model.CropModel
+import kr.co.main.calendar.model.type.ScheduleModelType
 
 internal object ScheduleModelTypeMapper
     : BaseMapper<ScheduleType, ScheduleModelType>() {

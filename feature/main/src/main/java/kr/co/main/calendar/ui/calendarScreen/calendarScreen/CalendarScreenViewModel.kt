@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import kr.co.domain.usecase.calendar.GetUserCropsUseCase
 import kr.co.main.R
 import kr.co.main.mapper.calendar.CropModelMapper
-import kr.co.main.model.calendar.CropModel
+import kr.co.main.calendar.model.CropModel
 import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarScreenViewModel.CalendarScreenState
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber

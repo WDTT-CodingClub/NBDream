@@ -25,8 +25,8 @@ import kr.co.common.util.toTitleDateString
 import kr.co.main.R
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.main.calendar.ui.CalendarDesignToken
-import kr.co.main.model.calendar.DiaryModel
-import kr.co.main.model.calendar.HolidayModel
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.HolidayModel
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.GreenIcon
 import kr.co.ui.theme.Paddings

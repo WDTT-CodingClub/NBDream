@@ -2,9 +2,9 @@ package kr.co.main.calendar.providers
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import kr.co.domain.entity.type.HolidayType
-import kr.co.main.model.calendar.DiaryModel
-import kr.co.main.model.calendar.HolidayModel
-import kr.co.main.model.calendar.type.WorkDescriptionModelType
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.HolidayModel
+import kr.co.main.calendar.model.type.WorkDescriptionModelType
 import java.time.LocalDate
 
 internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {

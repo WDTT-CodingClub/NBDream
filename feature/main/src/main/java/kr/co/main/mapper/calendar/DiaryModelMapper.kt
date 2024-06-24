@@ -2,7 +2,7 @@ package kr.co.main.mapper.calendar
 
 import kr.co.common.mapper.BaseMapper
 import kr.co.domain.entity.DiaryEntity
-import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.calendar.model.DiaryModel
 
 internal object DiaryModelMapper
     : BaseMapper<DiaryEntity, DiaryModel>() {

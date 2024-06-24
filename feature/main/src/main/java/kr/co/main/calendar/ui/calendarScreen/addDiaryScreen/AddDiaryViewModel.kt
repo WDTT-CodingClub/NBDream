@@ -3,10 +3,10 @@ package kr.co.main.calendar.ui.calendarScreen.addDiaryScreen
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kr.co.main.model.calendar.CropModel
-import kr.co.main.model.calendar.DiaryModel
-import kr.co.main.model.calendar.type.CropModelType
-import kr.co.main.model.calendar.type.WorkDescriptionModelType
+import kr.co.main.calendar.model.CropModel
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.type.CropModelType
+import kr.co.main.calendar.model.type.WorkDescriptionModelType
 import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate

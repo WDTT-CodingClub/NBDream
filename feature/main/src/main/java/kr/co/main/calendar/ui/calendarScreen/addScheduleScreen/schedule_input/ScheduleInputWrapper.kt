@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kr.co.main.model.calendar.type.ScheduleModelType
+import kr.co.main.calendar.model.type.ScheduleModelType
 import java.time.LocalDate
 
 internal sealed class ScheduleInputContent{

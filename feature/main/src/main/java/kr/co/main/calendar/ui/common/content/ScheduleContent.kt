@@ -15,8 +15,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import kr.co.common.util.toDateString
 import kr.co.main.calendar.providers.FakeScheduleModelProvider
 import kr.co.main.calendar.ui.common.CalendarCategoryIndicator
-import kr.co.main.model.calendar.ScheduleModel
-import kr.co.main.model.calendar.type.ScheduleModelType
+import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.calendar.model.type.ScheduleModelType
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo

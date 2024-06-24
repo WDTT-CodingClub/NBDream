@@ -3,9 +3,9 @@ package kr.co.main.calendar.ui.calendarScreen.addScheduleScreen
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kr.co.main.model.calendar.CropModel
-import kr.co.main.model.calendar.type.CropModelType
-import kr.co.main.model.calendar.type.ScheduleModelType
+import kr.co.main.calendar.model.CropModel
+import kr.co.main.calendar.model.type.CropModelType
+import kr.co.main.calendar.model.type.ScheduleModelType
 import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
