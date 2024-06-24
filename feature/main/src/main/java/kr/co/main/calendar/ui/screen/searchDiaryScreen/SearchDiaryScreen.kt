@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendarScreen.searchDiaryScreen
+package kr.co.main.calendar.ui.screen.searchDiaryScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

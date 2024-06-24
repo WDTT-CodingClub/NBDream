@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendarScreen.calendarScreen.scheduleTab
+package kr.co.main.calendar.ui.screen.calendarScreen.scheduleTab
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle

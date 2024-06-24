@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendarScreen.calendarScreen.scheduleTab
+package kr.co.main.calendar.ui.screen.calendarScreen.scheduleTab
 
 import FarmWorkCalendar
 import androidx.annotation.ColorInt

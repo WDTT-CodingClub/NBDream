@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendarScreen.calendarScreen
+package kr.co.main.calendar.ui.screen.calendarScreen
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
@@ -10,7 +10,7 @@ import kr.co.domain.usecase.calendar.GetUserCropsUseCase
 import kr.co.main.R
 import kr.co.main.calendar.mapper.CropModelMapper
 import kr.co.main.calendar.model.CropModel
-import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarScreenViewModel.CalendarScreenState
+import kr.co.main.calendar.ui.screen.calendarScreen.CalendarScreenViewModel.CalendarScreenState
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
 import java.time.LocalDate

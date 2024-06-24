@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendarScreen.addScheduleScreen
+package kr.co.main.calendar.ui.screen.addScheduleScreen
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text

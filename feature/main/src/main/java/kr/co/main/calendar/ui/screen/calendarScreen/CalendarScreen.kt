@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendarScreen.calendarScreen
+package kr.co.main.calendar.ui.screen.calendarScreen
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
 import kr.co.main.calendar.model.CropModel
-import kr.co.main.calendar.ui.calendarScreen.calendarScreen.diaryTab.DiaryTab
-import kr.co.main.calendar.ui.calendarScreen.calendarScreen.scheduleTab.ScheduleTab
+import kr.co.main.calendar.ui.screen.calendarScreen.diaryTab.DiaryTab
+import kr.co.main.calendar.ui.screen.calendarScreen.scheduleTab.ScheduleTab
 import kr.co.main.calendar.ui.CalendarDesignToken
 import kr.co.main.calendar.model.type.CropModelColorType
 import kr.co.main.calendar.model.type.CropModelType

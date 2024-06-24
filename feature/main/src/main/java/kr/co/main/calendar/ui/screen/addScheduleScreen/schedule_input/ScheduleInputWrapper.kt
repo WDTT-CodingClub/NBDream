@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.schedule_input
+package kr.co.main.calendar.ui.screen.addScheduleScreen.schedule_input
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
