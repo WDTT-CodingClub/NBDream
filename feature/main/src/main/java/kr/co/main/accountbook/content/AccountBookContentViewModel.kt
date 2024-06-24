@@ -20,10 +20,8 @@ internal class AccountBookContentViewModel @Inject constructor(
     }
 
     fun deleteAccountBookById() =
-        state.value.id.let { id ->
-            loadingScope {
-                repository.deleteAccountBook(id)
-            }
+        loadingScope {
+            repository.deleteAccountBook(id)
         }
 
     private fun fetchAccountBookById(id: Long) =

@@ -61,7 +61,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountBookCategoryBottomSheet(
-    categories: List<AccountBookEntity.Category>? = AccountBookEntity.Category.entries,
+    categories: List<AccountBookEntity.Category?>? = AccountBookEntity.Category.entries,
     onSelectedListener: (AccountBookEntity.Category) -> Unit,
     dismissBottomSheet: () -> Unit,
 ) {
@@ -99,7 +99,9 @@ internal fun AccountBookCategoryBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            onSelectedListener(category)
+                            if (category != null) {
+                                onSelectedListener(category)
+                            }
                         }
                         .background(color = backgroundColor)
                         .padding(vertical = 8.dp),
