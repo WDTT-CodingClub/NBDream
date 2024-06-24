@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import kr.co.domain.entity.AccountBookEntity
+import kr.co.main.accountbook.model.DateRangeOption
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Edit
@@ -77,11 +78,16 @@ internal fun AccountBookRoute(
             ) {
                 item {
                     CalendarSection(
+                        dateRangeOption = state.dateRangeOption,
                         start = state.start,
-                        end = state.end
-                    ) { startDate, endDate ->
-                        viewModel.updateDateRange(startDate.toString(), endDate.toString())
-                    }
+                        end = state.end,
+                        onDateRangeOptionSelected = {
+                            viewModel.updateDateRangeOption(it)
+                        },
+                        onDaysInRangeChange = { startDate, endDate ->
+                            viewModel.updateDateRange(startDate.toString(), endDate.toString())
+                        }
+                    )
                 }
 
                 item {
@@ -93,11 +99,16 @@ internal fun AccountBookRoute(
                             .padding(Paddings.extra)
                     ) {
                         GraphSection(
-                            state = state,
-                            showingExpenses = true
-                        ) {
-
-                        }
+                            graphTransactionType = state.graphTransactionType,
+                            totalAmount = if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
+                                state.totalExpense else state.totalRevenue,
+                            totalCost = state.totalCost,
+                            amountPercent = if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
+                                state.expensePercent else state.revenuePercent,
+                            onGraphTransactionTypeSelected = {
+                                viewModel.updateGraphTransactionType(it)
+                            }
+                        )
                     }
                 }
 
@@ -121,6 +132,7 @@ internal fun AccountBookRoute(
                         ) {
                             SelectorSection(
                                 transactionType = state.transactionType,
+                                category = state.category,
                                 categories = state.categories,
                                 sortOrder = state.sort,
                                 onCategoryChange = { viewModel.updateCategory(it) },
@@ -210,12 +222,13 @@ internal fun AccountBookRoute(
 
 @Composable
 private fun CalendarSection(
+    dateRangeOption: DateRangeOption,
     start: String,
     end: String,
+    onDateRangeOptionSelected: (DateRangeOption) -> Unit,
     onDaysInRangeChange: (LocalDate, LocalDate) -> Unit
 ) {
     var bottomSheetState by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf("1개월") }
 
     val startDate = LocalDate.parse(start)
     val endDate = LocalDate.parse(end)
@@ -242,9 +255,9 @@ private fun CalendarSection(
 
     if (bottomSheetState) {
         AccountBookCalendarBottomSheet(
-            selectedOption = selectedOption,
+            selectedOption = dateRangeOption,
             onOptionSelected = { newOption ->
-                selectedOption = newOption
+                onDateRangeOptionSelected(newOption)
             },
             onSelectedListener = { selectedStartDate, selectedEndDate ->
                 val newStartDate = LocalDate.parse(selectedStartDate)
@@ -259,95 +272,81 @@ private fun CalendarSection(
 
 @Composable
 private fun GraphSection(
-    state: AccountBookViewModel.State,
-    showingExpenses: Boolean,
-    onToggleTypeClick: () -> Unit
+    graphTransactionType: AccountBookEntity.TransactionType,
+    totalAmount: Long? = 0L,
+    totalCost: Long? = 0L,
+    amountPercent: List<AccountBookViewModel.State.PercentCategory>? = null,
+    onGraphTransactionTypeSelected: (AccountBookEntity.TransactionType) -> Unit
 ) {
-    val transactionType = if (showingExpenses) {
-        AccountBookEntity.TransactionType.EXPENSE
-    } else {
-        AccountBookEntity.TransactionType.REVENUE
-    }
-    val filteredData = state.accountBooks.filter { it.transactionType == transactionType }
-    val groupedData = filteredData.groupBy { it.category }
-    val data = groupedData.values.map { group ->
-        group.sumOf { it.amount?.toDouble() ?: 0.0 }.toFloat()
-    }
-    val categories = groupedData.keys.map { it.getDisplay() }
-    val totalAmount = if (transactionType == AccountBookEntity.TransactionType.EXPENSE) {
-        formatNumber(state.totalExpense ?: 0)
-    } else {
-        "-${formatNumber(state.totalRevenue ?: 0)}"
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        if (filteredData.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "등록된 데이터가 없습니다.",
-                    style = MaterialTheme.typo.body1,
-                    color = MaterialTheme.colors.gray5
-                )
-            }
-        } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                AccountBookOptionButton(
-                    option = "지출",
-                    isSelected = showingExpenses,
-                    onSelected = {
-                        onToggleTypeClick()
-                    }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                AccountBookOptionButton(
-                    option = "수입",
-                    isSelected = !showingExpenses,
-                    onSelected = {
-                        onToggleTypeClick()
-                    }
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .padding(top = Paddings.extra),
-            ) {
-                AccountBookGraph(
-                    data = data,
-                    categories = categories,
-                    modifier = Modifier.fillMaxSize(),
-                    graphHeight = 150
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Paddings.extra),
-                horizontalAlignment = Alignment.End
-            ) {
-                Text(
-                    text = "${totalAmount}원",
-                    style = MaterialTheme.typo.h3,
-                    color = MaterialTheme.colors.gray1
-                )
-                Text(
-                    text = "합계: ${formatNumber(state.totalCost ?: 0L)}원",
-                    style = MaterialTheme.typo.h3,
-                    color = MaterialTheme.colors.gray1
-                )
+        if (amountPercent != null) {
+            if (amountPercent.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "등록된 데이터가 없습니다.",
+                        style = MaterialTheme.typo.body1,
+                        color = MaterialTheme.colors.gray5
+                    )
+                }
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    AccountBookOptionButton(
+                        option = "지출",
+                        isSelected = graphTransactionType == AccountBookEntity.TransactionType.EXPENSE,
+                        onSelected = {
+                            onGraphTransactionTypeSelected(AccountBookEntity.TransactionType.EXPENSE)
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    AccountBookOptionButton(
+                        option = "수입",
+                        isSelected = graphTransactionType == AccountBookEntity.TransactionType.REVENUE,
+                        onSelected = {
+                            onGraphTransactionTypeSelected(AccountBookEntity.TransactionType.REVENUE)
+                        }
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .padding(top = Paddings.extra),
+                ) {
+                    AccountBookGraph(
+                        data = amountPercent,
+                        modifier = Modifier.fillMaxSize(),
+                        graphHeight = 150
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Paddings.extra),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = "${totalAmount}원",
+                        style = MaterialTheme.typo.h3,
+                        color = MaterialTheme.colors.gray1
+                    )
+                    Text(
+                        text = "합계: ${formatNumber(totalCost ?: 0L)}원",
+                        style = MaterialTheme.typo.h3,
+                        color = MaterialTheme.colors.gray1
+                    )
+                }
             }
         }
     }
@@ -423,21 +422,26 @@ fun AccountBookOptionButton(
 @Composable
 private fun SelectorSection(
     transactionType: AccountBookEntity.TransactionType?,
-    categories: List<String>?,
+    category: String,
+    categories: List<AccountBookEntity.Category>?,
     sortOrder: AccountBookEntity.SortOrder,
     onCategoryChange: (String) -> Unit,
     onSortOrderChange: (AccountBookEntity.SortOrder) -> Unit,
     onTransactionChange: (AccountBookEntity.TransactionType?) -> Unit
 ) {
     Column {
-        CategorySelector(categories, onCategoryChange = onCategoryChange)
+        CategorySelector(category, categories, onCategoryChange = onCategoryChange)
         FilterSelector(transactionType, onTransactionChange)
         SortOrderSelector(sortOrder, onSortOrderChange)
     }
 }
 
 @Composable
-private fun CategorySelector(state: List<String>?, onCategoryChange: (String) -> Unit) {
+private fun CategorySelector(
+    category: String?,
+    categories: List<AccountBookEntity.Category>?,
+    onCategoryChange: (String) -> Unit
+) {
     var bottomSheetState by remember { mutableStateOf(false) }
 
     Row(
@@ -467,8 +471,9 @@ private fun CategorySelector(state: List<String>?, onCategoryChange: (String) ->
     }
 
     if (bottomSheetState) {
-        state?.let {
+        categories?.let {
             AccountBookCategoryBottomSheet(
+                categories = categories,
                 onSelectedListener = { selectedCategory ->
                     onCategoryChange(selectedCategory.name)
                     bottomSheetState = false

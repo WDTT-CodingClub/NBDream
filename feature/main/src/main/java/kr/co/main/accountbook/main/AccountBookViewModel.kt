@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
+import kr.co.main.accountbook.model.DateRangeOption
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
 import java.time.LocalDate
@@ -70,6 +71,12 @@ internal class AccountBookViewModel @Inject constructor(
                     totalExpense = totalEntity.totalExpense,
                     totalRevenue = totalEntity.totalRevenue,
                     categories = totalEntity.categories,
+                    revenuePercent = totalEntity.revenuePercent.map {
+                        State.PercentCategory(it.percent, it.category)
+                    },
+                    expensePercent = totalEntity.expensePercent.map {
+                        State.PercentCategory(it.percent, it.category)
+                    },
                     hasNext = totalEntity.hasNext
                 )
             }
@@ -102,6 +109,15 @@ internal class AccountBookViewModel @Inject constructor(
         fetchAccountBooks()
     }
 
+    fun updateDateRangeOption(newDateRangeOption: DateRangeOption) {
+        updateState { copy(dateRangeOption = newDateRangeOption) }
+        fetchAccountBooks()
+    }
+
+    fun updateGraphTransactionType(newTransactionType: AccountBookEntity.TransactionType) {
+        updateState { copy(graphTransactionType = newTransactionType) }
+    }
+
     override fun createInitialState(savedState: Parcelable?): State = State()
 
     data class State(
@@ -110,12 +126,16 @@ internal class AccountBookViewModel @Inject constructor(
         val sort: AccountBookEntity.SortOrder = AccountBookEntity.SortOrder.EARLIEST,
         val start: String = LocalDate.now().withDayOfMonth(1).toString(),
         val end: String = LocalDate.now().toString(),
+        val dateRangeOption: DateRangeOption = DateRangeOption.ONE_MONTH,
         val transactionType: AccountBookEntity.TransactionType? = null,
         val accountBooks: List<AccountBook> = emptyList(),
         val totalCost: Long? = null,
         val totalExpense: Long? = null,
         val totalRevenue: Long? = null,
-        val categories: List<String>? = null,
+        val categories: List<AccountBookEntity.Category>? = null,
+        val revenuePercent: List<PercentCategory>? = null,
+        val expensePercent: List<PercentCategory>? = null,
+        val graphTransactionType: AccountBookEntity.TransactionType = AccountBookEntity.TransactionType.EXPENSE,
         val hasNext: Boolean? = null
     ) : BaseViewModel.State {
         data class AccountBook(
@@ -124,10 +144,15 @@ internal class AccountBookViewModel @Inject constructor(
             val day: Int?,
             val month: Int?,
             val dayName: String?,
-            val category:  AccountBookEntity.Category?,
+            val category: AccountBookEntity.Category?,
             val transactionType: AccountBookEntity.TransactionType?,
             val amount: Long? = 0,
             val imageUrl: List<String>
+        )
+
+        data class PercentCategory(
+            val percent: Float,
+            val category: String
         )
     }
 }

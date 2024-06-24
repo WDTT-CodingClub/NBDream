@@ -1,7 +1,7 @@
 package kr.co.domain.entity
 
 data class AccountBookTotalEntity(
-    val categories: List<String>,
+    val categories: List<AccountBookEntity.Category>,
     val totalRevenue: Long,
     val totalExpense: Long,
     val totalCost: Long,
@@ -10,7 +10,7 @@ data class AccountBookTotalEntity(
     val hasNext: Boolean
 ) {
     data class PercentCategory(
-        val percent: Int,
+        val percent: Float,
         val category: String
     )
 }

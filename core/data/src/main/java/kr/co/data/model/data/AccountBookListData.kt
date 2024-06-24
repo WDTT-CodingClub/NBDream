@@ -25,7 +25,7 @@ data class AccountBookListData(
     )
 
     data class PercentCategory(
-        val percent: Int,
+        val percent: Float,
         val category: String
     )
 }
