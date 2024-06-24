@@ -2,7 +2,6 @@ package kr.co.domain.repository
 
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.CommentEntity
-import kr.co.domain.entity.CropEntity
 import kr.co.domain.entity.type.CropType
 
 interface CommunityRepository {
@@ -19,7 +18,7 @@ interface CommunityRepository {
     suspend fun putBulletin(
         id: Long,
         content: String,
-        crop: CropEntity.Name,
+        crop: CropType,
         bulletinCategory: BulletinEntity.BulletinCategory,
         imageUrls: List<String>
     ): Long
