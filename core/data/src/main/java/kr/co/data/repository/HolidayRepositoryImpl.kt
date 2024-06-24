@@ -16,6 +16,6 @@ internal class HolidayRepositoryImpl @Inject constructor(
             year = String.format("%02d", year),
             month = String.format("%02d", month)
         ).transform {
-            emit(it.map { holidayData -> HolidayMapper.convert(holidayData) })
+            emit(it.map { holidayData -> HolidayMapper.toRight(holidayData) })
         }
 }

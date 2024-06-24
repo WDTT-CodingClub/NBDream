@@ -1,4 +1,4 @@
-package kr.co.main.model.calendar.type
+package kr.co.main.calendar.model.type
 
 import androidx.annotation.StringRes
 import kr.co.main.R

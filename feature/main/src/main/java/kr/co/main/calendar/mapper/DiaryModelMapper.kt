@@ -1,9 +1,8 @@
-package kr.co.main.mapper.calendar
+package kr.co.main.calendar.mapper
 
 import kr.co.common.mapper.BaseMapper
 import kr.co.domain.entity.DiaryEntity
-import kr.co.main.model.calendar.CropModel
-import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.calendar.model.DiaryModel
 
 internal object DiaryModelMapper
     : BaseMapper<DiaryEntity, DiaryModel>() {
@@ -11,10 +10,9 @@ internal object DiaryModelMapper
         with(left) {
             DiaryModel(
                 id = id,
-                crop = CropModel.create(CropModelTypeMapper.toRight(cropType)),
-                registerDate = registerDate,
+                date = date,
                 holidays = holidays.map { HolidayModelMapper.toRight(it) },
-                weatherForecast = WeatherForecastModelMapper.toRight(weatherForecast),
+                weatherInfo = weatherInfo,
                 workLaborer = workLaborer,
                 workHours = workHours,
                 workArea = workArea,
@@ -30,10 +28,9 @@ internal object DiaryModelMapper
         with(right) {
             DiaryEntity(
                 id = id,
-                cropType = CropModelTypeMapper.toLeft(crop.type),
-                registerDate = registerDate,
+                date = date,
                 holidays = holidays.map { HolidayModelMapper.toLeft(it) },
-                weatherForecast = WeatherForecastModelMapper.toLeft(weatherForecast),
+                weatherInfo = weatherInfo,
                 workLaborer = workLaborer,
                 workHours = workHours,
                 workArea = workArea,

@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kr.co.common.util.iterator
 import kr.co.main.R
-import kr.co.main.model.calendar.HolidayModel
+import kr.co.main.calendar.model.HolidayModel
 import kr.co.main.calendar.ui.CalendarDesignToken
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors

@@ -9,9 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import kr.co.main.calendar.adddiary.diaryinput.DiaryWorkInput
-import kr.co.main.model.calendar.DiaryModel
-import kr.co.main.model.calendar.WeatherForecastModel
-import kr.co.main.model.calendar.type.WorkDescriptionModelType
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.type.WorkDescriptionModelType
 import kr.co.ui.theme.typo
 import java.time.LocalDate
 
@@ -21,7 +20,7 @@ internal sealed class DiaryInputContent(
     data class DateInputContent(
         @StringRes override val headerId: Int,
         val registerDate: LocalDate,
-        val weatherForecast: WeatherForecastModel,
+        val weatherInfo: String,
         val onRegisterDateInput: (LocalDate) -> Unit,
     ) : DiaryInputContent()
 
@@ -68,7 +67,7 @@ internal fun DiaryInputWrapper(
         when (diaryInputContent) {
             is DiaryInputContent.DateInputContent -> DiaryDateInput(
                 registerDate = diaryInputContent.registerDate,
-                weatherForecast = diaryInputContent.weatherForecast,
+                weatherInfo = diaryInputContent.weatherInfo,
                 onRegisterDateInput = diaryInputContent.onRegisterDateInput
             )
 

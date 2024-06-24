@@ -1,10 +1,10 @@
-package kr.co.main.mapper.calendar
+package kr.co.main.calendar.mapper
 
 import kr.co.common.mapper.BaseMapper
 import kr.co.domain.entity.DiaryEntity
 import kr.co.domain.entity.type.WorkDescriptionType
-import kr.co.main.model.calendar.DiaryModel
-import kr.co.main.model.calendar.type.WorkDescriptionModelType
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.type.WorkDescriptionModelType
 
 internal object WorkDescriptionModelMapper
     : BaseMapper<DiaryEntity.WorkDescriptionEntity, DiaryModel.WorkDescriptionModel>() {

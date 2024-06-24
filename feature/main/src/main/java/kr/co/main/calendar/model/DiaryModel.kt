@@ -1,14 +1,13 @@
-package kr.co.main.model.calendar
+package kr.co.main.calendar.model
 
-import kr.co.main.model.calendar.type.WorkDescriptionModelType
+import kr.co.main.calendar.model.type.WorkDescriptionModelType
 import java.time.LocalDate
 
 internal data class DiaryModel(
     val id: Int,
-    val crop: CropModel,
-    val registerDate: LocalDate,
+    val date: LocalDate,
     val holidays: List<HolidayModel> = emptyList(),
-    val weatherForecast: WeatherForecastModel,
+    val weatherInfo: String,
     val workLaborer: Int = 0,
     val workHours: Int = 0,
     val workArea: Int = 0,

@@ -41,8 +41,8 @@ import kr.co.main.R
 import kr.co.main.calendar.providers.FakeWorkDescriptionModelListProvider
 import kr.co.main.calendar.ui.CalendarDesignToken
 import kr.co.main.calendar.ui.common.CalendarUnderLineTextField
-import kr.co.main.model.calendar.DiaryModel
-import kr.co.main.model.calendar.type.WorkDescriptionModelType
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.type.WorkDescriptionModelType
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Delete
 import kr.co.ui.icon.dreamicon.GreenIcon

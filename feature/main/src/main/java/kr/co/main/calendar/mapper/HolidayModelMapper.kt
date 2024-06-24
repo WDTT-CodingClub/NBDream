@@ -1,8 +1,8 @@
-package kr.co.main.mapper.calendar
+package kr.co.main.calendar.mapper
 
 import kr.co.common.mapper.BaseMapper
 import kr.co.domain.entity.HolidayEntity
-import kr.co.main.model.calendar.HolidayModel
+import kr.co.main.calendar.model.HolidayModel
 
 internal object HolidayModelMapper
     : BaseMapper<HolidayEntity, HolidayModel>() {

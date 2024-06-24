@@ -1,15 +1,13 @@
 package kr.co.domain.entity
 
-import kr.co.domain.entity.type.CropType
 import kr.co.domain.entity.type.WorkDescriptionType
 import java.time.LocalDate
 
 data class DiaryEntity(
     val id: Int,
-    val cropType: CropType,
-    val registerDate: LocalDate,
+    val date: LocalDate,
     val holidays: List<HolidayEntity> = emptyList(),
-    val weatherForecast: WeatherForecastEntity,
+    val weatherInfo: String,
     val workLaborer: Int = 0,
     val workHours: Int = 0,
     val workArea: Int = 0,

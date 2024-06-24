@@ -1,4 +1,4 @@
-package kr.co.main.model.calendar
+package kr.co.main.calendar.model
 
 import kr.co.domain.entity.type.HolidayType
 import java.time.LocalDate

@@ -4,9 +4,10 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kr.co.main.model.calendar.CropModel
-import kr.co.main.model.calendar.DiaryModel
-import kr.co.main.model.calendar.type.CropModelType
+import kr.co.main.calendar.model.CropModel
+import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.calendar.model.type.CropModelType
+import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import javax.inject.Inject
@@ -50,15 +51,15 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
 
     init {
         with(savedStateHandle) {
-            get<Int>("cropNameId")?.let { cropNameId ->
+            get<Int>(CalendarNavGraph.ARG_CROP_NAME_ID)?.let { cropNameId ->
                 updateState {
                     copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
                 }
             }
-            get<Int>("year")?.let { year ->
+            get<Int>(CalendarNavGraph.ARG_YEAR)?.let { year ->
                 updateState { copy(calendarYear = year) }
             }
-            get<Int>("month")?.let { month ->
+            get<Int>(CalendarNavGraph.ARG_MONTH)?.let { month ->
                 updateState { copy(calendarMonth = month) }
             }
         }

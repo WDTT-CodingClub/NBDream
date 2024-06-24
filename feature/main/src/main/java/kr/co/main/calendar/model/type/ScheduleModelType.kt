@@ -1,11 +1,11 @@
-package kr.co.main.model.calendar.type
+package kr.co.main.calendar.model.type
 
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import kr.co.main.R
-import kr.co.main.model.calendar.CropModel
+import kr.co.main.calendar.model.CropModel
 
 internal sealed class ScheduleModelType(
     @StringRes val nameId: Int,
