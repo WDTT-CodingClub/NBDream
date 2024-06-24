@@ -14,6 +14,18 @@ internal object GetAccountBookListMapper
                 totalExpense = totalExpense,
                 totalRevenue = totalRevenue,
                 categories = categories,
+                revenuePercent = revenuePercent.map {
+                    AccountBookTotalEntity.PercentCategory(
+                        it.percent,
+                        it.category
+                    )
+                },
+                expensePercent = expensePercent.map {
+                    AccountBookTotalEntity.PercentCategory(
+                        it.percent,
+                        it.category
+                    )
+                },
                 hasNext = hasNext
             ) to items.map {
                 AccountBookEntity(

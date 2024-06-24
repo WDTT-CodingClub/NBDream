@@ -5,6 +5,8 @@ data class AccountBookListData(
     val totalRevenue: Long,
     val totalExpense: Long,
     val totalCost: Long,
+    val revenuePercent: List<PercentCategory>,
+    val expensePercent: List<PercentCategory>,
     val hasNext: Boolean,
     val items: List<Item>
 ) {
@@ -19,6 +21,11 @@ data class AccountBookListData(
         val transactionType: String,
         val amount: Long,
         val thumbnail: String,
-        val imageSize: Int,
+        val imageSize: Int
+    )
+
+    data class PercentCategory(
+        val percent: Int,
+        val category: String
     )
 }
