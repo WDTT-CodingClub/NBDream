@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.ArrowLeft
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -60,7 +59,9 @@ private fun DreamCenterTopAppBarPreview() {
     NBDreamTheme {
         DreamCenterTopAppBar(
             title = "장부",
-            navigationIcon = {},
+            navigationIcon = {
+                Icon(imageVector = DreamIcon.Edit, contentDescription = "뒤로가기")
+            },
             actions = {}
         )
     }
