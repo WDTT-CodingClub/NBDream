@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.ScheduleModelType
+import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -51,7 +52,7 @@ internal class AddScheduleViewModel @Inject constructor(
         } ?: AddScheduleScreenState()
 
     init {
-        savedStateHandle.get<Int>("cropNameId")?.let { cropNameId ->
+        savedStateHandle.get<Int>(CalendarNavGraph.ARG_CROP_NAME_ID)?.let { cropNameId ->
             updateState {
                 copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
             }

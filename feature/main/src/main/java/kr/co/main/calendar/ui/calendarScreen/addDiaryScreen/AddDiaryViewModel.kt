@@ -7,6 +7,7 @@ import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.WorkDescriptionModelType
+import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import javax.inject.Inject
@@ -67,7 +68,7 @@ internal class AddDiaryViewModel @Inject constructor(
         } ?: AddDiaryScreenState()
 
     init {
-        savedStateHandle.get<Int>("cropNameId")?.let { cropNameId ->
+        savedStateHandle.get<Int>(CalendarNavGraph.ARG_CROP_NAME_ID)?.let { cropNameId ->
             updateState {
                 copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
             }
