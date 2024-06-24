@@ -20,9 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.providers.FakeDiaryModelProvider
-import kr.co.main.calendar.ui.common.content.CalendarContent
-import kr.co.main.calendar.ui.common.content.CalendarContentWrapper
-import kr.co.main.calendar.ui.common.innerCalendar.InnerCalendar
+import kr.co.main.calendar.common.content.CalendarContent
+import kr.co.main.calendar.common.content.CalendarContentWrapper
+import kr.co.main.calendar.common.innerCalendar.InnerCalendar
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.ui.theme.Paddings

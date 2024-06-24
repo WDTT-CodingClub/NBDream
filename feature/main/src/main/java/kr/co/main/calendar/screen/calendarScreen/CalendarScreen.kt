@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
 import kr.co.main.model.calendar.CropModel
-import kr.co.main.calendar.ui.screen.calendarScreen.diaryTab.DiaryTab
-import kr.co.main.calendar.ui.screen.calendarScreen.scheduleTab.ScheduleTab
+import kr.co.main.calendar.screen.calendarScreen.diaryTab.DiaryTab
+import kr.co.main.calendar.screen.calendarScreen.scheduleTab.ScheduleTab
 import kr.co.main.model.calendar.type.CropModelColorType
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.ui.icon.DreamIcon

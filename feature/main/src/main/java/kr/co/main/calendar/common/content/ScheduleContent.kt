@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import kr.co.common.util.toDateString
+import kr.co.main.calendar.common.CalendarCategoryIndicator
 import kr.co.main.providers.FakeScheduleModelProvider
-import kr.co.main.calendar.ui.common.CalendarCategoryIndicator
 import kr.co.main.model.calendar.ScheduleModel
 import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.ui.theme.Paddings

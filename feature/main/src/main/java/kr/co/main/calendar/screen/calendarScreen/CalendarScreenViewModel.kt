@@ -10,14 +10,13 @@ import kr.co.domain.usecase.calendar.GetUserCropsUseCase
 import kr.co.main.R
 import kr.co.main.mapper.calendar.CropModelMapper
 import kr.co.main.model.calendar.CropModel
-import kr.co.main.calendar.ui.screen.calendarScreen.CalendarScreenViewModel.CalendarScreenState
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
 internal interface CalendarScreenEvent {
-    fun onSelectTab(tab: CalendarScreenState.CalendarTab)
+    fun onSelectTab(tab: CalendarScreenViewModel.CalendarScreenState.CalendarTab)
     fun onSelectYear(year: Int)
     fun onSelectMonth(month: Int)
     fun onSelectCrop(crop: CropModel)
@@ -27,7 +26,7 @@ internal interface CalendarScreenEvent {
 internal class CalendarScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getUserCrop: GetUserCropsUseCase
-) : BaseViewModel<CalendarScreenState>(savedStateHandle),
+) : BaseViewModel<CalendarScreenViewModel.CalendarScreenState>(savedStateHandle),
     CalendarScreenEvent {
     private val _userCrops = MutableStateFlow<List<CropModel>>(emptyList())
 
