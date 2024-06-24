@@ -5,6 +5,9 @@ data class WeatherForecastEntity(
     val precipitation: Int,
     val humidity: Int,
     val temperature: Float,
+    val minTemperature: Float,
+    val maxTemperature: Float,
+    val day: String,
     val windSpeed: Int,
     val weather: List<Weather>,
 ) {

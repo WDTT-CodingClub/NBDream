@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kr.co.data.repository.AccountBookRepositoryImpl
+import kr.co.data.repository.AiRepositoryImpl
 import kr.co.data.repository.CommunityRepositoryImpl
 import kr.co.data.repository.AuthRepositoryImpl
 import kr.co.data.repository.DiaryRepositoryImpl
@@ -16,6 +17,7 @@ import kr.co.data.repository.SessionRepositoryImpl
 import kr.co.data.repository.UserRepositoryImpl
 import kr.co.data.repository.WeatherForecastRepositoryImpl
 import kr.co.domain.repository.AccountBookRepository
+import kr.co.domain.repository.AiRepository
 import kr.co.domain.repository.AuthRepository
 import kr.co.domain.repository.CommunityRepository
 import kr.co.domain.repository.DiaryRepository
@@ -72,4 +74,7 @@ internal abstract class DataModule {
     @Singleton
     @Binds
     abstract fun bindsUserRepository(repositoryImpl: UserRepositoryImpl): UserRepository
+    @Singleton
+    @Binds
+    abstract fun bindsAiChatRepository(repositoryImpl: AiRepositoryImpl): AiRepository
 }

@@ -21,4 +21,14 @@ internal class AuthRepositoryImpl @Inject constructor(
             session.updateRefreshToken(it.refreshToken)
         }
     }
+
+    override suspend fun check() {
+        remote.getAuthToken(
+            accessToken = session.getAccessToken()?: return,
+            refreshToken = session.getRefreshToken()?: return
+        ).also {
+            session.updateAccessToken(it.accessToken)
+            session.updateRefreshToken(it.refreshToken)
+        }
+    }
 }

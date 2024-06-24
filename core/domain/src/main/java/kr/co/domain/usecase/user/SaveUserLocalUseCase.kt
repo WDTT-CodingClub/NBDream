@@ -14,20 +14,10 @@ class SaveUserLocalUseCase @Inject constructor(
     private val sessionRepository: SessionRepository,
 ) : SuspendUseCase<UserEntity, Unit>() {
     override suspend fun build(params: UserEntity?) {
-        checkNotNull(params)
 
-        userRepository.fetchLocal().first().let {
-            it.copy(
-                name = params.name ?: it.name,
-                address = params.address ?: it.address,
-                profileImage = params.profileImage ?: it.profileImage,
-                longitude = params.longitude ?: it.longitude,
-                latitude = params.latitude ?: it.latitude,
-                crops = params.crops.ifEmpty { it.crops }
-            ).let { user ->
-                userRepository.save(user)
-                sessionRepository.save(user.name)
-            }
+        userRepository.fetch().let {
+            userRepository.save(it)
+            sessionRepository.save(it.name)
         }
     }
 }

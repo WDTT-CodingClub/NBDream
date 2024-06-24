@@ -37,6 +37,9 @@ internal object WeatherForecastModelMapper
                 probability = 0, //meaningless
                 humidity = 0, //meaningless,
                 temperature = 0.0f, //meaningless
+                maxTemperature = maxTemp.substringBefore("°C").toFloat(),
+                minTemperature = minTemp.substringBefore("°C").toFloat(),
+                day = date.format(DateTimeFormatter.ofPattern("yyyyMMdd")),
                 windSpeed = 0, //meaningless
                 weather = listOf(
                     WeatherForecastEntity.Weather(
