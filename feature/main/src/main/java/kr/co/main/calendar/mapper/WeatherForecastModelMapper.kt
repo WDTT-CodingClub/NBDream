@@ -1,4 +1,4 @@
-package kr.co.main.mapper.calendar
+package kr.co.main.calendar.mapper
 
 import kr.co.common.mapper.Mapper
 import kr.co.domain.entity.WeatherForecastEntity
