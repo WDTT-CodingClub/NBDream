@@ -57,9 +57,9 @@ internal class NetworkModule {
                 Json {
                     prettyPrint = true //출력시 이쁘게 포맷팅
                     isLenient = true // 관대한 파싱
-                    ignoreUnknownKeys = true // 알수없는 키 무시
-                    encodeDefaults = true // 기본값 인코딩
-                    explicitNulls = false // 명시적인 null생략
+                    ignoreUnknownKeys = true // 알 수 없는 키 무시
+                    encodeDefaults = true // 기본 값 인코딩
+                    explicitNulls = false // 명시적인 null 생략
                 }
             )
         }
