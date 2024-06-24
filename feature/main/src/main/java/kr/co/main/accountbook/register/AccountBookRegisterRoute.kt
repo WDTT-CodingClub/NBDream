@@ -68,7 +68,7 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
 import kr.co.main.accountbook.main.AccountBookOptionButton
 import kr.co.main.accountbook.main.formatNumber
-import kr.co.main.accountbook.model.CategoryDisplayMapper.getDisplay
+import kr.co.main.accountbook.model.getDisplay
 import kr.co.nbdream.core.ui.R
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.Shapes
@@ -249,7 +249,7 @@ internal fun AccountBookRegisterRoute(
                     ) {
                         AccountBookButton(
                             onClick = { showBottomSheet = true },
-                            text = state.category?.let { getDisplay(it) } ?: "선택하세요",
+                            text = state.category.getDisplay(),
                             buttonColors = ButtonDefaults.buttonColors(Color.Transparent),
                             contentPadding = PaddingValues(horizontal = Paddings.xlarge),
                             icon = Icons.AutoMirrored.Filled.KeyboardArrowRight

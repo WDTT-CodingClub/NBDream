@@ -30,7 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import kr.co.domain.entity.AccountBookEntity
-import kr.co.main.accountbook.model.CategoryDisplayMapper
+import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.Paddings
@@ -243,7 +243,7 @@ private fun GraphSection(
     val data = groupedData.values.map { group ->
         group.sumOf { it.amount?.toDouble() ?: 0.0 }.toFloat()
     }
-    val categories = groupedData.keys.map { CategoryDisplayMapper.getDisplay(it) }
+    val categories = groupedData.keys.map { it.getDisplay() }
     val totalAmount = if (transactionType == AccountBookEntity.TransactionType.EXPENSE) {
         formatNumber(state.totalExpense ?: 0)
     } else {
@@ -515,7 +515,7 @@ private fun AccountBookItem(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = CategoryDisplayMapper.getDisplay(accountBook.category),
+                    text = accountBook.category.getDisplay(),
                     style = MaterialTheme.typo.label,
                     color = MaterialTheme.colors.gray5,
                 )

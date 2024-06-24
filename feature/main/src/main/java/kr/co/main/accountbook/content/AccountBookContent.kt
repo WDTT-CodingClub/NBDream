@@ -49,7 +49,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.main.accountbook.main.formatNumber
-import kr.co.main.accountbook.model.CategoryDisplayMapper
+import kr.co.main.accountbook.model.getDisplay
+import kr.co.main.accountbook.model.getTransactionType
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
@@ -162,7 +163,7 @@ internal fun AccountBookContentRoute(
                         modifier = Modifier.padding(top = Paddings.xextra)
                     ) {
                         Text(
-                            text = CategoryDisplayMapper.getTransactionType(state.transactionType),
+                            text = state.transactionType.getTransactionType(),
                             style = MaterialTheme.typo.h4,
                             color = MaterialTheme.colors.gray1
                         )
@@ -204,7 +205,7 @@ internal fun AccountBookContentRoute(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = CategoryDisplayMapper.getDisplay(state.category),
+                                text = state.category.getDisplay(),
                                 style = MaterialTheme.typo.body1,
                                 color = MaterialTheme.colors.gray2,
                                 modifier = Modifier.padding(horizontal = Paddings.large)
