@@ -38,5 +38,11 @@
     <string name="feature_main_calendar_work_type_ship">운반 및 저장</string>
     <string name="feature_main_calendar_work_type_etc">기타</string>
 
+    <string name="feature_main_calendar_farm_work_era_early">상순</string>
+    <string name="feature_main_calendar_farm_work_era_mid">중순</string>
+    <string name="feature_main_calendar_farm_work_era_late">하순</string>
 
+    <string name="feature_main_calendar_farm_work_growth">주요 농작업 일정</string>
+    <string name="feature_main_calendar_farm_work_climate">기상 재해 및 문제점</string>
+    <string name="feature_main_calendar_farm_work_pest">병해충 방제</string>
 </resources>
