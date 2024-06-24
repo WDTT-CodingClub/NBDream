@@ -28,8 +28,6 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -51,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
+import kr.co.ui.theme.NBDreamTheme
 import java.io.File
 
 @Composable
@@ -60,15 +59,11 @@ internal fun BulletinWritingRoute(
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val writingInput by viewModel.bulletinWritingInput.collectAsStateWithLifecycle()
-    val writingImages by viewModel.writingImages.collectAsStateWithLifecycle()
-    val isShowWaitingDialog by viewModel.isShowWaitingDialog.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     BulletinWritingScreen(
         modifier = modifier,
+        state = state,
         context = context,
-        writingInput = writingInput,
-        writingImages = writingImages,
-        isShowWaitingDialog = isShowWaitingDialog,
         popBackStack = popBackStack,
         onAddImagesClick = viewModel::onAddImagesClick,
         onBulletinWritingInputChanged = viewModel::onBulletinWritingInputChanged,
@@ -81,10 +76,8 @@ internal fun BulletinWritingRoute(
 @Composable
 internal fun BulletinWritingScreen(
     modifier: Modifier = Modifier,
+    state: CommunityViewModel.State = CommunityViewModel.State(),
     context: Context = LocalContext.current,
-    writingInput: String = "",
-    writingImages: List<WritingSelectedImageModel> = emptyList(),
-    isShowWaitingDialog: Boolean = false,
     popBackStack: () -> Unit = {},
     onAddImagesClick: (uris: List<Uri>, (Uri) -> File) -> Unit = { _, _ -> },
     onBulletinWritingInputChanged: (input: String) -> Unit = {},
@@ -165,7 +158,7 @@ internal fun BulletinWritingScreen(
         }
         item {
             TextField(
-                value = writingInput,
+                value = state.bulletinWritingInput,
                 onValueChange = {
                     if (it.length <= 3000) {
                         onBulletinWritingInputChanged(it)
@@ -178,7 +171,7 @@ internal fun BulletinWritingScreen(
             )
         }
         item {
-            Text("${writingInput.length}/3000")
+            Text("${state.bulletinWritingInput.length}/3000")
         }
         item {
             Text("사진")
@@ -212,7 +205,7 @@ internal fun BulletinWritingScreen(
                         }
                     }
                 }
-                items(writingImages) {
+                items(state.writingImages) {
                     Box(
                         modifier = Modifier
                             .size(120.dp)
@@ -245,7 +238,7 @@ internal fun BulletinWritingScreen(
         }
     }
 
-    if (isShowWaitingDialog) AlertDialogExample(
+    if (state.isShowWaitingDialog) AlertDialogExample(
         onDismissRequest = { setIsShowWaitingDialog(false) },
         onConfirmation = {},
         dialogTitle = "title",
@@ -286,9 +279,7 @@ fun AlertDialogExample(
 @Preview(heightDp = 1200)
 @Composable
 private fun BulletinWritingScreenPreview() {
-    MaterialTheme {
-        Surface {
-            BulletinWritingScreen()
-        }
+    NBDreamTheme {
+        BulletinWritingScreen()
     }
 }

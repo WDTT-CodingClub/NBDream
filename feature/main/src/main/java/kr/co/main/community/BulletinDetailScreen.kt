@@ -18,8 +18,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -32,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kr.co.domain.entity.BulletinEntity
+import kr.co.ui.theme.NBDreamTheme
 import timber.log.Timber
 
 
@@ -42,17 +40,11 @@ internal fun BulletinDetailRoute(
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {
-    val currentDetailBulletinId by viewModel.currentDetailBulletinId.collectAsStateWithLifecycle()
-    val isLoadDetailSuccessful by viewModel.isLoadDetailSuccessful.collectAsStateWithLifecycle()
-    val currentDetailBulletin by viewModel.currentDetailBulletin.collectAsStateWithLifecycle()
-    val commentWritingInput by viewModel.commentWritingInput.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     BulletinDetailScreen(
         modifier = modifier,
+        state = state,
         popBackStack = popBackStack,
-        currentDetailBulletinId = currentDetailBulletinId,
-        isLoadDetailSuccessful = isLoadDetailSuccessful,
-        currentDetailBulletin = currentDetailBulletin,
-        commentWritingInput = commentWritingInput,
         onCommentWritingInput = viewModel::onCommentWritingInput,
     )
 }
@@ -60,27 +52,24 @@ internal fun BulletinDetailRoute(
 @Composable
 internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
+    state: CommunityViewModel.State = CommunityViewModel.State(),
     popBackStack: () -> Unit = {},
-    currentDetailBulletinId: Long = 0,
-    isLoadDetailSuccessful: Boolean = true,
-    currentDetailBulletin: BulletinEntity = BulletinEntity.dummy(),
-    commentWritingInput: String = "",
     onCommentWritingInput: (String) -> Unit = {},
 ) {
-    Timber.d("currentDetailBulletinId: $currentDetailBulletinId")
-    Timber.d("isLoadDetailSuccessful: $isLoadDetailSuccessful")
-    if (!isLoadDetailSuccessful) {
+    Timber.d("currentDetailBulletinId: ${state.currentDetailBulletinId}")
+    Timber.d("isLoadDetailSuccessful: ${state.isLoadDetailSuccessful}")
+    if (!state.isLoadDetailSuccessful) {
         NoBulletinScreen(
             modifier = modifier,
-            id = currentDetailBulletinId,
+            id = state.currentDetailBulletinId,
         )
         return
     }
 
     // check
-    Timber.d("$currentDetailBulletin")
-    Timber.d("${currentDetailBulletin.bulletinId}")
-    Timber.d(currentDetailBulletin.content)
+    Timber.d("${state.currentDetailBulletin}")
+    Timber.d("${state.currentDetailBulletin.bulletinId}")
+    Timber.d(state.currentDetailBulletin.content)
 
     Column {
         LazyColumn(
@@ -187,7 +176,7 @@ internal fun BulletinDetailScreen(
                     .padding(4.dp),
             )
             TextField(
-                value = commentWritingInput,
+                value = state.commentWritingInput,
                 onValueChange = onCommentWritingInput
             )
             IconButton(onClick = { /*TODO*/ }) {
@@ -218,9 +207,7 @@ fun NoBulletinScreen(
 @Preview(heightDp = 1200)
 @Composable
 private fun BulletinDetailScreenPreview() {
-    MaterialTheme {
-        Surface {
-            BulletinDetailScreen(popBackStack = {})
-        }
+    NBDreamTheme {
+        BulletinDetailScreen(popBackStack = {})
     }
 }

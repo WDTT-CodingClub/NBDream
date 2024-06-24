@@ -5,11 +5,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.BulletinEntity
-import kr.co.domain.entity.type.CropType
+import kr.co.domain.entity.CropEntity
 import kr.co.domain.repository.CommunityRepository
 import kr.co.domain.repository.ServerImageRepository
 import kr.co.main.community.temp.WritingSelectedImageModel
@@ -18,70 +16,95 @@ import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
+internal interface CommunityScreenEvent {
+    fun onSearchInputChanged(input: String)
+    fun setIsShowWaitingDialog(boolean: Boolean)
+    fun onBulletinWritingInputChanged(input: String)
+    fun onCommentWritingInput(input: String)
+    fun setBulletinEntities(entities: List<BulletinEntity>)
+    fun setCurrentDetailBulletinId(id: Long)
+    fun setCurrentDetailBulletin(entity: BulletinEntity)
+}
+
 @HiltViewModel
 internal class CommunityViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val serverImageRepository: ServerImageRepository,
     private val communityRepository: CommunityRepository,
-) : BaseViewModel<CommunityViewModel.State>(savedStateHandle) {
+) : BaseViewModel<CommunityViewModel.State>(savedStateHandle), CommunityScreenEvent {
 
-    // TODO: currentBoard 초기값? 혹은 들어올 때 받아서.
-    private val _currentBoard = MutableStateFlow(CropType.PEPPER)
-    private val currentBoard = _currentBoard.asStateFlow()
-
-    // TODO: currentCategory 초기값? 혹은 들어올 때 받아서.
-    private val _currentCategory = MutableStateFlow(BulletinEntity.BulletinCategory.Free)
-    private val currentCategory = _currentCategory.asStateFlow()
-
-    private val _searchInput = MutableStateFlow("")
-    val searchInput = _searchInput.asStateFlow()
-    fun onSearchInputChanged(input: String) {
-        _searchInput.value = input
+    override fun createInitialState(savedState: Parcelable?): State {
+        return State()
     }
 
-    private val _isShowWaitingDialog = MutableStateFlow(false)
-    val isShowWaitingDialog = _isShowWaitingDialog.asStateFlow()
-    fun setIsShowWaitingDialog(boolean: Boolean) {
-        _isShowWaitingDialog.value = boolean
+    data class State(
+        // TODO: currentBoard 초기값? 혹은 들어올 때 받아서.
+        val currentBoard: CropEntity.Name = CropEntity.Name.PEPPER,
+        // TODO: currentCategory 초기값? 혹은 들어올 때 받아서.
+        val currentCategory: BulletinEntity.BulletinCategory = BulletinEntity.BulletinCategory.Free,
+        val searchInput: String = "",
+        val isShowWaitingDialog: Boolean = false,
+        val bulletinWritingInput: String = "",
+        val commentWritingInput: String = "",
+        val writingImages: List<WritingSelectedImageModel> = emptyList(),
+        val bulletinEntities: List<BulletinEntity> = emptyList(),
+        val currentDetailBulletinId: Long = 0L,
+        val currentDetailBulletin: BulletinEntity = BulletinEntity.dummy(),
+        val isLoadDetailSuccessful: Boolean = false,
+//        val aa = 22,
+//        val aa = 22,
+    ) : BaseViewModel.State
+
+    override fun onSearchInputChanged(input: String) {
+        updateState { copy(searchInput = input) }
     }
 
-    private val _bulletinWritingInput = MutableStateFlow("")
-    val bulletinWritingInput = _bulletinWritingInput.asStateFlow()
-    fun onBulletinWritingInputChanged(input: String) {
-        _bulletinWritingInput.value = input
+    override fun setIsShowWaitingDialog(boolean: Boolean) {
+        updateState { copy(isShowWaitingDialog = boolean) }
     }
 
-    private val _commentWritingInput = MutableStateFlow("")
-    val commentWritingInput = _commentWritingInput.asStateFlow()
-    fun onCommentWritingInput(input: String) {
-        _commentWritingInput.value = input
+    override fun onBulletinWritingInputChanged(input: String) {
+        updateState { copy(bulletinWritingInput = input) }
     }
 
-    private val _writingImages = MutableStateFlow(listOf<WritingSelectedImageModel>())
-    val writingImages = _writingImages.asStateFlow()
+    override fun onCommentWritingInput(input: String) {
+        updateState { copy(commentWritingInput = input) }
+    }
 
-//    private fun setWritingImages(list: List<WritingSelectedImageModel>) {
-//        _writingImages.value = list
-//    }
-//
-//    private fun addWritingImages(list: List<WritingSelectedImageModel>) {
-//        _writingImages.value += list
-//    }
+    override fun setBulletinEntities(entities: List<BulletinEntity>) {
+        updateState { copy(bulletinEntities = entities) }
+    }
+
+    override fun setCurrentDetailBulletinId(id: Long) {
+        updateState { copy(currentDetailBulletinId = id) }
+    }
+
+    override fun setCurrentDetailBulletin(entity: BulletinEntity) {
+        updateState { copy(currentDetailBulletin = entity) }
+    }
+
+    fun onBulletinClick(id: Long) {
+        setCurrentDetailBulletinId(id)
+        loadBulletin(id)
+    }
+
 
     private fun addWritingImage(model: WritingSelectedImageModel) {
-        _writingImages.value += model
+        updateState { copy(writingImages = writingImages + model) }
     }
 
     private fun removeWritingImage(model: WritingSelectedImageModel) {
-        _writingImages.value -= model  // 이거 이렇게 해도 되려나..?
+        updateState { copy(writingImages = writingImages - model) }
     }
 
     private fun replaceWritingImagesByUri(model: WritingSelectedImageModel) {
-        val idx = writingImages.value.indexOfFirst { it.uri == model.uri }
+        val idx = state.value.writingImages.indexOfFirst { it.uri == model.uri }
         if (idx < 0) return
-        _writingImages.value = writingImages.value.toMutableList().apply {
-            removeAt(idx)
-            add(idx, model)
+        updateState {
+            copy(writingImages = writingImages.toMutableList().apply {
+                removeAt(idx)
+                add(idx, model)
+            })
         }
     }
 
@@ -127,9 +150,9 @@ internal class CommunityViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val uploadedBulletinId = communityRepository.postBulletin(
-                    content = bulletinWritingInput.value,
-                    crop = currentBoard.value,
-                    bulletinCategory = currentCategory.value,
+                    content = state.value.bulletinWritingInput,
+                    crop = state.value.currentBoard,
+                    bulletinCategory = state.value.currentCategory,
 //                    imageUrls = writingImages.value.map { it.url.toString() },
                     imageUrls = emptyList(),  // temp
                 )
@@ -142,19 +165,13 @@ internal class CommunityViewModel @Inject constructor(
         Timber.d("onFinishWritingClick 끝")
     }
 
-    private val _bulletinEntities = MutableStateFlow(listOf<BulletinEntity>())
-    val bulletinEntities = _bulletinEntities.asStateFlow()
-    private fun setBulletinEntities(entities: List<BulletinEntity>) {
-        _bulletinEntities.value = entities
-    }
-
     fun onFreeCategoryClick() {
         viewModelScope.launch {
             try {
                 val bulletins = communityRepository.getBulletins(
                     keyword = null,
                     bulletinCategory = BulletinEntity.BulletinCategory.Free,
-                    crop = currentBoard.value,
+                    crop = state.value.currentBoard,
                     lastBulletinId = null,
                 )
                 setBulletinEntities(bulletins)
@@ -164,56 +181,29 @@ internal class CommunityViewModel @Inject constructor(
         }
     }
 
-    private val _currentDetailBulletinId = MutableStateFlow(0L)
-    val currentDetailBulletinId = _currentDetailBulletinId.asStateFlow()
-    private fun setCurrentDetailBulletinId(id: Long) {
-        _currentDetailBulletinId.value = id
-    }
-
-    private val _currentDetailBulletin = MutableStateFlow(BulletinEntity.dummy())
-    val currentDetailBulletin = _currentDetailBulletin.asStateFlow()
-    private fun setCurrentDetailBulletin(entity: BulletinEntity) {
-        _currentDetailBulletin.value = entity
-    }
-
-    private val _isLoadDetailSuccessful = MutableStateFlow(false)
-    val isLoadDetailSuccessful = _isLoadDetailSuccessful.asStateFlow()
-
-    fun onBulletinClick(id: Long) {
-        setCurrentDetailBulletinId(id)
-        loadBulletin(id)
-    }
-
     private fun loadBulletin(id: Long) {
         viewModelScope.launch {
             Timber.d("loadBulletin 코루틴 시작, id: $id")
-            Timber.d("loadBulletin 코루틴 시작, id: ${_currentDetailBulletinId.value}")
-            Timber.d("loadBulletin 코루틴 시작, id: ${currentDetailBulletinId.value}")
+            Timber.d("loadBulletin 코루틴 시작, id: ${state.value.currentDetailBulletinId}")
+            Timber.d("loadBulletin 코루틴 시작, id: ${state.value.currentDetailBulletinId}")
             try {
                 val entity = communityRepository.getBulletinDetail(id)
                 if (entity == null) {
-                    _isLoadDetailSuccessful.emit(false)
+                    updateState { copy(isLoadDetailSuccessful = false) }
                 } else {
-                    _isLoadDetailSuccessful.emit(true)
+                    updateState { copy(isLoadDetailSuccessful = true) }
                     setCurrentDetailBulletin(entity)
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "loadBulletin 코루틴 에러, id: $id")
-                _isLoadDetailSuccessful.emit(false)
+                updateState { copy(isLoadDetailSuccessful = false) }
             }
             Timber.d("loadBulletin 코루틴 끝, id: $id")
         }
     }
 
     init {
-        _bulletinEntities.value = List(10) { i -> BulletinEntity.dummy(i) }
+        updateState { copy(bulletinEntities = List(10) { i -> BulletinEntity.dummy(i) }) }
     }
 
-    override fun createInitialState(savedState: Parcelable?): State {
-        return State()
-    }
-
-    data class State(
-        val state: Any? = null
-    ) : BaseViewModel.State
 }
