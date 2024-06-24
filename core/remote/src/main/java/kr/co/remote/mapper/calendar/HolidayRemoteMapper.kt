@@ -1,7 +1,7 @@
-package kr.co.remote.mapper
+package kr.co.remote.mapper.calendar
 
 import kr.co.common.mapper.Mapper
-import kr.co.data.model.data.HolidayData
+import kr.co.data.model.data.calendar.HolidayData
 import kr.co.remote.model.response.calendar.HolidayListResponse
 
 internal object HolidayRemoteMapper
