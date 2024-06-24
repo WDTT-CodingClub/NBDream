@@ -29,14 +29,10 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
             parameter("weekStartDate", weekStartDate)
         }
             .body<Dto<ScheduleListResponse>>()
-            .let { scheduleListResponseDto ->
-                scheduleListResponseDto.data.scheduleList.map {
-                    ScheduleRemoteMapper.convert(it)
-                }
+            .data.scheduleList.map {
+                ScheduleRemoteMapper.convert(it)
             }
-            .let {
-                flowOf(it)
-            }
+            .let { flowOf(it) }
 
 
     override suspend fun fetchList(crop: String, year: Int, month: Int): Flow<List<ScheduleData>> =
@@ -46,14 +42,10 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
             parameter("month", month)
         }
             .body<Dto<ScheduleListResponse>>()
-            .let { scheduleListResponseDto ->
-                scheduleListResponseDto.data.scheduleList.map {
-                    ScheduleRemoteMapper.convert(it)
-                }
+            .data.scheduleList.map {
+                ScheduleRemoteMapper.convert(it)
             }
-            .let {
-                flowOf(it)
-            }
+            .let { flowOf(it) }
 
     override suspend fun create(
         category: String,
