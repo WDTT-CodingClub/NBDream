@@ -3,7 +3,6 @@ package kr.co.main.accountbook.content
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.ui.base.BaseViewModel
@@ -40,12 +39,6 @@ internal class AccountBookContentViewModel @Inject constructor(
                     registerDateTime = accountBookDetail.registerDateTime,
                     imageUrls = accountBookDetail.imageUrl
                 )
-            }
-        }.invokeOnCompletion { // 에러 발생 여부
-            if (it == null) {
-                viewModelScopeEH.launch {
-
-                }
             }
         }
 
