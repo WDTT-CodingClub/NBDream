@@ -15,7 +15,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kr.co.main.calendar.model.WeatherForecastModel
+import kr.co.main.calendar.ui.CalendarDesignToken
+import kr.co.main.model.calendar.WeatherForecastModel
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 

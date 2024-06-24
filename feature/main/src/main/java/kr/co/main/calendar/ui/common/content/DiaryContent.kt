@@ -22,12 +22,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kr.co.common.util.toTitleDateString
-import kr.co.domain.entity.HolidayEntity
 import kr.co.main.R
-import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
-import kr.co.main.calendar.ui.common.CalendarDesignToken
+import kr.co.main.calendar.ui.CalendarDesignToken
 import kr.co.main.calendar.ui.common.CalendarWeather
+import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.model.calendar.HolidayModel
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.GreenIcon
 import kr.co.ui.theme.Paddings
@@ -76,7 +76,7 @@ internal fun DiaryContent(
 @Composable
 private fun DiaryTitle(
     date: LocalDate,
-    holidays: List<HolidayEntity>,
+    holidays: List<HolidayModel>,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -147,7 +147,7 @@ private fun DiaryWorkDescription(
                 color = MaterialTheme.colors.text1
             )
             Text(
-                text = stringResource(id = workDescription.typeId),
+                text = stringResource(id = workDescription.type.id),
                 style = MaterialTheme.typo.labelM,
                 color = MaterialTheme.colors.text2
             )

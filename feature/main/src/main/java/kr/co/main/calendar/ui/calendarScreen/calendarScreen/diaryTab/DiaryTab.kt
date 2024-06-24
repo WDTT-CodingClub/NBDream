@@ -19,12 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
-import kr.co.main.calendar.model.CropModel
-import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.main.calendar.ui.common.content.CalendarContent
 import kr.co.main.calendar.ui.common.content.CalendarContentWrapper
 import kr.co.main.calendar.ui.common.innerCalendar.InnerCalendar
+import kr.co.main.model.calendar.CropModel
+import kr.co.main.model.calendar.DiaryModel
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import java.time.LocalDate
@@ -112,11 +112,11 @@ private fun DiaryListPreview(
     Surface(modifier = Modifier.fillMaxSize()) {
         DiaryList(
             diaries = listOf(
-                diary.copy(id = "1"),
-                diary.copy(id = "2"),
-                diary.copy(id = "3"),
-                diary.copy(id = "4"),
-                diary.copy(id = "5")
+                diary.copy(id = 0),
+                diary.copy(id = 1),
+                diary.copy(id = 2),
+                diary.copy(id = 3),
+                diary.copy(id = 4)
             )
         )
     }

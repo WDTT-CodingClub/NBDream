@@ -25,11 +25,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
-import kr.co.main.calendar.model.CropModel
-import kr.co.main.calendar.model.FarmWorkModel
-import kr.co.main.calendar.model.HolidayModel
-import kr.co.main.calendar.model.ScheduleModel
-import kr.co.main.calendar.model.filterAndSortHolidays
+import kr.co.main.model.calendar.CropModel
+import kr.co.main.model.calendar.FarmWorkModel
+import kr.co.main.model.calendar.HolidayModel
+import kr.co.main.model.calendar.ScheduleModel
+import kr.co.main.model.calendar.filterAndSortHolidays
 import kr.co.main.calendar.ui.common.CalendarCategoryIndicator
 import kr.co.main.calendar.ui.common.innerCalendar.InnerCalendar
 import kr.co.ui.theme.Paddings
@@ -79,7 +79,7 @@ internal fun ScheduleTab(
                 onSelectDate = event::onSelectDate,
                 navToDiary = {
                     navToSearchDiary(
-                        state.value.calendarCrop!!.nameId,
+                        state.value.calendarCrop!!.type.nameId,
                         state.value.calendarYear,
                         state.value.calendarMonth
                     )
@@ -181,8 +181,8 @@ private fun CategoryIndicatorList(
     ) {
         crop?.let {
             CategoryIndicatorListItem(
-                cropNameId = it.nameId,
-                cropColor = it.color
+                cropNameId = it.type.nameId,
+                cropColor = it.color.color
             )
         }
         CategoryIndicatorListItem(

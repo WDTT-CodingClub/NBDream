@@ -25,9 +25,6 @@ private fun AddDiaryScreen(
     event: AddDiaryScreenEvent,
     modifier: Modifier = Modifier
 ) {
-
-    Text("AddDiaryScreen, crop: ${state.value.calendarCrop?.name ?: null}")
-
 //    val addDiaryScreenState = viewModel.state.collectAsState()
 //    val addDiaryScreenInput = viewModel.input
 //

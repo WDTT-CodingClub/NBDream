@@ -1,4 +1,4 @@
-package kr.co.main.calendar.ui.common
+package kr.co.main.calendar.ui
 
 internal object CalendarDesignToken {
     const val ROUNDED_CORNER_RADIUS = 12
@@ -8,8 +8,6 @@ internal object CalendarDesignToken {
 
     // schedule content/diary content
     const val DIARY_IMAGE_SIZE = 80
-    const val DIARY_ALARM_ICON_SIZE = 12
-
     // calendar screen
     const val CALENDAR_CROP_PICKER_WIDTH = 100
 

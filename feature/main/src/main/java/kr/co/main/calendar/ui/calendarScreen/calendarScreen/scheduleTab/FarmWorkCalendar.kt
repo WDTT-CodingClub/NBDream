@@ -17,10 +17,11 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kr.co.domain.entity.FarmWorkEntity
+import kr.co.domain.entity.type.FarmWorkEraType
+import kr.co.domain.entity.type.FarmWorkType
 import kr.co.main.R
-import kr.co.main.calendar.model.FarmWorkModel
-import kr.co.main.calendar.ui.common.CalendarDesignToken
+import kr.co.main.model.calendar.FarmWorkModel
+import kr.co.main.calendar.ui.CalendarDesignToken
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -37,19 +38,19 @@ internal class FarmWorkCalendarStateHolder(
 
     val farmWorkCategoryInfo =
         listOf(
-            Pair(R.string.feature_main_calendar_farm_work_growth, FarmWorkEntity.Category.GROWTH),
-            Pair(R.string.feature_main_calendar_farm_work_climate, FarmWorkEntity.Category.CLIMATE),
-            Pair(R.string.feature_main_calendar_farm_work_pest, FarmWorkEntity.Category.PEST)
+            Pair(R.string.feature_main_calendar_farm_work_growth, FarmWorkType.GROWTH),
+            Pair(R.string.feature_main_calendar_farm_work_climate, FarmWorkType.CLIMATE),
+            Pair(R.string.feature_main_calendar_farm_work_pest, FarmWorkType.PEST)
         )
 
-    fun getFilteredFarmWorks(category: FarmWorkEntity.Category) =
+    fun getFilteredFarmWorks(category: FarmWorkType) =
         farmWorks
-            .filter { it.category == category }
+            .filter { it.type == category }
             .map {
                 if (it.startMonth < calendarMonth)
                     it.copy(
                         startMonth = calendarMonth,
-                        startEra = FarmWorkEntity.Era.EARLY
+                        startEra = FarmWorkEraType.EARLY
                     )
                 else it
             }
@@ -57,7 +58,7 @@ internal class FarmWorkCalendarStateHolder(
                 if (it.endMonth > calendarMonth)
                     it.copy(
                         endMonth = calendarMonth,
-                        endEra = FarmWorkEntity.Era.LATE
+                        endEra = FarmWorkEraType.LATE
                     )
                 else it
             }
@@ -121,8 +122,8 @@ private fun FarmWorkEraRow(
 
 @Composable
 private fun FarmWorkCalendarContent(
-    farmWorkCategoryInfo: List<Pair<Int, FarmWorkEntity.Category>>,
-    getFilteredFarmWorks: (FarmWorkEntity.Category) -> List<FarmWorkModel>,
+    farmWorkCategoryInfo: List<Pair<Int, FarmWorkType>>,
+    getFilteredFarmWorks: (FarmWorkType) -> List<FarmWorkModel>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -178,9 +179,9 @@ private fun FarmWorkCalendarRow(
                 placeables.forEachIndexed { index, placeable ->
                     placeable.place(
                         x = when (farmWorks[index].startEra) {
-                            FarmWorkEntity.Era.EARLY -> 0
-                            FarmWorkEntity.Era.MID -> constraints.maxWidth / 3
-                            FarmWorkEntity.Era.LATE -> constraints.maxWidth / 3 * 2
+                            FarmWorkEraType.EARLY -> 0
+                            FarmWorkEraType.MID -> constraints.maxWidth / 3
+                            FarmWorkEraType.LATE -> constraints.maxWidth / 3 * 2
                         },
                         y = yPosition
                     )

@@ -25,7 +25,6 @@ private fun AddScheduleScreen(
     event: AddScheduleScreenEvent,
     modifier: Modifier = Modifier
 ) {
-    Text("AddScheduleScreen, crop: ${state.value.calendarCrop?.name ?: null}")
 //    val addScheduleScreenState = viewModel.state.collectAsState()
 //    val addScheduleScreenInput = viewModel.input
 //

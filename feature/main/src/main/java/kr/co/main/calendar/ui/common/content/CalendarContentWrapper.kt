@@ -2,8 +2,8 @@ package kr.co.main.calendar.ui.common.content
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kr.co.main.calendar.model.DiaryModel
-import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.model.calendar.ScheduleModel
 
 internal sealed class CalendarContent {
     data class ScheduleContent(val schedule: ScheduleModel) : CalendarContent()

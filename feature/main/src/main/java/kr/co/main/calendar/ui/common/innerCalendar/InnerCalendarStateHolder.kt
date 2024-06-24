@@ -1,8 +1,8 @@
 package kr.co.main.calendar.ui.common.innerCalendar
 
-import kr.co.main.calendar.model.DiaryModel
-import kr.co.main.calendar.model.HolidayModel
-import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.model.calendar.HolidayModel
+import kr.co.main.model.calendar.ScheduleModel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
