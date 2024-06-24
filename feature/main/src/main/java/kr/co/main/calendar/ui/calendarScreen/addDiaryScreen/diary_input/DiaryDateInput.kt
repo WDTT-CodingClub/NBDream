@@ -5,17 +5,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import kr.co.main.calendar.common.CalendarDatePicker
-import kr.co.main.calendar.providers.FakeWeatherForecastModelProvider
-import kr.co.main.calendar.ui.common.CalendarWeather
-import kr.co.main.model.calendar.WeatherForecastModel
 import java.time.LocalDate
 
 @Composable
 internal fun DiaryDateInput(
     registerDate: LocalDate,
-    weatherForecast: WeatherForecastModel,
+    weatherInfo: String,
     onRegisterDateInput: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -24,20 +20,17 @@ internal fun DiaryDateInput(
             date = registerDate,
             onDateInput = onRegisterDateInput
         )
-        CalendarWeather(weatherForecast = weatherForecast)
     }
 }
 
 @Preview
 @Composable
-private fun DateInputPreview(
-    @PreviewParameter(FakeWeatherForecastModelProvider::class) weatherForecast: WeatherForecastModel
-) {
+private fun DateInputPreview() {
     Surface {
         DiaryDateInput(
             registerDate = LocalDate.of(2024, 5, 22),
-            weatherForecast = weatherForecast,
-            onRegisterDateInput = { _ -> 2 }
+            weatherInfo = "25°C/13°C 1mm 미만 맑음",
+            onRegisterDateInput = { _ -> }
         )
     }
 }

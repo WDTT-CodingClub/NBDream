@@ -2,12 +2,8 @@ package kr.co.main.calendar.providers
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import kr.co.domain.entity.type.HolidayType
-import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.HolidayModel
-import kr.co.main.model.calendar.WeatherForecastModel
-import kr.co.main.model.calendar.type.CropModelColorType
-import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.WorkDescriptionModelType
 import java.time.LocalDate
 
@@ -15,11 +11,7 @@ internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {
     override val values = sequenceOf(
         DiaryModel(
             id = 1,
-            crop = CropModel(
-                type = CropModelType.POTATO,
-                color = CropModelColorType.POTATO
-            ),
-            registerDate = LocalDate.of(2024, 5, 6),
+            date = LocalDate.of(2024, 5, 6),
             holidays = listOf(
                 HolidayModel(
                     date = LocalDate.of(2024, 5, 6),
@@ -34,13 +26,7 @@ internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {
                     isHoliday = true
                 )
             ),
-            weatherForecast = WeatherForecastModel(
-                date = LocalDate.of(2024, 5, 6),
-                sky = WeatherForecastModel.Sky.SUNNY,
-                minTemp = "25°C",
-                maxTemp = "28°C",
-                precipitation = 1
-            ),
+            weatherInfo = "25°C/13°C 1mm 미만 맑음",
             workLaborer = 4,
             workHours = 6,
             workArea = 80,

@@ -25,7 +25,6 @@ import kr.co.common.util.toTitleDateString
 import kr.co.main.R
 import kr.co.main.calendar.providers.FakeDiaryModelProvider
 import kr.co.main.calendar.ui.CalendarDesignToken
-import kr.co.main.calendar.ui.common.CalendarWeather
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.HolidayModel
 import kr.co.ui.icon.DreamIcon
@@ -46,11 +45,8 @@ internal fun DiaryContent(
         modifier = modifier
     ) {
         DiaryTitle(
-            date = diary.registerDate,
+            date = diary.date,
             holidays = diary.holidays
-        )
-        CalendarWeather(
-            weatherForecast = diary.weatherForecast
         )
         HorizontalDivider(
             modifier = Modifier.padding(vertical = Paddings.medium),

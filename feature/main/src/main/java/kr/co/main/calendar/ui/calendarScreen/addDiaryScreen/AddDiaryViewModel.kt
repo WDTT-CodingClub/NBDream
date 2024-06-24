@@ -46,7 +46,7 @@ internal class AddDiaryViewModel @Inject constructor(
         val calendarCrop: CropModel? = null,
         val diaryId: String = "",
         val registerDate: LocalDate = LocalDate.now(),
-        val weatherForecast: String = "",
+        val weatherInfo: String = "",
         val workLaborer: Int = 0,
         val workHour: Int = 0,
         val workArea: Int = 0,
