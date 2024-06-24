@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.theme.colors
 
 @Composable
@@ -122,11 +123,11 @@ private fun DrawScope.drawCategoryText(
         )
 
         val categoryTextX = textStartX + circleTextGap
-        val percentageTextX = categoryTextX + Paint().apply { textSize = textSizePx }.measureText(item.category) + textPercentageGap
+        val percentageTextX = categoryTextX + Paint().apply { textSize = textSizePx }.measureText(item.category.getDisplay()) + textPercentageGap
 
         drawIntoCanvas {
             it.nativeCanvas.drawText(
-                item.category,
+                item.category.getDisplay(),
                 categoryTextX,
                 textY,
                 Paint().apply {

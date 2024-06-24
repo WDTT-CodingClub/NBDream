@@ -132,7 +132,7 @@ internal class AccountBookViewModel @Inject constructor(
         val totalCost: Long? = null,
         val totalExpense: Long? = null,
         val totalRevenue: Long? = null,
-        val categories: List<AccountBookEntity.Category>? = null,
+        val categories: List<AccountBookEntity.Category?>? = null,
         val revenuePercent: List<PercentCategory>? = null,
         val expensePercent: List<PercentCategory>? = null,
         val graphTransactionType: AccountBookEntity.TransactionType = AccountBookEntity.TransactionType.EXPENSE,
@@ -147,12 +147,12 @@ internal class AccountBookViewModel @Inject constructor(
             val category: AccountBookEntity.Category?,
             val transactionType: AccountBookEntity.TransactionType?,
             val amount: Long? = 0,
-            val imageUrl: List<String>
+            val imageUrl: List<String>?
         )
 
         data class PercentCategory(
             val percent: Float,
-            val category: String
+            val category: AccountBookEntity.Category
         )
     }
 }

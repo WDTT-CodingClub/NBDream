@@ -17,13 +17,13 @@ internal object GetAccountBookListMapper
                 revenuePercent = revenuePercent.map {
                     AccountBookTotalEntity.PercentCategory(
                         it.percent,
-                        it.category
+                        toCategory(it.category)
                     )
                 },
                 expensePercent = expensePercent.map {
                     AccountBookTotalEntity.PercentCategory(
                         it.percent,
-                        it.category
+                        toCategory(it.category)
                     )
                 },
                 hasNext = hasNext
@@ -51,10 +51,8 @@ internal object GetAccountBookListMapper
         AccountBookEntity.TransactionType.entries.find { it.name.lowercase() == transactionType }
 
 
-    private fun toCategories(categories: List<String>): List<AccountBookEntity.Category> {
-        return categories.map { categoryString ->
-            AccountBookEntity.Category.entries.find { it.name.lowercase() == categoryString }
-                ?: AccountBookEntity.Category.OTHER
-        }
+    private fun toCategories(categories: List<String>) = categories.map { categoryString ->
+        AccountBookEntity.Category.entries.find { it.name.lowercase() == categoryString }
     }
+
 }

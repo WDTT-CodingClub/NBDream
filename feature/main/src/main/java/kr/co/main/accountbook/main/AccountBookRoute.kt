@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import kr.co.domain.entity.AccountBookEntity
+import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
 import kr.co.main.accountbook.model.DateRangeOption
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.icon.DreamIcon
@@ -232,7 +233,7 @@ private fun CalendarSection(
 
     val startDate = LocalDate.parse(start)
     val endDate = LocalDate.parse(end)
-    val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+    val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -423,7 +424,7 @@ fun AccountBookOptionButton(
 private fun SelectorSection(
     transactionType: AccountBookEntity.TransactionType?,
     category: String,
-    categories: List<AccountBookEntity.Category>?,
+    categories: List<AccountBookEntity.Category?>?,
     sortOrder: AccountBookEntity.SortOrder,
     onCategoryChange: (String) -> Unit,
     onSortOrderChange: (AccountBookEntity.SortOrder) -> Unit,
@@ -439,7 +440,7 @@ private fun SelectorSection(
 @Composable
 private fun CategorySelector(
     category: String?,
-    categories: List<AccountBookEntity.Category>?,
+    categories: List<AccountBookEntity.Category?>?,
     onCategoryChange: (String) -> Unit
 ) {
     var bottomSheetState by remember { mutableStateOf(false) }
@@ -570,16 +571,15 @@ private fun AccountBookItem(
                 )
             }
 
-            val imageUrl = accountBook.imageUrl.firstOrNull()
-            if (imageUrl != null) {
+            accountBook.imageUrl?.let {
                 Image(
-                    painter = rememberAsyncImagePainter(imageUrl),
+                    painter = rememberAsyncImagePainter(it),
                     contentDescription = null,
                     modifier = Modifier
                         .size(56.dp),
                     contentScale = ContentScale.Crop
                 )
-            } else {
+            } ?: run {
                 Spacer(
                     modifier = Modifier
                         .size(56.dp)
