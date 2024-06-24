@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.BulletinEntity
-import kr.co.domain.entity.CropEntity
+import kr.co.domain.entity.type.CropType
 import kr.co.domain.repository.CommunityRepository
 import kr.co.domain.repository.ServerImageRepository
 import kr.co.main.community.temp.WritingSelectedImageModel
@@ -39,7 +39,7 @@ internal class CommunityViewModel @Inject constructor(
 
     data class State(
         // TODO: currentBoard 초기값? 혹은 들어올 때 받아서.
-        val currentBoard: CropEntity.Name = CropEntity.Name.PEPPER,
+        val currentBoard: CropType = CropType.PEPPER,
         // TODO: currentCategory 초기값? 혹은 들어올 때 받아서.
         val currentCategory: BulletinEntity.BulletinCategory = BulletinEntity.BulletinCategory.Free,
         val searchInput: String = "",
