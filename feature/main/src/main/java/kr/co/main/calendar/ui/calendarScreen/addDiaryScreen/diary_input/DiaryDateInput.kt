@@ -7,9 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import kr.co.main.calendar.common.CalendarDatePicker
-import kr.co.main.calendar.ui.common.CalendarWeather
-import kr.co.main.calendar.model.WeatherForecastModel
 import kr.co.main.calendar.providers.FakeWeatherForecastModelProvider
+import kr.co.main.calendar.ui.common.CalendarWeather
+import kr.co.main.model.calendar.WeatherForecastModel
 import java.time.LocalDate
 
 @Composable

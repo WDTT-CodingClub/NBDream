@@ -3,14 +3,16 @@ package kr.co.main.calendar.ui.calendarScreen.addDiaryScreen
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kr.co.main.calendar.model.CropModel
-import kr.co.main.calendar.model.DiaryModel
+import kr.co.main.model.calendar.CropModel
+import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.model.calendar.type.CropModelType
+import kr.co.main.model.calendar.type.WorkDescriptionModelType
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import javax.inject.Inject
 
 
-interface AddDiaryScreenEvent {
+internal interface AddDiaryScreenEvent {
     fun onBackClick()
     fun onPostClick()
 
@@ -21,9 +23,10 @@ interface AddDiaryScreenEvent {
     fun onWorkAreaInput(workArea: Int)
 
     fun onAddWorkDescription(
-        workCategory: DiaryModel.WorkDescriptionModel.TypeId,
+        workCategory: WorkDescriptionModelType,
         workDescription: String
     )
+
     fun onDeleteWorkDescription(workDescriptionId: String)
 
     fun onAddImage(imageUrl: String)
@@ -50,7 +53,7 @@ internal class AddDiaryViewModel @Inject constructor(
         val workDescriptions: List<DiaryModel.WorkDescriptionModel> = emptyList(),
         val images: List<String> = emptyList(),
         val memo: String = ""
-    ) : State{
+    ) : State {
         override fun toParcelable(): Parcelable? {
             // TODO("serialize")
             return null
@@ -61,12 +64,12 @@ internal class AddDiaryViewModel @Inject constructor(
         savedState?.let {
             // TODO("deserialize")
             AddDiaryScreenState()
-        }?: AddDiaryScreenState()
+        } ?: AddDiaryScreenState()
 
-    init{
+    init {
         savedStateHandle.get<Int>("cropNameId")?.let { cropNameId ->
             updateState {
-                copy(calendarCrop = CropModel.getCropModel(cropNameId))
+                copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
             }
         }
     }
@@ -96,7 +99,7 @@ internal class AddDiaryViewModel @Inject constructor(
     }
 
     override fun onAddWorkDescription(
-        workCategory: DiaryModel.WorkDescriptionModel.TypeId,
+        workCategory: WorkDescriptionModelType,
         workDescription: String
     ) {
         TODO("Not yet implemented")

@@ -8,7 +8,6 @@ import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentRoute
 import kr.co.main.accountbook.main.AccountBookRoute
 import kr.co.main.accountbook.register.AccountBookRegisterRoute
-import kr.co.main.calendar.ui.CalendarNavGraph
 import kr.co.main.calendar.ui.calendarScreen.addDiaryScreen.AddDiaryRoute
 import kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarRoute

@@ -1,7 +1,7 @@
 package kr.co.oauth
 
-import kr.co.domain.model.AuthType
-import kr.co.domain.model.LoginResult
+import kr.co.domain.entity.type.AuthType
+import kr.co.domain.entity.LoginEntity
 import kr.co.domain.proivder.SocialLoginProvider
 import timber.log.Timber
 import javax.inject.Inject
@@ -11,7 +11,7 @@ internal class SocialLoginProviderImpl @Inject constructor(
     private val providers: Map<AuthType, @JvmSuppressWildcards Provider<SocialLoginProvider>>
 ): SocialLoginProvider {
 
-    override suspend fun login(type: AuthType): LoginResult {
+    override suspend fun login(type: AuthType): LoginEntity {
         val provider = providers[type]?.get()
         return provider?.login(type)
             ?: throw IllegalArgumentException("$type of parameter type is not allowed value")

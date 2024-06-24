@@ -4,8 +4,8 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kr.co.common.ContextManager
-import kr.co.domain.model.AuthType
-import kr.co.domain.model.LoginResult
+import kr.co.domain.entity.type.AuthType
+import kr.co.domain.entity.LoginEntity
 import kr.co.domain.proivder.SocialLoginProvider
 import kr.co.nbdream.core.oauth.BuildConfig.OAUTH_CLIENT_ID
 import kr.co.nbdream.core.oauth.BuildConfig.OAUTH_CLIENT_NAME
@@ -26,12 +26,12 @@ internal class NaverLoginProviderImpl @Inject constructor(
         )
     }
 
-    override suspend fun login(type: AuthType): LoginResult {
+    override suspend fun login(type: AuthType): LoginEntity {
         return suspendCancellableCoroutine { continuation ->
             val oauthLoginCallback = object : OAuthLoginCallback {
                 override fun onSuccess() {
                     val accessToken = NaverIdLoginSDK.getAccessToken().orEmpty()
-                    continuation.resume(LoginResult(AuthType.NAVER, accessToken)) {}
+                    continuation.resume(LoginEntity(AuthType.NAVER, accessToken)) {}
                 }
 
                 override fun onFailure(httpStatus: Int, message: String) {

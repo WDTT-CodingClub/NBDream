@@ -53,10 +53,10 @@ internal abstract class DataModule {
     @Binds
     abstract fun bindsFarmWorkRepository(repositoryImpl: FarmWorkRepositoryImpl): FarmWorkRepository
 
-//    @Singleton
-//    @Binds
-//    abstract fun bindsScheduleRepository(repositoryImpl: ScheduleRepositoryImpl): ScheduleRepository
-//
+    @Singleton
+    @Binds
+    abstract fun bindsScheduleRepository(repositoryImpl: ScheduleRepositoryImpl): ScheduleRepository
+
 //    @Singleton
 //    @Binds
 //    abstract fun bindsDiaryRepository(repositoryImpl: DiaryRepositoryImpl): DiaryRepository

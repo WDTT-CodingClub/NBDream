@@ -7,12 +7,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class FarmWorkListResponse(
     @SerialName("farmWorkResDtoList")
-    val farmWorkResponse: List<FarmWorkResponse>
+    val farmWorkList: List<FarmWorkResponse>
 ){
     @Serializable
     data class FarmWorkResponse(
         val id: Int,
-        //val crop:String,
         val startMonth: Int,
         val startEra: String,
         val endMonth: Int,

@@ -4,19 +4,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kr.co.main.calendar.model.ScheduleModel
+import kr.co.main.model.calendar.type.ScheduleModelType
 import java.time.LocalDate
 
-sealed class ScheduleInputContent{
+internal sealed class ScheduleInputContent{
     abstract val headerId:Int
 
     data class GeneralInputContent(
         override val headerId:Int,
-        val category: ScheduleModel.Category,
+        val type: ScheduleModelType,
         val title:String,
         val startDate: LocalDate,
         val endDate: LocalDate,
-        val onCategoryInput: (ScheduleModel.Category) -> Unit,
+        val onTypeInput: (ScheduleModelType) -> Unit,
         val onTitleInput: (String) -> Unit,
         val onStartDateInput: (LocalDate) -> Unit,
         val onEndDateInput: (LocalDate) -> Unit

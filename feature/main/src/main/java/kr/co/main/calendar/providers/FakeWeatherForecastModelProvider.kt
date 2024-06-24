@@ -1,10 +1,10 @@
 package kr.co.main.calendar.providers
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import kr.co.main.calendar.model.WeatherForecastModel
+import kr.co.main.model.calendar.WeatherForecastModel
 import java.time.LocalDate
 
-class FakeWeatherForecastModelProvider : PreviewParameterProvider<WeatherForecastModel> {
+internal class FakeWeatherForecastModelProvider : PreviewParameterProvider<WeatherForecastModel> {
     override val values = sequenceOf(
         WeatherForecastModel(
             date = LocalDate.of(2024, 5, 22),

@@ -38,26 +38,27 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import kr.co.main.R
-import kr.co.main.calendar.ui.common.CalendarDesignToken
-import kr.co.main.calendar.ui.common.CalendarUnderLineTextField
-import kr.co.main.calendar.model.DiaryModel
 import kr.co.main.calendar.providers.FakeWorkDescriptionModelListProvider
+import kr.co.main.calendar.ui.CalendarDesignToken
+import kr.co.main.calendar.ui.common.CalendarUnderLineTextField
+import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.model.calendar.type.WorkDescriptionModelType
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Delete
-import kr.co.ui.icon.dreamicon.Edit
+import kr.co.ui.icon.dreamicon.GreenIcon
 import kr.co.ui.icon.dreamicon.Spinner
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 
-class WorkInputStateHolder {
-    var typeId = DiaryModel.WorkDescriptionModel.TypeId.NOT_SET
+internal class WorkInputStateHolder {
+    var type: WorkDescriptionModelType? = null
         private set
     var description = ""
         private set
 
-    fun onWorkTypeInput(input: DiaryModel.WorkDescriptionModel.TypeId) {
-        typeId = input
+    fun onWorkTypeInput(input: WorkDescriptionModelType) {
+        type = input
     }
 
     fun onDescriptionInput(input: String) {
@@ -68,15 +69,15 @@ class WorkInputStateHolder {
 @Composable
 internal fun DiaryWorkInput(
     workDescriptions: List<DiaryModel.WorkDescriptionModel>,
-    onAddWorkDescription: (DiaryModel.WorkDescriptionModel.TypeId, String) -> Unit,
-    onDeleteDescription: (String) -> Unit,
+    onAddWorkDescription: (WorkDescriptionModelType, String) -> Unit,
+    onDeleteDescription: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val workInputStateHolder by rememberWorkInputStateHolder()
 
     Column(modifier = modifier.fillMaxWidth()) {
         WorkDescriptionInput(
-            typeId = workInputStateHolder.typeId,
+            type = workInputStateHolder.type,
             description = workInputStateHolder.description,
             onWorkTypeInput = { workInputStateHolder.onWorkTypeInput(it) },
             onDescriptionInput = { workInputStateHolder.onDescriptionInput(it) },
@@ -97,11 +98,11 @@ private fun rememberWorkInputStateHolder() = remember {
 
 @Composable
 private fun WorkDescriptionInput(
-    typeId: DiaryModel.WorkDescriptionModel.TypeId,
+    type: WorkDescriptionModelType?,
     description: String,
-    onWorkTypeInput: (DiaryModel.WorkDescriptionModel.TypeId) -> Unit,
+    onWorkTypeInput: (WorkDescriptionModelType) -> Unit,
     onDescriptionInput: (String) -> Unit,
-    onAddWorkDescription: (DiaryModel.WorkDescriptionModel.TypeId, String) -> Unit,
+    onAddWorkDescription: (WorkDescriptionModelType, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -110,7 +111,7 @@ private fun WorkDescriptionInput(
     ) {
         WorkTypeSpinner(
             modifier = Modifier.weight(1f),
-            workTypeId = typeId,
+            workTypeId = type,
             onWorkTypeInput = onWorkTypeInput
         )
         WorkDescriptionTextField(
@@ -121,10 +122,9 @@ private fun WorkDescriptionInput(
         AddWorkDescriptionButton(
             modifier = Modifier.weight(1f),
             onClick = {
-                if (typeId == DiaryModel.WorkDescriptionModel.TypeId.NOT_SET)
-                    throw IllegalArgumentException("category typeId is not set")
+                checkNotNull(type)
                 onAddWorkDescription(
-                    typeId,
+                    type,
                     description
                 )
             }
@@ -134,8 +134,8 @@ private fun WorkDescriptionInput(
 
 @Composable
 private fun WorkTypeSpinner(
-    workTypeId: DiaryModel.WorkDescriptionModel.TypeId,
-    onWorkTypeInput: (DiaryModel.WorkDescriptionModel.TypeId) -> Unit,
+    workTypeId: WorkDescriptionModelType?,
+    onWorkTypeInput: (WorkDescriptionModelType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expandSpinner by remember { mutableStateOf(false) }
@@ -159,10 +159,10 @@ private fun WorkTypeSpinner(
 
 @Composable
 private fun WorkTypeSpinnerButton(
-    workTypeId: DiaryModel.WorkDescriptionModel.TypeId,
+    workTypeId: WorkDescriptionModelType?,
     onClick: () -> Unit,
-    modifier:Modifier = Modifier
-){
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp))
@@ -176,7 +176,10 @@ private fun WorkTypeSpinnerButton(
         ) {
             Text(
                 modifier = Modifier.padding(end = Paddings.small),
-                text = stringResource(id = workTypeId.id),
+                text = stringResource(
+                    id = workTypeId?.id
+                        ?: R.string.feature_main_calendar_add_diary_input_work_category
+                ),
                 style = MaterialTheme.typo.labelM,
                 color = MaterialTheme.colors.text1
             )
@@ -192,8 +195,8 @@ private fun WorkTypeSpinnerButton(
 @Composable
 private fun WorkTypeSpinnerDropDown(
     expanded: Boolean,
-    workType: DiaryModel.WorkDescriptionModel.TypeId,
-    onWorkTypeInput: (DiaryModel.WorkDescriptionModel.TypeId) -> Unit,
+    workType: WorkDescriptionModelType?,
+    onWorkTypeInput: (WorkDescriptionModelType) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -205,9 +208,8 @@ private fun WorkTypeSpinnerDropDown(
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
-        DiaryModel.WorkDescriptionModel.TypeId.entries
+        WorkDescriptionModelType.entries
             .toList()
-            .filter { it != DiaryModel.WorkDescriptionModel.TypeId.NOT_SET }
             .forEach {
                 WorkTypeSpinnerDropDownItem(
                     isSelected = (it == workType),
@@ -224,8 +226,8 @@ private fun WorkTypeSpinnerDropDown(
 @Composable
 private fun WorkTypeSpinnerDropDownItem(
     isSelected: Boolean,
-    workType: DiaryModel.WorkDescriptionModel.TypeId,
-    onWorkTypeInput: (DiaryModel.WorkDescriptionModel.TypeId) -> Unit,
+    workType: WorkDescriptionModelType,
+    onWorkTypeInput: (WorkDescriptionModelType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     DropdownMenuItem(
@@ -292,11 +294,11 @@ private fun AddWorkDescriptionButton(
 @Composable
 private fun WorkDescriptionList(
     workDescriptions: List<DiaryModel.WorkDescriptionModel>,
-    onDeleteDescription: (String) -> Unit,
+    onDeleteDescription: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier) {
-        items(workDescriptions, key = { it.id!! }) {
+        items(workDescriptions, key = { it.id }) {
             WorkDescriptionItem(
                 workDescription = it,
                 onDeleteDescription = onDeleteDescription
@@ -308,7 +310,7 @@ private fun WorkDescriptionList(
 @Composable
 private fun WorkDescriptionItem(
     workDescription: DiaryModel.WorkDescriptionModel,
-    onDeleteDescription: (String) -> Unit,
+    onDeleteDescription: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
@@ -318,7 +320,7 @@ private fun WorkDescriptionItem(
         ) {
             Icon(
                 modifier = Modifier.padding(end = Paddings.medium),
-                imageVector = DreamIcon.Edit, //TODO 새싹 아이콘으로 변경
+                imageVector = DreamIcon.GreenIcon,
                 contentDescription = null
             )
             Text(
@@ -329,7 +331,7 @@ private fun WorkDescriptionItem(
             )
             Text(
                 modifier = Modifier,
-                text = stringResource(id = workDescription.typeId),
+                text = stringResource(id = workDescription.id),
                 style = MaterialTheme.typo.labelM,
                 color = MaterialTheme.colors.text2
             )
@@ -339,7 +341,7 @@ private fun WorkDescriptionItem(
                 .align(Alignment.CenterEnd)
                 .padding(end = Paddings.medium)
                 .clickable {
-                    onDeleteDescription(workDescription.id!!)
+                    onDeleteDescription(workDescription.id)
                 },
             imageVector = DreamIcon.Delete,
             tint = Color.LightGray,

@@ -1,32 +1,36 @@
 package kr.co.main.calendar.providers
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import kr.co.domain.entity.HolidayEntity
-import kr.co.main.calendar.model.CropModel
-import kr.co.main.calendar.model.DiaryModel
-import kr.co.main.calendar.model.WeatherForecastModel
+import kr.co.domain.entity.type.HolidayType
+import kr.co.main.model.calendar.CropModel
+import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.model.calendar.HolidayModel
+import kr.co.main.model.calendar.WeatherForecastModel
+import kr.co.main.model.calendar.type.CropModelColorType
+import kr.co.main.model.calendar.type.CropModelType
+import kr.co.main.model.calendar.type.WorkDescriptionModelType
 import java.time.LocalDate
 
 internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {
-    @RequiresApi(Build.VERSION_CODES.O)
     override val values = sequenceOf(
         DiaryModel(
-            id = "1",
-            crop = CropModel.POTATO,
+            id = 1,
+            crop = CropModel(
+                type = CropModelType.POTATO,
+                color = CropModelColorType.POTATO
+            ),
             registerDate = LocalDate.of(2024, 5, 6),
             holidays = listOf(
-                HolidayEntity(
+                HolidayModel(
                     date = LocalDate.of(2024, 5, 6),
                     name = "입하(立夏)",
-                    type = HolidayEntity.Type.SOLAR_TERM,
+                    type = HolidayType.SOLAR_TERM,
                     isHoliday = false
                 ),
-                HolidayEntity(
+                HolidayModel(
                     date = LocalDate.of(2024, 5, 6),
                     name = "어린이날",
-                    type = HolidayEntity.Type.NATIONAL_HOLIDAY,
+                    type = HolidayType.NATIONAL_HOLIDAY,
                     isHoliday = true
                 )
             ),
@@ -42,13 +46,13 @@ internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {
             workArea = 80,
             workDescriptions = listOf(
                 DiaryModel.WorkDescriptionModel(
-                    id = "0",
-                    DiaryModel.WorkDescriptionModel.TypeId.WEED.id,
+                    id = 1,
+                    WorkDescriptionModelType.WEED,
                     "감자밭 제초 작업"
                 ),
                 DiaryModel.WorkDescriptionModel(
-                    id = "1",
-                    DiaryModel.WorkDescriptionModel.TypeId.HARVEST.id,
+                    id = 2,
+                    WorkDescriptionModelType.HARVEST,
                     "봄 감자 수확"
                 )
             ),
@@ -57,6 +61,5 @@ internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {
         )
     )
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override val count: Int = values.count()
 }

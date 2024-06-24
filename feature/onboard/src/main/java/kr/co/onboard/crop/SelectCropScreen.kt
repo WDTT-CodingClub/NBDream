@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kr.co.domain.entity.CropEntity
+import kr.co.domain.entity.type.CropType
 import kr.co.nbdream.core.ui.R
 import kr.co.onboard.address.DescriptionText
 import kr.co.onboard.address.DynamicStepProgressBars
@@ -62,8 +62,17 @@ fun SelectCropScreen(
                 .padding(paddingValues)
                 .fillMaxHeight()
         ) {
-            DynamicStepProgressBars(modifier, colors = listOf(ColorSet.Dream.lightColors.green2, ColorSet.Dream.lightColors.green2))
-            StepText(stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second), modifier = Modifier)
+            DynamicStepProgressBars(
+                modifier,
+                colors = listOf(
+                    ColorSet.Dream.lightColors.green2,
+                    ColorSet.Dream.lightColors.green2
+                )
+            )
+            StepText(
+                stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second),
+                modifier = Modifier
+            )
             DescriptionText(stringResource(id = kr.co.onboard.R.string.feature_onboard_my_farm_crops_description))
             CropsList(crops)
             NextButton(
@@ -79,15 +88,16 @@ fun SelectCropScreen(
 fun StepText(
     text: String,
     modifier: Modifier
-){
+) {
     Box(
         modifier.fillMaxWidth(),
         contentAlignment = Alignment.CenterEnd
-    ){
+    ) {
         Text(
             text,
             color = ColorSet.Dream.lightColors.grey6,
-            style = MaterialTheme.typo.labelL) // 피그마에 명시된 폰트가 없어서 임시로 제일 작고 얇은 폰트 적용
+            style = MaterialTheme.typo.labelL
+        ) // 피그마에 명시된 폰트가 없어서 임시로 제일 작고 얇은 폰트 적용
     }
 }
 
@@ -139,21 +149,22 @@ fun CropsList(
 @Preview(showSystemUi = true)
 private fun LazyVerticalGridDemoPreview() {
     val crops = listOf(
-        CropItem(CropEntity.Name.PEPPER, R.drawable.img_logo),
-        CropItem(CropEntity.Name.RICE, R.drawable.img_logo),
-        CropItem(CropEntity.Name.POTATO, R.drawable.img_logo),
-        CropItem(CropEntity.Name.SWEET_POTATO, R.drawable.img_logo),
-        CropItem(CropEntity.Name.APPLE, R.drawable.img_logo),
-        CropItem(CropEntity.Name.STRAWBERRY, R.drawable.img_logo),
-        CropItem(CropEntity.Name.GARLIC, R.drawable.img_logo),
-        CropItem(CropEntity.Name.LETTUCE, R.drawable.img_logo),
-        CropItem(CropEntity.Name.NAPPA_CABBAGE, R.drawable.img_logo),
-        CropItem(CropEntity.Name.TOMATO, R.drawable.img_logo)
+        CropItem(CropType.PEPPER, R.drawable.img_logo),
+        CropItem(CropType.RICE, R.drawable.img_logo),
+        CropItem(CropType.POTATO, R.drawable.img_logo),
+        CropItem(CropType.SWEET_POTATO, R.drawable.img_logo),
+        CropItem(CropType.APPLE, R.drawable.img_logo),
+        CropItem(CropType.STRAWBERRY, R.drawable.img_logo),
+        CropItem(CropType.GARLIC, R.drawable.img_logo),
+        CropItem(CropType.LETTUCE, R.drawable.img_logo),
+        CropItem(CropType.NAPPA_CABBAGE, R.drawable.img_logo),
+        CropItem(CropType.TOMATO, R.drawable.img_logo)
     )
     NBDreamTheme {
         CropsList(crops, modifier = Modifier)
     }
 }
+
 @Composable
 @Preview(showSystemUi = true)
 private fun SelectCropScreenPreview() {

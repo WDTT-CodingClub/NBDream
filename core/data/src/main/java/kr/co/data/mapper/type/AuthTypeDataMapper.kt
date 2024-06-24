@@ -2,7 +2,7 @@ package kr.co.data.mapper.type
 
 import kr.co.common.mapper.BaseMapper
 import kr.co.data.model.type.AuthTypeData
-import kr.co.domain.model.AuthType
+import kr.co.domain.entity.type.AuthType
 
 internal object AuthTypeDataMapper
     :BaseMapper<AuthTypeData, AuthType> (){

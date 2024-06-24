@@ -2,23 +2,24 @@ package kr.co.onboard.crop.model
 
 import androidx.annotation.DrawableRes
 import kr.co.domain.entity.CropEntity
+import kr.co.domain.entity.type.CropType
 
 data class CropItem(
-    val name: CropEntity.Name,
+    val name: CropType,
     @DrawableRes val imageRes: Int
 )
 
-fun CropEntity.Name.toKoreanName(): String {
-    return when (this) {
-        CropEntity.Name.PEPPER -> "고추"
-        CropEntity.Name.RICE -> "벼"
-        CropEntity.Name.POTATO -> "감자"
-        CropEntity.Name.SWEET_POTATO -> "고구마"
-        CropEntity.Name.APPLE -> "사과"
-        CropEntity.Name.STRAWBERRY -> "딸기"
-        CropEntity.Name.GARLIC -> "마늘"
-        CropEntity.Name.LETTUCE -> "상추"
-        CropEntity.Name.NAPPA_CABBAGE -> "배추"
-        CropEntity.Name.TOMATO -> "토마토"
+fun CropType.toKoreanName(): String =
+    when (this) {
+        CropType.PEPPER -> "고추"
+        CropType.RICE -> "벼"
+        CropType.POTATO -> "감자"
+        CropType.SWEET_POTATO -> "고구마"
+        CropType.APPLE -> "사과"
+        CropType.STRAWBERRY -> "딸기"
+        CropType.GARLIC -> "마늘"
+        CropType.LETTUCE -> "상추"
+        CropType.NAPPA_CABBAGE -> "배추"
+        CropType.TOMATO -> "토마토"
     }
-}
+

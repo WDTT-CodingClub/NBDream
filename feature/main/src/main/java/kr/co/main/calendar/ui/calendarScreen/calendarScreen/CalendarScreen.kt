@@ -45,10 +45,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
-import kr.co.main.calendar.model.CropModel
+import kr.co.main.model.calendar.CropModel
 import kr.co.main.calendar.ui.calendarScreen.calendarScreen.diaryTab.DiaryTab
 import kr.co.main.calendar.ui.calendarScreen.calendarScreen.scheduleTab.ScheduleTab
-import kr.co.main.calendar.ui.common.CalendarDesignToken
+import kr.co.main.calendar.ui.CalendarDesignToken
+import kr.co.main.model.calendar.type.CropModelColorType
+import kr.co.main.model.calendar.type.CropModelType
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Bell
 import kr.co.ui.icon.dreamicon.Edit
@@ -97,8 +99,8 @@ private fun CalendarScreen(
                     .padding(horizontal = Paddings.large),
                 selectedTab = state.value.selectedTab,
                 onSelectTab = event::onSelectTab,
-                navToAddSchedule = { navToAddSchedule(state.value.calendarCrop!!.nameId) },
-                navToAddDiary = { navToAddDiary(state.value.calendarCrop!!.nameId) },
+                navToAddSchedule = { navToAddSchedule(state.value.calendarCrop!!.type.nameId) },
+                navToAddDiary = { navToAddDiary(state.value.calendarCrop!!.type.nameId) },
                 navToNotification = navToNotification
             )
         }
@@ -143,7 +145,7 @@ private fun CalendarScreen(
                                 calendarMonth = state.value.calendarMonth,
                                 navToSearchDiary = {
                                     navToSearchDiary(
-                                        state.value.calendarCrop!!.nameId,
+                                        state.value.calendarCrop!!.type.nameId,
                                         state.value.calendarYear,
                                         state.value.calendarMonth
                                     )
@@ -382,7 +384,7 @@ private fun CalendarCropPickerButton(
                 .padding(vertical = Paddings.medium)
                 .padding(start = Paddings.large)
                 .align(Alignment.CenterStart),
-            text = stringResource(id = calendarCrop.nameId),
+            text = stringResource(id = calendarCrop.type.nameId),
             style = MaterialTheme.typo.body1,
             color = MaterialTheme.colors.text2
         )
@@ -434,7 +436,7 @@ private fun CalendarCropPickerDropDownItem(
 ) {
     Text(
         modifier = modifier,
-        text = stringResource(id = crop.nameId),
+        text = stringResource(id = crop.type.nameId),
         style = MaterialTheme.typo.body1,
         color = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.text2
     )
@@ -444,14 +446,16 @@ private fun CalendarCropPickerDropDownItem(
 @Composable
 private fun CalendarCropPickerPreview() {
     val calendarCrop = remember {
-        mutableStateOf(CropModel.POTATO)
+        mutableStateOf(
+            CropModel(type = CropModelType.POTATO, color = CropModelColorType.POTATO )
+        )
     }
 
     CalendarCropPicker(
         userCrops = listOf(
-            CropModel.POTATO,
-            CropModel.TOMATO,
-            CropModel.APPLE
+            CropModel(type = CropModelType.POTATO, color = CropModelColorType.POTATO ),
+            CropModel(type = CropModelType.SWEET_POTATO, color = CropModelColorType.SWEET_POTATO ),
+            CropModel(type = CropModelType.APPLE, color = CropModelColorType.APPLE )
         ),
         calendarCrop = calendarCrop.value,
         onSelectCrop = {

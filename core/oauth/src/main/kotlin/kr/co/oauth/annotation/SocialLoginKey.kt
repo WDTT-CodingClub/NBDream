@@ -1,7 +1,7 @@
 package kr.co.oauth.annotation
 
 import dagger.MapKey
-import kr.co.domain.model.AuthType
+import kr.co.domain.entity.type.AuthType
 
 @Target(
     AnnotationTarget.FUNCTION,

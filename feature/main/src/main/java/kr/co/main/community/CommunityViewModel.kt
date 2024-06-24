@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.BulletinEntity
-import kr.co.domain.entity.CropEntity
+import kr.co.domain.entity.type.CropType
 import kr.co.domain.repository.CommunityRepository
 import kr.co.domain.repository.ServerImageRepository
 import kr.co.main.community.temp.WritingSelectedImageModel
@@ -26,7 +26,7 @@ internal class CommunityViewModel @Inject constructor(
 ) : BaseViewModel<CommunityViewModel.State>(savedStateHandle) {
 
     // TODO: currentBoard 초기값? 혹은 들어올 때 받아서.
-    private val _currentBoard = MutableStateFlow(CropEntity.Name.PEPPER)
+    private val _currentBoard = MutableStateFlow(CropType.PEPPER)
     private val currentBoard = _currentBoard.asStateFlow()
 
     // TODO: currentCategory 초기값? 혹은 들어올 때 받아서.
