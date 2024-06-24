@@ -35,6 +35,7 @@ internal class UserRepositoryImpl @Inject constructor(
 
     override suspend fun save(user: UserEntity) {
         local.save(user.let(UserMapper::toLeft))
+        session.saveUserName(user.name)
     }
 
     override suspend fun update(user: UserEntity) {

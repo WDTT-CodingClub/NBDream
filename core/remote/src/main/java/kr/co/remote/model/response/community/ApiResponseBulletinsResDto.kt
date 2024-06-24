@@ -1,10 +1,10 @@
 package kr.co.remote.model.response.community
 
 import kotlinx.serialization.Serializable
-import kr.co.data.model.data.community.GetBulletinsResult
+import kr.co.data.model.data.community.ApiResponseBulletinsResDtoData
 
 @Serializable
-internal data class GetBulletinsResponse(
+internal data class ApiResponseBulletinsResDto(
     val code: Int? = null,
     val status: String? = null,
     val message: String? = null,
@@ -18,12 +18,13 @@ internal data class GetBulletinsResponse(
 }
 
 
-internal fun GetBulletinsResponse.Data.convertToResultData() = GetBulletinsResult.Data(
-    bulletins = bulletins?.convertToDataList(),
-    hasNext = hasNext,
-)
+internal fun ApiResponseBulletinsResDto.Data.convertToResultData() =
+    ApiResponseBulletinsResDtoData.Data(
+        bulletins = bulletins?.convertToDataList(),
+        hasNext = hasNext,
+    )
 
-internal fun GetBulletinsResponse.convertToResult() = GetBulletinsResult(
+internal fun ApiResponseBulletinsResDto.convertToData() = ApiResponseBulletinsResDtoData(
     code = code,
     status = status,
     message = message,

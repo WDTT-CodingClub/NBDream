@@ -1,6 +1,6 @@
 package kr.co.data.model.data.community
 
-data class PostBulletinResult(
+data class ApiResponseLongData(
     val code: Int?,
     val status: String?,
     val message: String?,

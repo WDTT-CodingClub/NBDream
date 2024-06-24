@@ -5,8 +5,9 @@ import kr.co.data.model.type.AuthTypeData
 
 interface AuthRemoteDataSource {
     suspend fun getAuthToken(
+        accessToken: String,
         refreshToken: String
-    )
+    ): Auth
 
     suspend fun login(
         type: AuthTypeData,

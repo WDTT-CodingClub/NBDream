@@ -21,6 +21,11 @@ import kr.co.main.my.MyPageRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
 import kr.co.main.my.setting.MyPageSettingRoute
 import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
+import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
+import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
+import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
+import kr.co.main.my.setting.verify.MyPageSettingDeleteSocialVerifyRoute
+import kr.co.main.notification.NotificationRoute
 import timber.log.Timber
 
 
@@ -46,6 +51,11 @@ internal data object MyPageRoute {
     const val SETTING_LOGOUT_ROUTE = "myPageSettingLogoutRoute"
     const val SETTING_APP_INFO_ROUTE = "myPageSettingAppInfoRoute"
     const val SETTING_DELETE_ACCOUNT_ROUTE = "myPageSettingDeleteAccountRoute"
+    const val SETTING_DELETE_VERIFY_ROUTE = "myPageSettingDeleteVerifyRoute"
+
+    const val BOOKMARK_ROUTE = "myPageBookmarkRoute"
+    const val WRITE_ROUTE = "myPageWriteRoute"
+    const val COMMENT_ROUTE = "myPageCommentRoute"
 }
 
 
@@ -128,6 +138,18 @@ fun NavGraphBuilder.mainNavGraph(
                     MyPageRoute(
                         navigateToProfileEdit = {
                             navController.navigate(MyPageRoute.EDIT_ROUTE)
+                        },
+                        navigateToSetting = {
+                            navController.navigate(MyPageRoute.SETTING_ROUTE)
+                        },
+                        navigateToBookmark = {
+
+                        },
+                        navigateToWrite = {
+
+                        },
+                        navigateToComment = {
+
                         }
                     )
                 }
@@ -146,7 +168,9 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = NOTIFICATION_ROUTE
     ) {
-
+        NotificationRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(
@@ -210,8 +234,9 @@ fun NavGraphBuilder.mainNavGraph(
         MyPageProfileEditRoute(
             popBackStack = navController::popBackStack,
             navigateToMyPage = {
-                navController.navigate(MainBottomRoute.MY_PAGE.route) {
-                    popUpTo(MainBottomRoute.MY_PAGE.route) { inclusive = true }
+                navController.navigate(MAIN_ROUTE) {
+                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    launchSingleTop = true
                 }
             }
         )
@@ -222,8 +247,17 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         MyPageSettingRoute(
             popBackStack = navController::popBackStack,
-            navigateTo = { route ->
-                navController.navigate(route)
+            navigateToNotification = {
+                navController.navigate(MyPageRoute.SETTING_NOTIFICATION_ROUTE)
+            },
+            navigateToPrivacyPolicy = {
+                navController.navigate(MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE)
+            },
+            navigateToAppInfo = {
+                navController.navigate(MyPageRoute.SETTING_APP_INFO_ROUTE)
+            },
+            navigateToDeleteAccount = {
+                navController.navigate(MyPageRoute.SETTING_DELETE_ACCOUNT_ROUTE)
             }
         )
     }
@@ -231,13 +265,17 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = MyPageRoute.SETTING_NOTIFICATION_ROUTE
     ) {
-
+        MyPageSettingNotificationRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(
         route = MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE
     ) {
-
+        MyPageSettingPrivacyPolicyRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(
@@ -249,14 +287,49 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = MyPageRoute.SETTING_APP_INFO_ROUTE
     ) {
-
+        MyPageSettingAppInfoRoute()
     }
 
     composable(
         route = MyPageRoute.SETTING_DELETE_ACCOUNT_ROUTE
     ) {
         MyPageSettingDeleteAccountRoute(
-            popBackStack = navController::popBackStack
+            popBackStack = navController::popBackStack,
+            navigateToSocialVerify = {
+                navController.navigate(MyPageRoute.SETTING_DELETE_VERIFY_ROUTE)
+            }
         )
+    }
+
+    composable(
+        route = MyPageRoute.SETTING_DELETE_VERIFY_ROUTE
+    ) {
+        MyPageSettingDeleteSocialVerifyRoute(
+            popBackStack = navController::popBackStack,
+            navigateToPrivacyPolicy = {
+                navController.navigate(MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE)
+            },
+            navigateToOnBoard = {
+
+            }
+        )
+    }
+
+    composable(
+        route = MyPageRoute.BOOKMARK_ROUTE
+    ) {
+
+    }
+
+    composable(
+        route = MyPageRoute.WRITE_ROUTE
+    ) {
+
+    }
+
+    composable(
+        route = MyPageRoute.COMMENT_ROUTE
+    ) {
+
     }
 }

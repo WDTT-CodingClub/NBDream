@@ -48,7 +48,9 @@ internal class SessionLocalDataSourceImpl @Inject constructor(
 
     override suspend fun removeAll() {
         dataStore.edit { pref ->
-            pref.clear()
+            pref.remove(USER_NAME)
+            pref.remove(ACCESS_TOKEN)
+            pref.remove(REFRESH_TOKEN)
         }
     }
 

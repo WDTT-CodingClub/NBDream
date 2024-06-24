@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.type.AuthType
@@ -17,28 +19,26 @@ import javax.inject.Inject
 internal class OnBoardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val socialLoginProvider: SocialLoginProvider,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
 ) : BaseViewModel<OnBoardViewModel.State>(savedStateHandle) {
+
+    private val _showAddressScreen = MutableSharedFlow<Unit>()
+
+    val showAddressScreen = _showAddressScreen.asSharedFlow()
 
     fun onSocialLoginClick(authType: AuthType) {
         viewModelScopeEH.launch {
-            try {
-                val loginResult = socialLoginProvider.login(authType)
-                Timber.d(loginResult.toString())
-
-                loginUseCase(LoginUseCase.Params(loginResult.type, loginResult.token))
-            } catch (e: Exception) {
-                Timber.e(e, "Login failed")
+            socialLoginProvider.login(authType).also {
+                loginUseCase(LoginUseCase.Params(it.type, it.token))
+            }
+        }.invokeOnCompletion {
+            viewModelScopeEH.launch {
+                _showAddressScreen.emit(Unit)
             }
         }
     }
 
     init {
-        viewModelScope.launch {
-            error.collectLatest {
-                Timber.d(it.cause?.message)
-            }
-        }
     }
 
     override fun createInitialState(savedState: Parcelable?) = State
