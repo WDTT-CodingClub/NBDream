@@ -56,6 +56,7 @@ import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import kr.co.ui.widget.LoadingShimmerEffect
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -65,6 +66,7 @@ import java.util.Locale
 @Composable
 internal fun AccountBookContentRoute(
     popBackStack: () -> Unit,
+    navigationToUpdate: (Long?) -> Unit,
     viewModel: AccountBookContentViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -118,7 +120,7 @@ internal fun AccountBookContentRoute(
                                     }
                                 },
                                 onClick = {
-                                    // TODO 수정하기
+                                    navigationToUpdate(state.id)
                                     showDropDownMenu = false
                                 }
                             )
@@ -145,15 +147,9 @@ internal fun AccountBookContentRoute(
             }
 
             if (isLoading) {
-                item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = Paddings.xlarge)
-                    ) {
-                        repeat(5) {
-                            LoadingShimmerEffect()
-                        }
+                items(5) {
+                    LoadingShimmerEffect {
+                        ShimmerGridItem(brush = it)
                     }
                 }
 
@@ -328,36 +324,6 @@ fun formatDate(dateString: String): String {
     } catch (e: Exception) {
         ""
     }
-}
-
-@Composable
-fun LoadingShimmerEffect() {
-    val shimmerColors = listOf(
-        Color.LightGray.copy(alpha = 0.6f),
-        Color.LightGray.copy(alpha = 0.2f),
-        Color.LightGray.copy(alpha = 0.6f),
-    )
-
-    val transition = rememberInfiniteTransition(label = "")
-    val translateAnim = transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1000,
-                easing = FastOutSlowInEasing
-            ),
-            repeatMode = RepeatMode.Reverse
-        ), label = ""
-    )
-
-    val brush = Brush.linearGradient(
-        colors = shimmerColors,
-        start = Offset.Zero,
-        end = Offset(x = translateAnim.value, y = translateAnim.value)
-    )
-
-    ShimmerGridItem(brush = brush)
 }
 
 @Composable

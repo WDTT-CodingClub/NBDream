@@ -81,9 +81,9 @@ import java.util.Locale
 
 
 @Composable
-internal fun AccountBookRegisterRoute(
+internal fun AccountBookCreateRoute(
     popBackStack: () -> Unit,
-    viewModel: AccountBookRegisterViewModel = hiltViewModel()
+    viewModel: AccountBookCreateViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

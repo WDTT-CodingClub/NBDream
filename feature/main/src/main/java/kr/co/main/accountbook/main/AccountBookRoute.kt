@@ -131,43 +131,73 @@ internal fun AccountBookRoute(
                     }
                 }
 
-                itemsIndexed(
-                    state.accountBooks
-                ) { index, data ->
-                    val lastIndex = state.accountBooks.lastIndex
-                    if (index == lastIndex && state.hasNext!!) {
-                        if (isLoading.not()) {
-                            viewModel.updatePage(state.accountBooks[lastIndex].id)
+                if (state.accountBooks.isEmpty()) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(
+                                        topStart = 0.dp,
+                                        topEnd = 0.dp,
+                                        bottomStart = 12.dp,
+                                        bottomEnd = 12.dp
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "등록된 데이터가 없습니다.",
+                                style = MaterialTheme.typo.body1,
+                                color = MaterialTheme.colors.gray5,
+                                modifier = Modifier
+                                    .padding(
+                                        vertical = Paddings.xlarge,
+                                        horizontal = Paddings.extra
+                                    )
+                            )
                         }
                     }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(
-                                    topStart = 0.dp,
-                                    topEnd = 0.dp,
-                                    bottomStart = if (index == lastIndex) 12.dp else 0.dp,
-                                    bottomEnd = if (index == lastIndex) 12.dp else 0.dp
+                } else {
+                    itemsIndexed(
+                        state.accountBooks
+                    ) { index, data ->
+                        val lastIndex = state.accountBooks.lastIndex
+                        if (index == lastIndex && state.hasNext!!) {
+                            if (isLoading.not()) {
+                                viewModel.updatePage(state.accountBooks[lastIndex].id)
+                            }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(
+                                        topStart = 0.dp,
+                                        topEnd = 0.dp,
+                                        bottomStart = if (index == lastIndex) 12.dp else 0.dp,
+                                        bottomEnd = if (index == lastIndex) 12.dp else 0.dp
+                                    )
                                 )
+                        ) {
+                            AccountBookItem(
+                                accountBook = data,
+                                onItemClicked = { navigationToContent(data.id) }
                             )
-                    ) {
-                        AccountBookItem(
-                            accountBook = data,
-                            onItemClicked = { navigationToContent(data.id) }
-                        )
 
-                        if (isLoading && index == lastIndex) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(
-                                    color = MaterialTheme.colors.primary
-                                )
+                            if (isLoading && index == lastIndex) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = MaterialTheme.colors.primary
+                                    )
+                                }
                             }
                         }
                     }
@@ -254,60 +284,74 @@ private fun GraphSection(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            AccountBookOptionButton(
-                option = "지출",
-                isSelected = showingExpenses,
-                onSelected = {
-                    onToggleTypeClick()
-                }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            AccountBookOptionButton(
-                option = "수입",
-                isSelected = !showingExpenses,
-                onSelected = {
-                    onToggleTypeClick()
-                }
-            )
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-                .padding(top = Paddings.extra),
-        ) {
-            AccountBookGraph(
-                data = data,
-                categories = categories,
-                modifier = Modifier.fillMaxSize(),
-                graphHeight = 150
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = Paddings.extra),
-            horizontalAlignment = Alignment.End
-        ) {
-            Text(
-                text = "${totalAmount}원",
-                style = MaterialTheme.typo.h3,
-                color = MaterialTheme.colors.gray1
-            )
-            Text(
-                text = "합계: ${formatNumber(state.totalCost ?: 0L)}원",
-                style = MaterialTheme.typo.h3,
-                color = MaterialTheme.colors.gray1
-            )
+        if (filteredData.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "등록된 데이터가 없습니다.",
+                    style = MaterialTheme.typo.body1,
+                    color = MaterialTheme.colors.gray5
+                )
+            }
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                AccountBookOptionButton(
+                    option = "지출",
+                    isSelected = showingExpenses,
+                    onSelected = {
+                        onToggleTypeClick()
+                    }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                AccountBookOptionButton(
+                    option = "수입",
+                    isSelected = !showingExpenses,
+                    onSelected = {
+                        onToggleTypeClick()
+                    }
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .padding(top = Paddings.extra),
+            ) {
+                AccountBookGraph(
+                    data = data,
+                    categories = categories,
+                    modifier = Modifier.fillMaxSize(),
+                    graphHeight = 150
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Paddings.extra),
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "${totalAmount}원",
+                    style = MaterialTheme.typo.h3,
+                    color = MaterialTheme.colors.gray1
+                )
+                Text(
+                    text = "합계: ${formatNumber(state.totalCost ?: 0L)}원",
+                    style = MaterialTheme.typo.h3,
+                    color = MaterialTheme.colors.gray1
+                )
+            }
         }
     }
 }
-
 
 @Composable
 private fun FilterSelector(

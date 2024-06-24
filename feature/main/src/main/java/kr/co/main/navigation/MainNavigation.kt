@@ -7,7 +7,7 @@ import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentRoute
 import kr.co.main.accountbook.main.AccountBookRoute
-import kr.co.main.accountbook.register.AccountBookRegisterRoute
+import kr.co.main.accountbook.register.AccountBookCreateRoute
 import kr.co.main.calendar.ui.CalendarNavGraph
 import kr.co.main.calendar.ui.calendarScreen.addDiaryScreen.AddDiaryRoute
 import kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.AddScheduleRoute
@@ -38,6 +38,7 @@ internal const val NOTIFICATION_ROUTE = "notificationRoute"
 
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
 internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
+internal const val ACCOUNT_BOOK_UPDATE_ROUTE = "accountBookUpdateRoute"
 
 internal data object CommunityRoute {
     const val WRITING_ROUTE = "community_writing_route"
@@ -196,7 +197,15 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = ACCOUNT_BOOK_ROUTE
     ) {
-        AccountBookRegisterRoute(
+        AccountBookCreateRoute(
+            popBackStack = navController::popBackStack
+        )
+    }
+
+    composable(
+        route = "$ACCOUNT_BOOK_UPDATE_ROUTE/{id}"
+    ) {
+        AccountBookCreateRoute(
             popBackStack = navController::popBackStack
         )
     }
@@ -209,7 +218,13 @@ fun NavGraphBuilder.mainNavGraph(
 
         if (id != null) {
             AccountBookContentRoute(
-                popBackStack = navController::popBackStack
+                popBackStack = navController::popBackStack,
+                navigationToUpdate = {
+                    navController.navigate("$ACCOUNT_BOOK_UPDATE_ROUTE/$id") {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         } else {
             Timber.e("Invalid id")
