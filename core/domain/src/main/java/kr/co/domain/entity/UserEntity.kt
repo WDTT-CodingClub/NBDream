@@ -7,5 +7,5 @@ data class UserEntity(
     val profileImage: String? = null,
     val longitude: Double? = null,
     val latitude: Double? = null,
-    val crops: List<String> = emptyList()
+    val crops: List<String>? = emptyList()
 )

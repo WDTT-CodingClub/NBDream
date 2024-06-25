@@ -1,5 +1,6 @@
 package kr.co.ui.widget
 
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import android.webkit.JavascriptInterface
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import timber.log.Timber
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun DreamLocationSearchScreen(
     modifier: Modifier = Modifier,
@@ -33,14 +35,12 @@ fun DreamLocationSearchScreen(
                         settings.domStorageEnabled = true
                         webViewClient = object : WebViewClient() {
                             override fun onPageFinished(view: WebView?, url: String?) {
-                                Timber.d("WebView page finished loading: $url")
                                 loadUrl("javascript:sample2_execDaumPostcode();")
                             }
                         }
                         webChromeClient = WebChromeClient()
                         addJavascriptInterface(WebAppInterface(onAddressSelected), "Android")
                         loadUrl("https://nbdream-18d68.web.app")
-                        Timber.d("WebView started loading URL")
                     }
                 },
                 modifier = modifier.fillMaxSize()
@@ -53,11 +53,10 @@ class WebAppInterface(private val onAddressSelected: (String, String) -> Unit) {
     private val handler = Handler(Looper.getMainLooper())
 
     @JavascriptInterface
-    fun processDATA(fullRoadAddr: String, bCode: String) {
+    fun processDATA(fullRoadAddress: String, bCode: String) {
         handler.post {
             try {
-                onAddressSelected(fullRoadAddr, bCode)
-                Timber.d("WebView fullRoadAddr: $fullRoadAddr, bCode: $bCode")
+                onAddressSelected(fullRoadAddress, bCode)
             } catch (e: Exception) {
                 Timber.tag("WebAppInterface").e(e, "Error processing data")
             }
