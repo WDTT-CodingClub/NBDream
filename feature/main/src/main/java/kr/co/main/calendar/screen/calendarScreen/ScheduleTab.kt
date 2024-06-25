@@ -1,6 +1,5 @@
-package kr.co.main.calendar.screen.calendarScreen.scheduleTab
+package kr.co.main.calendar.screen.calendarScreen
 
-import FarmWorkCalendar
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -15,50 +14,39 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import kr.co.main.R
 import kr.co.main.calendar.common.CalendarCategoryIndicator
 import kr.co.main.calendar.common.innerCalendar.InnerCalendar
+import kr.co.main.calendar.screen.calendarScreen.calendar.FarmWorkCalendar
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.FarmWorkModel
 import kr.co.main.model.calendar.HolidayModel
 import kr.co.main.model.calendar.ScheduleModel
-import kr.co.main.model.calendar.filterAndSortHolidays
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import timber.log.Timber
 import java.time.LocalDate
-
 
 @Composable
 internal fun ScheduleTab(
     calendarCrop: CropModel?,
     calendarYear: Int,
     calendarMonth: Int,
-    navToEditSchedule: (Int) -> Unit,
+    selectedDate: LocalDate,
+    onDateSelect: (LocalDate) -> Unit,
+    farmWorks: List<FarmWorkModel>,
+    holidays: List<HolidayModel>,
+    allSchedules: List<ScheduleModel>,
+    cropSchedules: List<ScheduleModel>,
+    onEditClick: (Long) -> Unit,
+    onDeleteClick:(Long) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ScheduleTabViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.collectAsState()
-    val event = viewModel.event
-
-    LaunchedEffect(calendarCrop, calendarYear, calendarMonth) {
-        Timber.d("calendarCrop: $calendarCrop, calendarYear: $calendarYear, calendarMonth: $calendarMonth")
-        calendarCrop?.let {
-            event.setCalendarCrop(it)
-        }
-        event.setCalendarYear(calendarYear)
-        event.setCalendarMonth(calendarMonth)
-    }
-
     Surface(
         modifier = modifier,
         color = MaterialTheme.colors.gray9
@@ -66,26 +54,24 @@ internal fun ScheduleTab(
         Column {
             FarmWorkCalendarCard(
                 modifier = Modifier.padding(Paddings.large),
-                calenderMonth = state.value.calendarMonth,
-                farmWorks = state.value.farmWorks
+                calenderMonth = calendarMonth,
+                farmWorks = farmWorks
             )
             ScheduleCalendarCard(
                 modifier = Modifier.padding(Paddings.large),
-                calendarCrop = state.value.calendarCrop,
-                calendarYear = state.value.calendarYear,
-                calendarMonth = state.value.calendarMonth,
-                selectedDate = state.value.selectedDate,
-                onSelectDate = event::onSelectDate
+                calendarCrop = calendarCrop,
+                calendarYear = calendarYear,
+                calendarMonth = calendarMonth,
+                selectedDate = selectedDate,
+                onDateSelect = onDateSelect
             )
 
             ScheduleCard(
                 modifier = Modifier.padding(Paddings.large),
-                selectedDate = state.value.selectedDate,
-                holidays = filterAndSortHolidays(
-                    holidays = state.value.holidays,
-                    date = state.value.selectedDate
-                ),
-                schedules = state.value.schedules
+                selectedDate = selectedDate,
+                schedules =
+                    allSchedules.filter{ selectedDate in (it.startDate .. it.endDate)} +
+                    cropSchedules.filter{ selectedDate in (it.startDate .. it.endDate)}
             )
         }
     }
@@ -120,7 +106,7 @@ private fun ScheduleCalendarCard(
     calendarYear: Int,
     calendarMonth: Int,
     selectedDate: LocalDate,
-    onSelectDate: (LocalDate) -> Unit,
+    onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -150,7 +136,7 @@ private fun ScheduleCalendarCard(
                 calendarYear = calendarYear,
                 calendarMonth = calendarMonth,
                 selectedDate = selectedDate,
-                onSelectDate = onSelectDate
+                onDateSelect = onDateSelect
             )
         }
     }
@@ -204,7 +190,6 @@ private fun CategoryIndicatorListItem(
 @Composable
 private fun ScheduleCard(
     selectedDate: LocalDate,
-    holidays: List<HolidayModel>,
     schedules: List<ScheduleModel>,
     modifier: Modifier = Modifier
 ) {

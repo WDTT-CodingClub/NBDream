@@ -49,8 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import kr.co.main.R
-import kr.co.main.calendar.screen.calendarScreen.diaryTab.DiaryTab
-import kr.co.main.calendar.screen.calendarScreen.scheduleTab.ScheduleTab
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.CalendarTabType
 import kr.co.main.model.calendar.type.CropModelColorType
@@ -67,8 +65,8 @@ import kr.co.ui.widget.DreamTopAppBar
 
 @Composable
 internal fun CalendarRoute(
-    navToAddSchedule: (Int?, Int?, Int?) -> Unit,
-    navToAddDiary: (Int?, Int?, Int?) -> Unit,
+    navToAddSchedule: (Int?, Int?, Long?) -> Unit,
+    navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
     navToNotification: () -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
@@ -87,8 +85,8 @@ internal fun CalendarRoute(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CalendarScreen(
-    navToAddSchedule: (Int?, Int?, Int?) -> Unit,
-    navToAddDiary: (Int?, Int?, Int?) -> Unit,
+    navToAddSchedule: (Int?, Int?, Long?) -> Unit,
+    navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
     navToNotification: () -> Unit,
     state: State<CalendarScreenViewModel.CalendarScreenState>,
@@ -129,66 +127,76 @@ private fun CalendarScreen(
         Surface(
             modifier = Modifier.padding(innerPadding)
         ) {
-            if (state.value.crop != null) {
-                Column {
-                    CalendarInfoPicker(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Paddings.large)
-                            .background(MaterialTheme.colors.gray9),
-                        userCrops = state.value.userCrops,
-                        calendarYear = state.value.year,
-                        calendarMonth = state.value.month,
-                        calendarCrop = state.value.crop!!,
-                        onSelectYear = event::onSelectYear,
-                        onSelectMonth = event::onSelectMonth,
-                        onSelectCrop = event::onSelectCrop
-                    )
+            Column {
+                CalendarInfoPicker(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Paddings.large)
+                        .background(MaterialTheme.colors.gray9),
+                    userCrops = state.value.userCrops,
+                    calendarYear = state.value.year,
+                    calendarMonth = state.value.month,
+                    calendarCrop = state.value.crop!!,
+                    onSelectYear = event::onSelectYear,
+                    onSelectMonth = event::onSelectMonth,
+                    onSelectCrop = event::onSelectCrop
+                )
 
-                    HorizontalPager(
-                        modifier = Modifier.background(MaterialTheme.colors.gray9),
-                        state = pagerState
-                    ) {
-                        when (pagerState.currentPage) {
-                            CalendarTabType.SCHEDULE.pagerIndex ->
-                                ScheduleTab(
-                                    calendarCrop = state.value.crop,
-                                    calendarYear = state.value.year,
-                                    calendarMonth = state.value.month,
-                                    navToEditSchedule = { scheduleId ->
-                                        navToAddSchedule(
-                                            state.value.crop?.type?.nameId,
-                                            ScreenModeType.EDIT_MODE.id,
-                                            scheduleId
-                                        )
-                                    }
-                                )
+                HorizontalPager(
+                    modifier = Modifier.background(MaterialTheme.colors.gray9),
+                    state = pagerState
+                ) {
+                    when (pagerState.currentPage) {
+                        CalendarTabType.SCHEDULE.pagerIndex ->
+                            ScheduleTab(
+                                calendarCrop = state.value.crop,
+                                calendarYear = state.value.year,
+                                calendarMonth = state.value.month,
+                                selectedDate = state.value.selectedDate,
+                                onDateSelect = event::onSelectDate,
+                                farmWorks = state.value.farmWorks,
+                                holidays = state.value.holidays,
+                                allSchedules = state.value.allSchedules,
+                                cropSchedules = state.value.cropSchedules,
+                                onEditClick = { scheduleId ->
+                                    navToAddSchedule(
+                                        state.value.crop?.type?.nameId,
+                                        ScreenModeType.EDIT_MODE.id,
+                                        scheduleId
+                                    )
+                                },
+                                onDeleteClick = { scheduleId ->
+                                    //TODO 삭제 확인 다이얼로그 표시 후 일정 삭제
+                                }
+                            )
 
-                            CalendarTabType.DIARY.pagerIndex ->
-                                DiaryTab(
-                                    calendarCrop = state.value.crop,
-                                    calendarYear = state.value.year,
-                                    calendarMonth = state.value.month,
-                                    navToEditDiary = { diaryId ->
-                                        navToAddDiary(
-                                            state.value.crop?.type?.nameId,
-                                            ScreenModeType.EDIT_MODE.id,
-                                            diaryId
-                                        )
-                                    },
-                                    navToSearchDiary = {
-                                        navToSearchDiary(
-                                            state.value.crop?.type?.nameId
-                                        )
-                                    }
-                                )
-                        }
+                        CalendarTabType.DIARY.pagerIndex ->
+                            DiaryTab(
+                                calendarCrop = state.value.crop,
+                                calendarYear = state.value.year,
+                                calendarMonth = state.value.month,
+                                selectedDate = state.value.selectedDate,
+                                onDateSelect = event::onSelectDate,
+                                holidays = state.value.holidays,
+                                diaries = state.value.diaries,
+                                onEditClick = { diaryId ->
+                                    navToAddDiary(
+                                        state.value.crop?.type?.nameId,
+                                        ScreenModeType.EDIT_MODE.id,
+                                        diaryId
+                                    )
+                                },
+                                onDeleteClick = { dialogId ->
+                                    //TODO 삭제 확인 다이얼로그 표시 후 영농일지 삭제
+                                }
+                            )
                     }
                 }
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
