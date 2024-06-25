@@ -14,6 +14,8 @@ data class BulletinEntity(
     val createdTime: String,
     val comments: List<CommentEntity>,
     val bookmarkedCount: Int,
+    val author: Boolean,
+    val bookmarked: Boolean,
 ) {
     companion object {
         fun dummy(idx: Int = 0) = BulletinEntity(
@@ -28,6 +30,8 @@ data class BulletinEntity(
             createdTime = "createdTime${idx}",
             comments = emptyList(),
             bookmarkedCount = 220 + idx,
+            author = idx % 2 == 0,
+            bookmarked = idx % 2 == 1,
         )
     }
 

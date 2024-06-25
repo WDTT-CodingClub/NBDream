@@ -16,6 +16,8 @@ data class BulletinResData(
     val createdTime: String? = null,
     val comments: List<CommentResData>? = null,
     val bookmarkedCount: Int? = null,
+    val author: Boolean? = null,
+    val bookmarked: Boolean? = null,
 )
 
 
@@ -28,7 +30,9 @@ internal fun BulletinResData.convertToEntity(): BulletinEntity? {
         this.crop == null ||
         this.bulletinCategory == null ||
         this.createdTime == null ||
-        this.bookmarkedCount == null
+        this.bookmarkedCount == null ||
+        this.author == null ||
+        this.bookmarked == null
     ) null
     else BulletinEntity(
         authorId = this.authorId,
@@ -42,6 +46,8 @@ internal fun BulletinResData.convertToEntity(): BulletinEntity? {
         createdTime = this.createdTime,
         comments = this.comments?.convertToEntities() ?: emptyList(),
         bookmarkedCount = this.bookmarkedCount,
+        author = this.author,
+        bookmarked = this.bookmarked,
     )
 }
 
