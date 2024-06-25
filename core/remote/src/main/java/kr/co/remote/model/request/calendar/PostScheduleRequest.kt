@@ -8,7 +8,5 @@ internal data class PostScheduleRequest (
     val title:String,
     val startDate:String,
     val endDate: String,
-    val memo:String,
-    val isAlarmOn:Boolean,
-    val alarmDateTime:String
+    val memo:String
 )

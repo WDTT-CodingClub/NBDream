@@ -79,14 +79,6 @@ internal sealed class CalendarNavGraph {
         override val arguments = listOf(
             navArgument(ARG_CROP_NAME_ID) {
                 nullable = true
-            },
-            navArgument(ARG_YEAR) {
-                defaultValue = LocalDate.now().year
-                type = NavType.IntType
-            },
-            navArgument(ARG_MONTH) {
-                defaultValue = LocalDate.now().monthValue
-                type = NavType.IntType
             }
         )
 
@@ -101,8 +93,6 @@ internal sealed class CalendarNavGraph {
         private const val SEARCH_DIARY_BASE_ROUTE = "search_diary_route"
 
         const val ARG_CROP_NAME_ID = "crop_name_id"
-        const val ARG_YEAR = "year"
-        const val ARG_MONTH = "month"
         const val ARG_SCREEN_MODE_ID = "screen_mode_id"
         const val ARG_SCHEDULE_ID = "schedule_id"
         const val ARG_DIARY_ID = "diary_id"
