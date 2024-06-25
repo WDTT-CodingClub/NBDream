@@ -1,5 +1,6 @@
 package kr.co.main
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,11 +48,21 @@ internal enum class MainBottomRoute(
     MY_PAGE("myPage", "MyPage", DreamIcon.Mypage)
 }
 
+@SuppressLint("StaticFieldLeak")
+internal object MainNav {
+    lateinit var controller: NavController
+
+    fun setNavController(navController: NavController) {
+        controller = navController
+    }
+}
+
 @Composable
 internal fun MainRoute(
     mainBuilder: NavGraphBuilder.() -> Unit,
 ) {
     val mainNavController = rememberNavController()
+    MainNav.setNavController(mainNavController)
 
     Box(
         modifier = Modifier

@@ -2,9 +2,11 @@ package kr.co.main.navigation
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
+import kr.co.main.MainNav
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentRoute
 import kr.co.main.accountbook.create.AccountBookCreateRoute
@@ -28,7 +30,6 @@ import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
 import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
-import kr.co.main.my.setting.verify.MyPageSettingDeleteSocialVerifyRoute
 import kr.co.main.notification.NotificationRoute
 import timber.log.Timber
 
@@ -79,6 +80,17 @@ fun NavGraphBuilder.mainNavGraph(
                         },
                         navigateToNotification = {
                             navController.navigate(NOTIFICATION_ROUTE)
+                        },
+                        navigateToCalendar = {
+                            MainNav.controller.navigate(
+                                MainBottomRoute.CALENDAR.route
+                            ) {
+                                popUpTo(MainNav.controller.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     )
                 }
