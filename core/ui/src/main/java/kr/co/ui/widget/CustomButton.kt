@@ -94,13 +94,10 @@ fun NextButton(
     onNextClick: () -> Unit = {}
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
         Column(
-            modifier = modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = modifier.fillMaxWidth()
         ) {
             SkipButton(
                 text = stringResource(id = skipId),
