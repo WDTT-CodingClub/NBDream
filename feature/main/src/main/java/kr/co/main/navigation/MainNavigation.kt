@@ -320,7 +320,9 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = MyPageRoute.SETTING_APP_INFO_ROUTE
     ) {
-        MyPageSettingAppInfoRoute()
+        MyPageSettingAppInfoRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(

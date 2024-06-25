@@ -59,7 +59,7 @@ internal fun MyPageSettingDeleteAccountRoute(
     popBackStack: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    
+
     val (isDialogVisible, setIsDialogVisible) = rememberSaveable {
         mutableStateOf(false)
     }
@@ -73,14 +73,17 @@ internal fun MyPageSettingDeleteAccountRoute(
     )
 
     if (isDialogVisible)
-    DreamDialog(
-        header = "정말 탈퇴 하시겠어요?",
-        description = "탈퇴한 계정은 다시 복구 할 수 없습니다.\n탈퇴를 원한다면 확인 버튼을 눌러주세요",
-        confirmText = "탈퇴하기",
-        dismissText = "다음에 할래요",
-        onConfirm = viewModel::onDeleteClick,
-        onDismiss = { setIsDialogVisible(false) }
-    )
+        DreamDialog(
+            header = "정말 탈퇴 하시겠어요?",
+            description = "탈퇴한 계정은 다시 복구 할 수 없습니다.\n탈퇴를 원한다면 확인 버튼을 눌러주세요",
+            confirmText = "탈퇴하기",
+            dismissText = "다음에 할래요",
+            onConfirm = {
+                viewModel.onDeleteClick()
+                setIsDialogVisible(false)
+            },
+            onDismiss = { setIsDialogVisible(false) }
+        )
 }
 
 @Composable
@@ -190,7 +193,7 @@ private fun MyPageSettingDeleteAccountScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .sizeIn(minHeight = 144.dp),
-                value = state.otherReason?: "",
+                value = state.otherReason ?: "",
                 onValueChange = {
                     if (it.length <= 200) setReason(it)
                 },
