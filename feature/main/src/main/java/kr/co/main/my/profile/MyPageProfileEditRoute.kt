@@ -44,9 +44,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,6 +62,7 @@ import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Addpicture
+import kr.co.ui.icon.dreamicon.Defaultprofile
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -183,6 +186,8 @@ private fun MyPageProfileEditScreen(
                         .clip(CircleShape),
                     model = state.profileImageUrl,
                     contentScale = ContentScale.Crop,
+                    placeholder = rememberVectorPainter(image = DreamIcon.Defaultprofile),
+                    error = rememberVectorPainter(image = DreamIcon.Defaultprofile),
                     contentDescription = stringResource(R.string.feature_main_profile_edit_image),
                 )
 
@@ -190,7 +195,7 @@ private fun MyPageProfileEditScreen(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .size(33.dp)
-                        .semantics { },
+                        .clearAndSetSemantics { },
                     imageVector = DreamIcon.Addpicture,
                     contentDescription = "",
                     tint = Color.Unspecified
