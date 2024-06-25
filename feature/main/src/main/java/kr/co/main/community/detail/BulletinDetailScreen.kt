@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -31,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import timber.log.Timber
 
@@ -63,135 +65,143 @@ internal fun BulletinDetailScreen(
     id: Long = 0L,
     onCommentWritingInput: (String) -> Unit = {},
 ) {
+    Scaffold(modifier = modifier) { paddingValues ->
+
 //    Timber.d("currentDetailBulletinId: ${state.currentDetailBulletinId}")
-    Timber.d("isLoadDetailSuccessful: ${state.isLoadDetailSuccessful}")
-    if (!state.isLoadDetailSuccessful) {
-        NoBulletinScreen(
-            modifier = modifier,
-            id = state.currentDetailBulletinId,
-        )
-        return
-    }
+        Timber.d("isLoadDetailSuccessful: ${state.isLoadDetailSuccessful}")
+        if (!state.isLoadDetailSuccessful) {
+            NoBulletinScreen(
+                modifier = Modifier.scaffoldBackground(paddingValues),
+                id = state.currentDetailBulletinId,
+            )
+            return@Scaffold
+        }
 
-    // check
-    Timber.d("${state.currentDetailBulletin}")
-    Timber.d("${state.currentDetailBulletin.bulletinId}")
-    Timber.d(state.currentDetailBulletin.content)
+        // check
+        Timber.d("${state.currentDetailBulletin}")
+        Timber.d("${state.currentDetailBulletin.bulletinId}")
+        Timber.d(state.currentDetailBulletin.content)
 
-    Column {
-        LazyColumn(
-            modifier = Modifier.weight(1f),
+        Column(
+            modifier = Modifier.scaffoldBackground(paddingValues),
         ) {
-            item {
-                Row {
-                    IconButton(onClick = popBackStack) {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+            ) {
+                item {
+                    Row {
+                        IconButton(onClick = popBackStack) {
+                            Icon(
+                                painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
+                                contentDescription = "뒤로가기 아이콘",
+                            )
+                        }
+                        Text("무슨무슨 게시판")
                         Icon(
-                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
-                            contentDescription = "뒤로가기 아이콘",
+                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_share_24),
+                            contentDescription = "공유 아이콘",
                         )
                     }
-                    Text("무슨무슨 게시판")
-                    Icon(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_share_24),
-                        contentDescription = "공유 아이콘",
-                    )
                 }
-            }
-            item {
-                Row {
-                    Image(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-                        contentDescription = "프로필 사진",
-                        modifier = Modifier
-                            .background(
-                                color = Color.Gray,
-                                shape = CircleShape,
-                            )
-                            .padding(4.dp),
-                    )
-                    Column {
-                        Text("닉네임")
-                        Text("2000.00.00 00:00:00")
-                    }
-                }
-            }
-            item {
-                Text(
-                    "본문",
-                    modifier = Modifier.height(80.dp),
-                )
-            }
-            item {
-                Text(
-                    "사진들",
-                    modifier = Modifier.height(240.dp),
-                )
-            }
-
-            item {
-                Row {
-                    Text("댓글 ${3}")
-                    Card {
-                        Row {
-                            Icon(
-                                painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_border_24),
-                                contentDescription = "북마크 빈 아이콘",
-                            )
-                            Text("50")
+                item {
+                    Row {
+                        Image(
+                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+                            contentDescription = "프로필 사진",
+                            modifier = Modifier
+                                .background(
+                                    color = Color.Gray,
+                                    shape = CircleShape,
+                                )
+                                .padding(4.dp),
+                        )
+                        Column {
+                            Text("닉네임")
+                            Text("2000.00.00 00:00:00")
                         }
                     }
-                    Text("등록순")
-                    Text("최신순")
+                }
+                item {
+                    Text(
+                        "본문",
+                        modifier = Modifier.height(80.dp),
+                    )
+                }
+                item {
+                    Text(
+                        "사진들",
+                        modifier = Modifier.height(240.dp),
+                    )
+                }
+
+                item {
+                    Row {
+                        Text("댓글 ${3}")
+                        Card {
+                            Row {
+                                Icon(
+                                    painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_border_24),
+                                    contentDescription = "북마크 빈 아이콘",
+                                )
+                                Text("50")
+                            }
+                        }
+                        Text("등록순")
+                        Text("최신순")
+                    }
+                }
+                item {
+                    HorizontalDivider()
+                }
+                items(Array(10) { it }) {
+                    Row {
+                        Image(
+                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+                            contentDescription = "댓글 프사",
+                            modifier = Modifier
+                                .background(
+                                    color = Color.Gray,
+                                    shape = CircleShape,
+                                )
+                                .padding(4.dp),
+                        )
+                        Text("댓글닉네임$it")
+                        Text("2000.00.00 00:00:${DecimalFormat("00").format(it)}")
+                        Icon(
+                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_more_vert_24),
+                            contentDescription = "더보기",
+                        )
+                    }
+                    Text("댓글 내용 $it")
                 }
             }
-            item {
-                HorizontalDivider()
-            }
-            items(Array(10) { it }) {
-                Row {
-                    Image(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-                        contentDescription = "댓글 프사",
-                        modifier = Modifier
-                            .background(
-                                color = Color.Gray,
-                                shape = CircleShape,
-                            )
-                            .padding(4.dp),
-                    )
-                    Text("댓글닉네임$it")
-                    Text("2000.00.00 00:00:${DecimalFormat("00").format(it)}")
+
+            // 댓글 작성란
+            Row {
+                Image(
+                    painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+                    contentDescription = "프로필 사진",
+                    modifier = Modifier
+                        .background(
+                            color = Color.Gray,
+                            shape = CircleShape,
+                        )
+                        .padding(4.dp),
+                )
+                TextField(
+                    value = state.commentWritingInput,
+                    onValueChange = onCommentWritingInput
+                )
+                IconButton(onClick = { /*TODO*/ }) {
                     Icon(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_more_vert_24),
-                        contentDescription = "더보기",
+                        imageVector = Icons.AutoMirrored.Filled.Send,
+                        contentDescription = "보내기 아이콘"
                     )
                 }
-                Text("댓글 내용 $it")
             }
         }
 
-        // 댓글 작성란
-        Row {
-            Image(
-                painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-                contentDescription = "프로필 사진",
-                modifier = Modifier
-                    .background(
-                        color = Color.Gray,
-                        shape = CircleShape,
-                    )
-                    .padding(4.dp),
-            )
-            TextField(
-                value = state.commentWritingInput,
-                onValueChange = onCommentWritingInput
-            )
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "보내기 아이콘")
-            }
-        }
     }
-
 }
 
 @Composable

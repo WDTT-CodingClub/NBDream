@@ -28,6 +28,7 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -51,6 +52,7 @@ import coil.compose.AsyncImage
 import kr.co.main.community.SharingData
 import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
+import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import java.io.File
 
@@ -92,166 +94,167 @@ internal fun BulletinWritingScreen(
     setIsShowWaitingDialog: (Boolean) -> Unit = {},
 ) {
 
-    val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(),
-        onResult = { uris ->
-            onAddImagesClick(uris) { UriUtil.toPngFile(context, it) }
-        }
-    )
+    Scaffold(modifier = modifier) { paddingValues ->
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        item {
-            Row {
-                IconButton(onClick = popBackStack) {
-                    Icon(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
-                        contentDescription = "뒤로가기 아이콘",
-                    )
-                }
-                Text(
-                    "${state.currentBoard.koreanName} 글쓰기",
-                    modifier = Modifier.weight(1f),
-                )
-                TextButton(onClick = {
-                    setIsShowWaitingDialog(true)
-                    onFinishWritingClick(popBackStack)
-                }) {
-//                TextButton(onClick = onFinishWritingClick) {
-                    Text(
-                        "등록",
-                        Modifier.padding(horizontal = 20.dp, vertical = 0.dp),
-                    )
-                }
+        val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickMultipleVisualMedia(),
+            onResult = { uris ->
+                onAddImagesClick(uris) { UriUtil.toPngFile(context, it) }
             }
-        }
-        item {
-            Card(
-                modifier = Modifier
-                    .height(40.dp)
-                    .border(
-                        width = 1.dp, color = Color(0), shape = RoundedCornerShape(12.dp)
-                    ),
-                colors = CardColors(
-                    containerColor = Color.Green,
-                    contentColor = Color.Black,
-                    disabledContainerColor = Color.LightGray,
-                    disabledContentColor = Color.Black,
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                ) {
-                    Text("자유 주제")
-                    // TODO: 디바이더에도 여백이 붙는데...
-                    VerticalDivider(
-                        thickness = 1.dp,
-                        color = Color.Red,
-                    )
-                    Text("질문")
-                    VerticalDivider(
-                        thickness = 1.dp,
-                        color = Color.Red,
-                    )
-                    Text("병해충")
-                }
-            }
-        }
-        item {
-            TextField(
-                value = state.bulletinWritingInput,
-                onValueChange = {
-                    if (it.length <= 3000) {
-                        onBulletinWritingInputChanged(it)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                placeholder = { Text("내용을 입력하세요") },
-            )
-        }
-        item {
-            Text("${state.bulletinWritingInput.length}/3000")
-        }
-        item {
-            Text("사진")
-        }
-        item {
-            LazyRow(
-                modifier = Modifier.height(120.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.LightGray)
-                            .clickable {
-                                multiplePhotoPickerLauncher.launch(
-                                    PickVisualMediaRequest(
-                                        ActivityResultContracts.PickVisualMedia.ImageOnly
-                                    )
-                                )
-                            },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.outline_photo_camera_24),
-                                contentDescription = "카메라 아이콘",
-                            )
-                            Text("사진 추가")
-                        }
-                    }
-                }
-                items(state.writingImages) {
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.LightGray),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        AsyncImage(
-                            model = it.uri,
-                            contentDescription = "image",
-                            contentScale = ContentScale.Crop,
+        )
+
+        LazyColumn(
+            modifier = Modifier.scaffoldBackground(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            item {
+                Row {
+                    IconButton(onClick = popBackStack) {
+                        Icon(
+                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
+                            contentDescription = "뒤로가기 아이콘",
                         )
-                        IconButton(
-                            onClick = { onRemoveImageClick(it) },
-                            modifier = Modifier.align(Alignment.TopEnd),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = Color(
-                                    0x99999999
-                                )
-                            ),
+                    }
+                    Text(
+                        "${state.currentBoard.koreanName} 글쓰기",
+                        modifier = Modifier.weight(1f),
+                    )
+                    TextButton(onClick = {
+                        setIsShowWaitingDialog(true)
+                        onFinishWritingClick(popBackStack)
+                    }) {
+//                TextButton(onClick = onFinishWritingClick) {
+                        Text(
+                            "등록",
+                            Modifier.padding(horizontal = 20.dp, vertical = 0.dp),
+                        )
+                    }
+                }
+            }
+            item {
+                Card(
+                    modifier = Modifier
+                        .height(40.dp)
+                        .border(
+                            width = 1.dp, color = Color(0), shape = RoundedCornerShape(12.dp)
+                        ),
+                    colors = CardColors(
+                        containerColor = Color.Green,
+                        contentColor = Color.Black,
+                        disabledContainerColor = Color.LightGray,
+                        disabledContentColor = Color.Black,
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                    ) {
+                        Text("자유 주제")
+                        // TODO: 디바이더에도 여백이 붙는데...
+                        VerticalDivider(
+                            thickness = 1.dp,
+                            color = Color.Red,
+                        )
+                        Text("질문")
+                        VerticalDivider(
+                            thickness = 1.dp,
+                            color = Color.Red,
+                        )
+                        Text("병해충")
+                    }
+                }
+            }
+            item {
+                TextField(
+                    value = state.bulletinWritingInput,
+                    onValueChange = {
+                        if (it.length <= 3000) {
+                            onBulletinWritingInputChanged(it)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp),
+                    placeholder = { Text("내용을 입력하세요") },
+                )
+            }
+            item {
+                Text("${state.bulletinWritingInput.length}/3000")
+            }
+            item {
+                Text("사진")
+            }
+            item {
+                LazyRow(
+                    modifier = Modifier.height(120.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color.LightGray)
+                                .clickable {
+                                    multiplePhotoPickerLauncher.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                                        )
+                                    )
+                                },
+                            contentAlignment = Alignment.Center,
                         ) {
-                            Icon(
-                                imageVector = Icons.Filled.Clear,
-                                contentDescription = "이미지 삭제 아이콘",
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.outline_photo_camera_24),
+                                    contentDescription = "카메라 아이콘",
+                                )
+                                Text("사진 추가")
+                            }
+                        }
+                    }
+                    items(state.writingImages) {
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color.LightGray),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            AsyncImage(
+                                model = it.uri,
+                                contentDescription = "image",
+                                contentScale = ContentScale.Crop,
                             )
+                            IconButton(
+                                onClick = { onRemoveImageClick(it) },
+                                modifier = Modifier.align(Alignment.TopEnd),
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = Color(
+                                        0x99999999
+                                    )
+                                ),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Clear,
+                                    contentDescription = "이미지 삭제 아이콘",
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+
+        if (state.isShowWaitingDialog) AlertDialogExample(
+            onDismissRequest = { setIsShowWaitingDialog(false) },
+            onConfirmation = {},
+            dialogTitle = "title",
+            dialogText = "text",
+            icon = null,
+        )
+
     }
-
-    if (state.isShowWaitingDialog) AlertDialogExample(
-        onDismissRequest = { setIsShowWaitingDialog(false) },
-        onConfirmation = {},
-        dialogTitle = "title",
-        dialogText = "text",
-        icon = null,
-    )
-
 }
 
 @Composable
