@@ -274,66 +274,68 @@ private fun BulletinCard(
                 )
             } else {
                 crops.forEachIndexed { index, s ->
-                    var isVisible by rememberSaveable { mutableStateOf(false) }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = s,
-                            style = MaterialTheme.typo.body1,
-                            color = MaterialTheme.colors.gray1
-                        )
-                        Box {
-                            Icon(
-                                modifier = Modifier
-                                    .graphicsLayer {
-                                        rotationZ = 90f
-                                    }
-                                    .size(20.dp)
-                                    .noRippleClickable { isVisible = true },
-                                imageVector = DreamIcon.Dots,
-                                contentDescription = "작물 제거"
+                    if (index <= 4) {
+                        var isVisible by rememberSaveable { mutableStateOf(false) }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = s,
+                                style = MaterialTheme.typo.body1,
+                                color = MaterialTheme.colors.gray1
                             )
-                            DropdownMenu(
-                                modifier = Modifier
-                                    .background(
-                                        MaterialTheme.colors.white,
-                                        shape = RoundedCornerShape(4.dp)
-                                    ),
-                                expanded = isVisible,
-                                onDismissRequest = { isVisible = false }
-                            ) {
-                                Box(
+                            Box {
+                                Icon(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .defaultMinSize(minWidth = 140.dp)
-                                        .padding(12.dp)
-                                        .clickable {
-                                            onCropDeleteClick(s)
-                                            isVisible = false
-                                        },
-                                    contentAlignment = Alignment.Center
+                                        .graphicsLayer {
+                                            rotationZ = 90f
+                                        }
+                                        .size(20.dp)
+                                        .noRippleClickable { isVisible = true },
+                                    imageVector = DreamIcon.Dots,
+                                    contentDescription = "작물 제거"
+                                )
+                                DropdownMenu(
+                                    modifier = Modifier
+                                        .background(
+                                            MaterialTheme.colors.white,
+                                            shape = RoundedCornerShape(4.dp)
+                                        ),
+                                    expanded = isVisible,
+                                    onDismissRequest = { isVisible = false }
                                 ) {
-                                    Text(
-                                        text = "삭제하기",
-                                        style = MaterialTheme.typo.body1,
-                                        color = MaterialTheme.colors.gray4
-                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .defaultMinSize(minWidth = 140.dp)
+                                            .padding(12.dp)
+                                            .clickable {
+                                                onCropDeleteClick(s)
+                                                isVisible = false
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "삭제하기",
+                                            style = MaterialTheme.typo.body1,
+                                            color = MaterialTheme.colors.gray4
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if (index != crops.lastIndex) {
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = MaterialTheme.colors.gray8
-                        )
+                        if (index != crops.lastIndex && index != 4) {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = MaterialTheme.colors.gray8
+                            )
+                        }
                     }
                 }
 
-                if (crops.size > 3) {
+                if (crops.size >= 4) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
