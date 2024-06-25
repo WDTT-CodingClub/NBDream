@@ -8,10 +8,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,6 +35,8 @@ import coil.compose.rememberAsyncImagePainter
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
 import kr.co.main.accountbook.model.DateRangeOption
+import kr.co.main.accountbook.model.MAX_CATEGORY_COUNT
+import kr.co.main.accountbook.model.getColorList
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Edit
@@ -65,7 +70,7 @@ internal fun AccountBookRoute(
         onUpdateSortOrder = { viewModel.updateSortOrder(it) },
         onUpdateTransactionType = { viewModel.updateTransactionType(it) },
         onUpdatePage = { viewModel.updatePage(it) },
-        )
+    )
 }
 
 @Composable
@@ -101,7 +106,6 @@ internal fun AccountBookScreen(
                     }
                 }
             )
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -128,13 +132,16 @@ internal fun AccountBookScreen(
                             .background(color = Color.White, shape = RoundedCornerShape(12.dp))
                             .padding(Paddings.extra)
                     ) {
+                        val amountPercent = if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
+                            state.expensePercent else state.revenuePercent
+
                         GraphSection(
                             graphTransactionType = state.graphTransactionType,
                             totalAmount = if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
                                 state.totalExpense else state.totalRevenue,
                             totalCost = state.totalCost,
-                            amountPercent = if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
-                                state.expensePercent else state.revenuePercent,
+                            percents = amountPercent?.map { it.percent },
+                            categories = amountPercent?.map { it.category.getDisplay() },
                             onGraphTransactionTypeSelected = {
                                 onUpdateGraphTransactionType(it)
                             }
@@ -305,15 +312,17 @@ private fun GraphSection(
     graphTransactionType: AccountBookEntity.TransactionType,
     totalAmount: Long? = 0L,
     totalCost: Long? = 0L,
-    amountPercent: List<AccountBookViewModel.State.PercentCategory>? = null,
+    percents: List<Float>?,
+    categories: List<String>?,
     onGraphTransactionTypeSelected: (AccountBookEntity.TransactionType) -> Unit
 ) {
+    val (showAll, setShowAll) = remember { mutableStateOf(false) }
+
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
-        if (amountPercent != null) {
-            if (amountPercent.isEmpty()) {
+        if (percents != null) {
+            if (percents.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -329,8 +338,7 @@ private fun GraphSection(
             } else {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     AccountBookOptionButton(
                         option = "지출",
@@ -348,33 +356,120 @@ private fun GraphSection(
                         }
                     )
                 }
+
+                val colors = percents.size.getColorList()
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
-                        .padding(top = Paddings.extra),
+                        .padding(top = Paddings.extra)
                 ) {
                     AccountBookGraph(
-                        data = amountPercent,
                         modifier = Modifier.fillMaxSize(),
+                        colors = colors,
+                        data = percents,
                         graphHeight = 150
                     )
                 }
-                Column(
+
+                val total = percents.sum()
+                val categoryPercent = categories?.zip(percents)?.map { it.first to ((it.second / total) * 100).toInt() }
+                var colorIndex = 0
+                Column(modifier = Modifier.padding(top = Paddings.xxlarge)) {
+                    val itemsToShow = if (showAll) categoryPercent else categoryPercent?.take(
+                        MAX_CATEGORY_COUNT)
+
+                    itemsToShow?.chunked(2)?.forEach { rowItems ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            rowItems.forEach { (category, percent) ->
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(12.dp)
+                                            .background(
+                                                colors[colorIndex % colors.size],
+                                                CircleShape
+                                            )
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = category,
+                                        style = MaterialTheme.typo.body1,
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    )
+                                    Text(
+                                        text = "$percent%",
+                                        style = MaterialTheme.typo.body1,
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    )
+                                }
+                                colorIndex++
+                            }
+                        }
+                    }
+                }
+
+                if ((categoryPercent?.size ?: 0) > MAX_CATEGORY_COUNT) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Paddings.extra, vertical = Paddings.xxlarge),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = if (showAll) "접기" else "더보기",
+                            style = MaterialTheme.typo.h3,
+                            color = MaterialTheme.colors.gray3,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .clickable { setShowAll(!showAll) }
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Icon(
+                            imageVector = if (showAll) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.gray3,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+                }
+
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = Paddings.extra),
-                    horizontalAlignment = Alignment.End
+                        .height(40.dp)
+                        .background(
+                            color = MaterialTheme.colors.gray9,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = Paddings.extra),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${totalAmount}원",
+                        text = "${formatNumber(totalAmount ?: 0L)}원",
                         style = MaterialTheme.typo.h3,
-                        color = MaterialTheme.colors.gray1
+                        color = MaterialTheme.colors.gray1,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(22.dp)
+                            .background(color = MaterialTheme.colors.gray7)
                     )
                     Text(
                         text = "합계: ${formatNumber(totalCost ?: 0L)}원",
                         style = MaterialTheme.typo.h3,
-                        color = MaterialTheme.colors.gray1
+                        color = MaterialTheme.colors.gray1,
+                        modifier = Modifier.padding(start = Paddings.extra)
                     )
                 }
             }
