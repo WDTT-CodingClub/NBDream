@@ -100,11 +100,11 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
     }
 
     companion object {
-        private const val GET_SCHEDULE_LIST_WEEK = "calendar/schedule/week"
-        private const val GET_SCHEDULE_LIST_MONTH = "calendar/schedule/month"
-        private const val GET_SCHEDULE_DETAIL = "calendar/schedule/detail"
-        private const val POST_SCHEDULE = "calendar/schedule/register"
-        private const val PUT_SCHEDULE = "calendar/schedule/update"
-        private const val DELETE_SCHEDULE = "calendar/schedule/delete"
+        private const val GET_SCHEDULE_LIST_WEEK = "api/calendar/schedule/week"
+        private const val GET_SCHEDULE_LIST_MONTH = "api/calendar/schedule/month"
+        private const val GET_SCHEDULE_DETAIL = "api/calendar/schedule/detail"
+        private const val POST_SCHEDULE = "api/calendar/schedule/register"
+        private const val PUT_SCHEDULE = "api/calendar/schedule/update"
+        private const val DELETE_SCHEDULE = "api/calendar/schedule/delete"
     }
 }
