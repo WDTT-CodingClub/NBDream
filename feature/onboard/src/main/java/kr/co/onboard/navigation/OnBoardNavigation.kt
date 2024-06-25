@@ -42,7 +42,7 @@ fun NavGraphBuilder.onboardNavGraph(
         route = CROP_ROUTE
     ) {
         SelectCropScreen(
-            navController = navController
+            navigateToWelcome = {navController.navigate(WELCOME_ROUTE)}
         )
     }
 
