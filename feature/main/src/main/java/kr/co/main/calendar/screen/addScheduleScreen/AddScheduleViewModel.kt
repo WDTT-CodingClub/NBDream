@@ -85,8 +85,10 @@ internal class AddScheduleViewModel @Inject constructor(
             }
         }
 
-        state.select { it.scheduleId }.bindState(_scheduleId)
-        state.select { it.title }.bindState(_title)
+        with(state) {
+            select { it.scheduleId }.bindState(_scheduleId)
+            select { it.title }.bindState(_title)
+        }
 
         viewModelScopeEH.launch {
             _scheduleId.collect { scheduleId ->
