@@ -8,7 +8,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import kr.co.main.calendar.adddiary.diaryinput.DiaryWorkInput
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.type.WorkDescriptionModelType
 import kr.co.ui.theme.typo
