@@ -66,9 +66,9 @@ import kr.co.ui.icon.dreamicon.Defaultprofile
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import kr.co.ui.widget.DreamButton
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.DreamLocationSearchScreen
+import timber.log.Timber
 import java.util.Locale
 
 @Composable
@@ -112,7 +112,8 @@ internal fun MyPageProfileEditRoute(
     )
 
     if (addressVisible) {
-        DreamLocationSearchScreen { _, jibunAddress ->
+        DreamLocationSearchScreen { jibunAddress, bCode ->
+            Timber.d("WebView jibunAddr: $jibunAddress, bCode: $bCode")
             viewModel.onAddressChanged(jibunAddress)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 geocoder.getFromLocationName(jibunAddress, 1) {

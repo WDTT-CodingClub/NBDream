@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,6 +42,7 @@ fun DreamSocialButton(
                 textColor = Color.Black,
                 onClick = onClick
             )
+            Spacer(modifier = Modifier.height(10.dp))
         }
         1 -> {
             LoginButton(
@@ -50,6 +52,7 @@ fun DreamSocialButton(
                 textColor = Color.White,
                 onClick = onClick
             )
+            Spacer(modifier = Modifier.height(10.dp))
         }
         2 -> {
             LoginButton(

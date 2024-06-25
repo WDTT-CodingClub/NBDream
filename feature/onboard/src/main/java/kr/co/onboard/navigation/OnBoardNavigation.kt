@@ -32,9 +32,6 @@ fun NavGraphBuilder.onboardNavGraph(
     ) {
         InputAddressScreen(
             modifier = Modifier,
-            navigateToWelcome = {
-                navController.navigate(WELCOME_ROUTE)
-            },
             navigateToCrop = {
                 navController.navigate(CROP_ROUTE)
             }
@@ -45,6 +42,7 @@ fun NavGraphBuilder.onboardNavGraph(
         route = CROP_ROUTE
     ) {
         SelectCropScreen(
+            navController = navController
         )
     }
 
