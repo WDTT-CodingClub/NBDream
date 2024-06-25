@@ -15,6 +15,8 @@ interface ScheduleRemoteDataSource {
         month:Int
     ):  Flow<List<ScheduleData>>
 
+    suspend fun fetchDetail(id:Int):ScheduleData
+
     suspend fun create(
         category:String,
         title:String,

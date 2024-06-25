@@ -21,7 +21,6 @@ internal data class DiaryListResponse(
     ) {
         @Serializable
         data class WorkDescriptionResponse(
-            val id: Int,
             val type: String,
             val description: String
         )

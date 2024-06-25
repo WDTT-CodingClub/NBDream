@@ -16,6 +16,9 @@ internal data class UserEntity(
     @ColumnInfo(name = "address")
     val address: String?,
 
+    @ColumnInfo(name = "bjd_code")
+    val bjdCode: String?,
+
     @ColumnInfo(name = "latitude")
     val latitude: Double?,
 

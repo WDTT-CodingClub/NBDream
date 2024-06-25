@@ -1,4 +1,4 @@
-package kr.co.main.calendar.adddiary.diaryinput
+package kr.co.main.calendar.screen.addDiaryScreen.diary_input
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -259,7 +259,7 @@ private fun WorkDescriptionTextField(
         onValueChange = onDescriptionInput,
         placeHolder = {
             Text(
-                text = stringResource(id = R.string.feature_main_calendar_add_diary_input_work_description),
+                text = stringResource(id = R.string.feature_main_calendar_add_diary_input_hint_work_description),
                 style = MaterialTheme.typo.bodyM,
                 color = MaterialTheme.colors.text1
             )
@@ -284,7 +284,7 @@ private fun AddWorkDescriptionButton(
         contentPadding = PaddingValues(Paddings.small)
     ) {
         Text(
-            text = stringResource(id = R.string.feature_main_calendar_add_diary_add),
+            text = stringResource(id = R.string.feature_main_calendar_add_diary_add_work),
             style = MaterialTheme.typo.bodyM
         )
     }
@@ -297,7 +297,7 @@ private fun WorkDescriptionList(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier) {
-        items(workDescriptions, key = { it.id }) {
+        items(workDescriptions, key = { it }) {
             WorkDescriptionItem(
                 workDescription = it,
                 onDeleteDescription = onDeleteDescription
@@ -330,7 +330,7 @@ private fun WorkDescriptionItem(
             )
             Text(
                 modifier = Modifier,
-                text = stringResource(id = workDescription.id),
+                text = stringResource(id = workDescription.type.id),
                 style = MaterialTheme.typo.labelM,
                 color = MaterialTheme.colors.text2
             )
@@ -340,7 +340,7 @@ private fun WorkDescriptionItem(
                 .align(Alignment.CenterEnd)
                 .padding(end = Paddings.medium)
                 .clickable {
-                    onDeleteDescription(workDescription.id)
+                    onDeleteDescription(workDescription.type.id)
                 },
             imageVector = DreamIcon.Delete,
             tint = Color.LightGray,

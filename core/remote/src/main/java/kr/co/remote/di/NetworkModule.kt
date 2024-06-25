@@ -35,8 +35,10 @@ import kr.co.common.model.CustomErrorType
 import kr.co.common.model.CustomException
 import kr.co.data.source.local.SessionLocalDataSource
 import kr.co.nbdream.core.remote.BuildConfig
+import kr.co.remote.model.Dto
 import kr.co.remote.model.request.auth.PostAuthRefreshTokenRequest
 import kr.co.remote.model.response.auth.PostAuthRefreshResponse
+import kr.co.remote.model.response.auth.PostAuthResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
@@ -106,13 +108,13 @@ internal class NetworkModule {
                                 refreshToken = session.getRefreshToken()!!
                             )
                         )
-                    }.body<PostAuthRefreshResponse>()
+                    }.body<Dto<PostAuthResponse>>()
 
-                    session.updateAccessToken(token.resultData.accessToken)
+                    session.updateAccessToken(token.data.accessToken)
 
                     BearerTokens(
-                        accessToken = token.resultData.accessToken,
-                        refreshToken = token.resultData.refreshToken
+                        accessToken = token.data.accessToken,
+                        refreshToken = token.data.refreshToken
                     )
                 }
             }

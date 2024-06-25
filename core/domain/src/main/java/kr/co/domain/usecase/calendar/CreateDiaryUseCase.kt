@@ -14,13 +14,14 @@ class CreateDiaryUseCase @Inject constructor(
 ): SuspendUseCase<CreateDiaryUseCase.Params, Unit>() {
     data class Params(
         val date: LocalDate,
-        val holidayList: List<HolidayEntity>,
-        val weatherForecast: String,
+        val memo: String,
+        val workDescriptions: List<DiaryEntity.WorkDescriptionEntity>,
         val workLaborer: Int,
         val workHours: Int,
         val workArea: Int,
-        val workDescriptions: List<DiaryEntity.WorkDescriptionEntity>,
-        val memo: String
+        val weatherForecast: String,
+        val holidayList: List<HolidayEntity>
+
     )
 
     override suspend fun build(params: Params?) {

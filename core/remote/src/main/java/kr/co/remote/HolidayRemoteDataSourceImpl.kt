@@ -4,8 +4,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kr.co.data.model.data.calendar.HolidayData
 import kr.co.data.source.remote.HolidayRemoteDataSource
 import kr.co.remote.mapper.calendar.HolidayRemoteMapper
@@ -16,7 +14,7 @@ import javax.inject.Inject
 internal class HolidayRemoteDataSourceImpl @Inject constructor(
     private val client: HttpClient
 ) : HolidayRemoteDataSource {
-    override suspend fun fetchList(year: String, month: String): Flow<List<HolidayData>> =
+    override suspend fun fetchList(year: String, month: String): List<HolidayData> =
         client.get(HOLIDAY) {
             parameter("year", year)
             parameter("month", month)
@@ -25,7 +23,6 @@ internal class HolidayRemoteDataSourceImpl @Inject constructor(
             .data.holidayList.map {
                 HolidayRemoteMapper.convert(it)
             }
-            .let { flowOf(it) }
 
     companion object {
         private const val HOLIDAY = "/api/calendar/holidays"

@@ -32,12 +32,10 @@ internal class FakeDiaryModelProvider : PreviewParameterProvider<DiaryModel> {
             workArea = 80,
             workDescriptions = listOf(
                 DiaryModel.WorkDescriptionModel(
-                    id = 1,
                     WorkDescriptionModelType.WEED,
                     "감자밭 제초 작업"
                 ),
                 DiaryModel.WorkDescriptionModel(
-                    id = 2,
                     WorkDescriptionModelType.HARVEST,
                     "봄 감자 수확"
                 )

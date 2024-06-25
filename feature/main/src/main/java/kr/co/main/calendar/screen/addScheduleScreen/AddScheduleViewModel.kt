@@ -3,41 +3,56 @@ package kr.co.main.calendar.screen.addScheduleScreen
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kr.co.domain.usecase.calendar.CreateScheduleUseCase
+import kr.co.domain.usecase.calendar.GetScheduleDetailUseCase
+import kr.co.domain.usecase.calendar.UpdateScheduleUseCase
+import kr.co.main.mapper.calendar.ScheduleModelTypeMapper
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.ScheduleModelType
+import kr.co.main.model.calendar.type.ScreenModeType
 import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 internal interface AddScheduleScreenEvent {
-    fun onBackClick()
-    fun onPostClick()
+    fun onActionClick()
 
     fun onTypeInput(type: ScheduleModelType)
     fun onTitleInput(title: String)
-
     fun onStartDateInput(startDate: LocalDate)
     fun onEndDateInput(endDate: LocalDate)
-
-    fun onSetAlarmInput(setAlarm: Boolean)
-    fun onAlarmDateTimeInput(alarmDateTime: LocalDateTime)
-
     fun onMemoInput(memo: String)
 }
 
 @HiltViewModel
 internal class AddScheduleViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val getSchedule: GetScheduleDetailUseCase,
+    private val createSchedule: CreateScheduleUseCase,
+    private val updateSchedule: UpdateScheduleUseCase
 ) : BaseViewModel<AddScheduleViewModel.AddScheduleScreenState>(savedStateHandle),
     AddScheduleScreenEvent {
+    private val _scheduleId = MutableStateFlow<Int?>(null)
+    private val _title = MutableStateFlow("")
+
     val event: AddScheduleScreenEvent = this@AddScheduleViewModel
 
     data class AddScheduleScreenState(
+        val screenMode: ScreenModeType = ScreenModeType.POST_MODE,
         val calendarCrop: CropModel? = null,
-        val scheduleType: ScheduleModelType = ScheduleModelType.All
+
+        val enableAction: Boolean = false,
+
+        val scheduleId: Int? = null,
+        val scheduleType: ScheduleModelType = ScheduleModelType.All,
+        val title: String = "",
+        val startDate: LocalDate = LocalDate.now(),
+        val endDate: LocalDate = LocalDate.now(),
+        val memo: String = ""
     ) : State {
         override fun toParcelable(): Parcelable? {
             // TODO ("serialize")
@@ -52,46 +67,107 @@ internal class AddScheduleViewModel @Inject constructor(
         } ?: AddScheduleScreenState()
 
     init {
-        savedStateHandle.get<Int>(CalendarNavGraph.ARG_CROP_NAME_ID)?.let { cropNameId ->
-            updateState {
-                copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
+        with(savedStateHandle) {
+            get<String>(CalendarNavGraph.ARG_CROP_NAME_ID)?.toIntOrNull()?.let { cropNameId ->
+                updateState {
+                    copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
+                }
+            }
+            get<Int>(CalendarNavGraph.ARG_SCREEN_MODE_ID)?.let { screenModeId ->
+                updateState {
+                    copy(screenMode = ScreenModeType.ofValue(screenModeId))
+                }
+            } ?: throw IllegalArgumentException("screen mode id is null")
+            get<String>(CalendarNavGraph.ARG_SCHEDULE_ID)?.toIntOrNull()?.let { scheduleId ->
+                updateState {
+                    copy(scheduleId = scheduleId)
+                }
+            }
+        }
+
+        with(state) {
+            select { it.scheduleId }.bindState(_scheduleId)
+            select { it.title }.bindState(_title)
+        }
+
+        viewModelScopeEH.launch {
+            _scheduleId.collect { scheduleId ->
+                scheduleId?.let { id ->
+                    getSchedule(GetScheduleDetailUseCase.Params(id)).let {
+                        updateState {
+                            copy(
+                                scheduleType = ScheduleModelTypeMapper.toRight(it.type),
+                                title = it.title,
+                                startDate = it.startDate,
+                                endDate = it.endDate,
+                                memo = it.memo
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        viewModelScopeEH.launch {
+            _title.collect { title ->
+                updateState { copy(enableAction = title.isNotEmpty()) }
             }
         }
     }
 
-    override fun onBackClick() {
-        TODO("Not yet implemented")
+    override fun onActionClick() {
+        when (currentState.screenMode) {
+            ScreenModeType.POST_MODE -> onPostClick()
+            ScreenModeType.EDIT_MODE -> onEditClick()
+        }
     }
 
-    override fun onPostClick() {
-        TODO("Not yet implemented")
+    private fun onPostClick() {
+        viewModelScopeEH.launch {
+            createSchedule(
+                CreateScheduleUseCase.Params(
+                    category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType).koreanName,
+                    title = currentState.title,
+                    startDate = currentState.startDate.toString(),
+                    endDate = currentState.endDate.toString(),
+                    memo = currentState.memo
+                )
+            )
+        }
     }
 
-    override fun onTypeInput(category: ScheduleModelType) {
-        TODO("Not yet implemented")
+    private fun onEditClick() {
+        viewModelScopeEH.launch {
+            updateSchedule(
+                UpdateScheduleUseCase.Params(
+                    id = currentState.scheduleId
+                        ?: throw (IllegalArgumentException("schedule id is null")),
+                    category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType).koreanName,
+                    title = currentState.title,
+                    startDate = currentState.startDate.toString(),
+                    endDate = currentState.endDate.toString(),
+                    memo = currentState.memo
+                )
+            )
+        }
+    }
+
+    override fun onTypeInput(type: ScheduleModelType) {
+        updateState { copy(scheduleType = type)}
     }
 
     override fun onTitleInput(title: String) {
-        TODO("Not yet implemented")
+        updateState { copy(title = title) }
     }
 
     override fun onStartDateInput(startDate: LocalDate) {
-        TODO("Not yet implemented")
+        updateState { copy(startDate = startDate) }
     }
 
     override fun onEndDateInput(endDate: LocalDate) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onSetAlarmInput(setAlarm: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onAlarmDateTimeInput(alarmDateTime: LocalDateTime) {
-        TODO("Not yet implemented")
+        updateState { copy(endDate = endDate) }
     }
 
     override fun onMemoInput(memo: String) {
-        TODO("Not yet implemented")
+        updateState { copy(memo = memo) }
     }
 }

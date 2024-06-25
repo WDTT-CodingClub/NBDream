@@ -3,6 +3,9 @@ package kr.co.main.navigation
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import kr.co.main.model.calendar.type.ScreenModeType
+import timber.log.Timber
+import java.time.LocalDate
 
 internal sealed class CalendarNavGraph {
     protected abstract val baseRoute: String
@@ -10,46 +13,89 @@ internal sealed class CalendarNavGraph {
 
     val route: String
         get() = StringBuilder()
-            .append(baseRoute)
+            .append("${baseRoute}?")
             .apply {
-                for (arg in arguments) append("/{${arg.name}}")
+                arguments.forEachIndexed { index, arg ->
+                    append("${arg.name}={${arg.name}}")
+                    if (index != arguments.lastIndex) append("&")
+                }
             }
             .toString()
 
-    open fun buildRoute(args: Any): String = baseRoute
+    fun buildRoute(values: List<*>): String = StringBuilder()
+        .append("${baseRoute}?")
+        .apply {
+            values.forEachIndexed { index, value ->
+                value?.let{
+                    append("${arguments[index].name}=${value}&")
+                }
+            }
+            if(values.any{it != null}) deleteCharAt(lastIndex)
+        }
+        .toString()
 
     data object AddScheduleRoute : CalendarNavGraph() {
         override val baseRoute = ADD_SCHEDULE_BASE_ROUTE
         override val arguments = listOf(
-            navArgument(ARG_CROP_NAME_ID) { type = NavType.IntType }
+            navArgument(ARG_CROP_NAME_ID) {
+                nullable = true
+            },
+            navArgument(ARG_SCREEN_MODE_ID) {
+                defaultValue = ScreenModeType.POST_MODE.id
+                type = NavType.IntType
+            },
+            navArgument(ARG_SCHEDULE_ID) {
+                nullable = true
+            }
         )
 
-        override fun buildRoute(args: Any): String = "$baseRoute/${args as Int}"
+        init{
+            Timber.d("AddScheduleRoute: ${AddScheduleRoute.route}")
+        }
     }
 
     data object AddDiaryRoute : CalendarNavGraph() {
         override val baseRoute = ADD_DIARY_BASE_ROUTE
         override val arguments = listOf(
-            navArgument(ARG_CROP_NAME_ID) { type = NavType.IntType }
+            navArgument(ARG_CROP_NAME_ID) {
+                nullable = true
+            },
+            navArgument(ARG_SCREEN_MODE_ID) {
+                defaultValue = ScreenModeType.POST_MODE.id
+                type = NavType.IntType
+            },
+            navArgument(ARG_DIARY_ID) {
+                nullable = true
+            }
         )
 
-        override fun buildRoute(args: Any): String = "$baseRoute/${args as Int}"
+        init{
+            Timber.d("AddDiaryRoute: ${AddDiaryRoute.route}")
+        }
     }
 
     data object SearchDiaryRoute : CalendarNavGraph() {
         override val baseRoute = SEARCH_DIARY_BASE_ROUTE
         override val arguments = listOf(
-            navArgument(ARG_CROP_NAME_ID) { type = NavType.IntType },
-            navArgument(ARG_YEAR) { type = NavType.IntType },
-            navArgument(ARG_MONTH) { type = NavType.IntType }
+            navArgument(ARG_CROP_NAME_ID) {
+                nullable = true
+            },
+            navArgument(ARG_YEAR) {
+                defaultValue = LocalDate.now().year
+                type = NavType.IntType
+            },
+            navArgument(ARG_MONTH) {
+                defaultValue = LocalDate.now().monthValue
+                type = NavType.IntType
+            }
         )
 
-        override fun buildRoute(args: Any): String = with(args as List<*>) {
-            "$baseRoute/${this[0] as Int}/${this[1] as Int}/${this[2] as Int}"
+        init{
+            Timber.d("SearchDiaryRoute: ${SearchDiaryRoute.route}")
         }
     }
 
-    companion object{
+    companion object {
         private const val ADD_SCHEDULE_BASE_ROUTE = "add_schedule_route"
         private const val ADD_DIARY_BASE_ROUTE = "add_diary_route"
         private const val SEARCH_DIARY_BASE_ROUTE = "search_diary_route"
@@ -57,5 +103,8 @@ internal sealed class CalendarNavGraph {
         const val ARG_CROP_NAME_ID = "crop_name_id"
         const val ARG_YEAR = "year"
         const val ARG_MONTH = "month"
+        const val ARG_SCREEN_MODE_ID = "screen_mode_id"
+        const val ARG_SCHEDULE_ID = "schedule_id"
+        const val ARG_DIARY_ID = "diary_id"
     }
 }

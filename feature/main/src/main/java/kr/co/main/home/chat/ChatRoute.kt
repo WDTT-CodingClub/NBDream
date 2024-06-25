@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,11 +34,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kr.co.domain.entity.CropEntity
 import kr.co.domain.entity.type.CropType
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
@@ -189,10 +193,8 @@ private fun AiTalk(
                     )
                     .padding(24.dp)
             ) {
-                Text(
-                    text = text,
-                    style = MaterialTheme.typo.body1,
-                    color = MaterialTheme.colors.white
+                MarkdownText(
+                    text = text
                 )
             }
         }
@@ -377,6 +379,56 @@ private fun CropSelector(
         }
     }
 }
+
+@Composable
+private fun MarkdownText(text: String) {
+    val styledText = buildAnnotatedString {
+        val patterns = listOf(
+            "**" to SpanStyle(fontWeight = FontWeight.Bold),
+            "*" to SpanStyle(fontStyle = FontStyle.Italic),
+            "__" to SpanStyle(fontWeight = FontWeight.Bold),
+            "_" to SpanStyle(fontStyle = FontStyle.Italic),
+            "~~" to SpanStyle(textDecoration = TextDecoration.LineThrough),
+            "`" to SpanStyle(background = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+        )
+
+        var remainingText = text
+
+        while (remainingText.isNotEmpty()) {
+            val nextStyle = patterns.mapNotNull { (pattern, style) ->
+                val start = remainingText.indexOf(pattern)
+                if (start == -1) null else Triple(start, pattern, style)
+            }.minByOrNull { it.first }
+
+            if (nextStyle == null) {
+                append(remainingText)
+                break
+            }
+
+            val (start, pattern, style) = nextStyle
+            val end = remainingText.indexOf(pattern, start + pattern.length)
+
+            if (end == -1) {
+                append(remainingText)
+                break
+            }
+
+            append(remainingText.substring(0, start))
+            withStyle(style) {
+                append(remainingText.substring(start + pattern.length, end))
+            }
+
+            remainingText = remainingText.substring(end + pattern.length)
+        }
+    }
+
+    Text(
+        text = styledText,
+        style = MaterialTheme.typo.body1,
+        color = MaterialTheme.colors.white
+    )
+}
+
 @Preview
 @Composable
 private fun Preview() {

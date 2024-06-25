@@ -1,20 +1,25 @@
 package kr.co.main.calendar.screen.addDiaryScreen
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 internal fun AddDiaryRoute(
+    popBackStack: () -> Unit,
     viewModel: AddDiaryViewModel = hiltViewModel()
 ) {
     AddDiaryScreen(
         modifier = Modifier.fillMaxSize(),
         state = viewModel.state.collectAsState(),
-        event = viewModel.event
+        event = viewModel.event,
+        popBackStack = popBackStack
     )
 }
 
@@ -22,11 +27,15 @@ internal fun AddDiaryRoute(
 private fun AddDiaryScreen(
     state: State<AddDiaryViewModel.AddDiaryScreenState>,
     event: AddDiaryScreenEvent,
+    popBackStack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-//    val addDiaryScreenState = viewModel.state.collectAsState()
-//    val addDiaryScreenInput = viewModel.input
-//
+    val context = LocalContext.current
+    val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = event::onAddImage
+    )
+
 //    Scaffold(
 //        modifier = modifier.fillMaxSize(),
 //        topBar = {

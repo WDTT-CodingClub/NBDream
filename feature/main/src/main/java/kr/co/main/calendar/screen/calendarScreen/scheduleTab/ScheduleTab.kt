@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +43,7 @@ internal fun ScheduleTab(
     calendarCrop: CropModel?,
     calendarYear: Int,
     calendarMonth: Int,
-    navToSearchDiary: (Int, Int, Int) -> Unit,
+    navToEditSchedule: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScheduleTabViewModel = hiltViewModel()
 ) {
@@ -70,20 +69,13 @@ internal fun ScheduleTab(
                 calenderMonth = state.value.calendarMonth,
                 farmWorks = state.value.farmWorks
             )
-            InnerCalendarCard(
+            ScheduleCalendarCard(
                 modifier = Modifier.padding(Paddings.large),
                 calendarCrop = state.value.calendarCrop,
                 calendarYear = state.value.calendarYear,
                 calendarMonth = state.value.calendarMonth,
                 selectedDate = state.value.selectedDate,
-                onSelectDate = event::onSelectDate,
-                navToDiary = {
-                    navToSearchDiary(
-                        state.value.calendarCrop!!.type.nameId,
-                        state.value.calendarYear,
-                        state.value.calendarMonth
-                    )
-                }
+                onSelectDate = event::onSelectDate
             )
 
             ScheduleCard(
@@ -123,13 +115,12 @@ private fun FarmWorkCalendarCard(
 
 
 @Composable
-private fun InnerCalendarCard(
+private fun ScheduleCalendarCard(
     calendarCrop: CropModel?,
     calendarYear: Int,
     calendarMonth: Int,
     selectedDate: LocalDate,
     onSelectDate: (LocalDate) -> Unit,
-    navToDiary: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -152,10 +143,6 @@ private fun InnerCalendarCard(
                 CategoryIndicatorList(
                     modifier = Modifier.align(Alignment.CenterStart),
                     crop = calendarCrop
-                )
-                SearchDiaryButton(
-                    modifier = Modifier.align(Alignment.CenterEnd),
-                    onClick = navToDiary
                 )
             }
 
@@ -213,20 +200,6 @@ private fun CategoryIndicatorListItem(
         )
     }
 }
-
-@Composable
-private fun SearchDiaryButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // TODO 영농일지 검색 화면 이동을 위한 임시 버튼
-    Button(
-        onClick = onClick
-    ) {
-        Text("영농일지 검색 화면")
-    }
-}
-
 
 @Composable
 private fun ScheduleCard(

@@ -20,4 +20,10 @@ class UploadImageUseCase @Inject constructor(
         val domain: String,
         val file: File
     )
+
+    companion object{
+        const val DOMAIN_BULLETIN = "bulletin"
+        const val DOMAIN_ACCOUNT_BOOK = "ledger"
+        const val DOMAIN_DIARY = "diary"
+    }
 }

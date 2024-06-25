@@ -43,12 +43,18 @@ internal class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun delete() {
+        remote.delete()
         local.clear()
         session.removeAll()
     }
 
     override suspend fun clearAll() {
         local.clear()
+        session.removeAll()
+    }
+
+    override suspend fun postReason(reason: String, otherReason: String) {
+        remote.postReason(reason, otherReason)
     }
 
 }

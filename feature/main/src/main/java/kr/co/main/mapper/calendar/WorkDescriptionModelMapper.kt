@@ -11,7 +11,6 @@ internal object WorkDescriptionModelMapper
     override fun toRight(left: DiaryEntity.WorkDescriptionEntity): DiaryModel.WorkDescriptionModel =
         with(left) {
             DiaryModel.WorkDescriptionModel(
-                id = id,
                 type = when (type) {
                     WorkDescriptionType.SEED_PREP -> WorkDescriptionModelType.SEED_PREP
                     WorkDescriptionType.SEEDBED_PREP -> WorkDescriptionModelType.SEEDBED_PREP
@@ -43,7 +42,6 @@ internal object WorkDescriptionModelMapper
     override fun toLeft(right: DiaryModel.WorkDescriptionModel): DiaryEntity.WorkDescriptionEntity =
         with(right) {
             DiaryEntity.WorkDescriptionEntity(
-                id = id,
                 type = when (type) {
                     WorkDescriptionModelType.SEED_PREP -> WorkDescriptionType.SEED_PREP
                     WorkDescriptionModelType.SEEDBED_PREP -> WorkDescriptionType.SEEDBED_PREP
