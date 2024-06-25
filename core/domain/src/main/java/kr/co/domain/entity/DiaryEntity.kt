@@ -16,7 +16,6 @@ data class DiaryEntity(
     val memo: String = ""
 ) {
     data class WorkDescriptionEntity(
-        val id: Int,
         val type: WorkDescriptionType,
         val description: String,
     )

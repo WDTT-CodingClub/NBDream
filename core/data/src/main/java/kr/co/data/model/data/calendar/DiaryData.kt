@@ -13,7 +13,6 @@ data class DiaryData(
     val memo: String = ""
 ) {
     data class WorkDescriptionData(
-        val id: Int,
         val type: String,
         val description: String,
     )
