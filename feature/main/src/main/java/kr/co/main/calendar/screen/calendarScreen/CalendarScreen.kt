@@ -55,20 +55,21 @@ import kr.co.main.model.calendar.type.CropModelColorType
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.ScreenModeType
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Bell
 import kr.co.ui.icon.dreamicon.Edit
+import kr.co.ui.icon.dreamicon.Search
 import kr.co.ui.icon.dreamicon.Spinner
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamTopAppBar
 
+
 @Composable
 internal fun CalendarRoute(
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
-    navToNotification: () -> Unit,
+//    navToNotification: () -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
 ) {
     CalendarScreen(
@@ -76,7 +77,7 @@ internal fun CalendarRoute(
         navToAddSchedule = navToAddSchedule,
         navToAddDiary = navToAddDiary,
         navToSearchDiary = navToSearchDiary,
-        navToNotification = navToNotification,
+//        navToNotification = navToNotification,
         state = viewModel.state.collectAsState(),
         event = viewModel.event
     )
@@ -88,7 +89,7 @@ private fun CalendarScreen(
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
-    navToNotification: () -> Unit,
+//    navToNotification: () -> Unit,
     state: State<CalendarScreenViewModel.CalendarScreenState>,
     event: CalendarScreenEvent,
     modifier: Modifier = Modifier,
@@ -120,7 +121,12 @@ private fun CalendarScreen(
                         null
                     )
                 },
-                navToNotification = navToNotification
+                navToSearchDiary = {
+                    navToSearchDiary(
+                        state.value.crop?.type?.nameId
+                    )
+                },
+//                navToNotification = navToNotification
             )
         }
     ) { innerPadding ->
@@ -136,10 +142,10 @@ private fun CalendarScreen(
                     userCrops = state.value.userCrops,
                     calendarYear = state.value.year,
                     calendarMonth = state.value.month,
-                    calendarCrop = state.value.crop!!,
-                    onSelectYear = event::onSelectYear,
-                    onSelectMonth = event::onSelectMonth,
-                    onSelectCrop = event::onSelectCrop
+                    calendarCrop = state.value.crop,
+                    onSelectYear = event::onYearSelect,
+                    onSelectMonth = event::onMonthSelect,
+                    onSelectCrop = event::onCropSelect
                 )
 
                 HorizontalPager(
@@ -153,7 +159,7 @@ private fun CalendarScreen(
                                 calendarYear = state.value.year,
                                 calendarMonth = state.value.month,
                                 selectedDate = state.value.selectedDate,
-                                onDateSelect = event::onSelectDate,
+                                onDateSelect = event::onDateSelect,
                                 farmWorks = state.value.farmWorks,
                                 holidays = state.value.holidays,
                                 allSchedules = state.value.allSchedules,
@@ -176,7 +182,7 @@ private fun CalendarScreen(
                                 calendarYear = state.value.year,
                                 calendarMonth = state.value.month,
                                 selectedDate = state.value.selectedDate,
-                                onDateSelect = event::onSelectDate,
+                                onDateSelect = event::onDateSelect,
                                 holidays = state.value.holidays,
                                 diaries = state.value.diaries,
                                 onEditClick = { diaryId ->
@@ -204,7 +210,8 @@ private fun CalendarScreenTopAppBar(
     pagerState: PagerState,
     navToAddSchedule: () -> Unit,
     navToAddDiary: () -> Unit,
-    navToNotification: () -> Unit,
+    navToSearchDiary: () -> Unit,
+//    navToNotification: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -228,7 +235,11 @@ private fun CalendarScreenTopAppBar(
                     CalendarTabType.SCHEDULE -> navToAddSchedule
                     CalendarTabType.DIARY -> navToAddDiary
                 },
-                navToNotification = navToNotification,
+                navToSearchScreen = when (CalendarTabType.ofIndex(pagerState.currentPage)) {
+                    CalendarTabType.SCHEDULE -> null
+                    CalendarTabType.DIARY -> navToSearchDiary
+                },
+//                navToNotification = navToNotification,
                 modifier = Modifier
             )
         }
@@ -299,7 +310,8 @@ private fun measureTextWidth(text: String, style: TextStyle): Dp {
 @Composable
 private fun CalendarScreenTopAppBarActions(
     navToAddScreen: () -> Unit,
-    navToNotification: () -> Unit,
+    navToSearchScreen: (() -> Unit)?,
+//    navToNotification: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -310,13 +322,22 @@ private fun CalendarScreenTopAppBarActions(
                 contentDescription = ""
             )
         }
-        IconButton(onClick = navToNotification) {
-            Icon(
-                modifier = Modifier,
-                imageVector = DreamIcon.Bell,
-                contentDescription = ""
-            )
+        navToSearchScreen?.let {
+            IconButton(onClick = navToSearchScreen) {
+                Icon(
+                    modifier = Modifier,
+                    imageVector = DreamIcon.Search,
+                    contentDescription = ""
+                )
+            }
         }
+//        IconButton(onClick = navToNotification) {
+//            Icon(
+//                modifier = Modifier,
+//                imageVector = DreamIcon.Bell,
+//                contentDescription = ""
+//            )
+//        }
     }
 }
 
@@ -325,7 +346,7 @@ private fun CalendarInfoPicker(
     userCrops: List<CropModel>,
     calendarYear: Int,
     calendarMonth: Int,
-    calendarCrop: CropModel,
+    calendarCrop: CropModel?,
     onSelectYear: (Int) -> Unit,
     onSelectMonth: (Int) -> Unit,
     onSelectCrop: (CropModel) -> Unit,
@@ -342,11 +363,17 @@ private fun CalendarInfoPicker(
             onSelectYear = onSelectYear,
             onSelectMonth = onSelectMonth
         )
-        CalendarCropPicker(
-            userCrops = userCrops,
-            calendarCrop = calendarCrop,
-            onSelectCrop = onSelectCrop
-        )
+        if (calendarCrop == null) {
+            Text(
+                text = stringResource(id = R.string.feature_main_calendar_crop_empty)
+            )
+        } else {
+            CalendarCropPicker(
+                userCrops = userCrops,
+                calendarCrop = calendarCrop,
+                onSelectCrop = onSelectCrop
+            )
+        }
     }
 }
 
