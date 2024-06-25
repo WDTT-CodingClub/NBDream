@@ -14,8 +14,10 @@ internal class MyPageSettingViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase
 ): BaseViewModel<MyPageSettingViewModel.State>(saveStateHandle) {
 
-    fun onLogout() = viewModelScopeEH.launch {
-        logoutUseCase()
+    fun onLogout() {
+        viewModelScopeEH.launch {
+            logoutUseCase()
+        }
     }
 
     data object State: BaseViewModel.State

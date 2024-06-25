@@ -3,14 +3,11 @@ package kr.co.ui.widget
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -59,9 +56,7 @@ private fun DreamCenterTopAppBarPreview() {
     NBDreamTheme {
         DreamCenterTopAppBar(
             title = "장부",
-            navigationIcon = {
-                Icon(imageVector = DreamIcon.Edit, contentDescription = "뒤로가기")
-            },
+            navigationIcon = {},
             actions = {}
         )
     }

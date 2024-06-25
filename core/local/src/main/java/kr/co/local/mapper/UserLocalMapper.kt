@@ -12,6 +12,7 @@ internal object UserLocalMapper
                 name = name,
                 profileImage = profileImage,
                 address = address,
+                bjdCode = bjdCode,
                 latitude = latitude,
                 longitude = longitude,
                 crops = crops
@@ -25,6 +26,7 @@ internal object UserLocalMapper
                 name = name,
                 profileImage = profileImage,
                 address = address,
+                bjdCode = bjdCode,
                 latitude = latitude,
                 longitude = longitude,
                 crops = crops

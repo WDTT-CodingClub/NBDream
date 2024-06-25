@@ -44,9 +44,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,6 +62,7 @@ import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Addpicture
+import kr.co.ui.icon.dreamicon.Defaultprofile
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -183,6 +186,8 @@ private fun MyPageProfileEditScreen(
                         .clip(CircleShape),
                     model = state.profileImageUrl,
                     contentScale = ContentScale.Crop,
+                    placeholder = rememberVectorPainter(image = DreamIcon.Defaultprofile),
+                    error = rememberVectorPainter(image = DreamIcon.Defaultprofile),
                     contentDescription = stringResource(R.string.feature_main_profile_edit_image),
                 )
 
@@ -190,7 +195,7 @@ private fun MyPageProfileEditScreen(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .size(33.dp)
-                        .semantics { },
+                        .clearAndSetSemantics { },
                     imageVector = DreamIcon.Addpicture,
                     contentDescription = "",
                     tint = Color.Unspecified
@@ -247,24 +252,27 @@ private fun MyPageProfileEditScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextField(
-                        modifier = Modifier.fillMaxWidth(0.75f),
-                        value = state.address ?: "농장을 등록해 주세요",
-                        onValueChange = {},
-                        enabled = false,
-                        colors = TextFieldDefaults.colors(
-                            disabledContainerColor = Color.Transparent,
-                        ),
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(0.75f)
+                            .background(
+                                color = MaterialTheme.colors.gray10,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(
+                                horizontal = 16.dp,
+                                vertical = 12.dp
+                            )
+                        ,
+                        text = state.address ?: "농장을 등록해 주세요",
+                        style = MaterialTheme.typo.body1,
+                        color = if (state.address.isNullOrBlank()) MaterialTheme.colors.gray5 else MaterialTheme.colors.gray1,
                     )
-                    OutlinedButton(
+                    TextButton(
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colors.white,
                             contentColor = MaterialTheme.colors.gray1
-                        ),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = MaterialTheme.colors.gray1
                         ),
                         shape = RoundedCornerShape(12.dp),
                         onClick = onClickAddress,
@@ -275,7 +283,8 @@ private fun MyPageProfileEditScreen(
                         ) {
                         Text(
                             text = "주소 찾기",
-                            style = MaterialTheme.typo.label
+                            style = MaterialTheme.typo.body1,
+                            color = MaterialTheme.colors.primary
                         )
                     }
                 }

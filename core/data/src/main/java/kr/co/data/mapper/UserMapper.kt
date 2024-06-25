@@ -24,6 +24,7 @@ internal object UserMapper
             UserData(
                 name = name,
                 address = address,
+                bjdCode = bjdCode,
                 profileImage = profileImage,
                 longitude = longitude,
                 latitude = latitude,

@@ -11,6 +11,6 @@ class LogoutUseCase @Inject constructor(
 ) : SuspendUseCase<Unit, Unit>(){
     override suspend fun build(params: Unit?) {
 
-        return userRepository.delete()
+        return userRepository.clearAll()
     }
 }
