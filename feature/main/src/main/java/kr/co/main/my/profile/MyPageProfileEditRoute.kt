@@ -1,21 +1,18 @@
 package kr.co.main.my.profile
 
 import android.location.Geocoder
-import android.net.Uri
 import android.os.Build
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,12 +21,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,12 +40,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -58,17 +53,17 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.collectLatest
 import kr.co.common.util.FileUtil
 import kr.co.main.R
+import kr.co.main.model.my.MyPageProfileDialog
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Addpicture
-import kr.co.ui.icon.dreamicon.Defaultprofile
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import kr.co.ui.widget.DreamListDialog
 import kr.co.ui.widget.DreamLocationSearchScreen
-import timber.log.Timber
 import java.util.Locale
 
 @Composable
@@ -78,8 +73,13 @@ internal fun MyPageProfileEditRoute(
     viewModel: MyPageProfileEditViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     val geocoder = Geocoder(LocalContext.current, Locale.KOREA)
+
+    val (imageDialogVisible, setImageDialogVisible) = rememberSaveable {
+        mutableStateOf(false)
+    }
 
     val (addressVisible, setAddressVisible) = rememberSaveable {
         mutableStateOf(false)
@@ -96,6 +96,17 @@ internal fun MyPageProfileEditRoute(
         }
     )
 
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { success ->
+            if (success) {
+                FileUtil.getFileFromUri(FileUtil.createImageUri())?.let { file ->
+                    viewModel.uploadImage(file)
+                }
+            }
+        }
+    )
+
     LaunchedEffect(Unit) {
         viewModel.complete.collectLatest {
             navigateToMyPage()
@@ -104,19 +115,46 @@ internal fun MyPageProfileEditRoute(
 
     MyPageProfileEditScreen(
         state = state,
-        photoPickerLauncher = photoPickerLauncher,
         popBackStack = popBackStack,
-        onClickAddress = { setAddressVisible(true) },
-        onClickConfirm = viewModel::onClickConfirm,
+        onImageClick = { setImageDialogVisible(true) },
+        onAddressClick = { setAddressVisible(true) },
+        onConfirmClick = viewModel::onClickConfirm,
         onNameChanged = viewModel::onNameChanged,
     )
 
+    if (imageDialogVisible) {
+        DreamListDialog(
+            header = "프로필 사진",
+            onDismissRequest = { setImageDialogVisible(false) },
+            descriptionList = MyPageProfileDialog.entries.map { it.value },
+            onDescriptionClick = {
+                when (MyPageProfileDialog.fromValue(it)) {
+                    MyPageProfileDialog.GALLERY -> {
+                        photoPickerLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
+                    }
+                    MyPageProfileDialog.CAMERA -> {
+                        cameraLauncher.launch(
+                            FileUtil.createImageUri()
+                        )
+                    }
+                    MyPageProfileDialog.DEFAULT -> {
+                        viewModel.onImageChanged(null)
+                    }
+                }
+                setImageDialogVisible(false)
+            }
+        )
+    }
+
     if (addressVisible) {
-        DreamLocationSearchScreen { jibunAddress, bCode ->
-            Timber.d("WebView jibunAddr: $jibunAddress, bCode: $bCode")
-            viewModel.onAddressChanged(jibunAddress)
+        DreamLocationSearchScreen { address, bCode ->
+            viewModel.onAddressChanged(address, bCode)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                geocoder.getFromLocationName(jibunAddress, 1) {
+                geocoder.getFromLocationName(address, 1) {
                     if (it.isNotEmpty()) {
                         viewModel.onCoordinateChanged(
                             latitude = it[0].latitude,
@@ -128,14 +166,25 @@ internal fun MyPageProfileEditRoute(
             setAddressVisible(false)
         }
     }
+
+    if (isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colors.primary
+            )
+        }
+    }
 }
 
 @Composable
 private fun MyPageProfileEditScreen(
-    photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     popBackStack: () -> Unit = {},
-    onClickAddress: () -> Unit = {},
-    onClickConfirm: () -> Unit = {},
+    onImageClick: () -> Unit = {},
+    onAddressClick: () -> Unit = {},
+    onConfirmClick: () -> Unit = {},
     onNameChanged: (String) -> Unit = {},
     state: MyPageProfileEditViewModel.State = MyPageProfileEditViewModel.State(),
 ) {
@@ -153,7 +202,7 @@ private fun MyPageProfileEditScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = onClickConfirm) {
+                    TextButton(onClick = onConfirmClick) {
                         Text(
                             text = stringResource(R.string.feature_main_profile_edit_complete),
                             style = MaterialTheme.typo.body2,
@@ -173,13 +222,7 @@ private fun MyPageProfileEditScreen(
             Box(
                 modifier = Modifier
                     .size(88.dp)
-                    .noRippleClickable(onClick = {
-                        photoPickerLauncher.launch(
-                            PickVisualMediaRequest(
-                                ActivityResultContracts.PickVisualMedia.ImageOnly
-                            )
-                        )
-                    }),
+                    .noRippleClickable(onClick = onImageClick),
             ) {
                 AsyncImage(
                     modifier = Modifier
@@ -187,8 +230,8 @@ private fun MyPageProfileEditScreen(
                         .clip(CircleShape),
                     model = state.profileImageUrl,
                     contentScale = ContentScale.Crop,
-                    placeholder = rememberVectorPainter(image = DreamIcon.Defaultprofile),
-                    error = rememberVectorPainter(image = DreamIcon.Defaultprofile),
+                    placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_deafault_profile),
+                    error = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_deafault_profile),
                     contentDescription = stringResource(R.string.feature_main_profile_edit_image),
                 )
 
@@ -276,7 +319,7 @@ private fun MyPageProfileEditScreen(
                             contentColor = MaterialTheme.colors.gray1
                         ),
                         shape = RoundedCornerShape(12.dp),
-                        onClick = onClickAddress,
+                        onClick = onAddressClick,
                         contentPadding = PaddingValues(
                             vertical = 4.dp,
                             horizontal = 12.dp
@@ -300,12 +343,8 @@ private fun Preview() {
     NBDreamTheme {
         MyPageProfileEditScreen(
             popBackStack = {},
-            onClickConfirm = {},
+            onConfirmClick = {},
             onNameChanged = {},
-            photoPickerLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.PickVisualMedia(),
-                onResult = {}
-            )
         )
     }
 }

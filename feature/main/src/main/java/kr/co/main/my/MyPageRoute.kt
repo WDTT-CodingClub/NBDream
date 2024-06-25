@@ -40,12 +40,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kr.co.nbdream.core.ui.R
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Defaultprofile
@@ -378,10 +380,10 @@ private fun ProfileCard(
                 .size(88.dp)
                 .clip(CircleShape),
             model = imageUrl,
-            error = rememberVectorPainter(image = DreamIcon.Defaultprofile),
+            error = painterResource(id = R.drawable.img_deafault_profile),
             contentDescription = "User's profile image",
             contentScale = ContentScale.Crop,
-            placeholder = rememberVectorPainter(image = DreamIcon.Defaultprofile)
+            placeholder = painterResource(id = R.drawable.img_deafault_profile)
         )
 
         Column(
