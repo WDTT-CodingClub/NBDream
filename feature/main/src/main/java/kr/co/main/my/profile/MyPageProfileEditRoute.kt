@@ -247,24 +247,27 @@ private fun MyPageProfileEditScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextField(
-                        modifier = Modifier.fillMaxWidth(0.75f),
-                        value = state.address ?: "농장을 등록해 주세요",
-                        onValueChange = {},
-                        enabled = false,
-                        colors = TextFieldDefaults.colors(
-                            disabledContainerColor = Color.Transparent,
-                        ),
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(0.75f)
+                            .background(
+                                color = MaterialTheme.colors.gray10,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(
+                                horizontal = 16.dp,
+                                vertical = 12.dp
+                            )
+                        ,
+                        text = state.address ?: "농장을 등록해 주세요",
+                        style = MaterialTheme.typo.body1,
+                        color = if (state.address.isNullOrBlank()) MaterialTheme.colors.gray5 else MaterialTheme.colors.gray1,
                     )
-                    OutlinedButton(
+                    TextButton(
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colors.white,
                             contentColor = MaterialTheme.colors.gray1
-                        ),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = MaterialTheme.colors.gray1
                         ),
                         shape = RoundedCornerShape(12.dp),
                         onClick = onClickAddress,
@@ -275,7 +278,8 @@ private fun MyPageProfileEditScreen(
                         ) {
                         Text(
                             text = "주소 찾기",
-                            style = MaterialTheme.typo.label
+                            style = MaterialTheme.typo.body1,
+                            color = MaterialTheme.colors.primary
                         )
                     }
                 }

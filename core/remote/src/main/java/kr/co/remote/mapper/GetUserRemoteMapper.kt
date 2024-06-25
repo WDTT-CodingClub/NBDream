@@ -12,6 +12,7 @@ internal object GetUserRemoteMapper
                 name = nickname,
                 address = address,
                 profileImage = profileImageUrl,
+                bjdCode = bjdCode,
                 latitude = latitude,
                 longitude = longitude,
                 crops = crops,

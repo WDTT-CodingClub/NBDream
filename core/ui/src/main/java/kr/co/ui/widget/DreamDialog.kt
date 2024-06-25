@@ -19,9 +19,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -41,7 +43,7 @@ fun DreamDialog(
         Column(
             modifier = Modifier
                 .background(
-                    color = MaterialTheme.colors.white,
+                    color = Color(0xFFF2F2F7),
                     shape = RoundedCornerShape(12.dp)
                 )
         ) {
@@ -55,9 +57,15 @@ fun DreamDialog(
                             top = 20.dp
                         ),
                     text = header,
-                    style = MaterialTheme.typo.h4,
+                    style = MaterialTheme.typo.h4.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 17.sp,
+                        color = MaterialTheme.colors.gray1,
+                        lineHeight = 27.2.sp,
+                        letterSpacing = (-0.01).sp
+                    ),
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.primary
+                    color = Color(0xFF0A84FF)
                 )
             }
             Text(
@@ -66,7 +74,13 @@ fun DreamDialog(
                     .padding(horizontal = 20.dp)
                     .padding(bottom = 20.dp),
                 text = description,
-                style = MaterialTheme.typo.body1,
+                style = MaterialTheme.typo.body1.copy(
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colors.gray1,
+                    lineHeight = 20.8.sp,
+                    letterSpacing = (-0.01).sp
+                ),
                 textAlign = TextAlign.Center
             )
             Spacer(

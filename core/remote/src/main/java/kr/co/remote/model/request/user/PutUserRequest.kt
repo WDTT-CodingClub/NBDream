@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 internal data class PutUserRequest(
     val nickname: String,
     val address: String?,
+    val bjdCode: String?,
     val profileImageUrl: String?,
     val longitude: Double?,
     val latitude: Double?,

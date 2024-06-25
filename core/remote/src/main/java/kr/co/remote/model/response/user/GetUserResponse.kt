@@ -7,6 +7,7 @@ internal data class GetUserResponse(
     val nickname: String,
     val address: String?,
     val profileImageUrl: String?,
+    val bjdCode: String?,
     val longitude: Double?,
     val latitude: Double?,
     val crops: List<String>

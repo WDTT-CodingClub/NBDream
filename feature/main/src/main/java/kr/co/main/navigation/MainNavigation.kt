@@ -328,24 +328,12 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         MyPageSettingDeleteAccountRoute(
             popBackStack = navController::popBackStack,
-            navigateToSocialVerify = {
-                navController.navigate(MyPageRoute.SETTING_DELETE_VERIFY_ROUTE)
-            }
         )
     }
 
     composable(
         route = MyPageRoute.SETTING_DELETE_VERIFY_ROUTE
     ) {
-        MyPageSettingDeleteSocialVerifyRoute(
-            popBackStack = navController::popBackStack,
-            navigateToPrivacyPolicy = {
-                navController.navigate(MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE)
-            },
-            navigateToOnBoard = {
-
-            }
-        )
     }
 
     composable(
