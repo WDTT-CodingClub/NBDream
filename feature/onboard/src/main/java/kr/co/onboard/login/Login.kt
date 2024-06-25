@@ -29,7 +29,7 @@ internal fun Login(
             .background(color = Color.White)
             .padding(Paddings.xlarge),
     ) {
-        Logo()
+        Logo("농부의 꿈")
         SocialLoginButtons(
             onSocialLoginClick = onSocialLoginClick,
         )
@@ -38,7 +38,9 @@ internal fun Login(
 
 
 @Composable
-internal fun Logo() {
+internal fun Logo(
+    text: String = "",
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -50,7 +52,7 @@ internal fun Logo() {
             contentDescription = "logo"
         )
         Text(
-            text = "",
+            text = text,
             style = MaterialTheme.typo.displayB
         )
     }

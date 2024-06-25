@@ -51,31 +51,48 @@ import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamButton
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.DreamCheckIcon
+import kr.co.ui.widget.DreamDialog
 
 @Composable
 internal fun MyPageSettingDeleteAccountRoute(
     viewModel: MyPageSettingDeleteAccountViewModel = hiltViewModel(),
     popBackStack: () -> Unit = {},
-    navigateToSocialVerify: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val (isDialogVisible, setIsDialogVisible) = rememberSaveable {
+        mutableStateOf(false)
+    }
 
     MyPageSettingDeleteAccountScreen(
         state = state,
         setSelected = viewModel::onSelectChange,
         setReason = viewModel::onReasonChange,
         popBackStack = popBackStack,
-        navigateToSocialVerify = navigateToSocialVerify
+        onDeleteClick = { setIsDialogVisible(true) }
     )
+
+    if (isDialogVisible)
+        DreamDialog(
+            header = "정말 탈퇴 하시겠어요?",
+            description = "탈퇴한 계정은 다시 복구 할 수 없습니다.\n탈퇴를 원한다면 확인 버튼을 눌러주세요",
+            confirmText = "탈퇴하기",
+            dismissText = "다음에 할래요",
+            onConfirm = {
+                viewModel.onDeleteClick()
+                setIsDialogVisible(false)
+            },
+            onDismiss = { setIsDialogVisible(false) }
+        )
 }
 
 @Composable
 private fun MyPageSettingDeleteAccountScreen(
     state: MyPageSettingDeleteAccountViewModel.State = MyPageSettingDeleteAccountViewModel.State(),
     setReason: (String) -> Unit = {},
-    setSelected: (Int?) -> Unit = {},
+    setSelected: (String?) -> Unit = {},
     popBackStack: () -> Unit = {},
-    navigateToSocialVerify: () -> Unit = {}
+    onDeleteClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -95,10 +112,11 @@ private fun MyPageSettingDeleteAccountScreen(
         bottomBar = {
             DreamButton(
                 modifier = Modifier
-                    .navigationBarsPadding(),
+                    .navigationBarsPadding()
+                    .padding(bottom = 16.dp),
                 enabled = state.isSelectValid,
                 text = "탈퇴하기",
-                onClick = navigateToSocialVerify,
+                onClick = onDeleteClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colors.gray2,
                     contentColor = MaterialTheme.colors.gray10
@@ -146,16 +164,16 @@ private fun MyPageSettingDeleteAccountScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(CircleShape)
-                            .clickable { setSelected(reason.ordinal) },
+                            .clickable { setSelected(reason.text) },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         DreamCheckIcon(
                             modifier = Modifier.size(24.dp),
-                            state = state.select == reason.ordinal,
+                            state = state.reason == reason.text,
                             leftIcon = DreamIcon.OutLineCircle,
                             rightIcon = DreamIcon.Checkcircle,
                             contentDescription = "check reason",
-                            onClick = { setSelected(reason.ordinal) },
+                            onClick = { setSelected(reason.text) },
                             colors = IconDefaults.vectorColors(
                                 default = MaterialTheme.colors.gray6,
                             )
@@ -175,7 +193,7 @@ private fun MyPageSettingDeleteAccountScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .sizeIn(minHeight = 144.dp),
-                value = state.reason?: "",
+                value = state.otherReason ?: "",
                 onValueChange = {
                     if (it.length <= 200) setReason(it)
                 },
@@ -191,7 +209,7 @@ private fun MyPageSettingDeleteAccountScreen(
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .align(Alignment.End),
-                text = "${state.reason?.length}/200",
+                text = "${state.otherReason?.length}/200",
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
@@ -207,7 +225,7 @@ private fun MyPageSettingDeleteAccountScreen(
 @Composable
 private fun Preview() {
     val (selected, setSelected) = rememberSaveable {
-        mutableStateOf<Int?>(null)
+        mutableStateOf<String?>(null)
     }
 
     val (reason, setReason) = rememberSaveable {

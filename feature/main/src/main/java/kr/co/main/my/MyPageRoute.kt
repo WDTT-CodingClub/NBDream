@@ -124,18 +124,18 @@ private fun MyPageScreen(
 
             item {
                 Spacer(modifier = Modifier.height(48.dp))
-                BulletinCard(
-                    crops = state.crops.orEmpty().ifEmpty { listOf("작물을 등록해 보세요") },
-                    showCropModal = showCropModal
+                CommunityCard(
+                    navigateToBookmark = navigateToBookmark,
+                    navigateToWrite = navigateToWrite,
+                    navigateToComment = navigateToComment
                 )
             }
 
             item {
                 Spacer(modifier = Modifier.height(20.dp))
-                CommunityCard(
-                    navigateToBookmark = navigateToBookmark,
-                    navigateToWrite = navigateToWrite,
-                    navigateToComment = navigateToComment
+                BulletinCard(
+                    crops = state.crops.orEmpty().ifEmpty { listOf("작물을 등록해 보세요") },
+                    showCropModal = showCropModal
                 )
             }
         }
@@ -240,7 +240,8 @@ private fun BulletinCard(
                     .size(24.dp)
                     .noRippleClickable(onClick = showCropModal),
                 imageVector = Icons.Filled.Add,
-                contentDescription = "add crop button"
+                contentDescription = "add crop button",
+                tint = MaterialTheme.colors.primary
             )
         }
 
@@ -248,7 +249,6 @@ private fun BulletinCard(
             modifier = Modifier
                 .padding(
                     top = 32.dp,
-                    bottom = 48.dp
                 ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -287,6 +287,7 @@ private fun BulletinCard(
                 tint = MaterialTheme.colors.gray5
             )
         }
+            Spacer(modifier = Modifier.height(48.dp))
             }
     }
 }

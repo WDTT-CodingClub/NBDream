@@ -25,12 +25,9 @@ internal fun BulletinResData.convertToEntity(): BulletinEntity? {
         this.bulletinId == null ||
         this.nickname == null ||
         this.profileImageUrl == null ||
-        this.content == null ||
         this.crop == null ||
-        this.imageUrls == null ||
         this.bulletinCategory == null ||
         this.createdTime == null ||
-        this.comments == null ||
         this.bookmarkedCount == null
     ) null
     else BulletinEntity(
@@ -38,12 +35,12 @@ internal fun BulletinResData.convertToEntity(): BulletinEntity? {
         bulletinId = this.bulletinId,
         nickname = this.nickname,
         profileImageUrl = this.profileImageUrl,
-        content = this.content,
+        content = this.content ?: "",
         crop = this.crop.toCropEntity(),
-        imageUrls = this.imageUrls,
+        imageUrls = this.imageUrls ?: emptyList(),
         bulletinCategory = this.bulletinCategory.toBulletinCategory(),
         createdTime = this.createdTime,
-        comments = this.comments.convertToEntities(),
+        comments = this.comments?.convertToEntities() ?: emptyList(),
         bookmarkedCount = this.bookmarkedCount,
     )
 }

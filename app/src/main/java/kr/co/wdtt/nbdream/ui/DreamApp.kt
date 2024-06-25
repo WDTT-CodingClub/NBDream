@@ -12,7 +12,6 @@ import androidx.compose.animation.slideIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,7 +34,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kr.co.main.navigation.MAIN_ROUTE
 import kr.co.main.navigation.mainNavGraph
@@ -43,6 +42,7 @@ import kr.co.onboard.navigation.onboardNavGraph
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.wdtt.nbdream.MainViewModel
+import kr.co.wdtt.nbdream.R
 
 private enum class DreamNavRoute(
     val route: String,
@@ -112,7 +112,7 @@ private fun DreamAppScreen(
                     exit = fadeOut(animationSpec = tween(1000))
                 ) {
                     Text(
-                        text = "농부의 꿈",
+                        text = stringResource(id = R.string.app_name),
                         style = MaterialTheme.typo.h1.copy(
                             fontSize = 72.sp
                         ),
