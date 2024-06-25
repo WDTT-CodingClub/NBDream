@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kr.co.domain.usecase.calendar.GetFarmWorksUseCase
 import kr.co.domain.usecase.calendar.GetHolidaysUseCase
-import kr.co.main.mapper.calendar.CropModelMapper
+import kr.co.main.mapper.calendar.CropModelTypeMapper
 import kr.co.main.mapper.calendar.FarmWorkModelMapper
 import kr.co.main.mapper.calendar.HolidayModelMapper
 import kr.co.main.model.calendar.CropModel
@@ -69,7 +69,7 @@ internal class ScheduleTabViewModel @Inject constructor(
                     year = currentState.calendarYear,
                     month = currentState.calendarMonth
                 )
-            ).let{ holidays ->
+            ).let { holidays ->
                 updateState {
                     currentState.copy(holidays = holidays.map { HolidayModelMapper.toRight(it) })
                 }
@@ -79,7 +79,7 @@ internal class ScheduleTabViewModel @Inject constructor(
                 Timber.d("crop: $crop, call getFarmWork")
                 getFarmWork(
                     GetFarmWorksUseCase.Params(
-                        crop = CropModelMapper.toLeft(crop).type.koreanName,
+                        crop = CropModelTypeMapper.toLeft(crop.type),
                         month = month
                     )
                 ).let {
