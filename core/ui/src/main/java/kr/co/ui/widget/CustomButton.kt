@@ -76,7 +76,7 @@ fun InputCompleteButton(
         onClick = onNextClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(52.dp)
             .padding(top = 8.dp),
         shape = RoundedCornerShape(12.dp),
         containerColor = MaterialTheme.colors.primary,
