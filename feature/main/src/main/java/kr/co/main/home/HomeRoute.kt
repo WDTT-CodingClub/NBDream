@@ -63,6 +63,9 @@ import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamTopAppBar
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 internal fun HomeRoute(
@@ -88,10 +91,6 @@ private fun HomeScreen(
     navigateToChat: () -> Unit = {},
     navigateToCalendar: () -> Unit = {}
 ) {
-    var maxWidth by remember {
-        mutableIntStateOf(0)
-    }
-
     Surface(
         color = MaterialTheme.colors.gray9,
     ) {
@@ -163,9 +162,14 @@ private fun HomeScreen(
                             color = MaterialTheme.colors.white,
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .padding(24.dp),
+                        .padding(24.dp)
+                        .animateContentSize(
+                            animationSpec = TweenSpec(
+                                durationMillis = 500
+                            )
+                        ),
                 ) {
-                    if (true) {
+                    if (state.schedules.isEmpty()) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -193,74 +197,9 @@ private fun HomeScreen(
                             )
                         }
                     } else {
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(
-                                    style = MaterialTheme.typo.h4.copy(
-                                        color = MaterialTheme.colors.gray1
-                                    ).toSpanStyle()
-                                ) {
-                                    append("5월 24일 일 ")
-                                }
-                                withStyle(
-                                    style = MaterialTheme.typo.body1.copy(
-                                        color = MaterialTheme.colors.gray2
-                                    ).toSpanStyle()
-                                ) {
-                                    append(" 소만 ")
-                                }
-                                append(" 오늘")
-                            },
-                            style = MaterialTheme.typo.body1,
-                            color = MaterialTheme.colors.primary
+                        ScheduleCard(
+                            schedules = state.schedules
                         )
-                        Spacer(modifier = Modifier.height(36.dp))
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .onGloballyPositioned {
-                                    maxWidth = it.size.width
-                                },
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            val dummy = listOf(
-                                Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
-                                Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
-                                Triple("감자 물 관리 작업 감자 물 관리 작업", "2024.05.16", "2024.05.21"),
-                            )
-                            dummy.forEachIndexed { index, value ->
-                                ScheduleText(
-                                    parentWidth = maxWidth,
-                                    title = value.first,
-                                    startDate = value.second,
-                                    endDate = value.third
-                                )
-                                if (index != dummy.lastIndex)
-                                    HorizontalDivider(
-                                        thickness = 1.dp,
-                                        color = MaterialTheme.colors.gray8
-                                    )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(48.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "펼쳐보기",
-                                style = MaterialTheme.typo.label,
-                                color = MaterialTheme.colors.gray3
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Icon(
-                                modifier = Modifier.size(20.dp),
-                                imageVector = Icons.Filled.KeyboardArrowDown,
-                                contentDescription = "expand"
-                            )
-                        }
                     }
                 }
             }
@@ -271,6 +210,118 @@ private fun HomeScreen(
         }
     }
 
+}
+
+@Composable
+private fun ScheduleCard(
+    schedules: List<HomeViewModel.State.Schedule>
+) {
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    schedules.groupBy { it.startDate }.apply {
+        firstNotNullOf { (startDate, schedules) ->
+            ScheduleContents(
+                startDate = startDate,
+                isToday = true,
+                schedules = schedules
+            )
+        }
+    }.entries.drop(1).forEach { (startDate, schedules) ->
+
+        if (expanded) {
+            Spacer(modifier = Modifier.height(48.dp))
+
+            ScheduleContents(
+                startDate = startDate,
+                schedules = schedules
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(48.dp))
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .noRippleClickable(onClick = { expanded = !expanded }),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = if (!expanded) "펼쳐보기" else "접기",
+            style = MaterialTheme.typo.label,
+            color = MaterialTheme.colors.gray3
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Icon(
+            modifier = Modifier.size(20.dp),
+            imageVector = if (!expanded) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowUp,
+            contentDescription = "expand",
+            tint = MaterialTheme.colors.gray5
+        )
+    }
+}
+
+@Composable
+private fun ScheduleContents(
+    startDate: LocalDate,
+    isToday: Boolean = false,
+    schedules: List<HomeViewModel.State.Schedule>,
+) {
+    var maxWidth by remember {
+        mutableIntStateOf(0)
+    }
+    Text(
+        text = buildAnnotatedString {
+            withStyle(
+                style = MaterialTheme.typo.h4.copy(
+                    color = MaterialTheme.colors.gray1
+                ).toSpanStyle()
+            ) {
+                startDate.apply {
+                    append("${monthValue}월 ${dayOfMonth}일 ${dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN)} ")
+                }
+            }
+            withStyle(
+                style = MaterialTheme.typo.body1.copy(
+                    color = MaterialTheme.colors.gray2
+                ).toSpanStyle()
+            ) {
+                append("")
+            }
+            if (isToday) append(" 오늘")
+        },
+        style = MaterialTheme.typo.body1,
+        color = MaterialTheme.colors.primary
+    )
+    Spacer(modifier = Modifier.height(36.dp))
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .onGloballyPositioned {
+                maxWidth = it.size.width
+            },
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        schedules.forEachIndexed { index, schedule ->
+            ScheduleText(
+                parentWidth = maxWidth,
+                title = schedule.title,
+                startDate = schedule.startDate.toString(),
+                endDate = schedule.endDate.toString()
+            )
+            if (index < schedules.lastIndex)
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colors.gray8
+                )
+        }
+    }
 }
 
 @Composable
@@ -415,7 +466,7 @@ private fun WeatherCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = it.day,
+                        text = it.day.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN),
                         style = MaterialTheme.typo.body1.copy(
                             fontWeight = FontWeight.Normal,
                             fontSize = 16.sp,
