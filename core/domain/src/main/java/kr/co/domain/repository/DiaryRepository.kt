@@ -19,6 +19,8 @@ interface DiaryRepository {
         endDate: LocalDate
     ): Flow<List<DiaryEntity>>
 
+    suspend fun getDiaryDetail(id:Int): DiaryEntity
+
     suspend fun createDiary(
         date: LocalDate,
         holidayList: List<HolidayEntity>,

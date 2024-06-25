@@ -30,7 +30,6 @@ internal object DiaryMapper
         override fun toRight(left: DiaryData.WorkDescriptionData): DiaryEntity.WorkDescriptionEntity =
             with(left) {
                 DiaryEntity.WorkDescriptionEntity(
-                    id = id,
                     type = WorkDescriptionType.ofValue(type),
                     description = description
                 )
@@ -39,7 +38,6 @@ internal object DiaryMapper
         override fun toLeft(right: DiaryEntity.WorkDescriptionEntity): DiaryData.WorkDescriptionData =
             with(right){
                 DiaryData.WorkDescriptionData(
-                    id = id,
                     type = type.koreanName,
                     description = description
                 )

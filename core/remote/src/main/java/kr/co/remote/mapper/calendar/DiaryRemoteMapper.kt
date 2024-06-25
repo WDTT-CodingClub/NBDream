@@ -33,7 +33,6 @@ internal object DiaryRemoteMapper
         ): DiaryData.WorkDescriptionData =
             with(param) {
                 DiaryData.WorkDescriptionData(
-                    id = id,
                     type = type,
                     description = description
                 )

@@ -11,7 +11,6 @@ class DeleteImageUseCase @Inject  constructor(
 ) : SuspendUseCase<String,Unit>(){
     override suspend fun build(url: String?) {
         checkNotNull(url)
-
         imageRepository.delete(url)
     }
 }

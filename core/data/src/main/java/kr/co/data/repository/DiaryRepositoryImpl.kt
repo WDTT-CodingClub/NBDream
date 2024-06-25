@@ -43,6 +43,11 @@ internal class DiaryRepositoryImpl @Inject constructor(
             )
         }
 
+    override suspend fun getDiaryDetail(id: Int): DiaryEntity =
+        remote.fetchDetail(id).let{
+            DiaryMapper.convert(it)
+        }
+
     override suspend fun createDiary(
         date: LocalDate,
         holidayList: List<HolidayEntity>,

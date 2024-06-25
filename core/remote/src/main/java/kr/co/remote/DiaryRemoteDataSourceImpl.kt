@@ -39,6 +39,11 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
             }
             .let { flowOf(it) }
 
+    override suspend fun fetchDetail(id: Int): DiaryData =
+        client.get("$GET_DIARY_DETAIL/$id")
+            .body<Dto<DiaryListResponse.DiaryResponse>>()
+            .data.let { DiaryRemoteMapper.convert(it) }
+
     override suspend fun searchList(
         crop: String,
         query: String,
@@ -72,7 +77,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
             setBody(
                 PostDiaryRequest(
                     date = date,
-                    holidayList = holidayList.map{
+                    holidayList = holidayList.map {
                         PostDiaryRequest.HolidayRequest(
                             date = it.date,
                             isHoliday = it.isHoliday,
@@ -84,7 +89,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
                     workLaborer = workLaborer,
                     workHours = workHours,
                     workArea = workArea,
-                    workDescriptions = workDescriptions.map{
+                    workDescriptions = workDescriptions.map {
                         PostDiaryRequest.WorkDescriptionRequest(
                             type = it.type,
                             description = it.description
@@ -107,12 +112,12 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         workDescriptions: List<DiaryData.WorkDescriptionData>,
         memo: String
     ) {
-        client.put(PUT_DIARY) {
+        client.put("$PUT_DIARY/$id") {
             setBody(
                 UpdateDiaryRequest(
                     id = id,
                     date = date,
-                    holidayList = holidayList.map{
+                    holidayList = holidayList.map {
                         PostDiaryRequest.HolidayRequest(
                             date = it.date,
                             isHoliday = it.isHoliday,
@@ -124,7 +129,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
                     workLaborer = workLaborer,
                     workHours = workHours,
                     workArea = workArea,
-                    workDescriptions = workDescriptions.map{
+                    workDescriptions = workDescriptions.map {
                         PostDiaryRequest.WorkDescriptionRequest(
                             type = it.type,
                             description = it.description
@@ -137,12 +142,13 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun delete(id: Int) {
-        client.delete(DELETE_DIARY)
+        client.delete("$DELETE_DIARY/$id")
     }
 
     companion object {
         private const val GET_DIARY_LIST = "calendar/diary"
         private const val SEARCH_DIARY_LIST = "calendar/diary/search"
+        private const val GET_DIARY_DETAIL = "calendar/diary/detail"
         private const val POST_DIARY = "calendar/diary/register"
         private const val PUT_DIARY = "calendar/diary/update"
         private const val DELETE_DIARY = "calendar/diary/delete"

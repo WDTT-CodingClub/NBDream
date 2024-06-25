@@ -11,6 +11,8 @@ interface DiaryRemoteDataSource {
         month: String
     ): Flow<List<DiaryData>>
 
+    suspend fun fetchDetail(id:Int):DiaryData
+
     suspend fun searchList(
         crop: String,
         query: String,
