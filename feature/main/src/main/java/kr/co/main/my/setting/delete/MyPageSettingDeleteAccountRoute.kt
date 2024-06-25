@@ -43,7 +43,7 @@ import kr.co.ui.ext.IconDefaults
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.ext.vectorColors
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Checkcircle
+import kr.co.ui.icon.dreamicon.CheckCircle
 import kr.co.ui.icon.dreamicon.OutLineCircle
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -171,7 +171,7 @@ private fun MyPageSettingDeleteAccountScreen(
                             modifier = Modifier.size(24.dp),
                             state = state.reason == reason.text,
                             leftIcon = DreamIcon.OutLineCircle,
-                            rightIcon = DreamIcon.Checkcircle,
+                            rightIcon = DreamIcon.CheckCircle,
                             contentDescription = "check reason",
                             onClick = { setSelected(reason.text) },
                             colors = IconDefaults.vectorColors(

@@ -7,9 +7,7 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,12 +22,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,7 +45,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -61,8 +56,8 @@ import kr.co.main.R
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Addpicture
-import kr.co.ui.icon.dreamicon.Defaultprofile
+import kr.co.ui.icon.dreamicon.AddPicture
+import kr.co.ui.icon.dreamicon.DefaultProfile
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -187,8 +182,8 @@ private fun MyPageProfileEditScreen(
                         .clip(CircleShape),
                     model = state.profileImageUrl,
                     contentScale = ContentScale.Crop,
-                    placeholder = rememberVectorPainter(image = DreamIcon.Defaultprofile),
-                    error = rememberVectorPainter(image = DreamIcon.Defaultprofile),
+                    placeholder = rememberVectorPainter(image = DreamIcon.DefaultProfile),
+                    error = rememberVectorPainter(image = DreamIcon.DefaultProfile),
                     contentDescription = stringResource(R.string.feature_main_profile_edit_image),
                 )
 
@@ -197,7 +192,7 @@ private fun MyPageProfileEditScreen(
                         .align(Alignment.BottomEnd)
                         .size(33.dp)
                         .clearAndSetSemantics { },
-                    imageVector = DreamIcon.Addpicture,
+                    imageVector = DreamIcon.AddPicture,
                     contentDescription = "",
                     tint = Color.Unspecified
                 )
@@ -263,8 +258,7 @@ private fun MyPageProfileEditScreen(
                             .padding(
                                 horizontal = 16.dp,
                                 vertical = 12.dp
-                            )
-                        ,
+                            ),
                         text = state.address ?: "농장을 등록해 주세요",
                         style = MaterialTheme.typo.body1,
                         color = if (state.address.isNullOrBlank()) MaterialTheme.colors.gray5 else MaterialTheme.colors.gray1,
@@ -281,7 +275,7 @@ private fun MyPageProfileEditScreen(
                             vertical = 4.dp,
                             horizontal = 12.dp
                         )
-                        ) {
+                    ) {
                         Text(
                             text = "주소 찾기",
                             style = MaterialTheme.typo.body1,

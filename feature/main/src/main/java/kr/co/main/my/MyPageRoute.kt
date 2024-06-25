@@ -40,8 +40,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Defaultprofile
-import kr.co.ui.icon.dreamicon.OutlineEdit
+import kr.co.ui.icon.dreamicon.DefaultProfile
+import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -98,7 +98,7 @@ private fun MyPageScreen(
                         IconButton(onClick = navigateToProfileEdit) {
                             Icon(
                                 modifier = Modifier.size(32.dp),
-                                imageVector = DreamIcon.OutlineEdit,
+                                imageVector = DreamIcon.Edit,
                                 contentDescription = "edit"
                             )
                         }
@@ -309,10 +309,10 @@ private fun ProfileCard(
                 .size(88.dp)
                 .clip(CircleShape),
             model = imageUrl,
-            error = rememberVectorPainter(image = DreamIcon.Defaultprofile),
+            error = rememberVectorPainter(image = DreamIcon.DefaultProfile),
             contentDescription = "User's profile image",
             contentScale = ContentScale.Crop,
-            placeholder = rememberVectorPainter(image = DreamIcon.Defaultprofile)
+            placeholder = rememberVectorPainter(image = DreamIcon.DefaultProfile)
         )
 
         Column(
