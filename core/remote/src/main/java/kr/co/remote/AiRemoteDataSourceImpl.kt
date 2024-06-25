@@ -8,6 +8,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kr.co.data.source.remote.AiRemoteDataSource
 import kr.co.remote.model.Dto
+import kr.co.remote.model.response.ai.PostAiChatResponse
 
 internal class AiRemoteDataSourceImpl(
     private val client: HttpClient,
@@ -24,6 +25,6 @@ internal class AiRemoteDataSourceImpl(
                     put("question", m)
                 }
             )
-        }.body<Dto<String>>().data
+        }.body<Dto<PostAiChatResponse>>().data.answer
     }
 }

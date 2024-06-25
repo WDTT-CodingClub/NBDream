@@ -1,20 +1,26 @@
 package kr.co.main.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
+import kr.co.main.MainNav
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentRoute
+import kr.co.main.accountbook.create.AccountBookCreateRoute
 import kr.co.main.accountbook.main.AccountBookRoute
-import kr.co.main.accountbook.register.AccountBookRegisterRoute
-import kr.co.main.calendar.ui.calendarScreen.addDiaryScreen.AddDiaryRoute
-import kr.co.main.calendar.ui.calendarScreen.addScheduleScreen.AddScheduleRoute
-import kr.co.main.calendar.ui.calendarScreen.calendarScreen.CalendarRoute
-import kr.co.main.calendar.ui.calendarScreen.searchDiaryScreen.SearchDiaryRoute
-import kr.co.main.community.BulletinDetailRoute
-import kr.co.main.community.BulletinWritingRoute
+import kr.co.main.accountbook.model.EntryType
+import kr.co.main.calendar.screen.addDiaryScreen.AddDiaryRoute
+import kr.co.main.calendar.screen.addScheduleScreen.AddScheduleRoute
+import kr.co.main.calendar.screen.calendarScreen.CalendarRoute
+import kr.co.main.calendar.screen.searchDiaryScreen.SearchDiaryRoute
 import kr.co.main.community.CommunityRoute
+import kr.co.main.community.CommunityViewModel
+import kr.co.main.community.SharingData
+import kr.co.main.community.detail.BulletinDetailRoute
+import kr.co.main.community.writing.BulletinWritingRoute
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
@@ -24,7 +30,6 @@ import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
 import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
-import kr.co.main.my.setting.verify.MyPageSettingDeleteSocialVerifyRoute
 import kr.co.main.notification.NotificationRoute
 import timber.log.Timber
 
@@ -37,6 +42,7 @@ internal const val NOTIFICATION_ROUTE = "notificationRoute"
 
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
 internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
+internal const val ACCOUNT_BOOK_UPDATE_ROUTE = "accountBookUpdateRoute"
 
 internal data object CommunityRoute {
     const val WRITING_ROUTE = "community_writing_route"
@@ -74,6 +80,17 @@ fun NavGraphBuilder.mainNavGraph(
                         },
                         navigateToNotification = {
                             navController.navigate(NOTIFICATION_ROUTE)
+                        },
+                        navigateToCalendar = {
+                            MainNav.controller.navigate(
+                                MainBottomRoute.CALENDAR.route
+                            ) {
+                                popUpTo(MainNav.controller.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     )
                 }
@@ -82,17 +99,17 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.CALENDAR.route
                 ) {
                     CalendarRoute(
-                        navToAddSchedule = { cropNameId ->
+                        navToAddSchedule = { cropNameId, screenModeId, scheduleId ->
                             navController.navigate(
                                 CalendarNavGraph.AddScheduleRoute.buildRoute(
-                                    cropNameId
+                                    listOf(cropNameId, screenModeId, scheduleId)
                                 )
                             )
                         },
-                        navToAddDiary = { cropNameId ->
+                        navToAddDiary = { cropNameId, screenModeId, diaryId ->
                             navController.navigate(
                                 CalendarNavGraph.AddDiaryRoute.buildRoute(
-                                    cropNameId
+                                    listOf(cropNameId, screenModeId, diaryId)
                                 )
                             )
                         },
@@ -112,7 +129,7 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     AccountBookRoute(
                         navigationToRegister = {
-                            navController.navigate(ACCOUNT_BOOK_ROUTE)
+                            navController.navigate("$ACCOUNT_BOOK_ROUTE?entryType=${EntryType.CREATE.name}")
                         },
                         navigationToContent = { id ->
                             navController.navigate("$ACCOUNT_BOOK_CONTENT_ROUTE/$id")
@@ -126,8 +143,8 @@ fun NavGraphBuilder.mainNavGraph(
                     CommunityRoute(
                         navigateToWriting = { navController.navigate(CommunityRoute.WRITING_ROUTE) },
                         navigateToNotification = {},
-                        navigateToBulletinDetail = {
-                            navController.navigate(CommunityRoute.BULLETIN_DETAIL_ROUTE)
+                        navigateToBulletinDetail = { id ->
+                            navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$id")
                         },
                     )
                 }
@@ -177,25 +194,39 @@ fun NavGraphBuilder.mainNavGraph(
         route = CalendarNavGraph.AddScheduleRoute.route,
         arguments = CalendarNavGraph.AddScheduleRoute.arguments
     ) {
-        AddScheduleRoute()
+        AddScheduleRoute(
+            popBackStack = navController::popBackStack
+        )
     }
     composable(
         route = CalendarNavGraph.AddDiaryRoute.route,
         arguments = CalendarNavGraph.AddDiaryRoute.arguments
     ) {
-        AddDiaryRoute()
+        AddDiaryRoute(
+            popBackStack = navController::popBackStack
+        )
     }
     composable(
         route = CalendarNavGraph.SearchDiaryRoute.route,
         arguments = CalendarNavGraph.SearchDiaryRoute.arguments
     ) {
-        SearchDiaryRoute()
+        SearchDiaryRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(
         route = ACCOUNT_BOOK_ROUTE
     ) {
-        AccountBookRegisterRoute(
+        AccountBookCreateRoute(
+            popBackStack = navController::popBackStack
+        )
+    }
+
+    composable(
+        route = "$ACCOUNT_BOOK_UPDATE_ROUTE/{id}"
+    ) {
+        AccountBookCreateRoute(
             popBackStack = navController::popBackStack
         )
     }
@@ -209,7 +240,9 @@ fun NavGraphBuilder.mainNavGraph(
         if (id != null) {
             AccountBookContentRoute(
                 popBackStack = navController::popBackStack,
-                id = id
+                navigationToUpdate = {
+                    navController.navigate("$ACCOUNT_BOOK_UPDATE_ROUTE/$id?entryType=${EntryType.UPDATE.name}")
+                }
             )
         } else {
             Timber.e("Invalid id")
@@ -219,13 +252,25 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = CommunityRoute.WRITING_ROUTE
     ) {
-        BulletinWritingRoute(popBackStack = navController::popBackStack)
+        BulletinWritingRoute(
+            popBackStack = navController::popBackStack,
+            sharingData = hiltViewModel<CommunityViewModel>(it) as SharingData,
+        )
     }
 
     composable(
-        route = CommunityRoute.BULLETIN_DETAIL_ROUTE
-    ) {
-        BulletinDetailRoute(popBackStack = navController::popBackStack)
+        route = "${CommunityRoute.BULLETIN_DETAIL_ROUTE}/{id}"
+    ) { backStackEntry ->
+        val idString = backStackEntry.arguments?.getString("id")
+        val id = idString?.toLongOrNull()
+        if (id != null) {
+            BulletinDetailRoute(
+                popBackStack = navController::popBackStack,
+                id = id,
+            )
+        } else {
+            Timber.e("Invalid id")
+        }
     }
 
     composable(
@@ -287,7 +332,9 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = MyPageRoute.SETTING_APP_INFO_ROUTE
     ) {
-        MyPageSettingAppInfoRoute()
+        MyPageSettingAppInfoRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(
@@ -295,24 +342,12 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         MyPageSettingDeleteAccountRoute(
             popBackStack = navController::popBackStack,
-            navigateToSocialVerify = {
-                navController.navigate(MyPageRoute.SETTING_DELETE_VERIFY_ROUTE)
-            }
         )
     }
 
     composable(
         route = MyPageRoute.SETTING_DELETE_VERIFY_ROUTE
     ) {
-        MyPageSettingDeleteSocialVerifyRoute(
-            popBackStack = navController::popBackStack,
-            navigateToPrivacyPolicy = {
-                navController.navigate(MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE)
-            },
-            navigateToOnBoard = {
-
-            }
-        )
     }
 
     composable(

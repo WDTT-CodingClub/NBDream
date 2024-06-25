@@ -1,6 +1,5 @@
 package kr.co.common.util
 
-import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.text.TextUtils
@@ -11,7 +10,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import kotlin.io.path.name
 
-object FileUtil: BaseUtil() {
+object FileUtil : BaseUtil() {
 
     fun getFileFromUri(uri: Uri): File? {
         val fileName = getFileName(uri)
@@ -28,6 +27,7 @@ object FileUtil: BaseUtil() {
         }
         return null
     }
+
     fun getFilePath(path: Path): File {
         return try {
             File(

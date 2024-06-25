@@ -35,8 +35,10 @@ import kr.co.common.model.CustomErrorType
 import kr.co.common.model.CustomException
 import kr.co.data.source.local.SessionLocalDataSource
 import kr.co.nbdream.core.remote.BuildConfig
+import kr.co.remote.model.Dto
 import kr.co.remote.model.request.auth.PostAuthRefreshTokenRequest
 import kr.co.remote.model.response.auth.PostAuthRefreshResponse
+import kr.co.remote.model.response.auth.PostAuthResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
@@ -57,9 +59,9 @@ internal class NetworkModule {
                 Json {
                     prettyPrint = true //출력시 이쁘게 포맷팅
                     isLenient = true // 관대한 파싱
-                    ignoreUnknownKeys = true // 알수없는 키 무시
-                    encodeDefaults = true // 기본값 인코딩
-                    explicitNulls = false // 명시적인 null생략
+                    ignoreUnknownKeys = true // 알 수 없는 키 무시
+                    encodeDefaults = true // 기본 값 인코딩
+                    explicitNulls = false // 명시적인 null 생략
                 }
             )
         }
@@ -106,13 +108,13 @@ internal class NetworkModule {
                                 refreshToken = session.getRefreshToken()!!
                             )
                         )
-                    }.body<PostAuthRefreshResponse>()
+                    }.body<Dto<PostAuthResponse>>()
 
-                    session.updateAccessToken(token.resultData.accessToken)
+                    session.updateAccessToken(token.data.accessToken)
 
                     BearerTokens(
-                        accessToken = token.resultData.accessToken,
-                        refreshToken = token.resultData.refreshToken
+                        accessToken = token.data.accessToken,
+                        refreshToken = token.data.refreshToken
                     )
                 }
             }

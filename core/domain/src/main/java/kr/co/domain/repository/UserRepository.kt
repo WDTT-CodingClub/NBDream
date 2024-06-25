@@ -15,4 +15,5 @@ interface UserRepository {
     suspend fun delete()
 
     suspend fun clearAll()
+    suspend fun postReason(reason: String, otherReason: String)
 }

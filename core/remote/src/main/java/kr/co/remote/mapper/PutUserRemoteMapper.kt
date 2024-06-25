@@ -11,6 +11,7 @@ internal object PutUserRemoteMapper
             PutUserRequest (
                 nickname = name,
                 profileImageUrl = profileImage,
+                bjdCode = bjdCode,
                 address = address,
                 latitude = latitude,
                 longitude = longitude,

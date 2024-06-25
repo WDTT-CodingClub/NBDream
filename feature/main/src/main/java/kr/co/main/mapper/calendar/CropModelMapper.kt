@@ -4,7 +4,6 @@ import kr.co.common.mapper.BaseMapper
 import kr.co.domain.entity.CropEntity
 import kr.co.domain.entity.type.CropType
 import kr.co.main.model.calendar.CropModel
-import kr.co.main.model.calendar.type.CropModelColorType
 import kr.co.main.model.calendar.type.CropModelType
 
 internal object CropModelMapper

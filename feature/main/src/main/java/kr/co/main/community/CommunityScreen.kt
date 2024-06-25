@@ -23,9 +23,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -40,27 +38,25 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.domain.entity.BulletinEntity
+import kr.co.ui.theme.NBDreamTheme
 
 @Composable
 internal fun CommunityRoute(
     navigateToWriting: () -> Unit,
     navigateToNotification: () -> Unit,
-    navigateToBulletinDetail: () -> Unit,
+    navigateToBulletinDetail: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = hiltViewModel(),
 ) {
-    val bulletinEntities by viewModel.bulletinEntities.collectAsStateWithLifecycle()
-    val searchInput by viewModel.searchInput.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     CommunityScreen(
         modifier = modifier,
+        state = state,
         navigateToWriting = navigateToWriting,
         navigateToNotification = navigateToNotification,
         navigateToBulletinDetail = navigateToBulletinDetail,
-        bulletinEntities = bulletinEntities,
-        searchInput = searchInput,
         onSearchInputChanged = viewModel::onSearchInputChanged,
         onFreeCategoryClick = viewModel::onFreeCategoryClick,
-        onBulletinClick = viewModel::onBulletinClick,
     )
 }
 
@@ -68,14 +64,12 @@ internal fun CommunityRoute(
 @Composable
 internal fun CommunityScreen(
     modifier: Modifier = Modifier,
+    state: CommunityViewModel.State = CommunityViewModel.State(),
     navigateToWriting: () -> Unit = {},
     navigateToNotification: () -> Unit = {},
-    navigateToBulletinDetail: () -> Unit = {},
-    bulletinEntities: List<BulletinEntity> = emptyList(),
-    searchInput: String = "",
+    navigateToBulletinDetail: (Long) -> Unit = {},
     onSearchInputChanged: (String) -> Unit = {},
     onFreeCategoryClick: () -> Unit = {},
-    onBulletinClick: (Long) -> Unit = {},
 ) {
 //    var tempTextFieldValue by remember {
 //        mutableStateOf(TextFieldValue())
@@ -141,7 +135,7 @@ internal fun CommunityScreen(
             }
             item {
                 TextField(
-                    value = searchInput,
+                    value = state.searchInput,
                     onValueChange = {
                         if ("\n" !in it) onSearchInputChanged(it)
                     },
@@ -155,21 +149,20 @@ internal fun CommunityScreen(
                     },
                 )
             }
-            if (bulletinEntities.isEmpty()) {
+            if (state.bulletinEntities.isEmpty()) {
                 item {
                     Text("게시물이 없습니다.")
                 }
             }
             itemsIndexed(
-                bulletinEntities
+                state.bulletinEntities
             ) { idx, bulletin ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
                         .clickable {
-                            onBulletinClick(bulletin.bulletinId)
-                            navigateToBulletinDetail()
+                            navigateToBulletinDetail(bulletin.bulletinId)
                         },
                     colors = CardDefaults.cardColors(),
                     elevation = CardDefaults.elevatedCardElevation(
@@ -242,11 +235,11 @@ internal fun CommunityScreen(
 @Preview(heightDp = 1200)
 @Composable
 private fun CommunityScreenPreview() {
-    MaterialTheme {
-        Surface {
-            CommunityScreen(
+    NBDreamTheme {
+        CommunityScreen(
+            state = CommunityViewModel.State(
                 bulletinEntities = List(10) { i -> BulletinEntity.dummy(i) },
             )
-        }
+        )
     }
 }

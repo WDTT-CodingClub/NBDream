@@ -2,7 +2,6 @@ package kr.co.main.accountbook.content
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,24 +11,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,239 +34,344 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.main.accountbook.main.formatNumber
-import kr.co.main.accountbook.model.CategoryDisplayMapper
+import kr.co.main.accountbook.model.getDisplay
+import kr.co.main.accountbook.model.getTransactionType
+import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import kr.co.ui.widget.LoadingShimmerEffect
+import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @Composable
 internal fun AccountBookContentRoute(
-    popBackStack: () -> Unit,
     viewModel: AccountBookContentViewModel = hiltViewModel(),
-    id: Long
+    navigationToUpdate: (Long?) -> Unit,
+    popBackStack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(key1 = id) {
-        viewModel.fetchAccountBookById(id)
-    }
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
+    AccountBookContentScreen(
+        state = state,
+        isLoading = isLoading,
+        navigationToUpdate = navigationToUpdate,
+        popBackStack = popBackStack,
+        onDeleteItem = viewModel::deleteAccountBookById
+    )
+}
+
+@Composable
+internal fun AccountBookContentScreen(
+    state: AccountBookContentViewModel.State = AccountBookContentViewModel.State(),
+    isLoading: Boolean,
+    navigationToUpdate: (Long?) -> Unit,
+    popBackStack: () -> Unit,
+    onDeleteItem: () -> Unit = {}
+) {
     var showDropDownMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            DreamCenterTopAppBar(
-                title = "장부 상세",
-                navigationIcon = {
-                    IconButton(onClick = popBackStack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null,
-                            tint = Color.Black
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showDropDownMenu = true }) {
-                        Icon(
-                            imageVector = Icons.Filled.MoreVert,
-                            contentDescription = "설정",
-                            tint = Color.Black
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = showDropDownMenu,
-                        onDismissRequest = { showDropDownMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = {
-                                Row {
-                                    Text("수정하기")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Icon(
-                                        imageVector = Icons.Filled.Edit,
-                                        contentDescription = null,
-                                        tint = Color.Black
-                                    )
+    Surface(
+        color = MaterialTheme.colors.white
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = Paddings.xlarge)
+        ) {
+            item {
+                DreamCenterTopAppBar(
+                    title = "장부 상세",
+                    navigationIcon = {
+                        IconButton(onClick = popBackStack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = null,
+                                tint = Color.Black
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { showDropDownMenu = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.MoreVert,
+                                contentDescription = "설정",
+                                tint = Color.Black
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showDropDownMenu,
+                            onDismissRequest = { showDropDownMenu = false },
+                            modifier = Modifier.background(MaterialTheme.colors.white)
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Row {
+                                        Text("수정하기")
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+                                },
+                                onClick = {
+                                    navigationToUpdate(state.id)
+                                    showDropDownMenu = false
                                 }
-                            },
-                            onClick = {
-                                // TODO 수정하기
-                                showDropDownMenu = false
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Row {
-                                    Text("삭제하기")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Icon(
-                                        imageVector = Icons.Filled.Delete,
-                                        contentDescription = null,
-                                        tint = Color.Black
-                                    )
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Row {
+                                        Text("삭제하기")
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+                                },
+                                onClick = {
+                                    showDeleteDialog = true
+                                    showDropDownMenu = false
                                 }
-                            },
-                            onClick = {
-                                showDeleteDialog = true
-                                showDropDownMenu = false
-                            }
-                        )
+                            )
+                        }
                     }
-                }
-            )
-        },
-        content = { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .padding(padding)
-            ) {
-                Text(
-                    text = CategoryDisplayMapper.getTransactionType(state.transactionType),
-                    style = MaterialTheme.typo.h4
                 )
+            }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "${formatNumber(state.amount)}원",
-                        style = MaterialTheme.typo.h2,
-                        color = MaterialTheme.colors.black
-                    )
+            if (isLoading) {
+                items(5) {
+                    LoadingShimmerEffect {
+                        ShimmerGridItem(brush = it)
+                    }
                 }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "카테고리",
-                        modifier = Modifier.width(80.dp),
-                        style = MaterialTheme.typo.h4
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(74.dp)
-                            .height(32.dp)
-                            .border(
-                                1.dp,
-                                MaterialTheme.colors.gray7,
-                                shape = RoundedCornerShape(12.dp)
-                            ),
-                        contentAlignment = Alignment.Center
+            } else {
+                item {
+                    Column(
+                        modifier = Modifier.padding(top = Paddings.xextra)
                     ) {
                         Text(
-                            text = if (state.category != null) CategoryDisplayMapper.getDisplay(
-                                state.category!!
-                            ) else "미정",
+                            text = state.transactionType.getTransactionType(),
+                            style = MaterialTheme.typo.h4,
+                            color = MaterialTheme.colors.gray1
+                        )
+                        Spacer(modifier = Modifier.height(Paddings.large))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "${formatNumber(state.amount)}원",
+                                style = MaterialTheme.typo.h2,
+                                color = MaterialTheme.colors.gray1
+                            )
+                        }
+
+                    }
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier
+                            .padding(top = Paddings.xextra)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "카테고리",
+                            style = MaterialTheme.typo.h4
+                        )
+                        Spacer(modifier = Modifier.width(Paddings.xxlarge))
+                        Box(
+                            modifier = Modifier
+                                .height(32.dp)
+                                .border(
+                                    1.dp,
+                                    MaterialTheme.colors.gray7,
+                                    shape = Shapes.medium
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = state.category.getDisplay(),
+                                style = MaterialTheme.typo.body1,
+                                color = MaterialTheme.colors.gray2,
+                                modifier = Modifier.padding(horizontal = Paddings.large)
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier
+                            .padding(top = Paddings.xextra)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "내역",
+                            style = MaterialTheme.typo.h4
+                        )
+                        Spacer(modifier = Modifier.width(Paddings.xxlarge))
+                        Text(
+                            text = state.title ?: "",
                             style = MaterialTheme.typo.body1,
                             color = MaterialTheme.colors.gray2
                         )
                     }
                 }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "내역",
-                        modifier = Modifier.width(80.dp),
-                        style = MaterialTheme.typo.h4
-                    )
-                    Text(
-                        text = state.title ?: "",
-                        style = MaterialTheme.typo.body1,
-                        color = MaterialTheme.colors.gray2
-                    )
+                item {
+                    Row(
+                        modifier = Modifier
+                            .padding(top = Paddings.xextra)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "날짜",
+                            style = MaterialTheme.typo.h4
+                        )
+                        Spacer(modifier = Modifier.width(Paddings.xxlarge))
+                        Text(
+                            text = state.registerDateTime?.let { formatDate(it) } ?: "",
+                            style = MaterialTheme.typo.body1,
+                            color = MaterialTheme.colors.gray2
+                        )
+                    }
                 }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "날짜",
-                        modifier = Modifier.width(80.dp),
-                        style = MaterialTheme.typo.h4
-                    )
-                    Text(
-                        text = state.registerDateTime ?: "",
-                        style = MaterialTheme.typo.body1,
-                        color = MaterialTheme.colors.gray2
-                    )
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "사진",
-                        modifier = Modifier.width(80.dp),
-                        style = MaterialTheme.typo.h4
-                    )
-                }
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(state.imageUrls.size) { index ->
-                        val imageUri = state.imageUrls[index]
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color.LightGray),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            AsyncImage(
-                                model = imageUri,
-                                contentDescription = "image",
-                                contentScale = ContentScale.Crop,
-                            )
+                item {
+                    Column(
+                        modifier = Modifier.padding(top = Paddings.xextra)
+                    ) {
+                        Text(
+                            text = "사진",
+                            style = MaterialTheme.typo.h4
+                        )
+                        Spacer(modifier = Modifier.height(Paddings.large))
+                        state.imageUrls.forEachIndexed { index, value ->
+                            Timber.d("imageUrls: ${state.imageUrls}")
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = Paddings.medium)
+                                    .clip(Shapes.medium)
+                                    .background(Color.LightGray),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                AsyncImage(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(Shapes.medium),
+                                    model = value,
+                                    contentDescription = "image",
+                                    contentScale = ContentScale.Crop,
+                                )
+                            }
                         }
                     }
                 }
             }
         }
-    )
+    }
 
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("장부 내역 삭제") },
-            text = { Text("장부 내역을 삭제하겠습니까?") },
+            title = {
+                Text(
+                    text = "삭제 확인",
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typo.h4
+                )
+            },
+            text = {
+                Text(
+                    text = "정말 삭제하시겠습니까?",
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typo.body1
+                )
+            },
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.deleteAccountBookById()
+                        onDeleteItem()
                         showDeleteDialog = false
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colors.black
+                    ),
+                    modifier = Modifier.widthIn(min = 72.dp)
                 ) {
-                    Text("확인")
+                    Text("네")
                 }
             },
             dismissButton = {
-                Button(onClick = { showDeleteDialog = false }) {
-                    Text("취소")
+                Button(
+                    onClick = { showDeleteDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colors.black
+                    ),
+                    modifier = Modifier.widthIn(min = 72.dp)
+                ) {
+                    Text("아니오")
                 }
             }
+        )
+    }
+
+}
+
+internal fun formatDate(dateString: String): String {
+    return try {
+        val originalFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val targetFormat = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
+        Timber.d("$originalFormat")
+        Timber.d("$targetFormat")
+        val date: Date? = originalFormat.parse(dateString)
+        if (date != null) {
+            targetFormat.format(date)
+        } else {
+            ""
+        }
+    } catch (e: Exception) {
+        ""
+    }
+}
+
+@Composable
+internal fun ShimmerGridItem(brush: Brush) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = Paddings.xextra),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(
+            modifier = Modifier
+                .height(32.dp)
+                .weight(1f)
+                .background(brush)
+        )
+        Spacer(modifier = Modifier.width(Paddings.xxlarge))
+        Spacer(
+            modifier = Modifier
+                .height(32.dp)
+                .weight(2f)
+                .background(brush)
         )
     }
 }

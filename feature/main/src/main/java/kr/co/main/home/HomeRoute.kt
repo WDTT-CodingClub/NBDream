@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.HorizontalDivider
@@ -38,6 +39,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -65,13 +69,15 @@ internal fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToNotification: () -> Unit = {},
     navigateToChat: () -> Unit = {},
+    navigateToCalendar: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     HomeScreen(
         state = state,
         navigateToNotification = navigateToNotification,
-        navigateToChat = navigateToChat
+        navigateToChat = navigateToChat,
+        navigateToCalendar = navigateToCalendar
     )
 }
 
@@ -80,6 +86,7 @@ private fun HomeScreen(
     state: HomeViewModel.State = HomeViewModel.State(),
     navigateToNotification: () -> Unit = {},
     navigateToChat: () -> Unit = {},
+    navigateToCalendar: () -> Unit = {}
 ) {
     var maxWidth by remember {
         mutableIntStateOf(0)
@@ -97,7 +104,9 @@ private fun HomeScreen(
             item {
                 DreamTopAppBar(
                     title = "내 농장",
-                    description = state.address ?: "산 좋고 물 좋 나만의 농장 1번지",
+                    description = state.address.let {
+                        if (it.isNullOrBlank()) "산 좋고 물 좋 나만의 농장 1번지" else it
+                    },
                     actions = {
                         IconButton(onClick = navigateToNotification) {
                             Icon(
@@ -156,73 +165,102 @@ private fun HomeScreen(
                         )
                         .padding(24.dp),
                 ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = MaterialTheme.typo.h4.copy(
-                                    color = MaterialTheme.colors.gray1
-                                ).toSpanStyle()
-                            ) {
-                                append("5월 24일 일 ")
-                            }
-                            withStyle(
-                                style = MaterialTheme.typo.body1.copy(
-                                    color = MaterialTheme.colors.gray2
-                                ).toSpanStyle()
-                            ) {
-                                append(" 소만 ")
-                            }
-                            append(" 오늘")
-                        },
-                        style = MaterialTheme.typo.body1,
-                        color = MaterialTheme.colors.primary
-                    )
-                    Spacer(modifier = Modifier.height(36.dp))
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .onGloballyPositioned {
-                                maxWidth = it.size.width
-                            },
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        val dummy = listOf(
-                            Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
-                            Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
-                            Triple("감자 물 관리 작업 감자 물 관리 작업", "2024.05.16", "2024.05.21"),
-                        )
-                        dummy.forEachIndexed { index, value ->
-                            ScheduleText(
-                                parentWidth = maxWidth,
-                                title = value.first,
-                                startDate = value.second,
-                                endDate = value.third
+                    if (true) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .noRippleClickable(onClick = navigateToCalendar)
+                                .padding(12.dp)
+                                .semantics {
+                                    contentDescription = "일정 작성하러 가기"
+                                },
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                modifier = Modifier.clearAndSetSemantics {},
+                                text = "일정을 적어주세요!",
+                                style = MaterialTheme.typo.body1,
+                                color = MaterialTheme.colors.gray4
                             )
-                            if (index != dummy.lastIndex)
-                                HorizontalDivider(
-                                    thickness = 1.dp,
-                                    color = MaterialTheme.colors.gray8
-                                )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Icon(
+                                modifier = Modifier.clearAndSetSemantics {},
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = null
+                            )
                         }
-                    }
-                    Spacer(modifier = Modifier.height(48.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
+                    } else {
                         Text(
-                            text = "펼쳐보기",
-                            style = MaterialTheme.typo.label,
-                            color = MaterialTheme.colors.gray3
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = MaterialTheme.typo.h4.copy(
+                                        color = MaterialTheme.colors.gray1
+                                    ).toSpanStyle()
+                                ) {
+                                    append("5월 24일 일 ")
+                                }
+                                withStyle(
+                                    style = MaterialTheme.typo.body1.copy(
+                                        color = MaterialTheme.colors.gray2
+                                    ).toSpanStyle()
+                                ) {
+                                    append(" 소만 ")
+                                }
+                                append(" 오늘")
+                            },
+                            style = MaterialTheme.typo.body1,
+                            color = MaterialTheme.colors.primary
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Icon(
-                            modifier = Modifier.size(20.dp),
-                            imageVector = Icons.Filled.KeyboardArrowDown,
-                            contentDescription = "expand"
-                        )
+                        Spacer(modifier = Modifier.height(36.dp))
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .onGloballyPositioned {
+                                    maxWidth = it.size.width
+                                },
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            val dummy = listOf(
+                                Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
+                                Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
+                                Triple("감자 물 관리 작업 감자 물 관리 작업", "2024.05.16", "2024.05.21"),
+                            )
+                            dummy.forEachIndexed { index, value ->
+                                ScheduleText(
+                                    parentWidth = maxWidth,
+                                    title = value.first,
+                                    startDate = value.second,
+                                    endDate = value.third
+                                )
+                                if (index != dummy.lastIndex)
+                                    HorizontalDivider(
+                                        thickness = 1.dp,
+                                        color = MaterialTheme.colors.gray8
+                                    )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(48.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "펼쳐보기",
+                                style = MaterialTheme.typo.label,
+                                color = MaterialTheme.colors.gray3
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Icon(
+                                modifier = Modifier.size(20.dp),
+                                imageVector = Icons.Filled.KeyboardArrowDown,
+                                contentDescription = "expand"
+                            )
+                        }
                     }
                 }
             }

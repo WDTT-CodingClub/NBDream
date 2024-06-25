@@ -10,6 +10,8 @@ interface ScheduleRepository {
     suspend fun getSchedules(crop: String, year: Int, month: Int):
             Flow<List<ScheduleEntity>>
 
+    suspend fun getScheduleDetail(id:Int):ScheduleEntity
+
     suspend fun createSchedule(
         category: String,
         title: String,

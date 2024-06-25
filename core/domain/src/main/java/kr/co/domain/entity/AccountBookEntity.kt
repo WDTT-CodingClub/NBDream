@@ -4,7 +4,7 @@ package kr.co.domain.entity
 data class AccountBookEntity(
     val id: Long,
     val title: String? = null,
-    val category: Category? = Category.OTHER,
+    val category: Category? = null,
     val imageUrl: List<String> = emptyList(),
     val registerDateTime: String? = null,
     val year: Int? = null,
@@ -32,9 +32,9 @@ data class AccountBookEntity(
         REVENUE,
         EXPENSE
     }
-}
 
-enum class SortOrder {
-    EARLIEST,
-    OLDEST
+    enum class SortOrder {
+        EARLIEST,
+        OLDEST
+    }
 }

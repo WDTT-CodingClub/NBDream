@@ -5,19 +5,17 @@ import java.time.LocalDate
 
 internal data class DiaryModel(
     val id: Int,
-    val crop: CropModel,
-    val registerDate: LocalDate,
-    val holidays: List<HolidayModel> = emptyList(),
-    val weatherForecast: WeatherForecastModel,
+    val date: LocalDate,
+    val images: List<String> = emptyList(),
+    val memo: String = "",
+    val workDescriptions: List<WorkDescriptionModel> = emptyList(),
     val workLaborer: Int = 0,
     val workHours: Int = 0,
     val workArea: Int = 0,
-    val workDescriptions: List<WorkDescriptionModel> = emptyList(),
-    val images: List<String> = emptyList(),
-    val memo: String = ""
+    val holidays: List<HolidayModel> = emptyList(),
+    val weatherInfo: String
 ) {
     data class WorkDescriptionModel(
-        val id: Int,
         val type: WorkDescriptionModelType,
         val description: String
     )
