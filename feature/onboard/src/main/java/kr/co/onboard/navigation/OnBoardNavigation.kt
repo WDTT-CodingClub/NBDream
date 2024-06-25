@@ -41,9 +41,7 @@ fun NavGraphBuilder.onboardNavGraph(
     composable(
         route = CROP_ROUTE
     ) {
-        SelectCropScreen(
-            navController = navController
-        )
+        SelectCropScreen()
     }
 
     composable(
