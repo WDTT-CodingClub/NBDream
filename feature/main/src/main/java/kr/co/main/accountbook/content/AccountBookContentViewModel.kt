@@ -13,16 +13,18 @@ internal class AccountBookContentViewModel @Inject constructor(
     private val repository: AccountBookRepository,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AccountBookContentViewModel.State>(savedStateHandle) {
+    private val id: Long = checkNotNull(savedStateHandle.get<String>("id")?.toLong())
 
-    fun deleteAccountBookById() {
-        state.value.id.let { id ->
-            loadingScope {
-                repository.deleteAccountBook(id)
-            }
-        }
+    init {
+        fetchAccountBookById(id)
     }
 
-    fun fetchAccountBookById(id: Long) {
+    fun deleteAccountBookById() =
+        loadingScope {
+            repository.deleteAccountBook(id)
+        }
+
+    private fun fetchAccountBookById(id: Long) =
         loadingScope {
             val accountBookDetail = repository.getAccountBookDetail(id)
             updateState {
@@ -32,12 +34,11 @@ internal class AccountBookContentViewModel @Inject constructor(
                     category = accountBookDetail.category,
                     transactionType = accountBookDetail.transactionType,
                     amount = accountBookDetail.amount ?: 0,
-                    registerDateTime = state.value.registerDateTime,
-                    imageUrls = state.value.imageUrls
+                    registerDateTime = accountBookDetail.registerDateTime,
+                    imageUrls = accountBookDetail.imageUrl
                 )
             }
         }
-    }
 
     override fun createInitialState(savedState: Parcelable?): State = State()
 
@@ -48,6 +49,6 @@ internal class AccountBookContentViewModel @Inject constructor(
         val transactionType: AccountBookEntity.TransactionType? = null,
         val amount: Long = 0,
         val registerDateTime: String? = null,
-        val imageUrls: List<String> = listOf()
+        val imageUrls: List<String> = emptyList()
     ) : BaseViewModel.State
 }

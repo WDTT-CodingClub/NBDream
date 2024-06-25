@@ -7,7 +7,8 @@ import kr.co.main.MainBottomRoute
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentRoute
 import kr.co.main.accountbook.main.AccountBookRoute
-import kr.co.main.accountbook.register.AccountBookRegisterRoute
+import kr.co.main.accountbook.create.AccountBookCreateRoute
+import kr.co.main.accountbook.model.EntryType
 import kr.co.main.calendar.screen.addDiaryScreen.AddDiaryRoute
 import kr.co.main.calendar.screen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.screen.calendarScreen.CalendarRoute
@@ -37,6 +38,7 @@ internal const val NOTIFICATION_ROUTE = "notificationRoute"
 
 internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
 internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
+internal const val ACCOUNT_BOOK_UPDATE_ROUTE = "accountBookUpdateRoute"
 
 internal data object CommunityRoute {
     const val WRITING_ROUTE = "community_writing_route"
@@ -112,8 +114,7 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     AccountBookRoute(
                         navigationToRegister = {
-                            navController.navigate(ACCOUNT_BOOK_ROUTE)
-                        },
+                            navController.navigate("$ACCOUNT_BOOK_ROUTE?entryType=${EntryType.CREATE.name}")                        },
                         navigationToContent = { id ->
                             navController.navigate("$ACCOUNT_BOOK_CONTENT_ROUTE/$id")
                         }
@@ -201,7 +202,15 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = ACCOUNT_BOOK_ROUTE
     ) {
-        AccountBookRegisterRoute(
+        AccountBookCreateRoute(
+            popBackStack = navController::popBackStack
+        )
+    }
+
+    composable(
+        route = "$ACCOUNT_BOOK_UPDATE_ROUTE/{id}"
+    ) {
+        AccountBookCreateRoute(
             popBackStack = navController::popBackStack
         )
     }
@@ -215,7 +224,9 @@ fun NavGraphBuilder.mainNavGraph(
         if (id != null) {
             AccountBookContentRoute(
                 popBackStack = navController::popBackStack,
-                id = id
+                navigationToUpdate = {
+                    navController.navigate("$ACCOUNT_BOOK_UPDATE_ROUTE/$id?entryType=${EntryType.UPDATE.name}")
+                }
             )
         } else {
             Timber.e("Invalid id")

@@ -15,6 +15,8 @@ internal data class GetAccountBookListResponse(
         val totalRevenue: Long,
         val totalExpense: Long,
         val totalCost: Long,
+        val revenuePercent: List<PercentCategory>,
+        val expensePercent: List<PercentCategory>,
         val hasNext: Boolean,
         val items: List<Item>
     ) {
@@ -32,5 +34,12 @@ internal data class GetAccountBookListResponse(
             val thumbnail: String?,
             val imageSize: Int
         )
+
+        @Serializable
+        data class PercentCategory(
+            val percent: Float,
+            val category: String
+        )
     }
 }
+
