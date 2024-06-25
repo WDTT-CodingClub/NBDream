@@ -1,11 +1,13 @@
 package kr.co.main.my
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,11 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,11 +32,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,6 +49,7 @@ import coil.compose.AsyncImage
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Defaultprofile
+import kr.co.ui.icon.dreamicon.Dots
 import kr.co.ui.icon.dreamicon.OutlineEdit
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -134,7 +143,7 @@ private fun MyPageScreen(
             item {
                 Spacer(modifier = Modifier.height(20.dp))
                 BulletinCard(
-                    crops = state.crops.orEmpty().ifEmpty { listOf("작물을 등록해 보세요") },
+                    crops = state.crops,
                     showCropModal = showCropModal
                 )
             }
@@ -212,8 +221,9 @@ private fun CommunityCard(
 
 @Composable
 private fun BulletinCard(
-    crops: List<String> = listOf(),
-    showCropModal: () -> Unit = {}
+    crops: List<String>? = listOf(),
+    showCropModal: () -> Unit = {},
+    onCropDeleteClick: (String) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -252,43 +262,100 @@ private fun BulletinCard(
                 ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            crops.forEachIndexed { index, s ->
+            if (crops.isNullOrEmpty()) {
                 Text(
-                    text = s,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    text = "작물을 등록해 보세요",
+                    textAlign = TextAlign.Center,
                     style = MaterialTheme.typo.body1,
                     color = MaterialTheme.colors.gray1
                 )
+            } else {
+                crops.forEachIndexed { index, s ->
+                    var isVisible by rememberSaveable { mutableStateOf(false) }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = s,
+                            style = MaterialTheme.typo.body1,
+                            color = MaterialTheme.colors.gray1
+                        )
+                        Box {
+                            Icon(
+                                modifier = Modifier
+                                    .graphicsLayer {
+                                        rotationZ = 90f
+                                    }
+                                    .size(20.dp)
+                                    .noRippleClickable { isVisible = true },
+                                imageVector = DreamIcon.Dots,
+                                contentDescription = "작물 제거"
+                            )
+                            DropdownMenu(
+                                modifier = Modifier
+                                    .background(
+                                        MaterialTheme.colors.white,
+                                        shape = RoundedCornerShape(4.dp)
+                                    ),
+                                expanded = isVisible,
+                                onDismissRequest = { isVisible = false }
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .defaultMinSize(minWidth = 140.dp)
+                                        .padding(12.dp)
+                                        .clickable {
+                                            onCropDeleteClick(s)
+                                            isVisible = false
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "삭제하기",
+                                        style = MaterialTheme.typo.body1,
+                                        color = MaterialTheme.colors.gray4
+                                    )
+                                }
+                            }
+                        }
+                    }
 
-                if (index != crops.lastIndex) {
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        color = MaterialTheme.colors.gray8
-                    )
+                    if (index != crops.lastIndex) {
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = MaterialTheme.colors.gray8
+                        )
+                    }
+                }
+
+                if (crops.size > 3) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "전체 보기",
+                            style = MaterialTheme.typo.label,
+                            color = MaterialTheme.colors.gray3
+                        )
+
+                        Icon(
+                            modifier = Modifier.size(20.dp),
+                            imageVector = Icons.Filled.KeyboardArrowDown,
+                            contentDescription = "extend bulletin list",
+                            tint = MaterialTheme.colors.gray5
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(48.dp))
                 }
             }
         }
-
-        if (crops.size > 3) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "전체 보기",
-                style = MaterialTheme.typo.label,
-                color = MaterialTheme.colors.gray3
-            )
-
-            Icon(
-                modifier = Modifier.size(20.dp),
-                imageVector = Icons.Filled.KeyboardArrowDown,
-                contentDescription = "extend bulletin list",
-                tint = MaterialTheme.colors.gray5
-            )
-        }
-            Spacer(modifier = Modifier.height(48.dp))
-            }
     }
 }
 
