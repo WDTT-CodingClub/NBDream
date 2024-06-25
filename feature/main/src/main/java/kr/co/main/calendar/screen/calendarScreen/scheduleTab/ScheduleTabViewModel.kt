@@ -69,7 +69,7 @@ internal class ScheduleTabViewModel @Inject constructor(
                     year = currentState.calendarYear,
                     month = currentState.calendarMonth
                 )
-            ).collect { holidays ->
+            ).let{ holidays ->
                 updateState {
                     currentState.copy(holidays = holidays.map { HolidayModelMapper.toRight(it) })
                 }
