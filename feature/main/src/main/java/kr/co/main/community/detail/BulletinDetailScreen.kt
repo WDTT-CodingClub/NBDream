@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,12 +15,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,11 +32,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kr.co.main.community.BulletinDetailMoreBottomSheet
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import timber.log.Timber
@@ -54,9 +63,14 @@ internal fun BulletinDetailRoute(
         popBackStack = popBackStack,
         id = id,
         onCommentWritingInput = viewModel::onCommentWritingInput,
+        setIsShowBulletinMoreBottomSheet = viewModel::setIsShowBulletinMoreBottomSheet,
+        setIsShowDeleteCheckDialog = viewModel::setIsShowDeleteCheckDialog,
+        deleteBulletin = viewModel::deleteBulletin,
+        setIsShowFailedDialog = viewModel::setIsShowFailedDialog,
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
@@ -64,6 +78,10 @@ internal fun BulletinDetailScreen(
     popBackStack: () -> Unit = {},
     id: Long = 0L,
     onCommentWritingInput: (String) -> Unit = {},
+    setIsShowBulletinMoreBottomSheet: (Boolean) -> Unit = {},
+    setIsShowDeleteCheckDialog: (Boolean) -> Unit = {},
+    deleteBulletin: (() -> Unit, () -> Unit) -> Unit = { _, _ -> },
+    setIsShowFailedDialog: (Boolean) -> Unit = {},
 ) {
     Scaffold(modifier = modifier) { paddingValues ->
 
@@ -118,6 +136,14 @@ internal fun BulletinDetailScreen(
                         Column {
                             Text("닉네임")
                             Text("2000.00.00 00:00:00")
+                        }
+                        IconButton(onClick = {
+                            setIsShowBulletinMoreBottomSheet(true)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "글 MoreVert",
+                            )
                         }
                     }
                 }
@@ -201,7 +227,66 @@ internal fun BulletinDetailScreen(
             }
         }
 
+        if (state.isShowBulletinMoreBottomSheet) {
+            BulletinDetailMoreBottomSheet(
+                onDismissRequest = { setIsShowBulletinMoreBottomSheet(false) },
+                onReportClick = { setIsShowFailedDialog(true) },
+                onEditClick = { setIsShowFailedDialog(true) },
+                onDeleteClick = { setIsShowDeleteCheckDialog(true) },
+            )
+        }
+
+        if (state.isShowDeleteCheckDialog) {
+            DialogYesOrNo(
+                onDismissRequest = { setIsShowDeleteCheckDialog(false) },
+                onConfirmation = {
+                    deleteBulletin(
+                        popBackStack,
+                    ) { setIsShowFailedDialog(true) }
+                },
+                dialogTitle = "정말 삭제하시겠습니까?",
+            )
+        }
+
+        if (state.isShowFailedDialog) {
+            DialogSimpleText(
+                onDismissRequest = { setIsShowFailedDialog(false) },
+                text = "처리하지 못했습니다.",
+            )
+        }
+
     }
+}
+
+@Composable
+fun DialogSimpleText(
+    onDismissRequest: () -> Unit,
+    text: String,
+    modifier: Modifier = Modifier,
+    fontSize: Int = 18,
+    textAlign: TextAlign = TextAlign.Center,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = {},
+        text = {
+            Text(
+                text = text,
+                modifier = modifier.fillMaxWidth(),
+                fontSize = fontSize.sp,
+                textAlign = textAlign,
+            )
+        },
+    )
+}
+
+@Preview
+@Composable
+fun DialogPreview(modifier: Modifier = Modifier) {
+    DialogSimpleText(
+        onDismissRequest = {},
+        text = "처리하지 못했습니다.",
+    )
 }
 
 @Composable
@@ -220,6 +305,36 @@ fun NoBulletinScreen(
         Text("id: $id")
     }
 }
+
+@Composable
+fun DialogYesOrNo(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String? = null,
+    icon: ImageVector? = null,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = {
+                onDismissRequest()
+                onConfirmation()
+            }) {
+                Text("확인")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("취소")
+            }
+        },
+        icon = { icon?.let { Icon(it, contentDescription = "DialogYesOrNo Icon") } },
+        title = { Text(dialogTitle) },
+        text = { dialogText?.let { Text(it) } },
+    )
+}
+
 
 @Preview(heightDp = 1200)
 @Composable
