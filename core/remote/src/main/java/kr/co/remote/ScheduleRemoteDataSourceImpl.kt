@@ -23,10 +23,10 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
     private val client: HttpClient
 ) : ScheduleRemoteDataSource {
 
-    override suspend fun fetchList(crop: String, weekStartDate: String): Flow<List<ScheduleData>> =
+    override suspend fun fetchList(crop: String, startDate: String): Flow<List<ScheduleData>> =
         client.get(GET_SCHEDULE_LIST_WEEK) {
             parameter("crop", crop)
-            parameter("weekStartDate", weekStartDate)
+            parameter("startDate", startDate)
         }
             .body<Dto<ScheduleListResponse>>()
             .data.scheduleList.map {
@@ -35,9 +35,9 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
             .let { flowOf(it) }
 
 
-    override suspend fun fetchList(crop: String, year: Int, month: Int): Flow<List<ScheduleData>> =
+    override suspend fun fetchList(category: String, year: Int, month: Int): Flow<List<ScheduleData>> =
         client.get(GET_SCHEDULE_LIST_MONTH) {
-            parameter("crop", crop)
+            parameter("category", category)
             parameter("year", year)
             parameter("month", month)
         }
@@ -47,7 +47,7 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
             }
             .let { flowOf(it) }
 
-    override suspend fun fetchDetail(id: Int): ScheduleData =
+    override suspend fun fetchDetail(id: Long): ScheduleData =
         client.get("$GET_SCHEDULE_DETAIL/$id")
             .body<Dto<ScheduleListResponse.ScheduleResponse>>()
             .data
@@ -58,9 +58,7 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
         title: String,
         startDate: String,
         endDate: String,
-        memo: String,
-        isAlarmOn: Boolean,
-        alarmDateTime: String
+        memo: String
     ) {
         client.post(POST_SCHEDULE) {
             setBody(
@@ -69,23 +67,19 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
                     title = title,
                     startDate = startDate,
                     endDate = endDate,
-                    memo = memo,
-                    isAlarmOn = isAlarmOn,
-                    alarmDateTime = alarmDateTime
+                    memo = memo
                 )
             )
         }
     }
 
     override suspend fun update(
-        id: Int,
+        id: Long,
         category: String,
         title: String,
         startDate: String,
         endDate: String,
-        memo: String,
-        isAlarmOn: Boolean,
-        alarmDateTime: String
+        memo: String
     ) {
         client.put("$PUT_SCHEDULE/$id") {
             setBody(
@@ -95,21 +89,19 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
                     title = title,
                     startDate = startDate,
                     endDate = endDate,
-                    memo = memo,
-                    isAlarmOn = isAlarmOn,
-                    alarmDateTime = alarmDateTime
+                    memo = memo
                 )
             )
         }
     }
 
-    override suspend fun delete(id: Int) {
+    override suspend fun delete(id: Long) {
         client.delete("$DELETE_SCHEDULE/$id")
     }
 
     companion object {
         private const val GET_SCHEDULE_LIST_WEEK = "calendar/schedule/week"
-        private const val GET_SCHEDULE_LIST_MONTH = "calendar/schedule"
+        private const val GET_SCHEDULE_LIST_MONTH = "calendar/schedule/month"
         private const val GET_SCHEDULE_DETAIL = "calendar/schedule/detail"
         private const val POST_SCHEDULE = "calendar/schedule/register"
         private const val PUT_SCHEDULE = "calendar/schedule/update"

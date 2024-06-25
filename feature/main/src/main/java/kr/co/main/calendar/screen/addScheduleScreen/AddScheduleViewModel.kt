@@ -36,7 +36,7 @@ internal class AddScheduleViewModel @Inject constructor(
     private val updateSchedule: UpdateScheduleUseCase
 ) : BaseViewModel<AddScheduleViewModel.AddScheduleScreenState>(savedStateHandle),
     AddScheduleScreenEvent {
-    private val _scheduleId = MutableStateFlow<Int?>(null)
+    private val _scheduleId = MutableStateFlow<Long?>(null)
     private val _title = MutableStateFlow("")
 
     val event: AddScheduleScreenEvent = this@AddScheduleViewModel
@@ -47,7 +47,7 @@ internal class AddScheduleViewModel @Inject constructor(
 
         val enableAction: Boolean = false,
 
-        val scheduleId: Int? = null,
+        val scheduleId: Long? = null,
         val scheduleType: ScheduleModelType = ScheduleModelType.All,
         val title: String = "",
         val startDate: LocalDate = LocalDate.now(),
@@ -78,7 +78,7 @@ internal class AddScheduleViewModel @Inject constructor(
                     copy(screenMode = ScreenModeType.ofValue(screenModeId))
                 }
             } ?: throw IllegalArgumentException("screen mode id is null")
-            get<String>(CalendarNavGraph.ARG_SCHEDULE_ID)?.toIntOrNull()?.let { scheduleId ->
+            get<String>(CalendarNavGraph.ARG_SCHEDULE_ID)?.toLongOrNull()?.let { scheduleId ->
                 updateState {
                     copy(scheduleId = scheduleId)
                 }
@@ -125,7 +125,7 @@ internal class AddScheduleViewModel @Inject constructor(
         viewModelScopeEH.launch {
             createSchedule(
                 CreateScheduleUseCase.Params(
-                    category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType).koreanName,
+                    category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType),
                     title = currentState.title,
                     startDate = currentState.startDate.toString(),
                     endDate = currentState.endDate.toString(),
@@ -141,7 +141,7 @@ internal class AddScheduleViewModel @Inject constructor(
                 UpdateScheduleUseCase.Params(
                     id = currentState.scheduleId
                         ?: throw (IllegalArgumentException("schedule id is null")),
-                    category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType).koreanName,
+                    category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType),
                     title = currentState.title,
                     startDate = currentState.startDate.toString(),
                     endDate = currentState.endDate.toString(),
