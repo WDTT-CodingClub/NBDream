@@ -51,17 +51,17 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
 
     init {
         with(savedStateHandle) {
-            get<Int>(CalendarNavGraph.ARG_CROP_NAME_ID)?.let { cropNameId ->
+            get<String>(CalendarNavGraph.ARG_CROP_NAME_ID)?.toInt()?.let { cropNameId ->
                 updateState {
                     copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
                 }
             }
             get<Int>(CalendarNavGraph.ARG_YEAR)?.let { year ->
                 updateState { copy(calendarYear = year) }
-            }
+            }?:throw IllegalArgumentException("calendar year is null")
             get<Int>(CalendarNavGraph.ARG_MONTH)?.let { month ->
                 updateState { copy(calendarMonth = month) }
-            }
+            }?:throw IllegalArgumentException("calendar month is null")
         }
 
 //        loadingScope {

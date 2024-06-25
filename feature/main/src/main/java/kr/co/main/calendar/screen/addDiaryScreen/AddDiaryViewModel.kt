@@ -68,7 +68,7 @@ internal class AddDiaryViewModel @Inject constructor(
         } ?: AddDiaryScreenState()
 
     init {
-        savedStateHandle.get<Int>(CalendarNavGraph.ARG_CROP_NAME_ID)?.let { cropNameId ->
+        savedStateHandle.get<String>(CalendarNavGraph.ARG_CROP_NAME_ID)?.toInt()?.let { cropNameId ->
             updateState {
                 copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
             }

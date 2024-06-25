@@ -62,9 +62,9 @@ import kr.co.ui.widget.DreamTopAppBar
 
 @Composable
 internal fun CalendarRoute(
-    navToAddSchedule: (Int, Int) -> Unit,
-    navToAddDiary: (Int, Int) -> Unit,
-    navToSearchDiary: (Int, Int, Int) -> Unit,
+    navToAddSchedule: (Int?, Int?, Int?) -> Unit,
+    navToAddDiary: (Int?, Int?, Int?) -> Unit,
+    navToSearchDiary: (Int?, Int?, Int?) -> Unit,
     navToNotification: () -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
 ) {
@@ -81,9 +81,9 @@ internal fun CalendarRoute(
 
 @Composable
 private fun CalendarScreen(
-    navToAddSchedule: (Int, Int) -> Unit,
-    navToAddDiary: (Int, Int) -> Unit,
-    navToSearchDiary: (Int, Int, Int) -> Unit,
+    navToAddSchedule: (Int?, Int?, Int?) -> Unit,
+    navToAddDiary: (Int?, Int?, Int?) -> Unit,
+    navToSearchDiary: (Int?, Int?, Int?) -> Unit,
     navToNotification: () -> Unit,
     state: State<CalendarScreenViewModel.CalendarScreenState>,
     event: CalendarScreenEvent,
@@ -101,14 +101,16 @@ private fun CalendarScreen(
                 onSelectTab = event::onSelectTab,
                 navToAddSchedule = {
                     navToAddSchedule(
-                        state.value.calendarCrop!!.type.nameId,
-                        ScreenModeType.POST_MODE.id
+                        state.value.calendarCrop?.type?.nameId,
+                        ScreenModeType.POST_MODE.id,
+                        null
                     )
                 },
                 navToAddDiary = {
                     navToAddDiary(
-                        state.value.calendarCrop!!.type.nameId,
-                        ScreenModeType.POST_MODE.id
+                        state.value.calendarCrop?.type?.nameId,
+                        ScreenModeType.POST_MODE.id,
+                        null
                     )
                 },
                 navToNotification = navToNotification
@@ -145,7 +147,13 @@ private fun CalendarScreen(
                                 calendarCrop = state.value.calendarCrop,
                                 calendarYear = state.value.calendarYear,
                                 calendarMonth = state.value.calendarMonth,
-                                navToSearchDiary = navToSearchDiary
+                                navToEditSchedule = { scheduleId ->
+                                    navToAddSchedule(
+                                        state.value.calendarCrop?.type?.nameId,
+                                        ScreenModeType.EDIT_MODE.id,
+                                        scheduleId
+                                    )
+                                }
                             )
 
                         CalendarScreenViewModel.CalendarScreenState.CalendarTabType.DIARY ->
@@ -153,9 +161,16 @@ private fun CalendarScreen(
                                 calendarCrop = state.value.calendarCrop,
                                 calendarYear = state.value.calendarYear,
                                 calendarMonth = state.value.calendarMonth,
+                                navToEditDiary = { diaryId ->
+                                    navToAddDiary(
+                                        state.value.calendarCrop?.type?.nameId,
+                                        ScreenModeType.EDIT_MODE.id,
+                                        diaryId
+                                    )
+                                },
                                 navToSearchDiary = {
                                     navToSearchDiary(
-                                        state.value.calendarCrop!!.type.nameId,
+                                        state.value.calendarCrop?.type?.nameId,
                                         state.value.calendarYear,
                                         state.value.calendarMonth
                                     )

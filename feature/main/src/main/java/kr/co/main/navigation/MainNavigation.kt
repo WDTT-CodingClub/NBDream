@@ -82,17 +82,17 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.CALENDAR.route
                 ) {
                     CalendarRoute(
-                        navToAddSchedule = { cropNameId, screenModeId ->
+                        navToAddSchedule = { cropNameId, screenModeId, scheduleId ->
                             navController.navigate(
                                 CalendarNavGraph.AddScheduleRoute.buildRoute(
-                                    listOf(cropNameId, screenModeId)
+                                    listOf(cropNameId, screenModeId, scheduleId)
                                 )
                             )
                         },
-                        navToAddDiary = { cropNameId, screenModeId ->
+                        navToAddDiary = { cropNameId, screenModeId, diaryId ->
                             navController.navigate(
                                 CalendarNavGraph.AddDiaryRoute.buildRoute(
-                                    listOf(cropNameId, screenModeId)
+                                    listOf(cropNameId, screenModeId, diaryId)
                                 )
                             )
                         },
