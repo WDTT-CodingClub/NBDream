@@ -150,11 +150,11 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
     }
 
     companion object {
-        private const val GET_DIARY_LIST = "calendar/diary"
-        private const val SEARCH_DIARY_LIST = "calendar/diary/search"
-        private const val GET_DIARY_DETAIL = "calendar/diary/detail"
-        private const val POST_DIARY = "calendar/diary/register"
-        private const val PUT_DIARY = "calendar/diary/update"
-        private const val DELETE_DIARY = "calendar/diary/delete"
+        private const val GET_DIARY_LIST = "api/calendar/diary"
+        private const val SEARCH_DIARY_LIST = "api/calendar/diary/search"
+        private const val GET_DIARY_DETAIL = "api/calendar/diary/detail"
+        private const val POST_DIARY = "api/calendar/diary/register"
+        private const val PUT_DIARY = "api/calendar/diary/update"
+        private const val DELETE_DIARY = "api/calendar/diary/delete"
     }
 }
