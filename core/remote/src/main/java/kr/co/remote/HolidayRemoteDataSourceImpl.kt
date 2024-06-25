@@ -16,8 +16,8 @@ internal class HolidayRemoteDataSourceImpl @Inject constructor(
 ) : HolidayRemoteDataSource {
     override suspend fun fetchList(year: String, month: String): List<HolidayData> =
         client.get(HOLIDAY) {
-            parameter("year", year)
-            parameter("month", month)
+            parameter("solYear", year)
+            parameter("solMonth", month)
         }
             .body<Dto<HolidayListResponse>>()
             .data.holidayList.map {

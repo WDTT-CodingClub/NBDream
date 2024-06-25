@@ -41,7 +41,9 @@ fun NavGraphBuilder.onboardNavGraph(
     composable(
         route = CROP_ROUTE
     ) {
-        SelectCropScreen()
+        SelectCropScreen(
+            navigateToWelcome = {navController.navigate(WELCOME_ROUTE)}
+        )
     }
 
     composable(

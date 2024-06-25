@@ -50,7 +50,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         startDate: String,
         endDate: String
     ): Flow<List<DiaryData>> =
-        client.get(GET_DIARY_LIST)
+        client.get(SEARCH_DIARY_LIST)
         {
             parameter("crop", crop)
             parameter("query", query)
@@ -64,6 +64,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
             .let { flowOf(it) }
 
     override suspend fun create(
+        crop:String,
         date: String,
         holidayList: List<HolidayData>,
         weatherForecast: String,
@@ -76,6 +77,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         client.post(POST_DIARY) {
             setBody(
                 PostDiaryRequest(
+                    crop = crop,
                     date = date,
                     holidayList = holidayList.map {
                         PostDiaryRequest.HolidayRequest(
@@ -103,6 +105,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun update(
         id: Int,
+        crop: String,
         date: String,
         holidayList: List<HolidayData>,
         weatherForecast: String,
@@ -116,6 +119,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
             setBody(
                 UpdateDiaryRequest(
                     id = id,
+                    crop = crop,
                     date = date,
                     holidayList = holidayList.map {
                         PostDiaryRequest.HolidayRequest(
@@ -146,11 +150,11 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
     }
 
     companion object {
-        private const val GET_DIARY_LIST = "calendar/diary"
-        private const val SEARCH_DIARY_LIST = "calendar/diary/search"
-        private const val GET_DIARY_DETAIL = "calendar/diary/detail"
-        private const val POST_DIARY = "calendar/diary/register"
-        private const val PUT_DIARY = "calendar/diary/update"
-        private const val DELETE_DIARY = "calendar/diary/delete"
+        private const val GET_DIARY_LIST = "api/calendar/diary"
+        private const val SEARCH_DIARY_LIST = "api/calendar/diary/search"
+        private const val GET_DIARY_DETAIL = "api/calendar/diary/detail"
+        private const val POST_DIARY = "api/calendar/diary/register"
+        private const val PUT_DIARY = "api/calendar/diary/update"
+        private const val DELETE_DIARY = "api/calendar/diary/delete"
     }
 }

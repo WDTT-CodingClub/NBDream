@@ -13,6 +13,7 @@ class CreateDiaryUseCase @Inject constructor(
     private val repository: DiaryRepository
 ): SuspendUseCase<CreateDiaryUseCase.Params, Unit>() {
     data class Params(
+        val crop:String,
         val date: LocalDate,
         val memo: String,
         val workDescriptions: List<DiaryEntity.WorkDescriptionEntity>,
@@ -27,6 +28,7 @@ class CreateDiaryUseCase @Inject constructor(
     override suspend fun build(params: Params?) {
         checkNotNull(params)
         return repository.createDiary(
+            crop = params.crop,
             date = params.date,
             holidayList = params.holidayList,
             weatherForecast = params.weatherForecast,

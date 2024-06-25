@@ -17,9 +17,7 @@ internal object ScheduleMapper
                 title = title,
                 startDate = LocalDate.parse(startDate),
                 endDate = LocalDate.parse(startDate),
-                memo = memo,
-                isAlarmOn = isAlarmOn,
-                alarmDateTime = LocalDateTime.parse(alarmDateTime)
+                memo = memo
             )
         }
 }

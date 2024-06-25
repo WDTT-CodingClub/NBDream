@@ -10,7 +10,7 @@ import javax.inject.Singleton
 class GetScheduleDetailUseCase @Inject constructor(
     private val repository: ScheduleRepository
 ) : SuspendUseCase<GetScheduleDetailUseCase.Params, ScheduleEntity>() {
-    data class Params(val id: Int)
+    data class Params(val id: Long)
 
     override suspend fun build(params: Params?): ScheduleEntity {
         checkNotNull(params)

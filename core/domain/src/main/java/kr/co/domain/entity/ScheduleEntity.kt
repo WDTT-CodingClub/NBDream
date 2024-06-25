@@ -5,14 +5,12 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class ScheduleEntity(
-    val id: Int,
+    val id: Long,
     val type: ScheduleType,
     val title: String,
     val startDate: LocalDate,
     val endDate: LocalDate = startDate,
-    val memo: String = "",
-    val isAlarmOn: Boolean = false,
-    val alarmDateTime: LocalDateTime? = null
+    val memo: String = ""
 )
 
 

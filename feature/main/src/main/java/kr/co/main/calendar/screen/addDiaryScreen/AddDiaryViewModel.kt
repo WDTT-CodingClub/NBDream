@@ -172,9 +172,11 @@ internal class AddDiaryViewModel @Inject constructor(
     }
 
     private fun onPostClick() {
+        checkNotNull(currentState.calendarCrop)
         viewModelScopeEH.launch {
             createDiary(
                 CreateDiaryUseCase.Params(
+                    crop = currentState.calendarCrop!!.type.name,
                     date = currentState.date,
                     memo = currentState.memo,
                     workDescriptions = currentState.workDescriptions.map {
@@ -193,11 +195,13 @@ internal class AddDiaryViewModel @Inject constructor(
     }
 
     private fun onEditClick() {
+        checkNotNull(currentState.calendarCrop)
         checkNotNull(currentState.diaryId)
         viewModelScopeEH.launch {
             updateDiary(
                 UpdateDiaryUseCase.Params(
                     id = currentState.diaryId!!,
+                    crop = currentState.calendarCrop!!.type.name,
                     date = currentState.date,
                     memo = currentState.memo,
                     workDescriptions = currentState.workDescriptions.map {

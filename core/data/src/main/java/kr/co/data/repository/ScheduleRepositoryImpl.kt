@@ -11,25 +11,25 @@ import javax.inject.Inject
 internal class ScheduleRepositoryImpl @Inject constructor(
     private val remote: ScheduleRemoteDataSource
 ) : ScheduleRepository {
-    override suspend fun getSchedules(crop: String, startDate: String): Flow<List<ScheduleEntity>> =
-        remote.fetchList(crop, startDate).transform {
+    override suspend fun getSchedules(category: String, startDate: String): Flow<List<ScheduleEntity>> =
+        remote.fetchList(category, startDate).transform {
             emit(
                 it.map { scheduleData -> ScheduleMapper.convert(scheduleData) }
             )
         }
 
     override suspend fun getSchedules(
-        crop: String,
+        category: String,
         year: Int,
         month: Int
     ): Flow<List<ScheduleEntity>> =
-        remote.fetchList(crop, year, month).transform {
+        remote.fetchList(category, year, month).transform {
             emit(
                 it.map { scheduleData -> ScheduleMapper.convert(scheduleData) }
             )
         }
 
-    override suspend fun getScheduleDetail(id: Int): ScheduleEntity =
+    override suspend fun getScheduleDetail(id: Long): ScheduleEntity =
         remote.fetchDetail(id).let { ScheduleMapper.convert(it) }
 
     override suspend fun createSchedule(
@@ -37,30 +37,24 @@ internal class ScheduleRepositoryImpl @Inject constructor(
         title: String,
         startDate: String,
         endDate: String,
-        memo: String,
-        isAlarmOn: Boolean,
-        alarmDateTime: String
+        memo: String
     ) {
         remote.create(
             category = category,
             title = title,
             startDate = startDate,
             endDate = endDate,
-            memo = memo,
-            isAlarmOn = isAlarmOn,
-            alarmDateTime = alarmDateTime
+            memo = memo
         )
     }
 
     override suspend fun updateSchedule(
-        id: Int,
+        id: Long,
         category: String,
         title: String,
         startDate: String,
         endDate: String,
-        memo: String,
-        isAlarmOn: Boolean,
-        alarmDateTime: String
+        memo: String
     ) {
         remote.update(
             id = id,
@@ -68,13 +62,11 @@ internal class ScheduleRepositoryImpl @Inject constructor(
             title = title,
             startDate = startDate,
             endDate = endDate,
-            memo = memo,
-            isAlarmOn = isAlarmOn,
-            alarmDateTime = alarmDateTime
+            memo = memo
         )
     }
 
-    override suspend fun deleteSchedule(id: Int) {
+    override suspend fun deleteSchedule(id: Long) {
         remote.delete(id)
     }
 }
