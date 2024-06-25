@@ -98,10 +98,10 @@ fun NavGraphBuilder.mainNavGraph(
                                 )
                             )
                         },
-                        navToSearchDiary = { cropNameId, year, month ->
+                        navToSearchDiary = { cropNameId ->
                             navController.navigate(
                                 CalendarNavGraph.SearchDiaryRoute.buildRoute(
-                                    listOf(cropNameId, year, month)
+                                    listOf(cropNameId)
                                 )
                             )
                         },

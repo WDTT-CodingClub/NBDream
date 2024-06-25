@@ -64,7 +64,7 @@ import kr.co.ui.widget.DreamTopAppBar
 internal fun CalendarRoute(
     navToAddSchedule: (Int?, Int?, Int?) -> Unit,
     navToAddDiary: (Int?, Int?, Int?) -> Unit,
-    navToSearchDiary: (Int?, Int?, Int?) -> Unit,
+    navToSearchDiary: (Int?) -> Unit,
     navToNotification: () -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
 ) {
@@ -83,7 +83,7 @@ internal fun CalendarRoute(
 private fun CalendarScreen(
     navToAddSchedule: (Int?, Int?, Int?) -> Unit,
     navToAddDiary: (Int?, Int?, Int?) -> Unit,
-    navToSearchDiary: (Int?, Int?, Int?) -> Unit,
+    navToSearchDiary: (Int?) -> Unit,
     navToNotification: () -> Unit,
     state: State<CalendarScreenViewModel.CalendarScreenState>,
     event: CalendarScreenEvent,
@@ -170,9 +170,7 @@ private fun CalendarScreen(
                                 },
                                 navToSearchDiary = {
                                     navToSearchDiary(
-                                        state.value.calendarCrop?.type?.nameId,
-                                        state.value.calendarYear,
-                                        state.value.calendarMonth
+                                        state.value.calendarCrop?.type?.nameId
                                     )
                                 }
                             )
