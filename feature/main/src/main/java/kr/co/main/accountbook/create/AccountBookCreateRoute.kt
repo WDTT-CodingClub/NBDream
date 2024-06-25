@@ -86,12 +86,13 @@ import java.util.Locale
 @Composable
 internal fun AccountBookCreateRoute(
     popBackStack: () -> Unit,
-    viewModel: AccountBookCreateViewModel = hiltViewModel()
+    viewModel: AccountBookCreateViewModel = hiltViewModel(),
+    navigationToAccountBook: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         viewModel.complete.collectLatest {
-            // TODO
+            navigationToAccountBook()
         }
     }
 

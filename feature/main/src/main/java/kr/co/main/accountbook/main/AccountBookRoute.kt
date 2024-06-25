@@ -48,11 +48,40 @@ import java.time.format.DateTimeFormatter
 internal fun AccountBookRoute(
     viewModel: AccountBookViewModel = hiltViewModel(),
     navigationToRegister: () -> Unit,
-    navigationToContent: (Long?) -> Unit
+    navigationToContent: (Long?) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
+    AccountBookScreen(
+        state = state,
+        isLoading = isLoading,
+        navigationToRegister = navigationToRegister,
+        navigationToContent = navigationToContent,
+        onUpdateDateRangeOption = { viewModel.updateDateRangeOption(it) },
+        onUpdateDateRange = { startDate, endDate -> viewModel.updateDateRange(startDate, endDate) },
+        onUpdateGraphTransactionType = { viewModel.updateGraphTransactionType(it) },
+        onUpdateCategory = { viewModel.updateCategory(it) },
+        onUpdateSortOrder = { viewModel.updateSortOrder(it) },
+        onUpdateTransactionType = { viewModel.updateTransactionType(it) },
+        onUpdatePage = { viewModel.updatePage(it) },
+        )
+}
+
+@Composable
+internal fun AccountBookScreen(
+    state: AccountBookViewModel.State = AccountBookViewModel.State(),
+    isLoading: Boolean,
+    navigationToRegister: () -> Unit,
+    navigationToContent: (Long?) -> Unit,
+    onUpdateDateRangeOption: (DateRangeOption) -> Unit = {},
+    onUpdateDateRange: (String, String) -> Unit = { _, _ -> },
+    onUpdateGraphTransactionType: (AccountBookEntity.TransactionType) -> Unit = {},
+    onUpdateCategory: (String) -> Unit = {},
+    onUpdateSortOrder: (AccountBookEntity.SortOrder) -> Unit = {},
+    onUpdateTransactionType: (AccountBookEntity.TransactionType?) -> Unit = {},
+    onUpdatePage: (Long) -> Unit = {},
+) {
     Surface(
         color = MaterialTheme.colors.gray9
     ) {
@@ -83,10 +112,10 @@ internal fun AccountBookRoute(
                         start = state.start,
                         end = state.end,
                         onDateRangeOptionSelected = {
-                            viewModel.updateDateRangeOption(it)
+                            onUpdateDateRangeOption(it)
                         },
                         onDaysInRangeChange = { startDate, endDate ->
-                            viewModel.updateDateRange(startDate.toString(), endDate.toString())
+                            onUpdateDateRange(startDate.toString(), endDate.toString())
                         }
                     )
                 }
@@ -107,7 +136,7 @@ internal fun AccountBookRoute(
                             amountPercent = if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
                                 state.expensePercent else state.revenuePercent,
                             onGraphTransactionTypeSelected = {
-                                viewModel.updateGraphTransactionType(it)
+                                onUpdateGraphTransactionType(it)
                             }
                         )
                     }
@@ -136,9 +165,9 @@ internal fun AccountBookRoute(
                                 category = state.category,
                                 categories = state.categories,
                                 sortOrder = state.sort,
-                                onCategoryChange = { viewModel.updateCategory(it) },
-                                onSortOrderChange = { viewModel.updateSortOrder(it) },
-                                onTransactionChange = { viewModel.updateTransactionType(it) }
+                                onCategoryChange = { onUpdateCategory(it) },
+                                onSortOrderChange = { onUpdateSortOrder(it) },
+                                onTransactionChange = { onUpdateTransactionType(it) }
                             )
                         }
                     }
@@ -179,7 +208,7 @@ internal fun AccountBookRoute(
                         val lastIndex = state.accountBooks.lastIndex
                         if (index == lastIndex && state.hasNext!!) {
                             if (isLoading.not()) {
-                                viewModel.updatePage(state.accountBooks[lastIndex].id)
+                                onUpdatePage(state.accountBooks[lastIndex].id)
                             }
                         }
                         Box(
