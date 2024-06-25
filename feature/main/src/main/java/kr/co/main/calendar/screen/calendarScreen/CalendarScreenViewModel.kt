@@ -13,13 +13,20 @@ import kr.co.domain.usecase.calendar.GetHolidaysUseCase
 import kr.co.domain.usecase.calendar.GetSchedulesUseCase
 import kr.co.domain.usecase.calendar.GetUserCropsUseCase
 import kr.co.main.mapper.calendar.CropModelMapper
+import kr.co.main.mapper.calendar.CropModelTypeMapper
+import kr.co.main.mapper.calendar.DiaryModelMapper
+import kr.co.main.mapper.calendar.FarmWorkModelMapper
 import kr.co.main.mapper.calendar.HolidayModelMapper
+import kr.co.main.mapper.calendar.ScheduleModelMapper
+import kr.co.main.mapper.calendar.ScheduleModelTypeMapper
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.FarmWorkModel
 import kr.co.main.model.calendar.HolidayModel
 import kr.co.main.model.calendar.ScheduleModel
+import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.ui.base.BaseViewModel
+import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -35,7 +42,7 @@ internal interface CalendarScreenEvent {
 internal class CalendarScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getUserCrops: GetUserCropsUseCase,
-    private val getFarmWork: GetFarmWorksUseCase,
+    private val getFarmWorks: GetFarmWorksUseCase,
     private val getHolidays: GetHolidaysUseCase,
     private val getSchedules: GetSchedulesUseCase,
     private val getDiaries: GetDiariesUseCase
@@ -43,6 +50,7 @@ internal class CalendarScreenViewModel @Inject constructor(
     CalendarScreenEvent {
     val event: CalendarScreenEvent = this@CalendarScreenViewModel
 
+    private val _userCrops = MutableStateFlow<List<CropModel>>(emptyList())
     private val _crop = MutableStateFlow<CropModel?>(null)
     private val _year = MutableStateFlow(LocalDate.now().year)
     private val _month = MutableStateFlow(LocalDate.now().monthValue)
@@ -51,7 +59,7 @@ internal class CalendarScreenViewModel @Inject constructor(
 
     data class CalendarScreenState(
         val userCrops: List<CropModel> = emptyList(),
-        val crop: CropModel? = if (userCrops.isNotEmpty()) userCrops.first() else null,
+        val crop: CropModel? = null,
         val year: Int = LocalDate.now().year,
         val month: Int = LocalDate.now().monthValue,
 
@@ -76,6 +84,18 @@ internal class CalendarScreenViewModel @Inject constructor(
         } ?: CalendarScreenState()
 
     init {
+        Timber.d("init ViewModel")
+
+//        updateState {
+//            copy(
+//                userCrops = listOf(
+//                    CropModel.create(CropModelType.POTATO),
+//                    CropModel.create(CropModelType.SWEET_POTATO),
+//                    CropModel.create(CropModelType.APPLE),
+//                    CropModel.create(CropModelType.GARLIC),
+//                )
+//            )
+//        }
         viewModelScopeEH.launch {
             getUserCrops().collect { userCrops ->
                 updateState {
@@ -97,18 +117,70 @@ internal class CalendarScreenViewModel @Inject constructor(
         }
 
         viewModelScopeEH.launch {
-            //TODO '전체' 카테고리 일정 api 요청
+            getSchedules(
+                GetSchedulesUseCase.Params.Monthly(
+                    category = ScheduleModelTypeMapper.toLeft(ScheduleModelType.All),
+                    year = currentState.year,
+                    month = currentState.month
+                )
+            ).collect { allSchedules ->
+                updateState {
+                    copy(allSchedules = allSchedules.map { ScheduleModelMapper.toRight(it) })
+                }
+            }
         }
 
         with(state) {
+            select { it.userCrops }.bindState(_userCrops)
             select { it.crop }.bindState(_crop)
             select { it.year }.bindState(_year)
             select { it.month }.bindState(_month)
             select { it.selectedDate }.bindState(_selectedDate)
         }
 
+        viewModelScopeEH.launch {
+            _userCrops.collect { userCrops ->
+                if (userCrops.isNotEmpty()) {
+                    updateState { copy(crop = userCrops.first()) }
+                }
+            }
+        }
         combine(_crop, _year, _month) { crop, year, month ->
-            //TODO 농작업 일정, 작물 카테고리 일정, 영농일지 api 요청
+            Timber.d("combine mutable state flows")
+            crop?.let {
+                getFarmWorks(
+                    GetFarmWorksUseCase.Params(
+                        crop = CropModelTypeMapper.toLeft(crop.type),
+                        month = month
+                    )
+                ).let { farmWorks ->
+                    updateState { copy(farmWorks = farmWorks.map { FarmWorkModelMapper.convert(it) }) }
+                }
+
+                getSchedules(
+                    GetSchedulesUseCase.Params.Monthly(
+                        category = ScheduleModelTypeMapper.toLeft(ScheduleModelType.Crop(crop)),
+                        year = year,
+                        month = month
+                    )
+                ).collect { cropSchedules ->
+                    updateState {
+                        copy(cropSchedules = cropSchedules.map { ScheduleModelMapper.toRight(it) })
+                    }
+                }
+
+                getDiaries(
+                    GetDiariesUseCase.Params(
+                        crop = crop.type.name,
+                        year = year,
+                        month = month
+                    )
+                ).collect { diaries ->
+                    updateState {
+                        copy(diaries = diaries.map { DiaryModelMapper.toRight(it) })
+                    }
+                }
+            }
         }.launchIn(viewModelScopeEH)
     }
 
