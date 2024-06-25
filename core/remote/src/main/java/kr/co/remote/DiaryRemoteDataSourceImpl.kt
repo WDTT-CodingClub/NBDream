@@ -50,7 +50,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         startDate: String,
         endDate: String
     ): Flow<List<DiaryData>> =
-        client.get(GET_DIARY_LIST)
+        client.get(SEARCH_DIARY_LIST)
         {
             parameter("crop", crop)
             parameter("query", query)
@@ -64,6 +64,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
             .let { flowOf(it) }
 
     override suspend fun create(
+        crop:String,
         date: String,
         holidayList: List<HolidayData>,
         weatherForecast: String,
@@ -76,6 +77,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         client.post(POST_DIARY) {
             setBody(
                 PostDiaryRequest(
+                    crop = crop,
                     date = date,
                     holidayList = holidayList.map {
                         PostDiaryRequest.HolidayRequest(
@@ -103,6 +105,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun update(
         id: Int,
+        crop: String,
         date: String,
         holidayList: List<HolidayData>,
         weatherForecast: String,
@@ -116,6 +119,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
             setBody(
                 UpdateDiaryRequest(
                     id = id,
+                    crop = crop,
                     date = date,
                     holidayList = holidayList.map {
                         PostDiaryRequest.HolidayRequest(

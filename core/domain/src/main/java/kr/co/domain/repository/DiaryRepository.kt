@@ -22,6 +22,7 @@ interface DiaryRepository {
     suspend fun getDiaryDetail(id:Int): DiaryEntity
 
     suspend fun createDiary(
+        crop: String,
         date: LocalDate,
         holidayList: List<HolidayEntity>,
         weatherForecast: String,
@@ -34,6 +35,7 @@ interface DiaryRepository {
 
     suspend fun updateDiary(
         id: Int,
+        crop:String,
         date: LocalDate,
         holidayList: List<HolidayEntity>,
         weatherForecast: String,
