@@ -9,12 +9,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 internal fun AddDiaryRoute(
+    popBackStack: () -> Unit,
     viewModel: AddDiaryViewModel = hiltViewModel()
 ) {
     AddDiaryScreen(
         modifier = Modifier.fillMaxSize(),
         state = viewModel.state.collectAsState(),
-        event = viewModel.event
+        event = viewModel.event,
+        popBackStack = popBackStack
     )
 }
 
@@ -22,6 +24,7 @@ internal fun AddDiaryRoute(
 private fun AddDiaryScreen(
     state: State<AddDiaryViewModel.AddDiaryScreenState>,
     event: AddDiaryScreenEvent,
+    popBackStack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 //    val addDiaryScreenState = viewModel.state.collectAsState()

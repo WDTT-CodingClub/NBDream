@@ -84,17 +84,17 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.CALENDAR.route
                 ) {
                     CalendarRoute(
-                        navToAddSchedule = { cropNameId ->
+                        navToAddSchedule = { cropNameId, screenModeId, scheduleId ->
                             navController.navigate(
                                 CalendarNavGraph.AddScheduleRoute.buildRoute(
-                                    cropNameId
+                                    listOf(cropNameId, screenModeId, scheduleId)
                                 )
                             )
                         },
-                        navToAddDiary = { cropNameId ->
+                        navToAddDiary = { cropNameId, screenModeId, diaryId ->
                             navController.navigate(
                                 CalendarNavGraph.AddDiaryRoute.buildRoute(
-                                    cropNameId
+                                    listOf(cropNameId, screenModeId, diaryId)
                                 )
                             )
                         },
@@ -178,19 +178,25 @@ fun NavGraphBuilder.mainNavGraph(
         route = CalendarNavGraph.AddScheduleRoute.route,
         arguments = CalendarNavGraph.AddScheduleRoute.arguments
     ) {
-        AddScheduleRoute()
+        AddScheduleRoute(
+            popBackStack = navController::popBackStack
+        )
     }
     composable(
         route = CalendarNavGraph.AddDiaryRoute.route,
         arguments = CalendarNavGraph.AddDiaryRoute.arguments
     ) {
-        AddDiaryRoute()
+        AddDiaryRoute(
+            popBackStack = navController::popBackStack
+        )
     }
     composable(
         route = CalendarNavGraph.SearchDiaryRoute.route,
         arguments = CalendarNavGraph.SearchDiaryRoute.arguments
     ) {
-        SearchDiaryRoute()
+        SearchDiaryRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(

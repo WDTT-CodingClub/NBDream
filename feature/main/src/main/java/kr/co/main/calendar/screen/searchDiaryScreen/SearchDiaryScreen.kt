@@ -11,12 +11,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 internal fun SearchDiaryRoute(
+    popBackStack: () -> Unit,
     viewModel: SearchDiaryScreenViewModel = hiltViewModel()
 ) {
     SearchDiaryScreen(
         modifier = Modifier.fillMaxSize(),
         state = viewModel.state.collectAsState(),
-        event = viewModel.event
+        event = viewModel.event,
+        popBackStack = popBackStack
     )
 }
 
@@ -24,6 +26,7 @@ internal fun SearchDiaryRoute(
 private fun SearchDiaryScreen(
     state: State<SearchDiaryScreenViewModel.SearchDiaryScreenState>,
     event: SearchDiaryScreenEvent,
+    popBackStack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(

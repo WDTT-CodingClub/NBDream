@@ -2,6 +2,7 @@ package kr.co.domain.usecase.calendar
 
 import kr.co.domain.repository.ScheduleRepository
 import kr.co.domain.usecase.SuspendUseCase
+import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,8 +16,8 @@ class CreateScheduleUseCase @Inject constructor(
         val startDate: String,
         val endDate: String,
         val memo: String,
-        val isAlarmOn: Boolean,
-        val alarmDateTime: String
+        val isAlarmOn: Boolean = false,
+        val alarmDateTime: String = LocalDateTime.now().toString()
     )
 
     override suspend fun build(params: Params?) {

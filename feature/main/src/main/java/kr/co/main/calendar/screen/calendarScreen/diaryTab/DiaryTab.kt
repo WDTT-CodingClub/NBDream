@@ -34,6 +34,7 @@ internal fun DiaryTab(
     calendarCrop: CropModel?,
     calendarYear: Int,
     calendarMonth: Int,
+    navToEditDiary: (Int) -> Unit,
     navToSearchDiary: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DiaryTabViewModel = hiltViewModel(),

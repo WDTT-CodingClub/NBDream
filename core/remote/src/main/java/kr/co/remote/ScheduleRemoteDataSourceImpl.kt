@@ -47,6 +47,12 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
             }
             .let { flowOf(it) }
 
+    override suspend fun fetchDetail(id: Int): ScheduleData =
+        client.get("$GET_SCHEDULE_DETAIL/$id")
+            .body<Dto<ScheduleListResponse.ScheduleResponse>>()
+            .data
+            .let { ScheduleRemoteMapper.convert(it) }
+
     override suspend fun create(
         category: String,
         title: String,
@@ -104,6 +110,7 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
     companion object {
         private const val GET_SCHEDULE_LIST_WEEK = "calendar/schedule/week"
         private const val GET_SCHEDULE_LIST_MONTH = "calendar/schedule"
+        private const val GET_SCHEDULE_DETAIL = "calendar/schedule/detail"
         private const val POST_SCHEDULE = "calendar/schedule/register"
         private const val PUT_SCHEDULE = "calendar/schedule/update"
         private const val DELETE_SCHEDULE = "calendar/schedule/delete"

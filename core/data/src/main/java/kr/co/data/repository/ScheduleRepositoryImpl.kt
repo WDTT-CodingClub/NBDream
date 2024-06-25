@@ -18,7 +18,6 @@ internal class ScheduleRepositoryImpl @Inject constructor(
             )
         }
 
-
     override suspend fun getSchedules(
         crop: String,
         year: Int,
@@ -29,6 +28,9 @@ internal class ScheduleRepositoryImpl @Inject constructor(
                 it.map { scheduleData -> ScheduleMapper.convert(scheduleData) }
             )
         }
+
+    override suspend fun getScheduleDetail(id: Int): ScheduleEntity =
+        remote.fetchDetail(id).let { ScheduleMapper.convert(it) }
 
     override suspend fun createSchedule(
         category: String,
