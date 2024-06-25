@@ -21,8 +21,8 @@ internal fun AccountBookEntity.Category?.getDisplay(): String {
 
 internal fun AccountBookEntity.TransactionType?.getTransactionType(): String {
     return when (this) {
-        AccountBookEntity.TransactionType.EXPENSE -> "수입"
-        AccountBookEntity.TransactionType.REVENUE -> "지출"
+        AccountBookEntity.TransactionType.REVENUE -> "수입"
+        AccountBookEntity.TransactionType.EXPENSE -> "지출"
         else -> ""
     }
 }

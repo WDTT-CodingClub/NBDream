@@ -15,18 +15,18 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.theme.colors
 
 @Composable
 internal fun AccountBookGraph(
-    data: List<Float>,
-    categories: List<String>,
+    data: List<AccountBookViewModel.State.PercentCategory>,
     modifier: Modifier = Modifier,
     graphHeight: Int
 ) {
-    val total = data.sum().toInt()
+    val total = data.sumOf { it.percent.toInt() }
     val angleInterval = if (data.size > 1) 1f else 0f
-    val angles = data.map { it / total * (360f - data.size * angleInterval) }
+    val angles = data.map { it.percent / total * (360f - data.size * angleInterval) }
     val colors = getColorList(data.size)
     val density = LocalDensity.current.density
     val categoryColor = MaterialTheme.colors.gray2
@@ -39,7 +39,7 @@ internal fun AccountBookGraph(
         val centerY = radius + strokeWidth / 2
 
         drawGraph(angles, colors, angleInterval, radius, strokeWidth, centerX, centerY)
-        drawCategoryText(categories, colors, data, total, density, categoryColor, percentageColor, radius, strokeWidth, centerY)
+        drawCategoryText(data, colors, total, density, categoryColor, percentageColor, radius, strokeWidth, centerY)
     }
 }
 
@@ -90,9 +90,8 @@ private fun DrawScope.drawGraph(
 }
 
 private fun DrawScope.drawCategoryText(
-    categories: List<String>,
+    data: List<AccountBookViewModel.State.PercentCategory>,
     colors: List<Color>,
-    data: List<Float>,
     total: Int,
     density: Float,
     categoryColor: Color,
@@ -108,14 +107,14 @@ private fun DrawScope.drawCategoryText(
     val outerPadding = 16.dp.toPx()
     val textStartX = graphRightX + outerPadding
 
-    val textStartY = centerY - ((categories.size - 1) * (textSizePx + 4.dp.toPx()) / 2)
+    val textStartY = centerY - ((data.size - 1) * (textSizePx + 4.dp.toPx()) / 2)
     val verticalInterval = 4.dp.toPx()
     val circleTextGap = 8.dp.toPx()
     val textPercentageGap = 8.dp.toPx()
 
-    categories.forEachIndexed { index, category ->
+    data.forEachIndexed { index, item ->
         val textY = textStartY + index * (textSizePx + verticalInterval)
-        val percentage = ((data[index] / total) * 100).toInt()
+        val percentage = ((item.percent / total) * 100).toInt()
 
         drawCircle(
             color = colors[index],
@@ -124,11 +123,11 @@ private fun DrawScope.drawCategoryText(
         )
 
         val categoryTextX = textStartX + circleTextGap
-        val percentageTextX = categoryTextX + Paint().apply { textSize = textSizePx }.measureText(category) + textPercentageGap
+        val percentageTextX = categoryTextX + Paint().apply { textSize = textSizePx }.measureText(item.category.getDisplay()) + textPercentageGap
 
         drawIntoCanvas {
             it.nativeCanvas.drawText(
-                category,
+                item.category.getDisplay(),
                 categoryTextX,
                 textY,
                 Paint().apply {

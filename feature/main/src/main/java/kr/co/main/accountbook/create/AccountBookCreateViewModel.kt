@@ -1,4 +1,4 @@
-package kr.co.main.accountbook.register
+package kr.co.main.accountbook.create
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -10,6 +10,10 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.domain.usecase.image.UploadImageUseCase
 import kr.co.main.accountbook.main.formatNumber
+import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
+import kr.co.main.accountbook.model.EntryType
+import kr.co.main.accountbook.model.formatReceiveDateTime
+import kr.co.main.accountbook.model.formatSendDateTime
 import kr.co.ui.base.BaseViewModel
 import java.io.File
 import java.text.SimpleDateFormat
@@ -24,6 +28,10 @@ internal class AccountBookCreateViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AccountBookCreateViewModel.State>(savedStateHandle) {
     private val id: Long? = savedStateHandle.get<String>("id")?.toLong()
+    private val entryType: EntryType = savedStateHandle.get<EntryType>("entryType") ?: EntryType.CREATE
+
+    private val _complete: MutableSharedFlow<Unit> = MutableSharedFlow()
+    val complete = _complete.asSharedFlow()
 
     init {
         id?.let {
@@ -31,14 +39,17 @@ internal class AccountBookCreateViewModel @Inject constructor(
         }
     }
 
-    private val _complete: MutableSharedFlow<Unit> = MutableSharedFlow()
-    val complete = _complete.asSharedFlow()
     fun updateAmountText(newAmountText: String) {
         updateState { copy(amountText = newAmountText) }
     }
 
     fun updateAmount(amount: Long) {
-        updateState { copy(amount = amount) }
+        updateState {
+            copy(
+                amount = amount,
+                amountText = formatNumber(amount)
+            )
+        }
     }
 
     fun updateTransactionType(transactionType: AccountBookEntity.TransactionType) {
@@ -77,6 +88,28 @@ internal class AccountBookCreateViewModel @Inject constructor(
             }
         }
 
+    private fun updateAccountBook() = loadingScope {
+        currentState.id?.let {
+            accountBookRepository.updateAccountBook(
+                id = it,
+                transactionType = currentState.transactionType!!.name.lowercase(),
+                amount = currentState.amount ?: 0L,
+                category = currentState.category!!.name.lowercase(),
+                title = currentState.title ?: "",
+                registerDateTime = currentState.registerDateTime,
+                imageUrls = currentState.imageUrls
+            )
+        }
+    }.invokeOnCompletion {
+        if (it == null) {
+            viewModelScopeEH.launch {
+                _complete.emit(Unit)
+            }
+        } else {
+            // TODO 작성 실패
+        }
+    }
+
     private fun fetchAccountBookById(id: Long) =
         loadingScope {
             val accountBookDetail = accountBookRepository.getAccountBookDetail(id)
@@ -87,26 +120,22 @@ internal class AccountBookCreateViewModel @Inject constructor(
                     category = accountBookDetail.category,
                     transactionType = accountBookDetail.transactionType,
                     amount = accountBookDetail.amount ?: 0,
-                    registerDateTime = accountBookDetail.registerDateTime ?: "",
-                    imageUrls = accountBookDetail.imageUrl
+                    registerDateTime = accountBookDetail.registerDateTime?.formatReceiveDateTime() ?: "",
+                    imageUrls = accountBookDetail.imageUrl,
+                    amountText = formatNumber(accountBookDetail.amount ?: 0)
                 )
             }
-        }.invokeOnCompletion { // 에러 발생 여부
-            if (it == null) {
-                viewModelScopeEH.launch {
-
-                }
-            }
         }
+
 
     fun createAccountBook() = loadingScope {
         accountBookRepository.createAccountBook(
             transactionType = currentState.transactionType!!.name.lowercase(),
-            amount = currentState.amount,
+            amount = currentState.amount ?: 0L,
             category = currentState.category!!.name.lowercase(),
             title = currentState.title ?: "",
-            registerDateTime = formatDateTime(currentState.registerDateTime),
-            imageUrls = currentState.imageUrls.map { it }
+            registerDateTime = currentState.registerDateTime.formatSendDateTime(),
+            imageUrls = currentState.imageUrls
         )
     }.invokeOnCompletion {
         if (it == null) {
@@ -122,14 +151,15 @@ internal class AccountBookCreateViewModel @Inject constructor(
 
     data class State(
         val id: Long? = null,
-        val amount: Long = 0,
-        val amountText: String = formatNumber(amount),
+        val amount: Long? = 0,
+        val amountText: String = formatNumber(amount ?: 0),
         val transactionType: AccountBookEntity.TransactionType? =
             AccountBookEntity.TransactionType.EXPENSE,
-        val category: AccountBookEntity.Category? = null,
-        val title: String = "",
+        val category: AccountBookEntity.Category? =
+            AccountBookEntity.Category.OTHER,
+        val title: String? = null,
         val registerDateTime: String = SimpleDateFormat(
-            "yyyy.MM.dd",
+            DATE_FORMAT_PATTERN,
             Locale.getDefault()
         ).format(Date()),
         val imageUrls: List<String> = listOf()
@@ -137,12 +167,5 @@ internal class AccountBookCreateViewModel @Inject constructor(
 
     private companion object {
         const val DOMAIN = "accountbook"
-    }
-
-    private fun formatDateTime(dateTime: String?): String {
-        val inputFormat = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("yyyy-MM-dd 00:00", Locale.getDefault())
-        val date = if (dateTime.isNullOrBlank()) Date() else inputFormat.parse(dateTime)
-        return outputFormat.format(date)
     }
 }

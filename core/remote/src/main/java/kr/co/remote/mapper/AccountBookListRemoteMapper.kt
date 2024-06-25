@@ -13,6 +13,8 @@ internal object AccountBookListRemoteMapper :
                 totalRevenue = totalRevenue,
                 totalExpense = totalExpense,
                 totalCost = totalCost,
+                revenuePercent = revenuePercent.map { AccountBookListData.PercentCategory(it.percent, it.category) },
+                expensePercent = expensePercent.map { AccountBookListData.PercentCategory(it.percent, it.category) },
                 hasNext = hasNext,
                 items = items.map {
                     AccountBookListData.Item(

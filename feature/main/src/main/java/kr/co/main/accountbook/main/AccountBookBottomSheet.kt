@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import kr.co.domain.entity.AccountBookEntity
+import kr.co.main.accountbook.model.DateRangeOption
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.theme.colors
 import java.text.SimpleDateFormat
@@ -60,10 +61,10 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountBookCategoryBottomSheet(
+    categories: List<AccountBookEntity.Category?>? = AccountBookEntity.Category.entries,
     onSelectedListener: (AccountBookEntity.Category) -> Unit,
     dismissBottomSheet: () -> Unit,
 ) {
-    var selectedCategory by remember { mutableStateOf<AccountBookEntity.Category?>(null) }
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
@@ -90,17 +91,17 @@ internal fun AccountBookCategoryBottomSheet(
                 modifier = Modifier.padding(bottom = 12.dp),
                 color = Color.Black
             )
-            AccountBookEntity.Category.entries.forEach { category ->
+            categories?.forEach { category ->
                 val categoryName = category.getDisplay()
-                val backgroundColor =
-                    if (category == selectedCategory) MaterialTheme.colors.primary else Color.Transparent
+                val backgroundColor = Color.Transparent
                 Text(
                     text = categoryName,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            selectedCategory = category
-                            onSelectedListener(category)
+                            if (category != null) {
+                                onSelectedListener(category)
+                            }
                         }
                         .background(color = backgroundColor)
                         .padding(vertical = 8.dp),
@@ -116,16 +117,14 @@ internal fun AccountBookCategoryBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountBookCalendarBottomSheet(
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit,
+    selectedOption: DateRangeOption,
+    onOptionSelected: (DateRangeOption) -> Unit,
     onSelectedListener: (String, String) -> Unit,
     dismissBottomSheet: () -> Unit,
 ) {
+    var (startDate, endDate) = selectedOption.getDate()
+
     val sheetState = rememberModalBottomSheetState()
-    val options = listOf("당일", "1주일", "1개월", "3개월", "6개월")
-
-    var (startDate, endDate) = updateDatesForOption(selectedOption)
-
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickerType by remember { mutableStateOf("start") }
 
@@ -156,15 +155,14 @@ internal fun AccountBookCalendarBottomSheet(
                     .padding(vertical = 16.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                options.forEach { option ->
+                DateRangeOption.entries.forEach { option ->
                     OptionBox(
-                        option = option,
-                        selectedOption = selectedOption,
-                        onOptionSelected = { newOption ->
-                            onOptionSelected(newOption)
-                            val (newStartDate, newEndDate) = updateDatesForOption(newOption)
-                            startDate = newStartDate
-                            endDate = newEndDate
+                        option = option.label,
+                        selectedOption = selectedOption.label,
+                        onOptionSelected = { newOptionLabel ->
+                            val newEnumOption =
+                                DateRangeOption.entries.find { it.label == newOptionLabel }
+                            newEnumOption?.let { onOptionSelected(it) }
                         }
                     )
                 }
@@ -239,7 +237,8 @@ internal fun AccountBookCalendarBottomSheet(
                 showDatePicker = false
             },
             onClickConfirm = { selectedDate ->
-                val selectedLocalDate = LocalDate.parse(selectedDate, DateTimeFormatter.BASIC_ISO_DATE)
+                val selectedLocalDate =
+                    LocalDate.parse(selectedDate, DateTimeFormatter.BASIC_ISO_DATE)
                 if (datePickerType == "start") {
                     startDate = selectedLocalDate
                 } else {
@@ -281,20 +280,6 @@ private fun DateRow(
     HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.grey6)
 }
 
-
-private fun updateDatesForOption(option: String): Pair<LocalDate, LocalDate> {
-    val today = LocalDate.now()
-    val startDate = when (option) {
-        "당일" -> today
-        "1주일" -> today.minusWeeks(1)
-        "1개월" -> today.minusMonths(1)
-        "3개월" -> today.minusMonths(3)
-        "6개월" -> today.minusMonths(6)
-        else -> today.minusMonths(1)
-    }
-    return startDate to today
-}
-
 @Composable
 private fun OptionBox(
     option: String,
@@ -334,7 +319,7 @@ private fun CustomDatePickerDialog(
     val endDate = remember { mutableStateOf(LocalDate.now()) }
 
     val datePickerState = rememberDatePickerState(
-        yearRange = IntRange(1900, 2100),
+        yearRange = IntRange(2000, 2050),
         initialDisplayMode = DisplayMode.Picker,
         initialSelectedDateMillis = System.currentTimeMillis(),
         selectableDates = object : SelectableDates {

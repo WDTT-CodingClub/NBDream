@@ -1,4 +1,4 @@
-package kr.co.main.accountbook.register
+package kr.co.main.accountbook.create
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -68,6 +69,7 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
 import kr.co.main.accountbook.main.AccountBookOptionButton
 import kr.co.main.accountbook.main.formatNumber
+import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.nbdream.core.ui.R
 import kr.co.ui.theme.Paddings
@@ -75,6 +77,7 @@ import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -86,13 +89,41 @@ internal fun AccountBookCreateRoute(
     viewModel: AccountBookCreateViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
     LaunchedEffect(Unit) {
         viewModel.complete.collectLatest {
-            popBackStack()
+            // TODO
         }
     }
 
+    AccountBookCreateScreen(
+        state = state,
+        popBackStack = popBackStack,
+        onUploadImage = { viewModel.uploadImage(it) },
+        onCreateAccountBook = viewModel::createAccountBook,
+        onUpdateAmount = { viewModel.updateAmount(it) },
+        onUpdateAmountText = { viewModel.updateAmountText(it) },
+        onUpdateTransactionType = { viewModel.updateTransactionType(it) },
+        onUpdateTitle = { viewModel.updateTitle(it) },
+        onRemoveImageUrl = { viewModel.removeImageUrl(it) },
+        onUpdateRegisterDateTime = { viewModel.updateRegisterDateTime(it) },
+        onUpdateCategory = { viewModel.updateCategory(it) }
+    )
+}
+
+@Composable
+internal fun AccountBookCreateScreen(
+    state: AccountBookCreateViewModel.State = AccountBookCreateViewModel.State(),
+    popBackStack: () -> Unit,
+    onUploadImage: (File) -> Unit = {},
+    onCreateAccountBook: () -> Unit = {},
+    onUpdateAmount: (Long) -> Unit = {},
+    onUpdateAmountText: (String) -> Unit = {},
+    onUpdateTransactionType: (AccountBookEntity.TransactionType) -> Unit = {},
+    onUpdateTitle: (String) -> Unit = {},
+    onRemoveImageUrl: (String) -> Unit = {},
+    onUpdateRegisterDateTime: (String) -> Unit = {},
+    onUpdateCategory: (AccountBookEntity.Category) -> Unit = {},
+) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -100,7 +131,7 @@ internal fun AccountBookCreateRoute(
         onResult = { uri ->
             uri?.let {
                 FileUtil.getFileFromUri(it)?.let { file ->
-                    viewModel.uploadImage(file)
+                    onUploadImage(file)
                 }
             }
         }
@@ -129,7 +160,7 @@ internal fun AccountBookCreateRoute(
                     actions = {
                         Button(
                             onClick = {
-                                viewModel.createAccountBook()
+                                onCreateAccountBook()
                             },
                             colors = ButtonDefaults.buttonColors(Color.Transparent)
                         ) {
@@ -163,14 +194,14 @@ internal fun AccountBookCreateRoute(
                                 ),
                             contentAlignment = Alignment.CenterStart
                         ) {
-                            AccountBookTextField(
+                            AccountBookCreateTextField(
                                 value = state.amountText,
                                 onValueChange = { newText ->
                                     val cleanedText = newText.replace(",", "")
                                     if (cleanedText.all { it.isDigit() }) {
                                         val newAmount = cleanedText.toLongOrNull() ?: 0L
-                                        viewModel.updateAmount(newAmount)
-                                        viewModel.updateAmountText(formatNumber(newAmount))
+                                        onUpdateAmount(newAmount)
+                                        onUpdateAmountText(formatNumber(newAmount))
                                     }
                                 },
                                 placeholder = "0",
@@ -211,7 +242,7 @@ internal fun AccountBookCreateRoute(
                             option = "지출",
                             isSelected = state.transactionType == AccountBookEntity.TransactionType.EXPENSE,
                             onSelected = {
-                                viewModel.updateTransactionType(AccountBookEntity.TransactionType.EXPENSE)
+                                onUpdateTransactionType(AccountBookEntity.TransactionType.EXPENSE)
                             }
                         )
                         Spacer(modifier = Modifier.width(Paddings.xlarge))
@@ -221,7 +252,7 @@ internal fun AccountBookCreateRoute(
                             option = "수입",
                             isSelected = state.transactionType == AccountBookEntity.TransactionType.REVENUE,
                             onSelected = {
-                                viewModel.updateTransactionType(AccountBookEntity.TransactionType.REVENUE)
+                                onUpdateTransactionType(AccountBookEntity.TransactionType.REVENUE)
                             }
                         )
                     }
@@ -247,7 +278,7 @@ internal fun AccountBookCreateRoute(
                                 shape = Shapes.medium
                             )
                     ) {
-                        AccountBookButton(
+                        AccountBookCreateButton(
                             onClick = { showBottomSheet = true },
                             text = state.category.getDisplay(),
                             buttonColors = ButtonDefaults.buttonColors(Color.Transparent),
@@ -277,9 +308,9 @@ internal fun AccountBookCreateRoute(
                                 shape = Shapes.medium
                             )
                     ) {
-                        AccountBookTextField(
-                            value = state.title,
-                            onValueChange = { newValue -> viewModel.updateTitle(newValue) },
+                        AccountBookCreateTextField(
+                            value = state.title ?: "",
+                            onValueChange = { newValue -> onUpdateTitle(newValue) },
                             placeholder = "입력하세요",
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -306,7 +337,7 @@ internal fun AccountBookCreateRoute(
                                 shape = Shapes.medium
                             )
                     ) {
-                        AccountBookButton(
+                        AccountBookCreateButton(
                             onClick = { showDatePicker = true },
                             text = state.registerDateTime,
                             buttonColors = ButtonDefaults.buttonColors(Color.Transparent),
@@ -373,12 +404,10 @@ internal fun AccountBookCreateRoute(
                             }
                         }
                     }
-
                     LazyRow(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(state.imageUrls.size) { index ->
-                            val imageUri = state.imageUrls[index]
+                        items(state.imageUrls) { imageUrl ->
                             Box(
                                 modifier = Modifier
                                     .padding(start = Paddings.large)
@@ -391,13 +420,13 @@ internal fun AccountBookCreateRoute(
                                     modifier = Modifier
                                         .size(120.dp)
                                         .clip(Shapes.small),
-                                    model = imageUri,
+                                    model = imageUrl,
                                     contentDescription = "image",
                                     contentScale = ContentScale.Crop,
                                 )
                                 IconButton(
                                     onClick = {
-                                        viewModel.removeImageUrl(imageUri)
+                                        onRemoveImageUrl(imageUrl)
                                     },
                                     modifier = Modifier
                                         .size(24.dp)
@@ -415,6 +444,7 @@ internal fun AccountBookCreateRoute(
                             }
                         }
                     }
+
                 }
             }
         }
@@ -423,7 +453,7 @@ internal fun AccountBookCreateRoute(
         AccountBookDatePickerDialog(
             onClickCancel = { showDatePicker = false },
             onClickConfirm = { selectedDate ->
-                viewModel.updateRegisterDateTime(selectedDate)
+                onUpdateRegisterDateTime(selectedDate)
                 showDatePicker = false
             }
         )
@@ -431,7 +461,7 @@ internal fun AccountBookCreateRoute(
     if (showBottomSheet) {
         AccountBookCategoryBottomSheet(
             onSelectedListener = { category ->
-                viewModel.updateCategory(category)
+                onUpdateCategory(category)
                 showBottomSheet = false
             },
             dismissBottomSheet = { showBottomSheet = false }
@@ -439,8 +469,9 @@ internal fun AccountBookCreateRoute(
     }
 }
 
+
 @Composable
-fun AccountBookTextField(
+internal fun AccountBookCreateTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
@@ -474,12 +505,12 @@ fun AccountBookTextField(
 }
 
 @Composable
-fun AccountBookButton(
+internal fun AccountBookCreateButton(
     onClick: () -> Unit,
     text: String,
     modifier: Modifier = Modifier,
     buttonColors: ButtonColors = ButtonDefaults.buttonColors(Color.Transparent),
-    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = Paddings.xlarge),
     icon: ImageVector? = null
 ) {
     Button(
@@ -526,19 +557,17 @@ fun AccountBookDatePickerDialog(
         }
     )
     val initialSelectedDate = remember { datePickerState.selectedDateMillis }
-
     LaunchedEffect(datePickerState.selectedDateMillis) {
         if (initialSelectedDate != datePickerState.selectedDateMillis) {
             datePickerState.selectedDateMillis?.let { selectedDateMillis ->
                 val date = Date(selectedDateMillis)
-                val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
+                val formatter = SimpleDateFormat(DATE_FORMAT_PATTERN, Locale.getDefault())
                 val formattedDate = formatter.format(date)
 
                 onClickConfirm(formattedDate)
             }
         }
     }
-
     DatePickerDialog(
         onDismissRequest = onClickCancel,
         confirmButton = {},

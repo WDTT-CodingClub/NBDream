@@ -1,11 +1,5 @@
 package kr.co.main.accountbook.content
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -17,14 +11,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -40,10 +34,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -65,13 +59,30 @@ import java.util.Locale
 
 @Composable
 internal fun AccountBookContentRoute(
-    popBackStack: () -> Unit,
+    viewModel: AccountBookContentViewModel = hiltViewModel(),
     navigationToUpdate: (Long?) -> Unit,
-    viewModel: AccountBookContentViewModel = hiltViewModel()
+    popBackStack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
+    AccountBookContentScreen(
+        state = state,
+        isLoading = isLoading,
+        navigationToUpdate = navigationToUpdate,
+        popBackStack = popBackStack,
+        onDeleteItem = viewModel::deleteAccountBookById
+    )
+}
+
+@Composable
+internal fun AccountBookContentScreen(
+    state: AccountBookContentViewModel.State = AccountBookContentViewModel.State(),
+    isLoading: Boolean,
+    navigationToUpdate: (Long?) -> Unit,
+    popBackStack: () -> Unit,
+    onDeleteItem: () -> Unit = {}
+) {
     var showDropDownMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -105,18 +116,14 @@ internal fun AccountBookContentRoute(
                         }
                         DropdownMenu(
                             expanded = showDropDownMenu,
-                            onDismissRequest = { showDropDownMenu = false }
+                            onDismissRequest = { showDropDownMenu = false },
+                            modifier = Modifier.background(MaterialTheme.colors.white)
                         ) {
                             DropdownMenuItem(
                                 text = {
                                     Row {
                                         Text("수정하기")
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Icon(
-                                            imageVector = Icons.Filled.Edit,
-                                            contentDescription = null,
-                                            tint = Color.Black
-                                        )
                                     }
                                 },
                                 onClick = {
@@ -129,11 +136,6 @@ internal fun AccountBookContentRoute(
                                     Row {
                                         Text("삭제하기")
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Icon(
-                                            imageVector = Icons.Filled.Delete,
-                                            contentDescription = null,
-                                            tint = Color.Black
-                                        )
                                     }
                                 },
                                 onClick = {
@@ -152,7 +154,6 @@ internal fun AccountBookContentRoute(
                         ShimmerGridItem(brush = it)
                     }
                 }
-
             } else {
                 item {
                     Column(
@@ -288,28 +289,53 @@ internal fun AccountBookContentRoute(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("장부 내역 삭제") },
-            text = { Text("장부 내역을 삭제하겠습니까?") },
+            title = {
+                Text(
+                    text = "삭제 확인",
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typo.h4
+                )
+            },
+            text = {
+                Text(
+                    text = "정말 삭제하시겠습니까?",
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typo.body1
+                )
+            },
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.deleteAccountBookById()
+                        onDeleteItem()
                         showDeleteDialog = false
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colors.black
+                    ),
+                    modifier = Modifier.widthIn(min = 72.dp)
                 ) {
-                    Text("확인")
+                    Text("네")
                 }
             },
             dismissButton = {
-                Button(onClick = { showDeleteDialog = false }) {
-                    Text("취소")
+                Button(
+                    onClick = { showDeleteDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colors.black
+                    ),
+                    modifier = Modifier.widthIn(min = 72.dp)
+                ) {
+                    Text("아니오")
                 }
             }
         )
     }
+
 }
 
-fun formatDate(dateString: String): String {
+internal fun formatDate(dateString: String): String {
     return try {
         val originalFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val targetFormat = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
@@ -327,7 +353,7 @@ fun formatDate(dateString: String): String {
 }
 
 @Composable
-fun ShimmerGridItem(brush: Brush) {
+internal fun ShimmerGridItem(brush: Brush) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
