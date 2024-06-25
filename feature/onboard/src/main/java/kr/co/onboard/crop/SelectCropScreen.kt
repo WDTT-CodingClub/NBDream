@@ -1,6 +1,7 @@
 package kr.co.onboard.crop
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,25 +35,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import kr.co.domain.entity.type.CropType
 import kr.co.nbdream.core.ui.R
 import kr.co.onboard.address.DescriptionText
 import kr.co.onboard.address.DynamicStepProgressBars
 import kr.co.onboard.crop.model.CropItem
 import kr.co.onboard.crop.model.toKoreanName
+import kr.co.onboard.navigation.WELCOME_ROUTE
 import kr.co.ui.theme.ColorSet
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.NextButton
+import timber.log.Timber
 
 @Composable
 fun SelectCropScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: SelectCropViewModel = hiltViewModel()
 ) {
     val crops by viewModel.crops.collectAsState()
+    val selectedIndexes = remember { mutableStateListOf<Int?>()}
 
     Scaffold(
         modifier = modifier.padding(Paddings.xlarge),
@@ -62,22 +71,27 @@ fun SelectCropScreen(
                 .padding(paddingValues)
                 .fillMaxHeight()
         ) {
-            DynamicStepProgressBars(
-                modifier,
-                colors = listOf(
-                    ColorSet.Dream.lightColors.green2,
-                    ColorSet.Dream.lightColors.green2
-                )
-            )
-            StepText(
-                stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second),
-                modifier = Modifier
-            )
+            DynamicStepProgressBars(modifier, colors = listOf(ColorSet.Dream.lightColors.green2, ColorSet.Dream.lightColors.green2))
+            StepText(stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second), modifier = Modifier)
             DescriptionText(stringResource(id = kr.co.onboard.R.string.feature_onboard_my_farm_crops_description))
-            CropsList(crops)
+            Box(modifier = Modifier.weight(1f)) {
+                CropsList(
+                    cropList = crops,
+                    selectedIndexes = selectedIndexes.filterNotNull(),
+                    onItemClick = { index ->
+                        if (selectedIndexes.contains(index))
+                            selectedIndexes.remove(index)
+                        else
+                            selectedIndexes.add(index)
+                        Timber.d(selectedIndexes.joinToString())
+                    },
+                )
+            }
             NextButton(
                 skipId = kr.co.onboard.R.string.feature_onboard_my_farm_skip_select,
-                nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next
+                nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next,
+                onNextClick = { navController.navigate(WELCOME_ROUTE) },
+                onSkipClick = { navController.navigate(WELCOME_ROUTE) }
             )
         }
     }
@@ -88,22 +102,23 @@ fun SelectCropScreen(
 fun StepText(
     text: String,
     modifier: Modifier
-) {
+){
     Box(
         modifier.fillMaxWidth(),
         contentAlignment = Alignment.CenterEnd
-    ) {
+    ){
         Text(
             text,
             color = ColorSet.Dream.lightColors.grey6,
-            style = MaterialTheme.typo.labelL
-        ) // 피그마에 명시된 폰트가 없어서 임시로 제일 작고 얇은 폰트 적용
+            style = MaterialTheme.typo.labelL) // 피그마에 명시된 폰트가 없어서 임시로 제일 작고 얇은 폰트 적용
     }
 }
 
 @Composable
 fun CropsList(
     cropList: List<CropItem>,
+    onItemClick: (Int) -> Unit,
+    selectedIndexes: List<Int> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
@@ -114,12 +129,18 @@ fun CropsList(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(cropList.size) { index ->
+            val isSelected = selectedIndexes.contains(index)
+            val backgroundColor = if (isSelected) ColorSet.Dream.lightColors.green4.copy(alpha = 0.3f) else Color.Transparent
             Card(
+                shape = CircleShape,
                 modifier = modifier
                     .padding(Paddings.large)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .clickable {
+                        onItemClick(index)
+                    },
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent
+                    containerColor = backgroundColor
                 )
             ) {
                 Column(
@@ -158,17 +179,19 @@ private fun LazyVerticalGridDemoPreview() {
         CropItem(CropType.GARLIC, R.drawable.img_logo),
         CropItem(CropType.LETTUCE, R.drawable.img_logo),
         CropItem(CropType.NAPPA_CABBAGE, R.drawable.img_logo),
-        CropItem(CropType.TOMATO, R.drawable.img_logo)
+        CropItem(CropType.TOMATO, R.drawable.img_logo),
+        CropItem(CropType.LETTUCE, R.drawable.img_logo),
+    CropItem(CropType.NAPPA_CABBAGE, R.drawable.img_logo),
+    CropItem(CropType.TOMATO, R.drawable.img_logo)
     )
     NBDreamTheme {
-        CropsList(crops, modifier = Modifier)
+        CropsList(crops, {}, modifier = Modifier)
     }
 }
-
-@Composable
-@Preview(showSystemUi = true)
-private fun SelectCropScreenPreview() {
-    NBDreamTheme {
-        SelectCropScreen()
-    }
-}
+//@Composable
+//@Preview(showSystemUi = true)
+//private fun SelectCropScreenPreview() {
+//    NBDreamTheme {
+//        SelectCropScreen()
+//    }
+//}
