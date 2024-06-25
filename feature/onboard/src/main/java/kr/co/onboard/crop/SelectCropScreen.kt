@@ -5,9 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,14 +36,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import kr.co.domain.entity.type.CropType
 import kr.co.nbdream.core.ui.R
 import kr.co.onboard.address.DescriptionText
 import kr.co.onboard.address.DynamicStepProgressBars
 import kr.co.onboard.crop.model.CropItem
 import kr.co.onboard.crop.model.toKoreanName
-import kr.co.onboard.navigation.WELCOME_ROUTE
 import kr.co.ui.theme.ColorSet
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Paddings
@@ -53,12 +52,12 @@ import timber.log.Timber
 
 @Composable
 fun SelectCropScreen(
-    navController: NavController,
     modifier: Modifier = Modifier,
+    navigateToWelcome: () -> Unit = {},
     viewModel: SelectCropViewModel = hiltViewModel()
 ) {
     val crops by viewModel.crops.collectAsState()
-    val selectedIndexes = remember { mutableStateListOf<Int?>()}
+    val selectedIndexes = remember { mutableStateListOf<Int?>() }
 
     Scaffold(
         modifier = modifier.padding(Paddings.xlarge),
@@ -71,8 +70,17 @@ fun SelectCropScreen(
                 .padding(paddingValues)
                 .fillMaxHeight()
         ) {
-            DynamicStepProgressBars(modifier, colors = listOf(ColorSet.Dream.lightColors.green2, ColorSet.Dream.lightColors.green2))
-            StepText(stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second), modifier = Modifier)
+            DynamicStepProgressBars(
+                modifier,
+                colors = listOf(
+                    ColorSet.Dream.lightColors.green2,
+                    ColorSet.Dream.lightColors.green2
+                )
+            )
+            StepText(
+                stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second),
+                modifier = Modifier
+            )
             DescriptionText(stringResource(id = kr.co.onboard.R.string.feature_onboard_my_farm_crops_description))
             Box(modifier = Modifier.weight(1f)) {
                 CropsList(
@@ -90,8 +98,8 @@ fun SelectCropScreen(
             NextButton(
                 skipId = kr.co.onboard.R.string.feature_onboard_my_farm_skip_select,
                 nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next,
-                onNextClick = { navController.navigate(WELCOME_ROUTE) },
-                onSkipClick = { navController.navigate(WELCOME_ROUTE) }
+                onNextClick = { navigateToWelcome() },
+                onSkipClick = { navigateToWelcome() }
             )
         }
     }
@@ -102,15 +110,16 @@ fun SelectCropScreen(
 fun StepText(
     text: String,
     modifier: Modifier
-){
+) {
     Box(
         modifier.fillMaxWidth(),
         contentAlignment = Alignment.CenterEnd
-    ){
+    ) {
         Text(
             text,
             color = ColorSet.Dream.lightColors.grey6,
-            style = MaterialTheme.typo.labelL) // 피그마에 명시된 폰트가 없어서 임시로 제일 작고 얇은 폰트 적용
+            style = MaterialTheme.typo.labelL // 피그마에 명시된 폰트가 없어서 임시로 제일 작고 얇은 폰트 적용
+        )
     }
 }
 
@@ -124,18 +133,19 @@ fun CropsList(
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(cropList.size) { index ->
             val isSelected = selectedIndexes.contains(index)
-            val backgroundColor = if (isSelected) ColorSet.Dream.lightColors.green4.copy(alpha = 0.3f) else Color.Transparent
+            val backgroundColor =
+                if (isSelected) ColorSet.Dream.lightColors.green4.copy(alpha = 0.3f) else Color.Transparent
             Card(
                 shape = CircleShape,
-                modifier = modifier
+                modifier = Modifier
                     .padding(Paddings.large)
-                    .fillMaxWidth()
+                    .fillMaxWidth(1f / 3f)
+                    .aspectRatio(1f)
                     .clickable {
                         onItemClick(index)
                     },
@@ -145,23 +155,26 @@ fun CropsList(
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier.padding(Paddings.xlarge)
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
                 ) {
                     Image(
                         painter = painterResource(id = cropList[index].imageRes),
                         contentDescription = cropList[index].name.name,
-                        modifier = modifier.size(64.dp)
-                    )
-                    Spacer(modifier = modifier.height(8.dp))
-                    Text(
-                        text = cropList[index].name.toKoreanName(),
-                        fontSize = 16.sp,
-                        color = ColorSet.Dream.lightColors.text2,
-                        textAlign = TextAlign.Center,
-                        modifier = modifier.fillMaxWidth()
+                        modifier = Modifier.size(64.dp)
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = cropList[index].name.toKoreanName(),
+                fontSize = 16.sp,
+                color = ColorSet.Dream.lightColors.text2,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+            )
         }
     }
 }
@@ -181,8 +194,8 @@ private fun LazyVerticalGridDemoPreview() {
         CropItem(CropType.NAPPA_CABBAGE, R.drawable.img_logo),
         CropItem(CropType.TOMATO, R.drawable.img_logo),
         CropItem(CropType.LETTUCE, R.drawable.img_logo),
-    CropItem(CropType.NAPPA_CABBAGE, R.drawable.img_logo),
-    CropItem(CropType.TOMATO, R.drawable.img_logo)
+        CropItem(CropType.NAPPA_CABBAGE, R.drawable.img_logo),
+        CropItem(CropType.TOMATO, R.drawable.img_logo)
     )
     NBDreamTheme {
         CropsList(crops, {}, modifier = Modifier)
