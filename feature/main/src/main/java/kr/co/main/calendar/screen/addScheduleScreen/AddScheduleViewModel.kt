@@ -68,7 +68,7 @@ internal class AddScheduleViewModel @Inject constructor(
 
     init {
         with(savedStateHandle) {
-            get<String>(CalendarNavGraph.ARG_CROP_NAME_ID)?.toInt()?.let { cropNameId ->
+            get<String>(CalendarNavGraph.ARG_CROP_NAME_ID)?.toIntOrNull()?.let { cropNameId ->
                 updateState {
                     copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
                 }
@@ -78,7 +78,7 @@ internal class AddScheduleViewModel @Inject constructor(
                     copy(screenMode = ScreenModeType.ofValue(screenModeId))
                 }
             } ?: throw IllegalArgumentException("screen mode id is null")
-            get<String>(CalendarNavGraph.ARG_SCHEDULE_ID)?.toInt()?.let { scheduleId ->
+            get<String>(CalendarNavGraph.ARG_SCHEDULE_ID)?.toIntOrNull()?.let { scheduleId ->
                 updateState {
                     copy(scheduleId = scheduleId)
                 }
