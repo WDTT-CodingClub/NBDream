@@ -16,7 +16,6 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 internal interface CalendarScreenEvent {
-    fun onSelectTab(tab: CalendarScreenViewModel.CalendarScreenState.CalendarTabType)
     fun onSelectYear(year: Int)
     fun onSelectMonth(month: Int)
     fun onSelectCrop(crop: CropModel)
@@ -31,22 +30,31 @@ internal class CalendarScreenViewModel @Inject constructor(
     private val _userCrops = MutableStateFlow<List<CropModel>>(emptyList())
 
     data class CalendarScreenState(
-        val selectedTab: CalendarTabType = CalendarTabType.SCHEDULE,
-
         val userCrops: List<CropModel> = emptyList(),
         val calendarCrop: CropModel? = if (userCrops.isNotEmpty()) userCrops.first() else null,
 
         val calendarYear: Int = LocalDate.now().year,
         val calendarMonth: Int = LocalDate.now().monthValue
     ) : State {
-        enum class CalendarTabType(@StringRes val titleId: Int) {
-            SCHEDULE(R.string.feature_main_calendar_tab_title_schedule),
-            DIARY(R.string.feature_main_calendar_tab_title_diary)
-        }
-
         override fun toParcelable(): Parcelable? {
             // TODO("serialize")
             return null
+        }
+    }
+
+    enum class CalendarTabType(
+        val pagerIndex: Int,
+        @StringRes val titleId: Int
+    ) {
+        SCHEDULE(0, R.string.feature_main_calendar_tab_title_schedule),
+        DIARY(1, R.string.feature_main_calendar_tab_title_diary);
+
+        companion object{
+            fun ofIndex(pagerIndex: Int) = when (pagerIndex) {
+                SCHEDULE.pagerIndex -> SCHEDULE
+                DIARY.pagerIndex -> DIARY
+                else -> throw IllegalStateException("pagerState.currentPage is not valid")
+            }
         }
     }
 
@@ -77,10 +85,6 @@ internal class CalendarScreenViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    override fun onSelectTab(tab: CalendarScreenState.CalendarTabType) {
-        updateState { copy(selectedTab = tab) }
     }
 
     override fun onSelectYear(year: Int) {
