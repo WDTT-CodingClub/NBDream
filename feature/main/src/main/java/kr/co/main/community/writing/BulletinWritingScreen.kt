@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kr.co.domain.entity.BulletinEntity
 import kr.co.main.community.SharingData
 import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
@@ -78,6 +80,7 @@ internal fun BulletinWritingRoute(
         onRemoveImageClick = viewModel::onRemoveImageClick,
         onFinishWritingClick = viewModel::onFinishWritingClick,
         setIsShowWaitingDialog = viewModel::setIsShowWaitingDialog,
+        onCategoryClick = viewModel::onCategoryClick,
     )
 }
 
@@ -92,6 +95,7 @@ internal fun BulletinWritingScreen(
     onRemoveImageClick: (model: WritingSelectedImageModel) -> Unit = {},
     onFinishWritingClick: (() -> Unit) -> Unit = {},
     setIsShowWaitingDialog: (Boolean) -> Unit = {},
+    onCategoryClick: (BulletinEntity.BulletinCategory) -> Unit = {},
 ) {
 
     Scaffold(modifier = modifier) { paddingValues ->
@@ -136,7 +140,9 @@ internal fun BulletinWritingScreen(
                     modifier = Modifier
                         .height(40.dp)
                         .border(
-                            width = 1.dp, color = Color(0), shape = RoundedCornerShape(12.dp)
+                            width = 1.dp,
+                            color = Color(0),
+                            shape = RoundedCornerShape(12.dp)
                         ),
                     colors = CardColors(
                         containerColor = Color.Green,
@@ -149,18 +155,45 @@ internal fun BulletinWritingScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround,
                     ) {
-                        Text("자유 주제")
+                        TextButton(
+                            onClick = {
+                                onCategoryClick(BulletinEntity.BulletinCategory.Free)
+                            },
+                            colors = if (state.currentCategory == BulletinEntity.BulletinCategory.Free) ButtonDefaults.textButtonColors(
+                                containerColor = Color.Yellow,
+                            ) else ButtonDefaults.textButtonColors(),
+                        ) {
+                            Text("자유 주제")
+                        }
                         // TODO: 디바이더에도 여백이 붙는데...
                         VerticalDivider(
                             thickness = 1.dp,
                             color = Color.Red,
                         )
-                        Text("질문")
+                        TextButton(
+                            onClick = {
+                                onCategoryClick(BulletinEntity.BulletinCategory.Qna)
+                            },
+                            colors = if (state.currentCategory == BulletinEntity.BulletinCategory.Qna) ButtonDefaults.textButtonColors(
+                                containerColor = Color.Yellow,
+                            ) else ButtonDefaults.textButtonColors(),
+                        ) {
+                            Text("질문")
+                        }
                         VerticalDivider(
                             thickness = 1.dp,
                             color = Color.Red,
                         )
-                        Text("병해충")
+                        TextButton(
+                            onClick = {
+                                onCategoryClick(BulletinEntity.BulletinCategory.Disease)
+                            },
+                            colors = if (state.currentCategory == BulletinEntity.BulletinCategory.Disease) ButtonDefaults.textButtonColors(
+                                containerColor = Color.Yellow,
+                            ) else ButtonDefaults.textButtonColors(),
+                        ) {
+                            Text("병해충")
+                        }
                     }
                 }
             }
