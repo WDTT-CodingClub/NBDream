@@ -94,21 +94,22 @@ internal class CalendarScreenViewModel @Inject constructor(
                     copy(holidays = holidays.map { HolidayModelMapper.toRight(it) })
                 }
             }
-            viewModelScopeEH.launch {
-                //TODO '전체' 카테고리 일정 api 요청
-            }
-
-            with(state) {
-                select { it.crop }.bindState(_crop)
-                select { it.year }.bindState(_year)
-                select { it.month }.bindState(_month)
-                select { it.selectedDate }.bindState(_selectedDate)
-            }
-
-            combine(_crop, _year, _month) { crop, year, month ->
-                //TODO 농작업 일정, 작물 카테고리 일정, 영농일지 api 요청
-            }.launchIn(viewModelScopeEH)
         }
+
+        viewModelScopeEH.launch {
+            //TODO '전체' 카테고리 일정 api 요청
+        }
+
+        with(state) {
+            select { it.crop }.bindState(_crop)
+            select { it.year }.bindState(_year)
+            select { it.month }.bindState(_month)
+            select { it.selectedDate }.bindState(_selectedDate)
+        }
+
+        combine(_crop, _year, _month) { crop, year, month ->
+            //TODO 농작업 일정, 작물 카테고리 일정, 영농일지 api 요청
+        }.launchIn(viewModelScopeEH)
     }
 
     override fun onSelectYear(year: Int) {
