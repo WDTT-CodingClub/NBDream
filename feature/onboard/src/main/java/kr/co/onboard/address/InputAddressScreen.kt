@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.KakaoMapSdk
@@ -53,6 +54,7 @@ import com.kakao.vectormap.camera.CameraUpdateFactory
 import kr.co.onboard.BuildConfig
 import kr.co.onboard.R
 import kr.co.onboard.crop.StepText
+import kr.co.onboard.navigation.CROP_ROUTE
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Paddings
@@ -68,7 +70,8 @@ import java.util.Locale
 internal fun InputAddressScreen(
     modifier: Modifier,
     viewModel: InputAddressViewModel = hiltViewModel(),
-    navigateToCrop: () -> Unit = {}
+//    navigateToCrop: () -> Unit = {}
+    navController: NavController
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -80,7 +83,10 @@ internal fun InputAddressScreen(
 
     LaunchedEffect(Unit) {
         viewModel.showCropScreen.collect {
-            navigateToCrop()
+//            navigateToCrop()
+            navController.navigate(
+                "SelectCropScreen/${state.fullRoadAddress}/${state.bCode}"
+            )
         }
     }
 
@@ -118,10 +124,22 @@ internal fun InputAddressScreen(
                 skipId = R.string.feature_onboard_my_farm_skip_input,
                 nextId = R.string.feature_onboard_my_farm_next,
                 onNextClick = {
-//                    viewModel::saveAddress
-                    navigateToCrop()
+                    val fullRoadAddress = state.fullRoadAddress ?: ""
+                    val bCode = state.bCode ?: ""
+                    val latitude = state.latitude ?: 0.0
+                    val longitude = state.longitude ?: 0.0
+
+                    Timber.d("fullRoadAddress: $fullRoadAddress, bCode: $bCode, latitude: $latitude, longitude: $longitude")
+                    navController.navigate(
+                        "SelectCropScreen/$fullRoadAddress/$bCode/$latitude/$longitude"
+                    )
                               },
-                onSkipClick = navigateToCrop
+                onSkipClick = {
+                    val address = "/"+" "+"/"+" "+"/"+0.0+"/"+0.0
+                    navController.navigate(
+                    "SelectCropScreen"+"$address"
+                    )
+                }
             )
         }
     }
@@ -132,6 +150,7 @@ internal fun InputAddressScreen(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 geocoder.getFromLocationName(jibunAddress, 1) {
                     if (it.isNotEmpty()) {
+                        Timber.d("state latitude: ${it[0].latitude}, longitude: ${it[0].longitude}")
                         viewModel.onCoordinateChanged(
                             latitude = it[0].latitude, longitude = it[0].longitude
                         )
@@ -370,15 +389,15 @@ private fun CustomTextField(
         })
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun InputAddressScreenPreview() {
-    NBDreamTheme {
-        InputAddressScreen(
-            modifier = Modifier,
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun InputAddressScreenPreview() {
+//    NBDreamTheme {
+//        InputAddressScreen(
+//            modifier = Modifier,
+//        )
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable

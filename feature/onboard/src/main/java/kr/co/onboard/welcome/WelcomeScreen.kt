@@ -1,5 +1,6 @@
 package kr.co.onboard.welcome
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,19 +15,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import kr.co.onboard.R
 import kr.co.onboard.login.Logo
+import kr.co.onboard.login.WelcomeLogo
 import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.background
+import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.InputCompleteButton
+import timber.log.Timber
 
 @Composable
 internal fun WelcomeScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: WelcomeViewModel = hiltViewModel(),
 ) {
+
+    val backStackEntry = navController.currentBackStackEntry
+    val fullRoadAddress = backStackEntry?.arguments?.getString("fullRoadAddress") ?: ""
+    val bCode = backStackEntry?.arguments?.getString("bCode") ?: ""
+    val latitude = backStackEntry?.arguments?.getFloat("latitude") ?: 0F
+    val longitude = backStackEntry?.arguments?.getFloat("longitude") ?: 0F
+    val cropsString = backStackEntry?.arguments?.getString("cropsString")?.split(",") ?: " "
+
+    Timber.d("받은2 fullRoadAddress: $fullRoadAddress")
+    Timber.d("받은2 bCode: $bCode")
+    Timber.d("받은2 latitude: $latitude")
+    Timber.d("받은2 longitude: $longitude")
+    Timber.d("받은2 cropsString 리스트: $cropsString")
+
     Scaffold(
-        modifier = modifier.padding(Paddings.xlarge),
+        modifier = modifier
+            .padding(Paddings.xlarge)
+            .background(MaterialTheme.colors.white),
     ) { paddingValues ->
         Column(
             modifier = modifier
@@ -43,10 +66,10 @@ internal fun WelcomeScreen(
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Logo()
+                WelcomeLogo()
             }
             InputCompleteButton(
-                text = stringResource(id = R.string.feature_onboard_my_farm_next),
+                text = stringResource(id = R.string.feature_onboard_start),
                 onNextClick = viewModel::onClickNext
             )
         }
