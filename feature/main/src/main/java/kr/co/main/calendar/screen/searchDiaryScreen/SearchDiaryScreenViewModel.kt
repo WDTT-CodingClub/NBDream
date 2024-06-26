@@ -10,6 +10,7 @@ import kr.co.domain.usecase.calendar.SearchDiariesUseCase
 import kr.co.main.mapper.calendar.DiaryModelMapper
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.model.calendar.type.CalendarSortType
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
@@ -20,6 +21,7 @@ internal interface SearchDiaryScreenEvent {
     fun onQueryInput(query: String)
     fun onStartDateInput(startDate: LocalDate)
     fun onEndDateInput(endDate: LocalDate)
+    fun onSortChange(sortType: CalendarSortType)
 }
 
 @HiltViewModel
@@ -38,6 +40,8 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
         val calendarCrop: CropModel? = null,
 
         val query: String = "",
+        val sortType: CalendarSortType = CalendarSortType.RECENCY,
+
         val startDate: LocalDate = LocalDate.now(),
         val endDate: LocalDate = LocalDate.now(),
         val diaries: List<DiaryModel> = emptyList()
@@ -64,9 +68,12 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
         }
 
         with(state) {
-            select { it.query }.bindState(_query)
-            select { it.startDate }.bindState(_startDate)
-            select { it.endDate }.bindState(_endDate)
+            select(SearchDiaryScreenState::query)
+                .bindState(_query)
+            select(SearchDiaryScreenState::startDate)
+                .bindState(_startDate)
+            select(SearchDiaryScreenState::endDate)
+                .bindState(_endDate)
         }
 
         combine(_query, _startDate, _endDate) { query, startDate, endDate ->
@@ -95,5 +102,9 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
 
     override fun onEndDateInput(endDate: LocalDate) {
         updateState { copy(endDate = endDate) }
+    }
+
+    override fun onSortChange(sortType: CalendarSortType) = updateState {
+        copy(sortType = sortType)
     }
 }
