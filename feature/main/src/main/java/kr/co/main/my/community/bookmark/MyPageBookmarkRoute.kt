@@ -2,12 +2,14 @@
 
 package kr.co.main.my.community.bookmark
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,7 +54,7 @@ private fun MyPageBookmarkScreen(
     navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     Scaffold(
-        containerColor = MaterialTheme.colors.background,
+        containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
                 title = "저장한 글 보기",
@@ -82,6 +84,12 @@ private fun MyPageBookmarkScreen(
         ) {
             items(state.bulletin) {
                 DreamMainPostCard(
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colors.gray5
+                        ),
                     bulletin = it,
                     onPostClick = navigateToBulletinDetail
                 )

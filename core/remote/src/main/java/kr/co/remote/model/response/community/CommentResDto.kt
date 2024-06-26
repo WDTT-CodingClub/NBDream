@@ -1,5 +1,6 @@
 package kr.co.remote.model.response.community
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.co.data.model.data.community.CommentResData
 import kr.co.remote.serializer.LocalDateTimeSerializer
@@ -16,6 +17,8 @@ internal data class CommentResDto(
     val content: String? = null,
     @Serializable(with = LocalDateTimeSerializer::class)
     val createdDate: LocalDateTime,
+
+    @SerialName("lastModifiedDate")
     val lastModifiedTime: String? = null,
 )
 
