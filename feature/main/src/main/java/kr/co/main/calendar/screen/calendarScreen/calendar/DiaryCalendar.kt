@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,8 +25,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kr.co.common.util.LocalDateUtil
 import kr.co.common.util.iterator
+import kr.co.main.calendar.CalendarDesignToken
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.HolidayModel
 import kr.co.main.model.calendar.type.CropModelColorType
@@ -35,7 +38,7 @@ import kr.co.ui.theme.typo
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-internal class DiaryCalendarStateHolder(
+private class DiaryCalendarStateHolder(
     @ColorInt val cropColor: Int,
     val year: Int,
     val month: Int,
@@ -100,22 +103,23 @@ private fun StatelessDiaryCalendar(
         modifier = modifier
     ) {
         CalendarDayOfWeekRow(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = Paddings.xlarge)
         )
 
         for (weekNum in stateHolder.startWeekNum..stateHolder.endWeekNum) {
             val weekDateRange = LocalDateUtil.getWeekDateRange(stateHolder.year, weekNum)
-            Box {
-                DiaryCalendarRow(
-                    cropColor = stateHolder.cropColor,
-                    calendarMonth = stateHolder.month,
-                    weekDateRange = weekDateRange,
-                    selectedDate = stateHolder.selectedDate,
-                    onDateSelect = stateHolder.onDateSelect,
-                    holidays = stateHolder.holidays.filter { it.date in weekDateRange },
-                    diaries = stateHolder.diaries.filter { it.date in weekDateRange }
-                )
-            }
+            DiaryCalendarRow(
+                modifier = Modifier.padding(bottom = Paddings.medium),
+                cropColor = stateHolder.cropColor,
+                calendarMonth = stateHolder.month,
+                weekDateRange = weekDateRange,
+                selectedDate = stateHolder.selectedDate,
+                onDateSelect = stateHolder.onDateSelect,
+                holidays = stateHolder.holidays.filter { it.date in weekDateRange },
+                diaries = stateHolder.diaries.filter { it.date in weekDateRange }
+            )
         }
     }
 }
@@ -134,12 +138,10 @@ private fun DiaryCalendarRow(
 ) {
     Row(modifier = modifier) {
         for (date in weekDateRange) {
-            InnerCalendarDateItem(
+            DiaryCalendarDateItem(
                 modifier = Modifier
                     .weight(1f)
-                    .clickable {
-                        onDateSelect(date)
-                    }
+                    .clickable { onDateSelect(date) }
                     .alpha(
                         if (date.monthValue == calendarMonth) 1f
                         else 0.3f
@@ -155,7 +157,7 @@ private fun DiaryCalendarRow(
 }
 
 @Composable
-private fun InnerCalendarDateItem(
+private fun DiaryCalendarDateItem(
     @ColorInt cropColor: Int,
     date: LocalDate,
     isSelected: Boolean,
@@ -175,8 +177,9 @@ private fun InnerCalendarDateItem(
 
     Box(
         modifier = modifier
-            .clip(shape = CircleShape)
+            .size(CalendarDesignToken.CALENDAR_ITEM_SIZE.dp)
             .aspectRatio(1f)
+            .clip(shape = CircleShape)
             .background(backgroundColor)
     ) {
         Text(
@@ -207,6 +210,3 @@ private fun DiaryCalendarPreview() {
         )
     )
 }
-
-
-

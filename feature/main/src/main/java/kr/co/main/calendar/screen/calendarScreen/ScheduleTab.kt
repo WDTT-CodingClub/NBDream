@@ -3,7 +3,6 @@ package kr.co.main.calendar.screen.calendarScreen
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,10 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import kr.co.main.R
 import kr.co.main.calendar.common.CalendarCategoryIndicator
-import kr.co.main.calendar.common.innerCalendar.InnerCalendar
+import kr.co.main.calendar.common.content.ScheduleContent
 import kr.co.main.calendar.screen.calendarScreen.calendar.FarmWorkCalendar
+import kr.co.main.calendar.screen.calendarScreen.calendar.ScheduleCalendar
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.FarmWorkModel
 import kr.co.main.model.calendar.HolidayModel
@@ -43,8 +44,6 @@ internal fun ScheduleTab(
     holidays: List<HolidayModel>,
     allSchedules: List<ScheduleModel>,
     cropSchedules: List<ScheduleModel>,
-    onEditClick: (Long) -> Unit,
-    onDeleteClick:(Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -52,28 +51,60 @@ internal fun ScheduleTab(
         color = MaterialTheme.colors.gray9
     ) {
         Column {
-            FarmWorkCalendarCard(
-                modifier = Modifier.padding(Paddings.large),
-                calenderMonth = calendarMonth,
-                farmWorks = farmWorks
-            )
+            if (calendarCrop == null) {
+                FarmWorkCropEmptyCard(
+                    modifier = Modifier.padding(Paddings.large),
+                )
+            } else {
+                FarmWorkCalendarCard(
+                    modifier = Modifier.padding(Paddings.large),
+                    calenderMonth = calendarMonth,
+                    farmWorks = farmWorks
+                )
+            }
+
             ScheduleCalendarCard(
                 modifier = Modifier.padding(Paddings.large),
                 calendarCrop = calendarCrop,
                 calendarYear = calendarYear,
                 calendarMonth = calendarMonth,
                 selectedDate = selectedDate,
-                onDateSelect = onDateSelect
+                onDateSelect = onDateSelect,
+                holidays = holidays,
+                allSchedules = allSchedules,
+                cropSchedules = cropSchedules
             )
 
             ScheduleCard(
                 modifier = Modifier.padding(Paddings.large),
-                selectedDate = selectedDate,
                 schedules =
-                    allSchedules.filter{ selectedDate in (it.startDate .. it.endDate)} +
-                    cropSchedules.filter{ selectedDate in (it.startDate .. it.endDate)}
+                allSchedules.filter { selectedDate in (it.startDate..it.endDate) } +
+                        cropSchedules.filter { selectedDate in (it.startDate..it.endDate) }
             )
         }
+    }
+}
+
+@Composable
+private fun FarmWorkCropEmptyCard(
+    modifier: Modifier = Modifier
+){
+    // TODO 클릭 시 온보딩 작물 선택 화면으로 이동
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = Paddings.xxlarge),
+            text = stringResource(id = R.string.feature_main_calendar_farm_work_crop_empty),
+            style = MaterialTheme.typo.body2,
+            color = MaterialTheme.colors.gray4,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -107,6 +138,9 @@ private fun ScheduleCalendarCard(
     calendarMonth: Int,
     selectedDate: LocalDate,
     onDateSelect: (LocalDate) -> Unit,
+    holidays: List<HolidayModel>,
+    allSchedules: List<ScheduleModel>,
+    cropSchedules: List<ScheduleModel>,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -120,23 +154,18 @@ private fun ScheduleCalendarCard(
                 .fillMaxWidth()
                 .padding(vertical = Paddings.xlarge)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = Paddings.large)
-                    .padding(bottom = Paddings.large)
-            ) {
-                CategoryIndicatorList(
-                    modifier = Modifier.align(Alignment.CenterStart),
-                    crop = calendarCrop
-                )
-            }
-
-            InnerCalendar(
+            CategoryIndicatorList(
+                crop = calendarCrop
+            )
+            ScheduleCalendar(
+                modifier = Modifier.padding(Paddings.xlarge),
                 calendarYear = calendarYear,
                 calendarMonth = calendarMonth,
                 selectedDate = selectedDate,
-                onDateSelect = onDateSelect
+                onDateSelect = onDateSelect,
+                holidays = holidays,
+                allSchedules = allSchedules,
+                cropSchedules = cropSchedules
             )
         }
     }
@@ -152,16 +181,16 @@ private fun CategoryIndicatorList(
         horizontalArrangement = Arrangement.spacedBy(Paddings.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        CategoryIndicatorListItem(
+            cropNameId = R.string.feature_main_calendar_category_all,
+            cropColor = Color.Gray.toArgb()
+        )
         crop?.let {
             CategoryIndicatorListItem(
                 cropNameId = it.type.nameId,
                 cropColor = it.color.color
             )
         }
-        CategoryIndicatorListItem(
-            cropNameId = R.string.feature_main_calendar_category_all,
-            cropColor = Color.Gray.toArgb()
-        )
     }
 }
 
@@ -189,9 +218,19 @@ private fun CategoryIndicatorListItem(
 
 @Composable
 private fun ScheduleCard(
-    selectedDate: LocalDate,
     schedules: List<ScheduleModel>,
     modifier: Modifier = Modifier
 ) {
-
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
+    ) {
+        Row {
+            for (schedule in schedules) {
+                ScheduleContent(schedule = schedule)
+            }
+        }
+    }
 }
