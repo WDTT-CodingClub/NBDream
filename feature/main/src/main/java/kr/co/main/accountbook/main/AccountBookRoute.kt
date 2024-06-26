@@ -322,17 +322,15 @@ private fun CalendarSection(
 
     if (bottomSheetState) {
         AccountBookCalendarBottomSheet(
-            startDate = startDate,
-            endDate = endDate,
+            startDate = if (dateRangeOption == DateRangeOption.OTHER) startDate else null,
+            endDate = if (dateRangeOption == DateRangeOption.OTHER) endDate else null,
             selectedOption = dateRangeOption,
-            onOptionSelected = { newOption ->
-                onDateRangeOptionSelected(newOption)
-            },
-            onSelectedListener = { selectedStartDate, selectedEndDate ->
+            onSelectedListener = { selectedStartDate, selectedEndDate, newOption ->
                 val newStartDate = LocalDate.parse(selectedStartDate)
                 val newEndDate = LocalDate.parse(selectedEndDate)
                 bottomSheetState = false
                 onDaysInRangeChange(newStartDate, newEndDate)
+                onDateRangeOptionSelected(newOption)
             },
             dismissBottomSheet = { bottomSheetState = false }
         )
