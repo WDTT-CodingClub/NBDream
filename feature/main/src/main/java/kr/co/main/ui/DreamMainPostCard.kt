@@ -43,12 +43,13 @@ import kr.co.ui.theme.typo
 
 @Composable
 internal fun DreamMainPostCard(
+    modifier: Modifier = Modifier,
     bulletin: BulletinEntity = BulletinEntity.dummy(4),
     onPostClick: (Long) -> Unit = {},
     onBookMarkClick: (Long) -> Unit = {}
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable { onPostClick(bulletin.bulletinId) }
             .background(
@@ -88,7 +89,7 @@ internal fun DreamMainPostCard(
                 )
 
                 Text(
-                    text = bulletin.createdTime.format("yyyy/MM/dd HH:mm"),
+                    text = bulletin.createdTime.format("yyyy/MM/dd"),
                     style = MaterialTheme.typo.body2,
                     color = MaterialTheme.colors.gray5
                 )
