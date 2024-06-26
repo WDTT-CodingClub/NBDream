@@ -70,7 +70,7 @@ internal class MyPageProfileEditViewModel @Inject constructor(
             if (this) {
                 UserEntity(
                     name = currentState.name!!,
-                    profileImage = currentState.profileImageUrl,
+                    profileImage = currentState.profileImageUrl?: "https://storage.googleapis.com/nbdream_bucket_1/default/default-profile.png",
                     bjdCode = currentState.bCode,
                     address = currentState.address,
                     latitude = currentState.latitude,
