@@ -2,7 +2,7 @@ package kr.co.main.mapper.my
 
 import kr.co.common.mapper.Mapper
 import kr.co.domain.entity.BulletinEntity
-import kr.co.main.my.community.MyPageWriteViewModel
+import kr.co.main.my.community.written.MyPageWriteViewModel
 
 internal object MyPageBulletinMapper
     :Mapper<BulletinEntity, MyPageWriteViewModel.State.Bulletin>{

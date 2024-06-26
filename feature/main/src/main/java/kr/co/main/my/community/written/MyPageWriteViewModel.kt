@@ -1,4 +1,4 @@
-package kr.co.main.my.community
+package kr.co.main.my.community.written
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
