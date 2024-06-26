@@ -31,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.KakaoMapSdk
@@ -50,9 +52,11 @@ import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraUpdateFactory
+import kotlinx.coroutines.launch
 import kr.co.onboard.BuildConfig
 import kr.co.onboard.R
 import kr.co.onboard.crop.StepText
+import kr.co.onboard.navigation.CROP_ROUTE
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Paddings
@@ -68,10 +72,11 @@ import java.util.Locale
 internal fun InputAddressScreen(
     modifier: Modifier,
     viewModel: InputAddressViewModel = hiltViewModel(),
-    navigateToCrop: () -> Unit = {}
+    navController: NavController
 ) {
     val state by viewModel.state.collectAsState()
 
+    val scope = rememberCoroutineScope()
     val geocoder = Geocoder(LocalContext.current, Locale.KOREA)
 
     val (locationSearchVisible, setLocationSearchVisible) = remember {
@@ -80,7 +85,9 @@ internal fun InputAddressScreen(
 
     LaunchedEffect(Unit) {
         viewModel.showCropScreen.collect {
-            navigateToCrop()
+            navController.navigate(
+                "SelectCropScreen/${state.fullRoadAddress}/${state.bCode}"
+            )
         }
     }
 
@@ -94,9 +101,6 @@ internal fun InputAddressScreen(
         ) {
             DynamicStepProgressBars(
                 modifier, colors = listOf(MaterialTheme.colors.green2, Color.Transparent)
-            )
-            StepText(
-                stringResource(id = R.string.feature_onboard_step_bar_first), modifier = modifier
             )
             DescriptionText(stringResource(id = R.string.feature_onboard_my_farm_address_description))
 
@@ -118,23 +122,51 @@ internal fun InputAddressScreen(
                 skipId = R.string.feature_onboard_my_farm_skip_input,
                 nextId = R.string.feature_onboard_my_farm_next,
                 onNextClick = {
-//                    viewModel::saveAddress
-                    navigateToCrop()
-                              },
-                onSkipClick = navigateToCrop
+                    val fullRoadAddress = state.fullRoadAddress
+                    val bCode = state.bCode
+                    val latitude = state.latitude ?: 0.0
+                    val longitude = state.longitude ?: 0.0
+
+                    Timber.d("fullRoadAddress: $fullRoadAddress, bCode: $bCode, latitude: $latitude, longitude: $longitude")
+                    navController.navigate(
+                        "SelectCropScreen/$fullRoadAddress/$bCode/$latitude/$longitude"
+                    )
+                },
+                onSkipClick = {
+                    val fullRoadAddress = state.fullRoadAddress
+                    val bCode = state.bCode
+                    val latitude = state.latitude ?: 0.0
+                    val longitude = state.longitude ?: 0.0
+
+                    navController.navigate(
+                        "SelectCropScreen/$fullRoadAddress/$bCode/$latitude/$longitude"
+                    )
+                }
             )
         }
     }
 
     if (locationSearchVisible) {
-        DreamLocationSearchScreen { jibunAddress, bCode->
+        DreamLocationSearchScreen { jibunAddress, bCode ->
             viewModel.updateAddresses(jibunAddress, bCode)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 geocoder.getFromLocationName(jibunAddress, 1) {
                     if (it.isNotEmpty()) {
+                        Timber.d("state latitude: ${it[0].latitude}, longitude: ${it[0].longitude}")
                         viewModel.onCoordinateChanged(
                             latitude = it[0].latitude, longitude = it[0].longitude
                         )
+                    }
+                }
+            } else {
+                scope.launch {
+                    geocoder.getFromLocationName(jibunAddress, 1).let {
+                        if (!it.isNullOrEmpty()) {
+                            viewModel.onCoordinateChanged(
+                                latitude = it[0].latitude,
+                                longitude = it[0].longitude
+                            )
+                        }
                     }
                 }
             }
@@ -146,7 +178,7 @@ internal fun InputAddressScreen(
 @Composable
 private fun Address(
     modifier: Modifier,
-    fullRoadAddr: String,
+    fullRoadAddr: String?,
     onFullRoadAddrChange: (String) -> Unit,
     onSearchClick: () -> Unit,
 ) {
@@ -158,7 +190,7 @@ private fun Address(
             verticalAlignment = Alignment.CenterVertically
         ) {
             CustomTextField(
-                value = fullRoadAddr,
+                value = fullRoadAddr ?: "",
                 onValueChange = {
                     onFullRoadAddrChange(it)
                 },
@@ -196,9 +228,9 @@ private fun StepProgressBar(
 ) {
     Box(
         modifier = modifier
-            .height(10.dp)
+            .height(5.dp)
             .background(
-                color = color, shape = RoundedCornerShape(4.dp)
+                color = color
             )
             .then(
                 if (color == Color.Transparent) modifier.border(
@@ -217,7 +249,6 @@ fun DynamicStepProgressBars(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         colors.forEach { color ->
@@ -234,7 +265,7 @@ fun DescriptionText(
 ) {
     Text(
         text,
-        style = MaterialTheme.typo.titleSB,
+        style = MaterialTheme.typo.header2M,
     )
 }
 
@@ -370,15 +401,15 @@ private fun CustomTextField(
         })
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun InputAddressScreenPreview() {
-    NBDreamTheme {
-        InputAddressScreen(
-            modifier = Modifier,
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun InputAddressScreenPreview() {
+//    NBDreamTheme {
+//        InputAddressScreen(
+//            modifier = Modifier,
+//        )
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable
@@ -386,19 +417,19 @@ private fun DynamicStepProgressBarsPreview() {
     Column(modifier = Modifier.fillMaxWidth()) {
         DynamicStepProgressBars(
             Modifier, colors = listOf(lightColors.green2)
-        ) // 한 개의 StepProgressBar
+        )
         Spacer(modifier = Modifier.height(16.dp))
         DynamicStepProgressBars(
             Modifier, colors = listOf(lightColors.green2, Color.Transparent)
-        ) // 두 개의 StepProgressBar
+        )
         Spacer(modifier = Modifier.height(16.dp))
         DynamicStepProgressBars(
             Modifier, colors = listOf(lightColors.green2, lightColors.green2)
-        ) // 두 개의 StepProgressBar
+        )
         Spacer(modifier = Modifier.height(16.dp))
         DynamicStepProgressBars(
             Modifier, colors = listOf(lightColors.green2, lightColors.green2, lightColors.green3)
-        ) // 세 개의 StepProgressBar
+        )
     }
 }
 

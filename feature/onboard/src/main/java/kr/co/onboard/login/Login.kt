@@ -59,6 +59,23 @@ internal fun Logo(
 }
 
 @Composable
+internal fun WelcomeLogo() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_welcome),
+            contentDescription = "logo"
+        )
+    }
+}
+
+
+
+@Composable
 internal fun SocialLoginButtons(
     onSocialLoginClick: (AuthType) -> Unit,
 ) {

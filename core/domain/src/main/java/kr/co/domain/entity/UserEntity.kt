@@ -1,7 +1,7 @@
 package kr.co.domain.entity
 
 data class UserEntity(
-    val name: String,
+    val name: String? = null,
     val address: String? = null,
     val bjdCode: String? = null,
     val profileImage: String? = null,
