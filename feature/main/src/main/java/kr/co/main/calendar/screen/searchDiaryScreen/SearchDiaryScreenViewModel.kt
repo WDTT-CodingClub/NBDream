@@ -4,15 +4,21 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kr.co.domain.usecase.calendar.SearchDiariesUseCase
 import kr.co.main.mapper.calendar.DiaryModelMapper
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.model.calendar.type.CalendarSortType
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
+import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -20,12 +26,13 @@ internal interface SearchDiaryScreenEvent {
     fun onQueryInput(query: String)
     fun onStartDateInput(startDate: LocalDate)
     fun onEndDateInput(endDate: LocalDate)
+    fun onSortChange(sortType: CalendarSortType)
 }
 
 @HiltViewModel
 internal class SearchDiaryScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val searchDiaries: SearchDiariesUseCase
+    private val searchDiaries: SearchDiariesUseCase,
 ) : BaseViewModel<SearchDiaryScreenViewModel.SearchDiaryScreenState>(savedStateHandle),
     SearchDiaryScreenEvent {
     val event: SearchDiaryScreenEvent = this@SearchDiaryScreenViewModel
@@ -38,15 +45,12 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
         val calendarCrop: CropModel? = null,
 
         val query: String = "",
+        val sortType: CalendarSortType = CalendarSortType.RECENCY,
+
         val startDate: LocalDate = LocalDate.now(),
         val endDate: LocalDate = LocalDate.now(),
-        val diaries: List<DiaryModel> = emptyList()
-    ) : State {
-        override fun toParcelable(): Parcelable? {
-            // TODO "serialize"
-            return null
-        }
-    }
+        val diaries: List<DiaryModel> = emptyList(),
+    ) : State
 
     override fun createInitialState(savedState: Parcelable?): SearchDiaryScreenState =
         savedState?.let {
@@ -64,25 +68,41 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
         }
 
         with(state) {
-            select { it.query }.bindState(_query)
-            select { it.startDate }.bindState(_startDate)
-            select { it.endDate }.bindState(_endDate)
+            select(SearchDiaryScreenState::query)
+                .bindState(_query)
+            select(SearchDiaryScreenState::startDate)
+                .bindState(_startDate)
+            select(SearchDiaryScreenState::endDate)
+                .bindState(_endDate)
         }
 
-        combine(_query, _startDate, _endDate) { query, startDate, endDate ->
-            currentState.calendarCrop?.let { crop ->
-                searchDiaries(
+        viewModelScopeEH.launch {
+            combine(
+                _query,
+                _startDate,
+                _endDate
+            ) {
+                    query,
+                    startDate,
+                    endDate,
+                ->
+                Timber.d("$query, $startDate, $endDate")
+                currentState.calendarCrop?.let { crop ->
                     SearchDiariesUseCase.Params(
                         crop = crop.type.name,
                         query = query,
                         startDate = startDate,
                         endDate = endDate
-                    )
-                ).collect { diaries ->
-                    updateState { copy(diaries = diaries.map { DiaryModelMapper.toRight(it) }) }
+                    ).run {
+                        searchDiaries(this)
+                    }
+                }
+            }.collect { diaries ->
+                diaries?.collectLatest {
+                    updateState { copy(diaries = it.map(DiaryModelMapper::toRight)) }
                 }
             }
-        }.launchIn(viewModelScopeEH)
+        }
     }
 
     override fun onQueryInput(query: String) {
@@ -95,5 +115,9 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
 
     override fun onEndDateInput(endDate: LocalDate) {
         updateState { copy(endDate = endDate) }
+    }
+
+    override fun onSortChange(sortType: CalendarSortType) = updateState {
+        copy(sortType = sortType)
     }
 }

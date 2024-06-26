@@ -50,7 +50,6 @@ internal class MyPageCropSelectViewModel @Inject constructor(
         viewModelScopeEH.launch {
             fetchUserUseCase().collect {
                 updateState {
-                    copy(name = it.name!!)
                     copy(crops = it.crops?: emptyList())
                 }
             }

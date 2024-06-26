@@ -16,7 +16,7 @@ class RegisterUserUseCase @Inject constructor(
 
         userRepository.fetchLocal().first().let {
             it.copy(
-                name = params.name,
+                name = params.name ?: it.name,
                 address = params.address ?: it.address,
                 profileImage = params.profileImage ?: it.profileImage,
                 bjdCode = params.bjdCode ?: it.bjdCode,
