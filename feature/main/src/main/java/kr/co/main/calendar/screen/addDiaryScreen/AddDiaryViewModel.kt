@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kr.co.common.util.FileUtil
 import kr.co.domain.usecase.calendar.CreateDiaryUseCase
+import kr.co.domain.usecase.calendar.DeleteDiaryUseCase
 import kr.co.domain.usecase.calendar.GetDiaryDetailUseCase
 import kr.co.domain.usecase.calendar.GetHolidaysUseCase
 import kr.co.domain.usecase.calendar.UpdateDiaryUseCase
@@ -28,7 +29,9 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 internal interface AddDiaryScreenEvent {
-    fun onActionClick()
+    fun onPostClick()
+    fun onEditClick()
+    fun onDeleteClick()
 
     fun onDateInput(date: LocalDate)
     fun onAddImage(imageUris: List<Uri>)
@@ -52,6 +55,8 @@ internal class AddDiaryViewModel @Inject constructor(
     private val getDiary: GetDiaryDetailUseCase,
     private val createDiary: CreateDiaryUseCase,
     private val updateDiary: UpdateDiaryUseCase,
+    private val deleteDiary: DeleteDiaryUseCase,
+
     private val uploadImage: UploadImageUseCase,
     private val deleteImage: DeleteImageUseCase,
     private val getHolidays: GetHolidaysUseCase
@@ -163,16 +168,13 @@ internal class AddDiaryViewModel @Inject constructor(
         }
     }
 
-    override fun onActionClick() {
+    override fun onPostClick() {
         if (!currentState.enableAction) return
-        when (currentState.screenMode) {
-            ScreenModeType.POST_MODE -> onPostClick()
-            ScreenModeType.EDIT_MODE -> onEditClick()
-        }
-    }
 
-    private fun onPostClick() {
+        if(currentState.screenMode != ScreenModeType.POST_MODE)
+            throw IllegalStateException ("screen mode is not post mode")
         checkNotNull(currentState.calendarCrop)
+
         viewModelScopeEH.launch {
             createDiary(
                 CreateDiaryUseCase.Params(
@@ -194,9 +196,14 @@ internal class AddDiaryViewModel @Inject constructor(
         }
     }
 
-    private fun onEditClick() {
+    override fun onEditClick() {
+        if (!currentState.enableAction) return
+
+        if(currentState.screenMode != ScreenModeType.EDIT_MODE)
+            throw IllegalStateException ("screen mode is not edit mode")
         checkNotNull(currentState.calendarCrop)
         checkNotNull(currentState.diaryId)
+
         viewModelScopeEH.launch {
             updateDiary(
                 UpdateDiaryUseCase.Params(
@@ -216,6 +223,18 @@ internal class AddDiaryViewModel @Inject constructor(
                     }
                 )
             )
+        }
+    }
+
+    override fun onDeleteClick() {
+        if (!currentState.enableAction) return
+
+        if(currentState.screenMode != ScreenModeType.EDIT_MODE)
+            throw IllegalStateException ("screen mode is not edit mode")
+        checkNotNull(currentState.diaryId)
+
+        viewModelScopeEH.launch {
+            deleteDiary(DeleteDiaryUseCase.Params(currentState.diaryId!!))
         }
     }
 
