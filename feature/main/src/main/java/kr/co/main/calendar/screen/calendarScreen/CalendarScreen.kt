@@ -69,7 +69,6 @@ internal fun CalendarRoute(
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
-//    navToNotification: () -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
 ) {
     CalendarScreen(
@@ -77,7 +76,6 @@ internal fun CalendarRoute(
         navToAddSchedule = navToAddSchedule,
         navToAddDiary = navToAddDiary,
         navToSearchDiary = navToSearchDiary,
-//        navToNotification = navToNotification,
         state = viewModel.state.collectAsState(),
         event = viewModel.event
     )
@@ -89,7 +87,6 @@ private fun CalendarScreen(
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
-//    navToNotification: () -> Unit,
     state: State<CalendarScreenViewModel.CalendarScreenState>,
     event: CalendarScreenEvent,
     modifier: Modifier = Modifier,
@@ -126,7 +123,6 @@ private fun CalendarScreen(
                         state.value.crop?.type?.nameId
                     )
                 },
-//                navToNotification = navToNotification
             )
         }
     ) { innerPadding ->
@@ -164,16 +160,6 @@ private fun CalendarScreen(
                                 holidays = state.value.holidays,
                                 allSchedules = state.value.allSchedules,
                                 cropSchedules = state.value.cropSchedules,
-                                onEditClick = { scheduleId ->
-                                    navToAddSchedule(
-                                        state.value.crop?.type?.nameId,
-                                        ScreenModeType.EDIT_MODE.id,
-                                        scheduleId
-                                    )
-                                },
-                                onDeleteClick = { scheduleId ->
-                                    //TODO 삭제 확인 다이얼로그 표시 후 일정 삭제
-                                }
                             )
 
                         CalendarTabType.DIARY.pagerIndex ->
@@ -185,16 +171,6 @@ private fun CalendarScreen(
                                 onDateSelect = event::onDateSelect,
                                 holidays = state.value.holidays,
                                 diaries = state.value.diaries,
-                                onEditClick = { diaryId ->
-                                    navToAddDiary(
-                                        state.value.crop?.type?.nameId,
-                                        ScreenModeType.EDIT_MODE.id,
-                                        diaryId
-                                    )
-                                },
-                                onDeleteClick = { dialogId ->
-                                    //TODO 삭제 확인 다이얼로그 표시 후 영농일지 삭제
-                                }
                             )
                     }
                 }
@@ -211,7 +187,6 @@ private fun CalendarScreenTopAppBar(
     navToAddSchedule: () -> Unit,
     navToAddDiary: () -> Unit,
     navToSearchDiary: () -> Unit,
-//    navToNotification: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -239,7 +214,6 @@ private fun CalendarScreenTopAppBar(
                     CalendarTabType.SCHEDULE -> null
                     CalendarTabType.DIARY -> navToSearchDiary
                 },
-//                navToNotification = navToNotification,
                 modifier = Modifier
             )
         }
@@ -311,7 +285,6 @@ private fun measureTextWidth(text: String, style: TextStyle): Dp {
 private fun CalendarScreenTopAppBarActions(
     navToAddScreen: () -> Unit,
     navToSearchScreen: (() -> Unit)?,
-//    navToNotification: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -331,13 +304,6 @@ private fun CalendarScreenTopAppBarActions(
                 )
             }
         }
-//        IconButton(onClick = navToNotification) {
-//            Icon(
-//                modifier = Modifier,
-//                imageVector = DreamIcon.Bell,
-//                contentDescription = ""
-//            )
-//        }
     }
 }
 

@@ -1,3 +1,5 @@
+package kr.co.main.calendar.screen.calendarScreen.calendar
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,7 @@ import kr.co.main.model.calendar.FarmWorkModel
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import timber.log.Timber
 
 internal class FarmWorkCalendarStateHolder(
     private val calendarMonth: Int,
@@ -94,6 +97,7 @@ private fun rememberFarmWorkCalendarStateHolder(
     calendarMonth: Int,
     farmWorks: List<FarmWorkModel>,
 ) = remember {
+    Timber.d("rememberFarmWorkCalendarStateHolder) farmworks: ${farmWorks.map{it.farmWork}}")
     FarmWorkCalendarStateHolder(
         calendarMonth = calendarMonth,
         farmWorks = farmWorks

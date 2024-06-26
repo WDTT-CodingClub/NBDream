@@ -156,7 +156,7 @@ internal class CalendarScreenViewModel @Inject constructor(
     }
 
     private suspend fun updateFarmWorks() {
-        Timber.d("updateFarmWorks) called")
+        Timber.d("updateFarmWorks) called, crop: ${currentState.crop?.type?.name}")
         if (currentState.crop == null) {
             updateState { copy(farmWorks = emptyList()) }
             return
