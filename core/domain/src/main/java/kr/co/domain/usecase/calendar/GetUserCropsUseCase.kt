@@ -18,9 +18,9 @@ class GetUserCropsUseCase @Inject constructor(
         checkNotNull(params)
         return repository.fetchLocal().transform { userEntity ->
             emit(
-                userEntity.crops.map { crop ->
+                userEntity.crops?.map { crop ->
                     CropEntity(CropType.ofValue(crop))
-                }
+                }?: emptyList()
             )
         }
     }

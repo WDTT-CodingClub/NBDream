@@ -57,7 +57,7 @@ import kr.co.main.model.my.MyPageProfileDialog
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Addpicture
+import kr.co.ui.icon.dreamicon.AddPicture
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -136,11 +136,13 @@ internal fun MyPageProfileEditRoute(
                             )
                         )
                     }
+
                     MyPageProfileDialog.CAMERA -> {
                         cameraLauncher.launch(
                             FileUtil.createImageUri()
                         )
                     }
+
                     MyPageProfileDialog.DEFAULT -> {
                         viewModel.onImageChanged(null)
                     }
@@ -240,7 +242,7 @@ private fun MyPageProfileEditScreen(
                         .align(Alignment.BottomEnd)
                         .size(33.dp)
                         .clearAndSetSemantics { },
-                    imageVector = DreamIcon.Addpicture,
+                    imageVector = DreamIcon.AddPicture,
                     contentDescription = "",
                     tint = Color.Unspecified
                 )
@@ -311,8 +313,7 @@ private fun MyPageProfileEditScreen(
                             .padding(
                                 horizontal = 16.dp,
                                 vertical = 12.dp
-                            )
-                        ,
+                            ),
                         text = state.address ?: "농장을 등록해 주세요",
                         style = MaterialTheme.typo.body1,
                         color = if (state.address.isNullOrBlank()) MaterialTheme.colors.gray5 else MaterialTheme.colors.gray1,
@@ -329,7 +330,7 @@ private fun MyPageProfileEditScreen(
                             vertical = 4.dp,
                             horizontal = 12.dp
                         )
-                        ) {
+                    ) {
                         Text(
                             text = "주소 찾기",
                             style = MaterialTheme.typo.body1,
