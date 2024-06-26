@@ -1,4 +1,4 @@
-package kr.co.main.calendar.screen.addDiaryScreen.diary_input
+package kr.co.main.calendar.common.input
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kr.co.main.R
 import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.AddPicture
 import kr.co.ui.icon.dreamicon.Delete
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.Paddings
@@ -34,7 +35,7 @@ import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 
 @Composable
-internal fun DiaryImageInput(
+internal fun CalendarImagePicker(
     images: List<String>,
     onAddImage: (String) -> Unit,
     onDeleteImage: (String) -> Unit,
@@ -75,7 +76,7 @@ private fun AddImageButton(
         ) {
             Icon(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                imageVector = DreamIcon.Edit, //TODO 카메라 아이콘으로 변경
+                imageVector = DreamIcon.AddPicture,
                 contentDescription = "",
                 tint = MaterialTheme.colors.text1
             )
@@ -164,10 +165,8 @@ private fun ImageItemDeleteButton(
 @Preview
 @Composable
 private fun DiaryImageInputPreview() {
-    DiaryImageInput(
-        images = listOf(
-            "https://src.hidoc.co.kr/image/lib/2021/6/11/1623368825118_0.jpg"
-        ),
+    CalendarImagePicker(
+        images = listOf( "1", "2", "3"),
         onAddImage = { _ -> },
         onDeleteImage = { _ -> }
     )

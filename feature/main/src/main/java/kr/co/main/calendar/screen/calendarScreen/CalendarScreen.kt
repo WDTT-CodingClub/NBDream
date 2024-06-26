@@ -47,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import kr.co.main.R
 import kr.co.main.model.calendar.CropModel
@@ -71,12 +72,14 @@ internal fun CalendarRoute(
     navToSearchDiary: (Int?) -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     CalendarScreen(
         modifier = Modifier.fillMaxSize(),
         navToAddSchedule = navToAddSchedule,
         navToAddDiary = navToAddDiary,
         navToSearchDiary = navToSearchDiary,
-        state = viewModel.state.collectAsState(),
+        state = state,
         event = viewModel.event
     )
 }
@@ -87,7 +90,7 @@ private fun CalendarScreen(
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
-    state: State<CalendarScreenViewModel.CalendarScreenState>,
+    state: CalendarScreenViewModel.CalendarScreenState,
     event: CalendarScreenEvent,
     modifier: Modifier = Modifier,
 ) {
@@ -106,21 +109,21 @@ private fun CalendarScreen(
                 pagerState = pagerState,
                 navToAddSchedule = {
                     navToAddSchedule(
-                        state.value.crop?.type?.nameId,
+                        state.crop?.type?.nameId,
                         ScreenModeType.POST_MODE.id,
                         null
                     )
                 },
                 navToAddDiary = {
                     navToAddDiary(
-                        state.value.crop?.type?.nameId,
+                        state.crop?.type?.nameId,
                         ScreenModeType.POST_MODE.id,
                         null
                     )
                 },
                 navToSearchDiary = {
                     navToSearchDiary(
-                        state.value.crop?.type?.nameId
+                        state.crop?.type?.nameId
                     )
                 },
             )
@@ -135,10 +138,10 @@ private fun CalendarScreen(
                         .fillMaxWidth()
                         .padding(horizontal = Paddings.large)
                         .background(MaterialTheme.colors.gray9),
-                    userCrops = state.value.userCrops,
-                    calendarYear = state.value.year,
-                    calendarMonth = state.value.month,
-                    calendarCrop = state.value.crop,
+                    userCrops = state.userCrops,
+                    calendarYear = state.year,
+                    calendarMonth = state.month,
+                    calendarCrop = state.crop,
                     onSelectYear = event::onYearSelect,
                     onSelectMonth = event::onMonthSelect,
                     onSelectCrop = event::onCropSelect
@@ -151,26 +154,26 @@ private fun CalendarScreen(
                     when (pagerState.currentPage) {
                         CalendarTabType.SCHEDULE.pagerIndex ->
                             ScheduleTab(
-                                calendarCrop = state.value.crop,
-                                calendarYear = state.value.year,
-                                calendarMonth = state.value.month,
-                                selectedDate = state.value.selectedDate,
+                                calendarCrop = state.crop,
+                                calendarYear = state.year,
+                                calendarMonth = state.month,
+                                selectedDate = state.selectedDate,
                                 onDateSelect = event::onDateSelect,
-                                farmWorks = state.value.farmWorks,
-                                holidays = state.value.holidays,
-                                allSchedules = state.value.allSchedules,
-                                cropSchedules = state.value.cropSchedules,
+                                farmWorks = state.farmWorks,
+                                holidays = state.holidays,
+                                allSchedules = state.allSchedules,
+                                cropSchedules = state.cropSchedules,
                             )
 
                         CalendarTabType.DIARY.pagerIndex ->
                             DiaryTab(
-                                calendarCrop = state.value.crop,
-                                calendarYear = state.value.year,
-                                calendarMonth = state.value.month,
-                                selectedDate = state.value.selectedDate,
+                                calendarCrop = state.crop,
+                                calendarYear = state.year,
+                                calendarMonth = state.month,
+                                selectedDate = state.selectedDate,
                                 onDateSelect = event::onDateSelect,
-                                holidays = state.value.holidays,
-                                diaries = state.value.diaries,
+                                holidays = state.holidays,
+                                diaries = state.diaries,
                             )
                     }
                 }

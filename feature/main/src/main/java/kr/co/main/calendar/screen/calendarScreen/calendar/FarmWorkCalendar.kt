@@ -78,16 +78,30 @@ internal fun FarmWorkCalendar(
         farmWorks = farmWorks
     )
 
-    Column(
-        modifier = modifier
-    ) {
-        FarmWorkEraRow(
-            modifier = Modifier.padding(vertical = Paddings.medium),
-            farmWorkEraInfo = stateHolder.farmWorkEraInfo
-        )
-        FarmWorkCalendarContent(
-            farmWorkCategoryInfo = stateHolder.farmWorkCategoryInfo,
-            getFilteredFarmWorks = stateHolder::getFilteredFarmWorks
+    if(farmWorks.isNotEmpty()) {
+        Column(
+            modifier = modifier
+        ) {
+            FarmWorkEraRow(
+                modifier = Modifier.padding(vertical = Paddings.medium),
+                farmWorkEraInfo = stateHolder.farmWorkEraInfo
+            )
+
+            FarmWorkCalendarContent(
+                farmWorkCategoryInfo = stateHolder.farmWorkCategoryInfo,
+                getFilteredFarmWorks = stateHolder::getFilteredFarmWorks
+            )
+        }
+    }
+    else{
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = Paddings.xlarge),
+            text = stringResource(id = R.string.feature_main_calendar_farm_work_empty),
+            style = MaterialTheme.typo.body2,
+            color = MaterialTheme.colors.gray4,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -97,7 +111,7 @@ private fun rememberFarmWorkCalendarStateHolder(
     calendarMonth: Int,
     farmWorks: List<FarmWorkModel>,
 ) = remember {
-    Timber.d("rememberFarmWorkCalendarStateHolder) farmworks: ${farmWorks.map{it.farmWork}}")
+    Timber.d("rememberFarmWorkCalendarStateHolder) farmworks: ${farmWorks.map { it.farmWork }}")
     FarmWorkCalendarStateHolder(
         calendarMonth = calendarMonth,
         farmWorks = farmWorks
@@ -130,8 +144,8 @@ private fun FarmWorkCalendarContent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        for(categoryInfo in farmWorkCategoryInfo){
-            if(getFilteredFarmWorks(categoryInfo.second).isEmpty())
+        for (categoryInfo in farmWorkCategoryInfo) {
+            if (getFilteredFarmWorks(categoryInfo.second).isEmpty())
                 continue
 
             Text(

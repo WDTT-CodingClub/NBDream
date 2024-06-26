@@ -17,6 +17,9 @@ internal object CalendarDesignToken {
     const val FARM_WORK_ITEM_CORNER_RADIUS = 5
     const val CALENDAR_ITEM_SIZE = 50
 
+    // add schedule screen
+    const val INPUT_BOX_CORNER_RADIUS = 12
+
     // add diary screen
     const val IMAGE_SIZE = 66
     const val ADD_IMAGE_BUTTON_SIZE = 66

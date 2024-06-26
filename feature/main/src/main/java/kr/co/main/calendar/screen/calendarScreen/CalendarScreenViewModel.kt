@@ -99,6 +99,7 @@ internal class CalendarScreenViewModel @Inject constructor(
     override fun onDateSelect(date: LocalDate) {
         Timber.d("onDateSelect) date: $date")
         updateState { copy(selectedDate = date) }
+        Timber.d("onDateSelect) updated date: ${currentState.selectedDate}")
     }
 
     private suspend fun updateUserCrops() {
@@ -115,10 +116,11 @@ internal class CalendarScreenViewModel @Inject constructor(
 //        updateCrop(currentState.userCrops.firstOrNull())
 
         val tmpUserCrops = listOf(
-            CropModel.create(CropModelType.POTATO),
             CropModel.create(CropModelType.SWEET_POTATO),
-            CropModel.create(CropModelType.APPLE),
+            CropModel.create(CropModelType.POTATO),
             CropModel.create(CropModelType.GARLIC),
+            CropModel.create(CropModelType.APPLE),
+            CropModel.create(CropModelType.PEPPER)
         )
         updateState { copy(userCrops = tmpUserCrops) }
         updateCrop(tmpUserCrops.firstOrNull())
@@ -127,6 +129,7 @@ internal class CalendarScreenViewModel @Inject constructor(
     private suspend fun updateCrop(newCrop: CropModel?) {
         Timber.d("updateCrop) newCrop: $newCrop")
         if (currentState.crop == newCrop) return
+        Timber.d("updateCrop) currentState.crop: ${currentState.crop}")
 
         viewModelScopeEH.launch {
             updateState { copy(crop = newCrop) }
