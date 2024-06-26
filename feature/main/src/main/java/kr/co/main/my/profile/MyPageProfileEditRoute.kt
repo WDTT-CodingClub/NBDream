@@ -66,6 +66,7 @@ import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.DreamListDialog
 import kr.co.ui.widget.DreamLocationSearchScreen
+import kr.co.ui.widget.DreamProgress
 import java.util.Locale
 
 @Composable
@@ -184,16 +185,7 @@ internal fun MyPageProfileEditRoute(
         }
     }
 
-    if (isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                color = MaterialTheme.colors.primary
-            )
-        }
-    }
+    DreamProgress(isVisible = isLoading)
 }
 
 @Composable

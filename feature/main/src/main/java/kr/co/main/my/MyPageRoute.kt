@@ -55,6 +55,7 @@ import kr.co.ui.icon.dreamicon.Tobot
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import kr.co.ui.widget.DreamProgress
 import kr.co.ui.widget.DreamTopAppBar
 
 @Composable
@@ -68,19 +69,25 @@ internal fun MyPageRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
     MyPageScreen(
         state = state,
+        onCropDeleteClick = viewModel::onCropDeleteClick,
         navigateToProfileEdit = navigateToProfileEdit,
         navigateToSetting = navigateToSetting,
         navigateToBookmark = navigateToBookmark,
         navigateToWrite = navigateToWrite,
         navigateToCropSelect = navigateToCropSelect
     )
+
+    DreamProgress(isVisible = isLoading)
 }
 
 @Composable
 private fun MyPageScreen(
     state: MyPageViewModel.State = MyPageViewModel.State(),
+    onCropDeleteClick: (String) -> Unit = {},
     navigateToProfileEdit: () -> Unit = {},
     navigateToSetting: () -> Unit = {},
     navigateToBookmark: () -> Unit = {},
@@ -138,7 +145,8 @@ private fun MyPageScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 BulletinCard(
                     crops = state.crops,
-                    showCropModal = navigateToCropSelect
+                    showCropModal = navigateToCropSelect,
+                    onCropDeleteClick = onCropDeleteClick
                 )
                 
                 Spacer(modifier = Modifier.height(48.dp))
@@ -275,7 +283,8 @@ private fun BulletinCard(
             } else {
                 if (!expanded) {
                     CropRow(
-                        crops = crops.take(4)
+                        crops = crops.take(4),
+                        onCropDeleteClick = onCropDeleteClick
                     )
                 } else {
                     CropRow(
