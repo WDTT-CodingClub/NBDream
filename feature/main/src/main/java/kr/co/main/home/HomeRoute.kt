@@ -2,7 +2,6 @@ package kr.co.main.home
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.TweenSpec
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -38,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -69,6 +66,7 @@ import java.util.Locale
 internal fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToNotification: () -> Unit = {},
+    navigateToAddress: () -> Unit = {},
     navigateToChat: () -> Unit = {},
     navigateToCalendar: () -> Unit = {}
 ) {
@@ -77,6 +75,7 @@ internal fun HomeRoute(
     HomeScreen(
         state = state,
         navigateToNotification = navigateToNotification,
+        navigateToAddress = navigateToAddress,
         navigateToChat = navigateToChat,
         navigateToCalendar = navigateToCalendar
     )
@@ -86,8 +85,9 @@ internal fun HomeRoute(
 private fun HomeScreen(
     state: HomeViewModel.State = HomeViewModel.State(),
     navigateToNotification: () -> Unit = {},
+    navigateToAddress: () -> Unit = {},
     navigateToChat: () -> Unit = {},
-    navigateToCalendar: () -> Unit = {}
+    navigateToCalendar: () -> Unit = {},
 ) {
     Surface(
         color = MaterialTheme.colors.gray9,
@@ -102,9 +102,9 @@ private fun HomeScreen(
                 DreamTopAppBar(
                     title = "내 농장",
                     description = state.address.let {
-                        if (it.isNullOrBlank()) "산 좋고 물 좋 나만의 농장 1번지" else it
+                        if (it.isNullOrBlank()) "농장 주소 설정하러 가기" else it
                     },
-                    descriptionAction = {},
+                    descriptionAction = navigateToAddress,
                     actions = {
 //                        IconButton(onClick = navigateToNotification) {
 //                            Icon(

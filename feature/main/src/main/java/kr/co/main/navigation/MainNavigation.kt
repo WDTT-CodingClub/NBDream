@@ -75,11 +75,14 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.HOME.route
                 ) {
                     HomeRoute(
-                        navigateToChat = {
-                            navController.navigate(CHAT_ROUTE)
-                        },
                         navigateToNotification = {
                             navController.navigate(NOTIFICATION_ROUTE)
+                        },
+                        navigateToAddress = {
+                            navController.navigate(MyPageRoute.EDIT_ROUTE)
+                        },
+                        navigateToChat = {
+                            navController.navigate(CHAT_ROUTE)
                         },
                         navigateToCalendar = {
                             MainNav.controller.navigate(
@@ -278,14 +281,7 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         MyPageProfileEditRoute(
             popBackStack = navController::popBackStack,
-            navigateToMyPage = {
-                MainNav.controller.navigate(
-                    MainBottomRoute.MY_PAGE.route
-                ) {
-                    popUpTo(MainNav.controller.graph.findStartDestination().id)
-                    launchSingleTop = true
-                }
-            }
+            navigateToMyPage = navController::popBackStack,
         )
     }
 
