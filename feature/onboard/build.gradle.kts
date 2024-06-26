@@ -1,5 +1,3 @@
-import kr.co.wdtt.convention.Local
-
 plugins {
     alias(libs.plugins.nbdream.android.feature)
     alias(libs.plugins.nbdream.android.library.compose)

@@ -14,8 +14,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -83,13 +86,9 @@ fun DreamDialog(
                 ),
                 textAlign = TextAlign.Center
             )
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(
-                        color = Color(0xFF3C3C43).copy(alpha = 0.36f)
-                    )
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = Color(0xFF3C3C43).copy(alpha = 0.36f)
             )
 
             Row(
@@ -104,13 +103,9 @@ fun DreamDialog(
                     onClick = onDismiss
                 )
 
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(1.dp)
-                        .background(
-                            color = Color(0xFF3C3C43).copy(alpha = 0.36f)
-                        )
+                VerticalDivider(
+                    thickness = 1.dp,
+                    color = Color(0xFF3C3C43).copy(alpha = 0.36f)
                 )
 
                 DiaButton(
@@ -129,7 +124,7 @@ private fun DiaButton(
     text: String,
     onClick: () -> Unit,
 ) {
-    Button(
+    TextButton(
         modifier = modifier,
         onClick = onClick,
         colors = ButtonDefaults.textButtonColors()
