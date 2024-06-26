@@ -23,9 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -150,6 +149,7 @@ private fun MyPageCropSelectScreen(
                                         color = if (crops.contains(crop.value)) Color(0xFF71C16B).copy(0.3f) else Color.Transparent,
                                         shape = CircleShape
                                     )
+                                    .clip(CircleShape)
                                     .clickable { onCropSelected(crop.value) }
                                     .size(84.dp)
                                     .padding(16.dp),

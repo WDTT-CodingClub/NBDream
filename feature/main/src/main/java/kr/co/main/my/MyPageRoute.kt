@@ -1,5 +1,7 @@
 package kr.co.main.my
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -31,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,6 +50,7 @@ import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Dots
 import kr.co.ui.icon.dreamicon.Edit
+import kr.co.ui.icon.dreamicon.Settings
 import kr.co.ui.icon.dreamicon.Tobot
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -98,18 +99,18 @@ private fun MyPageScreen(
                     title = "마이페이지",
                 ) {
                     Row {
-                        IconButton(onClick = navigateToProfileEdit) {
+                        IconButton(onClick = navigateToSetting) {
                             Icon(
-                                modifier = Modifier.size(32.dp),
-                                imageVector = DreamIcon.Edit,
+                                modifier = Modifier.size(24.dp),
+                                imageVector = DreamIcon.Settings,
                                 contentDescription = "edit"
                             )
                         }
 
-                        IconButton(onClick = navigateToSetting) {
+                        IconButton(onClick = navigateToProfileEdit) {
                             Icon(
-                                modifier = Modifier.size(28.dp),
-                                imageVector = Icons.Outlined.Settings,
+                                modifier = Modifier.size(32.dp),
+                                imageVector = DreamIcon.Edit,
                                 contentDescription = "edit"
                             )
                         }
@@ -139,6 +140,8 @@ private fun MyPageScreen(
                     crops = state.crops,
                     showCropModal = navigateToCropSelect
                 )
+                
+                Spacer(modifier = Modifier.height(48.dp))
             }
         }
     }
@@ -215,6 +218,8 @@ private fun BulletinCard(
     showCropModal: () -> Unit = {},
     onCropDeleteClick: (String) -> Unit = {},
 ) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -249,6 +254,11 @@ private fun BulletinCard(
             modifier = Modifier
                 .padding(
                     top = 32.dp,
+                )
+                .animateContentSize(
+                    animationSpec = TweenSpec(
+                        durationMillis = 300
+                    )
                 ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -263,71 +273,22 @@ private fun BulletinCard(
                     color = MaterialTheme.colors.gray1
                 )
             } else {
-                crops.forEachIndexed { index, s ->
-                    if (index <= 4) {
-                        var isVisible by rememberSaveable { mutableStateOf(false) }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = s,
-                                style = MaterialTheme.typo.body1,
-                                color = MaterialTheme.colors.gray1
-                            )
-                            Box {
-                                Icon(
-                                    modifier = Modifier
-                                        .graphicsLayer {
-                                            rotationZ = 90f
-                                        }
-                                        .size(20.dp)
-                                        .noRippleClickable { isVisible = true },
-                                    imageVector = DreamIcon.Dots,
-                                    contentDescription = "작물 제거"
-                                )
-                                DropdownMenu(
-                                    modifier = Modifier
-                                        .background(
-                                            MaterialTheme.colors.white,
-                                            shape = RoundedCornerShape(4.dp)
-                                        ),
-                                    expanded = isVisible,
-                                    onDismissRequest = { isVisible = false }
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .defaultMinSize(minWidth = 140.dp)
-                                            .padding(12.dp)
-                                            .clickable {
-                                                onCropDeleteClick(s)
-                                                isVisible = false
-                                            },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = "삭제하기",
-                                            style = MaterialTheme.typo.body1,
-                                            color = MaterialTheme.colors.gray4
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        if (index != crops.lastIndex && index != 4) {
-                            HorizontalDivider(
-                                thickness = 1.dp,
-                                color = MaterialTheme.colors.gray8
-                            )
-                        }
-                    }
+                if (!expanded) {
+                    CropRow(
+                        crops = crops.take(4)
+                    )
+                } else {
+                    CropRow(
+                        crops = crops,
+                        onCropDeleteClick = onCropDeleteClick
+                    )
                 }
 
                 if (crops.size >= 4) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .noRippleClickable { expanded = !expanded },
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -338,17 +299,88 @@ private fun BulletinCard(
                         )
 
                         Icon(
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier
+                                .size(20.dp)
+                                .graphicsLayer {
+                                    if (expanded)
+                                        rotationZ = 180f
+                                },
                             imageVector = Icons.Filled.KeyboardArrowDown,
                             contentDescription = "extend bulletin list",
                             tint = MaterialTheme.colors.gray5
                         )
                     }
-                    Spacer(modifier = Modifier.height(48.dp))
                 }
             }
         }
     }
+}
+
+@Composable
+private fun CropRow(
+    crops: List<String> = listOf(),
+    onCropDeleteClick: (String) -> Unit = {},
+) {
+    crops.forEachIndexed { index, s ->
+        var isDropDownVisible by rememberSaveable { mutableStateOf(false) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = s,
+                style = MaterialTheme.typo.body1,
+                color = MaterialTheme.colors.gray1
+            )
+            Box {
+                Icon(
+                    modifier = Modifier
+                        .graphicsLayer {
+                            rotationZ = 90f
+                        }
+                        .size(20.dp)
+                        .noRippleClickable { isDropDownVisible = true },
+                    imageVector = DreamIcon.Dots,
+                    contentDescription = "작물 제거"
+                )
+                DropdownMenu(
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colors.white,
+                            shape = RoundedCornerShape(4.dp)
+                        ),
+                    expanded = isDropDownVisible,
+                    onDismissRequest = { isDropDownVisible = false }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .defaultMinSize(minWidth = 140.dp)
+                            .padding(12.dp)
+                            .clickable {
+                                onCropDeleteClick(s)
+                                isDropDownVisible = false
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "삭제하기",
+                            style = MaterialTheme.typo.body1,
+                            color = MaterialTheme.colors.gray4
+                        )
+                    }
+                }
+            }
+        }
+
+        if (index != crops.lastIndex) {
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MaterialTheme.colors.gray8
+            )
+        }
+    }
+
 }
 
 @Composable
