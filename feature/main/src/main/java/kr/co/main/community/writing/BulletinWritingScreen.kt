@@ -6,7 +6,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,16 +23,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,6 +53,7 @@ import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.colors
 import java.io.File
 
 @Composable
@@ -104,7 +102,7 @@ internal fun BulletinWritingScreen(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
             onResult = { uris ->
                 onAddImagesClick(uris) { UriUtil.toPngFile(context, it) }
-            }
+            },
         )
 
         LazyColumn(
@@ -136,64 +134,16 @@ internal fun BulletinWritingScreen(
                 }
             }
             item {
-                Card(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .border(
-                            width = 1.dp,
-                            color = Color(0),
-                            shape = RoundedCornerShape(12.dp)
-                        ),
-                    colors = CardColors(
-                        containerColor = Color.Green,
-                        contentColor = Color.Black,
-                        disabledContainerColor = Color.LightGray,
-                        disabledContentColor = Color.Black,
-                    )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                    ) {
-                        TextButton(
-                            onClick = {
-                                onCategoryClick(BulletinEntity.BulletinCategory.Free)
-                            },
-                            colors = if (state.currentCategory == BulletinEntity.BulletinCategory.Free) ButtonDefaults.textButtonColors(
-                                containerColor = Color.Yellow,
-                            ) else ButtonDefaults.textButtonColors(),
-                        ) {
-                            Text("자유 주제")
-                        }
-                        // TODO: 디바이더에도 여백이 붙는데...
-                        VerticalDivider(
-                            thickness = 1.dp,
-                            color = Color.Red,
+                    for (category in BulletinEntity.BulletinCategory.entries) {
+                        CategoryButton(
+                            onClick = { onCategoryClick(category) },
+                            text = category.koreanName,
+                            isSelected = state.currentCategory == category,
                         )
-                        TextButton(
-                            onClick = {
-                                onCategoryClick(BulletinEntity.BulletinCategory.Qna)
-                            },
-                            colors = if (state.currentCategory == BulletinEntity.BulletinCategory.Qna) ButtonDefaults.textButtonColors(
-                                containerColor = Color.Yellow,
-                            ) else ButtonDefaults.textButtonColors(),
-                        ) {
-                            Text("질문")
-                        }
-                        VerticalDivider(
-                            thickness = 1.dp,
-                            color = Color.Red,
-                        )
-                        TextButton(
-                            onClick = {
-                                onCategoryClick(BulletinEntity.BulletinCategory.Disease)
-                            },
-                            colors = if (state.currentCategory == BulletinEntity.BulletinCategory.Disease) ButtonDefaults.textButtonColors(
-                                containerColor = Color.Yellow,
-                            ) else ButtonDefaults.textButtonColors(),
-                        ) {
-                            Text("병해충")
-                        }
                     }
                 }
             }
@@ -287,6 +237,31 @@ internal fun BulletinWritingScreen(
             icon = null,
         )
 
+    }
+}
+
+@Composable
+private fun CategoryButton(
+    onClick: () -> Unit,
+    text: String,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(40),
+        colors = if (isSelected) ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colors.gray4,
+        ) else ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colors.gray8,
+        ),
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 8.dp),
+            color = if (isSelected) MaterialTheme.colors.white else MaterialTheme.colors.gray4,
+        )
     }
 }
 
