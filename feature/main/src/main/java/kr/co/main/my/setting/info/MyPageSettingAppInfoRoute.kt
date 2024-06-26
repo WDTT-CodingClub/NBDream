@@ -43,9 +43,11 @@ private fun MyPageSettingAppInfoScreen(
     popBackStack: () -> Unit = {},
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
                 title = "앱 정보",
+                colorBackground = true,
                 navigationIcon = {
                     IconButton(
                         onClick = popBackStack
