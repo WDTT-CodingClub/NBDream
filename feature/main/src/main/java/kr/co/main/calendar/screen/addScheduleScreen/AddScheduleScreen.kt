@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,10 +18,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -33,11 +37,14 @@ import kr.co.main.calendar.CalendarDesignToken
 import kr.co.main.calendar.common.AddScreenCenterTopAppBar
 import kr.co.main.calendar.common.CalendarCategoryIndicator
 import kr.co.main.calendar.common.CalendarContainerTextField
+import kr.co.main.calendar.common.input.CalendarDatePicker
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import timber.log.Timber
+import java.time.LocalDate
 
 @Composable
 internal fun AddScheduleRoute(
@@ -45,6 +52,7 @@ internal fun AddScheduleRoute(
     viewModel: AddScheduleViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    Timber.d("AddScheduleRoute) calendarCrop: ${state.calendarCrop}")
 
     AddScheduleScreen(
         modifier = Modifier.fillMaxSize(),
@@ -61,6 +69,10 @@ private fun AddScheduleScreen(
     popBackStack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val enableAction by remember {
+        derivedStateOf { state.title.isNotEmpty() }
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -69,6 +81,7 @@ private fun AddScheduleScreen(
                 screenMode = state.screenMode,
                 postModeTitleId = R.string.feature_main_calendar_top_app_bar_add_schedule,
                 editModeTitleId = R.string.feature_main_calendar_top_app_bar_edit_schedule,
+                enableAction = enableAction,
                 popBackStack = popBackStack,
                 onPostClick = event::onPostClick,
                 onEditClick = event::onEditClick,
@@ -80,7 +93,9 @@ private fun AddScheduleScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Paddings.extra)
             ) {
                 ScheduleCategoryPicker(
                     modifier = Modifier.fillMaxWidth(),
@@ -88,21 +103,26 @@ private fun AddScheduleScreen(
                     selectedType = state.scheduleType,
                     onTypeSelect = event::onTypeSelect
                 )
-
+                Spacer(modifier = Modifier.height(Paddings.extra))
                 ScheduleTitleInput(
                     modifier = Modifier.fillMaxWidth(),
                     title = state.title,
                     onTitleInput = event::onTitleInput
                 )
-
-                // TODO 일정 정보 입력 UI 작성 중
-//                ScheduleDateInput(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    startDate = state.startDate,
-//                    endDate = state.endDate,
-//                    onStartDateSelect = event::onStartDateSelect
-//                    onEndDateSelect = event::onEndDateSelect
-//                )
+                Spacer(modifier = Modifier.height(Paddings.extra))
+                ScheduleDateInput(
+                    modifier = Modifier.fillMaxWidth(),
+                    startDate = state.startDate,
+                    endDate = state.endDate,
+                    onStartDateSelect = event::onStartDateSelect,
+                    onEndDateSelect = event::onEndDateSelect
+                )
+                Spacer(modifier = Modifier.height(Paddings.extra))
+                ScheduleMemoInput(
+                    modifier = Modifier.fillMaxWidth(),
+                    memo = state.memo,
+                    onMemoInput = event::onMemoInput
+                )
             }
         }
     }
@@ -123,8 +143,9 @@ private fun ScheduleCategoryPicker(
         Text(
             text = stringResource(id = R.string.feature_main_calendar_add_schedule_header_category),
             style = MaterialTheme.typo.h4,
-            color = MaterialTheme.colors.graph1
+            color = MaterialTheme.colors.gray1
         )
+        Spacer(modifier = Modifier.height(Paddings.large))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -138,6 +159,7 @@ private fun ScheduleCategoryPicker(
                 }
         ) {
             ScheduleCategoryPickerItem(
+                modifier = Modifier.padding(Paddings.medium),
                 scheduleType = selectedType,
                 onTypeSelect = {}
             )
@@ -173,7 +195,8 @@ private fun ScheduleCategoryPickerItem(
 ) {
     Row(
         modifier = modifier
-            .clickable { onTypeSelect(scheduleType) }
+            .clickable { onTypeSelect(scheduleType) },
+        verticalAlignment = Alignment.CenterVertically
     ) {
         CalendarCategoryIndicator(
             modifier = Modifier.padding(end = Paddings.medium),
@@ -197,8 +220,9 @@ private fun ScheduleTitleInput(
         Text(
             text = stringResource(id = R.string.feature_main_calendar_add_schedule_header_title),
             style = MaterialTheme.typo.h4,
-            color = MaterialTheme.colors.graph1
+            color = MaterialTheme.colors.gray1
         )
+        Spacer(modifier = Modifier.height(Paddings.large))
         CalendarContainerTextField(
             modifier = Modifier.fillMaxWidth(),
             value = title,
@@ -212,6 +236,67 @@ private fun ScheduleTitleInput(
             }
         )
     }
+}
+
+@Composable
+private fun ScheduleDateInput(
+    startDate: LocalDate,
+    endDate: LocalDate,
+    onStartDateSelect: (LocalDate) -> Unit,
+    onEndDateSelect: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(id = R.string.feature_main_calendar_add_schedule_header_start_date),
+            style = MaterialTheme.typo.h4,
+            color = MaterialTheme.colors.gray1
+        )
+        Spacer(modifier = Modifier.height(Paddings.large))
+        CalendarDatePicker(
+            modifier = Modifier.fillMaxWidth(),
+            date = startDate,
+            onDateInput = onStartDateSelect
+        )
+        Spacer(modifier = Modifier.height(Paddings.extra))
+        Text(
+            text = stringResource(id = R.string.feature_main_calendar_add_schedule_header_end_date),
+            style = MaterialTheme.typo.h4,
+            color = MaterialTheme.colors.gray1
+        )
+        Spacer(modifier = Modifier.height(Paddings.large))
+        CalendarDatePicker(
+            modifier = Modifier.fillMaxWidth(),
+            date = endDate,
+            onDateInput = onEndDateSelect
+        )
+    }
+}
+
+@Composable
+private fun ScheduleMemoInput(
+    memo: String,
+    onMemoInput: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = stringResource(id = R.string.feature_main_calendar_add_schedule_header_memo),
+        style = MaterialTheme.typo.h4,
+        color = MaterialTheme.colors.gray1
+    )
+    Spacer(modifier = Modifier.height(Paddings.large))
+    CalendarContainerTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = memo,
+        onValueChange = onMemoInput,
+        placeHolder = {
+            Text(
+                text = stringResource(id = R.string.feature_main_calendar_add_schedule_input_hint_memo),
+                style = MaterialTheme.typo.body1,
+                color = MaterialTheme.colors.gray4
+            )
+        }
+    )
 }
 
 

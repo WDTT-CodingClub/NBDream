@@ -34,7 +34,8 @@ internal fun AddScreenCenterTopAppBar(
     onPostClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enableAction: Boolean = true
 ) {
     DreamCenterTopAppBar(
         modifier = modifier,
@@ -59,11 +60,17 @@ internal fun AddScreenCenterTopAppBar(
                 ScreenModeType.POST_MODE -> {
                     Text(
                         modifier = Modifier.clickable {
-                            onPostClick()
+                            if (enableAction) {
+                                onPostClick()
+                            } else {
+                                // TODO 제목을 입력해 주세요 토스트 메세지 띄우기
+                            }
                         },
                         text = stringResource(id = R.string.feature_main_calendar_top_app_bar_post),
                         style = MaterialTheme.typo.bodyM,
-                        color = MaterialTheme.colors.gray5
+                        color =
+                        if (enableAction) MaterialTheme.colors.primary
+                        else MaterialTheme.colors.gray5
                     )
                 }
 
@@ -73,14 +80,20 @@ internal fun AddScreenCenterTopAppBar(
                     Column {
                         Text(
                             modifier = Modifier.clickable {
-                                expandDropDown = true
+                                if (enableAction) {
+                                    expandDropDown = true
+                                } else {
+                                    // TODO 제목을 입력해 주세요 토스트 메세지 띄우기
+                                }
                             },
                             text = stringResource(
                                 id =
                                 R.string.feature_main_calendar_top_app_bar_edit
                             ),
                             style = MaterialTheme.typo.bodyM,
-                            color = MaterialTheme.colors.gray5
+                            color =
+                            if (enableAction) MaterialTheme.colors.primary
+                            else MaterialTheme.colors.gray5
                         )
 
                         DropdownMenu(

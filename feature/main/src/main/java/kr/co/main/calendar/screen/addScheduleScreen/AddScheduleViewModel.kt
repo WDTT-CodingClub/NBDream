@@ -27,7 +27,7 @@ internal interface AddScheduleScreenEvent {
     fun onTitleInput(title: String)
     fun onStartDateSelect(startDate: LocalDate)
     fun onEndDateSelect(endDate: LocalDate)
-    fun onMemoSelect(memo: String)
+    fun onMemoInput(memo: String)
 }
 
 @HiltViewModel
@@ -162,7 +162,7 @@ internal class AddScheduleViewModel @Inject constructor(
         updateState { copy(endDate = endDate) }
     }
 
-    override fun onMemoSelect(memo: String) {
+    override fun onMemoInput(memo: String) {
         updateState { copy(memo = memo) }
     }
 }
