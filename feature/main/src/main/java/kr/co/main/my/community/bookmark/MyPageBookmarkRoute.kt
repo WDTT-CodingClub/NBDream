@@ -33,20 +33,23 @@ import kr.co.ui.widget.DreamCenterTopAppBar
 @Composable
 internal fun MyPageBookmarkRoute(
     viewModel: MyPageBookmarkViewModel = hiltViewModel(),
-    popBackStack : () -> Unit = {}
+    popBackStack : () -> Unit = {},
+    navigateToBulletinDetail: (Long) -> Unit = {}
 ){
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     MyPageBookmarkScreen(
         state = state,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        navigateToBulletinDetail = navigateToBulletinDetail
     )
 }
 
 @Composable
 private fun MyPageBookmarkScreen(
     state: MyPageBookmarkViewModel.State = MyPageBookmarkViewModel.State(),
-    popBackStack : () -> Unit = {}
+    popBackStack : () -> Unit = {},
+    navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     Scaffold(
         containerColor = MaterialTheme.colors.background,
@@ -77,8 +80,11 @@ private fun MyPageBookmarkScreen(
                 .padding(top = 52.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(List(10){ 1 }) {
-                DreamMainPostCard()
+            items(state.bulletin) {
+                DreamMainPostCard(
+                    bulletin = it,
+                    onPostClick = navigateToBulletinDetail
+                )
             }
         }
     }

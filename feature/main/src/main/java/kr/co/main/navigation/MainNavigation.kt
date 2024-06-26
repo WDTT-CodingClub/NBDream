@@ -26,6 +26,7 @@ import kr.co.main.community.writing.BulletinWritingRoute
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
+import kr.co.main.my.community.bookmark.MyPageBookmarkRoute
 import kr.co.main.my.community.written.MyPageWriteRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
 import kr.co.main.my.setting.MyPageSettingRoute
@@ -321,12 +322,6 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = MyPageRoute.SETTING_LOGOUT_ROUTE
-    ) {
-
-    }
-
-    composable(
         route = MyPageRoute.SETTING_APP_INFO_ROUTE
     ) {
         MyPageSettingAppInfoRoute(
@@ -343,14 +338,14 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = MyPageRoute.SETTING_DELETE_VERIFY_ROUTE
-    ) {
-    }
-
-    composable(
         route = MyPageRoute.BOOKMARK_ROUTE
     ) {
-
+        MyPageBookmarkRoute(
+            popBackStack = navController::popBackStack,
+            navigateToBulletinDetail = {
+                navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$it")
+            }
+        )
     }
 
     composable(
@@ -362,11 +357,5 @@ fun NavGraphBuilder.mainNavGraph(
                 navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$it")
             }
         )
-    }
-
-    composable(
-        route = MyPageRoute.COMMENT_ROUTE
-    ) {
-
     }
 }
