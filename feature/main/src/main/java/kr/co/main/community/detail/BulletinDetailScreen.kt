@@ -3,12 +3,15 @@ package kr.co.main.community.detail
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +55,7 @@ import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.widget.DreamBottomSheetWithTextButtons
 import kr.co.ui.widget.DreamCenterTopAppBar
+import kr.co.ui.widget.DreamDialog
 import kr.co.ui.widget.TextAndOnClick
 import timber.log.Timber
 
@@ -126,7 +129,7 @@ internal fun BulletinDetailScreen(
         Timber.d(state.currentDetailBulletin.content)
 
         Column(
-            modifier = Modifier.scaffoldBackground(paddingValues),
+            modifier = Modifier.scaffoldBackground(PaddingValues(top = paddingValues.calculateTopPadding())),
         ) {
             LazyColumn(
                 modifier = Modifier.weight(1f),
@@ -218,7 +221,14 @@ internal fun BulletinDetailScreen(
                         onMoreVertClick = {
                             event.showBottomSheet(
                                 listOf(
-                                    TextAndOnClick("삭제하기") { event.deleteComment(it.commentId) },
+                                    TextAndOnClick("삭제하기") {
+                                        event.showDialog(
+                                            header = "정말 삭제하시겠습니까?",
+                                            description = "",
+                                            onConfirm = { event.deleteComment(it.commentId) },
+                                            onDismiss = { event.setIsShowDialog(false) },
+                                        )
+                                    },
                                 )
                             )
                         },
@@ -228,7 +238,11 @@ internal fun BulletinDetailScreen(
 
             // 댓글 작성란
             // TODO: ui
-            Row {
+            Row(
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .imePadding(),
+            ) {
                 AsyncImage(
                     model = state.currentDetailBulletin.profileImageUrl,
                     contentDescription = "글쓴이 프로필 사진",
@@ -274,6 +288,15 @@ internal fun BulletinDetailScreen(
             DialogSimpleText(
                 onDismissRequest = { event.setIsShowFailedDialog(false) },
                 text = "처리하지 못했습니다.",
+            )
+        }
+
+        if (state.isShowDialog) {
+            DreamDialog(
+                header = state.dialogHeader,
+                description = state.dialogDescription,
+                onConfirm = state.dialogOnConfirm,
+                onDismiss = state.dialogOnDismiss,
             )
         }
 

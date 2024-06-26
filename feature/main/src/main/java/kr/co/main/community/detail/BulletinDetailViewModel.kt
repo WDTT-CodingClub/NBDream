@@ -16,6 +16,7 @@ internal interface BulletinDetailEvent {
     fun setIsShowBulletinMoreBottomSheet(boolean: Boolean)
     fun setIsShowDeleteCheckDialog(boolean: Boolean)
     fun setIsShowFailedDialog(boolean: Boolean)
+    fun setIsShowDialog(boolean: Boolean)
     fun onCommentWritingInput(input: String)
     fun onPostCommentClick()
     fun loadBulletin(id: Long)
@@ -26,18 +27,34 @@ internal interface BulletinDetailEvent {
 
     fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>)
     fun deleteComment(id: Long)
+    fun showDialog(
+        header: String,
+        description: String,
+        onConfirm: () -> Unit,
+        onDismiss: () -> Unit,
+    )
+
 
     companion object {
         val dummy = object : BulletinDetailEvent {
             override fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) {}
             override fun setIsShowDeleteCheckDialog(boolean: Boolean) {}
             override fun setIsShowFailedDialog(boolean: Boolean) {}
+            override fun setIsShowDialog(boolean: Boolean) {}
             override fun onCommentWritingInput(input: String) {}
             override fun onPostCommentClick() {}
             override fun loadBulletin(id: Long) {}
             override fun deleteBulletin(popBackStack: () -> Unit, onFail: () -> Unit) {}
             override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {}
             override fun deleteComment(id: Long) {}
+            override fun showDialog(
+                header: String,
+                description: String,
+                onConfirm: () -> Unit,
+                onDismiss: () -> Unit,
+            ) {
+            }
+
         }
     }
 
@@ -63,7 +80,30 @@ internal class BulletinDetailViewModel @Inject constructor(
         val isShowDeleteCheckDialog: Boolean = false,
         val isShowFailedDialog: Boolean = false,
         val bottomSheetItems: List<TextAndOnClick> = emptyList(),
+        val isShowDialog: Boolean = false,
+        val dialogHeader: String = "dialogHeader",
+        val dialogDescription: String = "dialogDescription",
+        val dialogOnConfirm: () -> Unit = {},
+        val dialogOnDismiss: () -> Unit = {},
     ) : BaseViewModel.State
+
+
+    override fun showDialog(
+        header: String,
+        description: String,
+        onConfirm: () -> Unit,
+        onDismiss: () -> Unit,
+    ) {
+        updateState {
+            copy(
+                dialogHeader = header,
+                dialogDescription = description,
+                dialogOnConfirm = onConfirm,
+                dialogOnDismiss = onDismiss,
+                isShowDialog = true,
+            )
+        }
+    }
 
     override fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) =
         updateState { copy(isShowBulletinMoreBottomSheet = boolean) }
@@ -73,6 +113,9 @@ internal class BulletinDetailViewModel @Inject constructor(
 
     override fun setIsShowFailedDialog(boolean: Boolean) =
         updateState { copy(isShowFailedDialog = boolean) }
+
+    override fun setIsShowDialog(boolean: Boolean) =
+        updateState { copy(isShowDialog = boolean) }
 
     override fun onCommentWritingInput(input: String) =
         updateState { copy(commentWritingInput = input) }
