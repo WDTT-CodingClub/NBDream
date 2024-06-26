@@ -146,8 +146,8 @@ internal fun BulletinDetailScreen(
                             placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
                         )
                         Column {
-                            Text("닉네임")
-                            Text("2000/00/00 00:00:00")
+                            Text(state.currentDetailBulletin.nickname)
+                            Text(state.currentDetailBulletin.createdTime.toString())
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         IconButton(onClick = {
@@ -178,6 +178,8 @@ internal fun BulletinDetailScreen(
                     val pagerState = rememberPagerState(pageCount = {
                         state.currentDetailBulletin.imageUrls.size
                     })
+                    // TODO: 페이저 화살표 표시. 끝단에서는 해당 방향 화살표 숨기기.
+                    // TODO: 인디케이터...는 나중에...
                     HorizontalPager(state = pagerState) { page ->
                         // TODO: 사진 사이즈 설정해야 할까?
                         AsyncImage(
