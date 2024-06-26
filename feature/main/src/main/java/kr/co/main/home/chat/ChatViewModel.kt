@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kr.co.common.model.CustomErrorType
+import kr.co.common.model.CustomException
 import kr.co.domain.usecase.ai.SendAiChatUseCase
 import kr.co.domain.usecase.user.FetchUserUseCase
 import kr.co.ui.base.BaseViewModel
@@ -25,6 +27,7 @@ internal class ChatViewModel @Inject constructor(
                 }
 
                 loadingScope {
+                    if(currentState.address.isNullOrBlank()) throw CustomException(customError = CustomErrorType.NOT_FOUND)
                     sendAiChatUseCase("1").also {
                         updateState {
                             copy(
@@ -74,6 +77,7 @@ internal class ChatViewModel @Inject constructor(
                 updateState {
                     copy(
                         userName = it.name,
+                        address = it.address,
                         chats = listOf(true to "안녕하세요 ${it.name}님의 토지친구 토봇입니다^^ \n 궁금한 내용을 선택해 주세요!")
                     )
                 }
@@ -108,6 +112,7 @@ internal class ChatViewModel @Inject constructor(
 
     data class State(
         val userName: String = "",
+        val address: String? = null,
         val chats: List<Pair<Boolean, String>> = emptyList(),
 
         val chatType: Int = 0,

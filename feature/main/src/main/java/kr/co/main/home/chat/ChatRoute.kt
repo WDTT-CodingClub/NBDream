@@ -1,6 +1,7 @@
 package kr.co.main.home.chat
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -34,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -45,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.domain.entity.type.CropType
+import kr.co.main.R
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
@@ -116,7 +121,21 @@ private fun ChatScreen(
 
             item {
                 if (state.isAiLoading) {
-                    AiTalk(text = "토지를 분석중 입니다")
+                    AiTalk(
+                        text = "토지를 분석중 입니다",
+                        content = {
+                            Row(
+                                modifier = Modifier
+                                    .fillParentMaxWidth()
+                                    .padding(top = 12.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colors.white
+                                )
+                            }
+                        }
+                    )
                 }
             }
 
@@ -129,6 +148,10 @@ private fun ChatScreen(
                     )
                 }
             }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         }
     }
 }
@@ -137,6 +160,7 @@ private fun ChatScreen(
 private fun AiTalk(
     text: String,
     isProfileVisible: Boolean = true,
+    content: (@Composable () -> Unit)? = null,
 ) {
     Column(
         modifier = Modifier
@@ -149,12 +173,11 @@ private fun AiTalk(
                 horizontalArrangement = Arrangement.spacedBy(9.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
+                Image(
                     modifier = Modifier
                         .size(32.dp),
-                    imageVector = Icons.Filled.Person,
+                    painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_deafault_profile),
                     contentDescription = "tobot",
-                    tint = Color.Unspecified
                 )
                 Text(
                     text = "토봇",
@@ -196,6 +219,7 @@ private fun AiTalk(
                 MarkdownText(
                     text = text
                 )
+                content?.let { it() }
             }
         }
     }
