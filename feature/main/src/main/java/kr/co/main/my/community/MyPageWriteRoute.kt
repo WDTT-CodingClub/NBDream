@@ -27,12 +27,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -78,6 +81,7 @@ private fun MyPageCommunityScreen(
         containerColor = MaterialTheme.colors.background,
         topBar = {
             DreamCenterTopAppBar(
+                modifier = Modifier.background(MaterialTheme.colors.background),
                 title = "작성한 글/댓글 보기",
                 navigationIcon = {
                     IconButton(onClick = popBackStack) {
@@ -100,7 +104,16 @@ private fun MyPageCommunityScreen(
                 .background(MaterialTheme.colors.background)
         ) {
             TabRow(
-                selectedTabIndex = pagerState.currentPage
+                selectedTabIndex = pagerState.currentPage,
+                indicator = { tabPositions ->
+                    TabRowDefaults.SecondaryIndicator(
+                        modifier =  Modifier
+                            .fillMaxWidth()
+                            .tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                        height = 3.dp,
+                        color = Color(0xFF292929)
+                    )
+                }
             ) {
                 listOf("작성한 글", "작성한 댓글").forEachIndexed { index, s ->
                     Tab(
