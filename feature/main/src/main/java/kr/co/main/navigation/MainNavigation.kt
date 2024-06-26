@@ -167,7 +167,7 @@ fun NavGraphBuilder.mainNavGraph(
                             navController.navigate(MyPageRoute.SETTING_ROUTE)
                         },
                         navigateToBookmark = {
-
+                            navController.navigate(MyPageRoute.BOOKMARK_ROUTE)
                         },
                         navigateToWrite = {
                             navController.navigate(MyPageRoute.WRITE_ROUTE)
