@@ -329,14 +329,10 @@ private fun CalendarInfoPicker(
             onSelectYear = onSelectYear,
             onSelectMonth = onSelectMonth
         )
-        if (calendarCrop == null) {
-            Text(
-                text = stringResource(id = R.string.feature_main_calendar_crop_empty)
-            )
-        } else {
+        calendarCrop?.let {
             CalendarCropPicker(
                 userCrops = userCrops,
-                calendarCrop = calendarCrop,
+                calendarCrop = it,
                 onSelectCrop = onSelectCrop
             )
         }
