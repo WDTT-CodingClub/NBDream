@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import kr.co.main.R
-import kr.co.main.providers.FakeWorkDescriptionModelListProvider
+import kr.co.main.providers.calendar.FakeWorkDescriptionModelListProvider
 import kr.co.main.calendar.common.CalendarUnderLineTextField
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.type.WorkDescriptionModelType

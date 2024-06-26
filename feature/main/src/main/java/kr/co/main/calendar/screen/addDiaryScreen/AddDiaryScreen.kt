@@ -3,12 +3,17 @@ package kr.co.main.calendar.screen.addDiaryScreen
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import kr.co.main.calendar.common.AddScreenCenterTopAppBar
 
 @Composable
 internal fun AddDiaryRoute(
@@ -36,16 +41,22 @@ private fun AddDiaryScreen(
         onResult = event::onAddImage
     )
 
-//    Scaffold(
-//        modifier = modifier.fillMaxSize(),
-//        topBar = {
-//            AddDiaryTopBar(
-//                onBackClick = { /* TODO 전 화면으로 이동*/ },
-//                onPostClick = addDiaryScreenInput::onPostClick
-//            )
-//        }
-//    ) { innerPadding ->
-//        Surface(modifier = Modifier.padding(innerPadding)) {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            AddScreenCenterTopAppBar(
+                modifier = Modifier.fillMaxWidth(),
+                screenMode = state.value.screenMode,
+                postModeTitleId = kr.co.main.R.string.feature_main_calendar_top_app_bar_add_diary,
+                editModeTitleId = kr.co.main.R.string.feature_main_calendar_top_app_bar_edit_diary,
+                popBackStack = popBackStack,
+                onPostClick = event::onPostClick,
+                onEditClick = event::onEditClick,
+                onDeleteClick = event::onDeleteClick
+            )
+        }
+    ) { innerPadding ->
+        Surface(modifier = Modifier.padding(innerPadding)) {
 //            Row(modifier = Modifier.fillMaxWidth()) {
 //                DiaryInputWrapper(
 //                    modifier = Modifier.weight(1f),
@@ -92,6 +103,7 @@ private fun AddDiaryScreen(
 //                    )
 //                )
 //            }
-//        }
-//    }
+        }
+    }
 }
+

@@ -40,19 +40,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import kr.co.nbdream.core.ui.R
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Defaultprofile
 import kr.co.ui.icon.dreamicon.Dots
-import kr.co.ui.icon.dreamicon.OutlineEdit
+import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.icon.dreamicon.Tobot
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -107,7 +104,7 @@ private fun MyPageScreen(
                         IconButton(onClick = navigateToProfileEdit) {
                             Icon(
                                 modifier = Modifier.size(32.dp),
-                                imageVector = DreamIcon.OutlineEdit,
+                                imageVector = DreamIcon.Edit,
                                 contentDescription = "edit"
                             )
                         }
@@ -125,9 +122,9 @@ private fun MyPageScreen(
 
             item {
                 ProfileCard(
-                    imageUrl = state.profileImageUrl?: "",
-                    userName = state.name?:"",
-                    address = state.address?: "주소를 설정해 주세요"
+                    imageUrl = state.profileImageUrl ?: "",
+                    userName = state.name ?: "",
+                    address = state.address ?: "주소를 설정해 주세요"
                 )
             }
 
@@ -230,11 +227,11 @@ private fun BulletinCard(
             )
             .padding(24.dp),
     ) {
-        Row (
+        Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-        ){
+        ) {
             Text(
                 text = "재배 작물",
                 style = MaterialTheme.typo.h4,

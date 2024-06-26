@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kr.co.main.calendar.CalendarDesignToken
 
 @Composable
 internal fun CalendarCategoryIndicator(
@@ -18,7 +19,7 @@ internal fun CalendarCategoryIndicator(
 ) {
     Box(
         modifier = modifier
-            .size(kr.co.main.calendar.CalendarDesignToken.CROP_COLOR_SHAPE_SIZE.dp)
+            .size(CalendarDesignToken.CROP_COLOR_SHAPE_SIZE.dp)
             .clip(CircleShape)
             .background(Color(categoryColor)),
     )

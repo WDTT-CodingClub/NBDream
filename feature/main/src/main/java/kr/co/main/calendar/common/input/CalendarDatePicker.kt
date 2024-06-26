@@ -1,4 +1,4 @@
-package kr.co.main.calendar.common
+package kr.co.main.calendar.common.input
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -9,12 +9,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kr.co.common.util.toDateString
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun CalendarDatePicker(
@@ -32,7 +32,7 @@ internal fun CalendarDatePicker(
         ) {
             Text(
                 modifier = Modifier,
-                text = date.toDateString(),
+                text = date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
                 style = MaterialTheme.typo.bodyM,
                 color = MaterialTheme.colors.text1
             )
