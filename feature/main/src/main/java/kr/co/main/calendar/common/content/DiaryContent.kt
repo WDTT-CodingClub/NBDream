@@ -21,17 +21,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import kr.co.common.util.toTitleDateString
 import kr.co.main.R
-import kr.co.main.providers.FakeDiaryModelProvider
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.HolidayModel
+import kr.co.main.providers.calendar.FakeDiaryModelProvider
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.GreenIcon
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 private const val HORIZONTAL_DIVIDER_HEIGHT = 0.5
 
@@ -44,7 +44,7 @@ internal fun DiaryContent(
         modifier = modifier
     ) {
         DiaryTitle(
-            date = diary.date,
+            registerDate = diary.date,
             holidays = diary.holidays
         )
         HorizontalDivider(
@@ -70,14 +70,14 @@ internal fun DiaryContent(
 
 @Composable
 private fun DiaryTitle(
-    date: LocalDate,
+    registerDate: LocalDate,
     holidays: List<HolidayModel>,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
         Text(
             modifier = Modifier.padding(end = Paddings.medium),
-            text = date.toTitleDateString(),
+            text = registerDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
             style = MaterialTheme.typo.header2M,
             color = MaterialTheme.colors.text1
         )
