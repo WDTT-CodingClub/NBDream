@@ -16,6 +16,8 @@ internal data class BulletinResDto(
     val createdTime: String? = null,
     val comments: List<CommentResDto>? = null,
     val bookmarkedCount: Int? = null,
+    val author: Boolean? = null,
+    val bookmarked: Boolean? = null,
 )
 
 
@@ -31,6 +33,8 @@ internal fun BulletinResDto.convertToData() = BulletinResData(
     createdTime = createdTime,
     comments = comments?.convertToDataList(),
     bookmarkedCount = bookmarkedCount,
+    author = author,
+    bookmarked = bookmarked,
 )
 
 internal fun List<BulletinResDto>.convertToDataList() = this.map { it.convertToData() }
