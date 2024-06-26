@@ -1,4 +1,4 @@
-package kr.co.main.calendar.common
+package kr.co.main.calendar.common.input
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
