@@ -7,9 +7,9 @@ import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-internal class MyPageCommunityViewModel @Inject constructor(
+internal class MyPageWriteViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
-) : BaseViewModel<MyPageCommunityViewModel.State>(savedStateHandle){
+) : BaseViewModel<MyPageWriteViewModel.State>(savedStateHandle){
 
     data class State(
         val state: Any? = null

@@ -53,6 +53,7 @@ import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Defaultprofile
 import kr.co.ui.icon.dreamicon.Dots
 import kr.co.ui.icon.dreamicon.OutlineEdit
+import kr.co.ui.icon.dreamicon.Tobot
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -65,7 +66,6 @@ internal fun MyPageRoute(
     navigateToSetting: () -> Unit = {},
     navigateToBookmark: () -> Unit = {},
     navigateToWrite: () -> Unit = {},
-    navigateToComment: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -79,7 +79,6 @@ internal fun MyPageRoute(
         navigateToSetting = navigateToSetting,
         navigateToBookmark = navigateToBookmark,
         navigateToWrite = navigateToWrite,
-        navigateToComment = navigateToComment,
         showCropModal = { showCropModal.invoke(true) }
     )
 }
@@ -92,7 +91,6 @@ private fun MyPageScreen(
     navigateToSetting: () -> Unit = {},
     navigateToBookmark: () -> Unit = {},
     navigateToWrite: () -> Unit = {},
-    navigateToComment: () -> Unit = {},
 ) {
     Surface {
         LazyColumn(
@@ -138,7 +136,6 @@ private fun MyPageScreen(
                 CommunityCard(
                     navigateToBookmark = navigateToBookmark,
                     navigateToWrite = navigateToWrite,
-                    navigateToComment = navigateToComment
                 )
             }
 
@@ -157,7 +154,6 @@ private fun MyPageScreen(
 private fun CommunityCard(
     navigateToBookmark: () -> Unit = {},
     navigateToWrite: () -> Unit = {},
-    navigateToComment: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -183,8 +179,7 @@ private fun CommunityCard(
         ) {
             listOf(
                 "저장한 글 보러가기",
-                "작성한 글 보러가기",
-                "작성한 댓글 보러가기"
+                "작성한 글/댓글 보러가기",
             ).forEachIndexed { index, text ->
                 Row(
                     modifier = Modifier
@@ -193,7 +188,6 @@ private fun CommunityCard(
                             when (index) {
                                 0 -> navigateToBookmark()
                                 1 -> navigateToWrite()
-                                2 -> navigateToComment()
                             }
                         },
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -380,10 +374,10 @@ private fun ProfileCard(
                 .size(88.dp)
                 .clip(CircleShape),
             model = imageUrl,
-            error = painterResource(id = R.drawable.img_deafault_profile),
+            error = rememberVectorPainter(image = DreamIcon.Tobot),
             contentDescription = "User's profile image",
             contentScale = ContentScale.Crop,
-            placeholder = painterResource(id = R.drawable.img_deafault_profile)
+            placeholder = rememberVectorPainter(image = DreamIcon.Tobot)
         )
 
         Column(
