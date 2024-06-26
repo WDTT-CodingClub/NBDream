@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -42,18 +43,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
+import kr.co.main.R
 import kr.co.main.community.SharingData
 import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
+import kr.co.ui.widget.DreamCenterTopAppBar
 import java.io.File
 
 @Composable
@@ -96,7 +101,35 @@ internal fun BulletinWritingScreen(
     onCategoryClick: (BulletinEntity.BulletinCategory) -> Unit = {},
 ) {
 
-    Scaffold(modifier = modifier) { paddingValues ->
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            DreamCenterTopAppBar(
+                title = "글쓰기",
+                navigationIcon = {
+                    IconButton(onClick = popBackStack) {
+                        Icon(
+                            modifier = Modifier.size(32.dp),
+                            imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
+                            contentDescription = stringResource(R.string.feature_main_pop_back_stack)
+                        )
+                    }
+                },
+                actions = {
+                    TextButton(onClick = {
+                        setIsShowWaitingDialog(true)
+                        onFinishWritingClick(popBackStack)
+                    }) {
+                        Text(
+                            text = "등록",
+                            style = MaterialTheme.typo.body2,
+                            color = MaterialTheme.colors.gray3
+                        )
+                    }
+                },
+            )
+        },
+    ) { paddingValues ->
 
         val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
@@ -109,30 +142,30 @@ internal fun BulletinWritingScreen(
             modifier = Modifier.scaffoldBackground(paddingValues),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            item {
-                Row {
-                    IconButton(onClick = popBackStack) {
-                        Icon(
-                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
-                            contentDescription = "뒤로가기 아이콘",
-                        )
-                    }
-                    Text(
-                        "${state.currentBoard.koreanName} 글쓰기",
-                        modifier = Modifier.weight(1f),
-                    )
-                    TextButton(onClick = {
-                        setIsShowWaitingDialog(true)
-                        onFinishWritingClick(popBackStack)
-                    }) {
-//                TextButton(onClick = onFinishWritingClick) {
-                        Text(
-                            "등록",
-                            Modifier.padding(horizontal = 20.dp, vertical = 0.dp),
-                        )
-                    }
-                }
-            }
+//            item {
+//                Row {
+//                    IconButton(onClick = popBackStack) {
+//                        Icon(
+//                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
+//                            contentDescription = "뒤로가기 아이콘",
+//                        )
+//                    }
+//                    Text(
+//                        "${state.currentBoard.koreanName} 글쓰기",
+//                        modifier = Modifier.weight(1f),
+//                    )
+//                    TextButton(onClick = {
+//                        setIsShowWaitingDialog(true)
+//                        onFinishWritingClick(popBackStack)
+//                    }) {
+////                TextButton(onClick = onFinishWritingClick) {
+//                        Text(
+//                            "등록",
+//                            Modifier.padding(horizontal = 20.dp, vertical = 0.dp),
+//                        )
+//                    }
+//                }
+//            }
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -158,7 +191,7 @@ internal fun BulletinWritingScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(300.dp),
-                    placeholder = { Text("내용을 입력하세요") },
+                    placeholder = { Text("'${state.currentBoard.koreanName}'에 대해 이야기해보세요!") },
                 )
             }
             item {
