@@ -204,7 +204,7 @@ private fun CommunityCard(
                         tint = MaterialTheme.colors.gray5,
                     )
                 }
-                if (index < 2)
+                if (index < 1)
                     HorizontalDivider(
                         thickness = 1.dp,
                         color = MaterialTheme.colors.gray8

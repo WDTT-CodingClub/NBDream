@@ -38,19 +38,14 @@ import timber.log.Timber
 @Composable
 internal fun BulletinDetailRoute(
     popBackStack: () -> Unit,
-    id: Long,
     modifier: Modifier = Modifier,
     viewModel: BulletinDetailViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(key1 = id) {
-        viewModel.loadBulletin(id)
-    }
     val state by viewModel.state.collectAsStateWithLifecycle()
     BulletinDetailScreen(
         modifier = modifier,
         state = state,
         popBackStack = popBackStack,
-        id = id,
         onCommentWritingInput = viewModel::onCommentWritingInput,
     )
 }

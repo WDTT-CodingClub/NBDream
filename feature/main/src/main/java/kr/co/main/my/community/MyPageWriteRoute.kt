@@ -4,17 +4,22 @@ package kr.co.main.my.community
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -61,12 +66,14 @@ import kr.co.ui.widget.DreamCenterTopAppBar
 internal fun MyPageWriteRoute(
     viewModel: MyPageWriteViewModel = hiltViewModel(),
     popBackStack: () -> Unit = {},
+    navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     MyPageCommunityScreen(
         state = state,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        navigateToBulletinDetail = navigateToBulletinDetail
     )
 }
 
@@ -76,6 +83,7 @@ private fun MyPageCommunityScreen(
     pagerState: PagerState = rememberPagerState { 2 },
     scope: CoroutineScope = rememberCoroutineScope(),
     popBackStack: () -> Unit = {},
+    navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     Scaffold(
         containerColor = MaterialTheme.colors.background,
@@ -107,7 +115,7 @@ private fun MyPageCommunityScreen(
                 selectedTabIndex = pagerState.currentPage,
                 indicator = { tabPositions ->
                     TabRowDefaults.SecondaryIndicator(
-                        modifier =  Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .tabIndicatorOffset(tabPositions[pagerState.currentPage]),
                         height = 3.dp,
@@ -140,25 +148,27 @@ private fun MyPageCommunityScreen(
                 userScrollEnabled = false,
                 state = pagerState
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    item {
-                        Spacer(modifier = Modifier.height(17.dp))
-                    }
-                    item {
-                        when (pagerState.currentPage) {
-                            0 -> {
-                                PostCard()
-                            }
-
-                            1 -> {
-                                CommentCard()
-                            }
+                when (pagerState.currentPage) {
+                    0 -> ContentPage(
+                        items = state.bulletins,
+                        emptyText = "아직 작성한 게시글이 없어요",
+                        content = { bulletin ->
+                            PostCard(
+                                bulletin = bulletin,
+                                navigateToBulletinDetail = navigateToBulletinDetail
+                            )
                         }
-                    }
+                    )
+                    1 -> ContentPage(
+                        items = state.comments,
+                        emptyText = "아직 작성한 댓글이 없어요",
+                        content = { comment ->
+                            CommentCard(
+                                comment = comment,
+                                navigateToBulletinDetail = navigateToBulletinDetail
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -166,10 +176,58 @@ private fun MyPageCommunityScreen(
 }
 
 @Composable
-private fun PostCard() {
+fun <T> ContentPage(
+    items: List<T>,
+    emptyText: String,
+    content: @Composable (T) -> Unit
+) {
+    if (items.isEmpty()) {
+        EmptyCard(emptyText)
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item { Spacer(modifier = Modifier.height(1.dp)) }
+            items(items) { item ->
+                content(item)
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyCard(
+    text: String,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .aspectRatio(
+                375 / 780f
+            ),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typo.h4,
+            color = MaterialTheme.colors.gray5
+        )
+    }
+}
+
+@Composable
+private fun PostCard(
+    bulletin: MyPageWriteViewModel.State.Bulletin,
+    navigateToBulletinDetail: (Long) -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { navigateToBulletinDetail(bulletin.id) }
             .background(
                 color = MaterialTheme.colors.white,
                 shape = RoundedCornerShape(12.dp)
@@ -191,7 +249,7 @@ private fun PostCard() {
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "불타는 감자",
+                    text = bulletin.content,
                     style = MaterialTheme.typo.body1,
                     color = MaterialTheme.colors.gray1,
                     overflow = TextOverflow.Ellipsis,
@@ -199,7 +257,7 @@ private fun PostCard() {
                 )
 
                 Text(
-                    text = "2024/05/08 23:11:01",
+                    text = bulletin.createdAt,
                     style = MaterialTheme.typo.body2,
                     color = MaterialTheme.colors.gray5
                 )
@@ -209,7 +267,7 @@ private fun PostCard() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "댓글 29개",
+                    text = "댓글 ${bulletin.commentCount}개",
                     fontFamily = MaterialTheme.typo.body1.fontFamily,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
@@ -229,7 +287,7 @@ private fun PostCard() {
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
-                    text = "50",
+                    text = bulletin.bookmarkedCount.toString(),
                     style = MaterialTheme.typo.body2,
                     color = MaterialTheme.colors.gray5
                 )
@@ -240,7 +298,7 @@ private fun PostCard() {
             modifier = Modifier
                 .size(80.dp)
                 .padding(bottom = 10.dp),
-            model = "https://storage.googleapis.com/nbdream_bucket_1/default/default-profile.png",
+            model = bulletin.thumbnail,
             contentDescription = "작성한 글 이미지",
             contentScale = ContentScale.Crop
         )
@@ -248,10 +306,14 @@ private fun PostCard() {
 }
 
 @Composable
-private fun CommentCard() {
+private fun CommentCard(
+    comment: MyPageWriteViewModel.State.Comment,
+    navigateToBulletinDetail: (Long) -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { navigateToBulletinDetail(comment.bulletinId) }
             .background(
                 color = MaterialTheme.colors.white,
                 shape = RoundedCornerShape(12.dp)
@@ -263,7 +325,7 @@ private fun CommentCard() {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "불타는 감자가요?",
+            text = comment.authorName,
             style = MaterialTheme.typo.body1,
             color = MaterialTheme.colors.gray1,
             overflow = TextOverflow.Ellipsis,
@@ -271,13 +333,13 @@ private fun CommentCard() {
         )
 
         Text(
-            text = "어쩌구 저쩌구 댓글 내용",
+            text = comment.content,
             style = MaterialTheme.typo.body2,
             color = MaterialTheme.colors.gray5
         )
 
         Text(
-            text = "2024/05/08 23:11:01",
+            text = comment.createAt.let { "${it.year}/${it.monthValue}/${it.dayOfMonth} ${it.hour}:${it.minute}" },
             style = MaterialTheme.typo.body2,
             color = MaterialTheme.colors.gray5
         )

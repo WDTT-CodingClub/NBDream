@@ -17,6 +17,7 @@ internal class BulletinDetailViewModel @Inject constructor(
     private val communityRepository: CommunityRepository,
 ) : BaseViewModel<BulletinDetailViewModel.State>(savedStateHandle) {
 
+    private val id: Long = savedStateHandle.get<Long>("id") ?: 0L
     override fun createInitialState(savedState: Parcelable?) = State()
 
     data class State(
@@ -38,7 +39,7 @@ internal class BulletinDetailViewModel @Inject constructor(
         updateState { copy(currentDetailBulletin = entity) }
     }
 
-    fun loadBulletin(id: Long) {
+    init {
         viewModelScope.launch {
             setCurrentDetailBulletinId(id)
             Timber.d("loadBulletin 코루틴 시작, id: $id")
