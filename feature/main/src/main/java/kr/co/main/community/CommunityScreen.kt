@@ -184,7 +184,7 @@ internal fun BulletinCard(
                     Column {
                         Text("${bulletin.authorId}의닉네임")
                         Text(
-                            text = bulletin.createdTime,
+                            text = bulletin.createdTime.toString(),
                             color = Color.Gray,
                         )
                     }

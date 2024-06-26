@@ -46,6 +46,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kr.co.common.util.format
+import kr.co.domain.entity.BulletinEntity
+import kr.co.domain.entity.CommentEntity
 import kr.co.main.R
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
@@ -111,7 +114,7 @@ private fun MyPageBookmarkScreen(
 
 @Composable
 private fun PostCard(
-
+    bulletin: BulletinEntity = BulletinEntity.dummy(4)
 ) {
     Column(
         modifier = Modifier
@@ -132,7 +135,7 @@ private fun PostCard(
         ) {
             AsyncImage(
                 modifier = Modifier.size(54.dp),
-                model = "",
+                model = bulletin.profileImageUrl,
                 contentDescription = "작성자 프로필 이미지",
                 contentScale = ContentScale.Crop,
                 placeholder = rememberVectorPainter(image = DreamIcon.Tobot),
@@ -145,7 +148,7 @@ private fun PostCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "불타는 감자",
+                    text = bulletin.nickname,
                     style = MaterialTheme.typo.body1,
                     color = MaterialTheme.colors.gray1,
                     maxLines = 1,
@@ -153,7 +156,7 @@ private fun PostCard(
                 )
                 
                 Text(
-                    text = "2024/05/08 23:11:01",
+                    text = bulletin.createdTime.format("yyyy/MM/dd HH:mm"),
                     style = MaterialTheme.typo.body2,
                     color = MaterialTheme.colors.gray5
                 )
@@ -171,7 +174,7 @@ private fun PostCard(
             )
 
             Text(
-                text = "50",
+                text = bulletin.bookmarkedCount.toString(),
                 style = MaterialTheme.typo.body2,
                 color = MaterialTheme.colors.gray5
             )
@@ -180,17 +183,17 @@ private fun PostCard(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "이건 내가 심은 감자이고 나는 말하는 감자이다..이건 내가 심은 감자이고 나는 말하는 감자이다..이건 내가 심은 감자이고 나는 말하는 감자이다..이건 내가 심은 감자이고 나는 말하는 감자이다..이건 내가 심은 감자이고 나는 말하는 감자이다..",
+            text = bulletin.content,
             style = MaterialTheme.typo.body1,
             color = MaterialTheme.colors.gray1,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
 
-        ImageGrid(imageUrls = List(5) { "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoUYZj6uQB5p6HzmZzOpZ8kk1bKsmePhmCRQ&s" })
+        ImageGrid(bulletin.imageUrls)
 
         Text(
-            text = "댓글 29개",
+            text = "댓글 ${bulletin.comments.size}개",
             fontFamily = MaterialTheme.typo.body1.fontFamily,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
@@ -198,14 +201,18 @@ private fun PostCard(
             color = MaterialTheme.colors.gray5
         )
 
-        CommentRow(
-
-        )
+        bulletin.comments.firstOrNull()?.let {
+            CommentRow(
+                it
+            )
+        }
     }
 }
 
 @Composable
-private fun CommentRow() {
+private fun CommentRow(
+    comment: CommentEntity
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -214,21 +221,21 @@ private fun CommentRow() {
     ) {
         AsyncImage(
             modifier = Modifier.size(40.dp),
-            model = "",
-            contentDescription = "댓글 작성자 프로필 이미지"
+            model = comment.profileImageUrl,
+            contentDescription = "${comment.nickname}의 프로필 이미지"
         )
 
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "유바비",
+                text = comment.nickname,
                 style = MaterialTheme.typo.body1,
                 color = MaterialTheme.colors.gray1
             )
 
             Text(
-                text = "정말 좋은 생각이야",
+                text = comment.content,
                 style = MaterialTheme.typo.body1,
                 color = MaterialTheme.colors.gray1,
                 maxLines = 2,

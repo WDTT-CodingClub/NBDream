@@ -2,6 +2,8 @@ package kr.co.remote.model.response.community
 
 import kotlinx.serialization.Serializable
 import kr.co.data.model.data.community.BulletinResData
+import kr.co.remote.serializer.LocalDateTimeSerializer
+import java.time.LocalDateTime
 
 @Serializable
 internal data class BulletinResDto(
@@ -13,7 +15,10 @@ internal data class BulletinResDto(
     val crop: String? = null,
     val imageUrls: List<String>? = null,
     val bulletinCategory: String? = null,
-    val createdTime: String? = null,
+
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val createdTime: LocalDateTime? = null,
+
     val comments: List<CommentResDto>? = null,
     val bookmarkedCount: Int? = null,
     val author: Boolean? = null,
