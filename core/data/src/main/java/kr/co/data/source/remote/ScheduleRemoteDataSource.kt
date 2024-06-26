@@ -5,7 +5,7 @@ import kr.co.data.model.data.calendar.ScheduleData
 
 interface ScheduleRemoteDataSource {
     suspend fun fetchList(
-        crop:String,
+        category:String,
         weekStartDate:String
     ): Flow<List<ScheduleData>>
 

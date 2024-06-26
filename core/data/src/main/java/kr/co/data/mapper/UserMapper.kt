@@ -11,6 +11,7 @@ internal object UserMapper
             UserEntity(
                 name = name,
                 address = address,
+                bjdCode = bjdCode,
                 profileImage = profileImage,
                 longitude = longitude,
                 latitude = latitude,
@@ -28,7 +29,7 @@ internal object UserMapper
                 profileImage = profileImage,
                 longitude = longitude,
                 latitude = latitude,
-                crops = crops
+                crops = crops?: emptyList()
             )
         }
     }

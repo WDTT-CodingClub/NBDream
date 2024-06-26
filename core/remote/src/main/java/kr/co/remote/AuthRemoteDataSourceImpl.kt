@@ -44,10 +44,8 @@ internal class AuthRemoteDataSourceImpl @Inject constructor(
             url {
                 parameters.append("token", token)
             }
-        }.body<Dto<PostAuthResponse>>()
-            .let {
-                PostAuthMapper.convert(it.data)
-            }
+        }.body<Dto<PostAuthResponse>>().data
+            .let(PostAuthMapper::convert)
 
 
     override suspend fun register(

@@ -2,7 +2,6 @@ package kr.co.main.home
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.TweenSpec
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,7 +21,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,8 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -54,20 +51,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.main.home.HomeViewModel.State.WeatherDetail
 import kr.co.main.home.HomeViewModel.State.WeatherSimple
+import kr.co.main.mapper.home.WeatherSkyMapper
 import kr.co.main.model.home.WeatherMetrics
-import kr.co.main.model.home.toSky
 import kr.co.ui.ext.noRippleClickable
-import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Bell
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamTopAppBar
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 internal fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToNotification: () -> Unit = {},
+    navigateToAddress: () -> Unit = {},
     navigateToChat: () -> Unit = {},
     navigateToCalendar: () -> Unit = {}
 ) {
@@ -76,6 +75,7 @@ internal fun HomeRoute(
     HomeScreen(
         state = state,
         navigateToNotification = navigateToNotification,
+        navigateToAddress = navigateToAddress,
         navigateToChat = navigateToChat,
         navigateToCalendar = navigateToCalendar
     )
@@ -85,13 +85,10 @@ internal fun HomeRoute(
 private fun HomeScreen(
     state: HomeViewModel.State = HomeViewModel.State(),
     navigateToNotification: () -> Unit = {},
+    navigateToAddress: () -> Unit = {},
     navigateToChat: () -> Unit = {},
-    navigateToCalendar: () -> Unit = {}
+    navigateToCalendar: () -> Unit = {},
 ) {
-    var maxWidth by remember {
-        mutableIntStateOf(0)
-    }
-
     Surface(
         color = MaterialTheme.colors.gray9,
     ) {
@@ -105,15 +102,16 @@ private fun HomeScreen(
                 DreamTopAppBar(
                     title = "내 농장",
                     description = state.address.let {
-                        if (it.isNullOrBlank()) "산 좋고 물 좋 나만의 농장 1번지" else it
+                        if (it.isNullOrBlank()) "농장 주소 설정하러 가기" else it
                     },
+                    descriptionAction = navigateToAddress,
                     actions = {
-                        IconButton(onClick = navigateToNotification) {
-                            Icon(
-                                imageVector = DreamIcon.Bell,
-                                contentDescription = "notification"
-                            )
-                        }
+//                        IconButton(onClick = navigateToNotification) {
+//                            Icon(
+//                                imageVector = DreamIcon.Bell,
+//                                contentDescription = "notification"
+//                            )
+//                        }
                     }
                 )
             }
@@ -163,9 +161,14 @@ private fun HomeScreen(
                             color = MaterialTheme.colors.white,
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .padding(24.dp),
+                        .padding(24.dp)
+                        .animateContentSize(
+                            animationSpec = TweenSpec(
+                                durationMillis = 500
+                            )
+                        ),
                 ) {
-                    if (true) {
+                    if (state.schedules.isEmpty()) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -189,84 +192,143 @@ private fun HomeScreen(
                             Icon(
                                 modifier = Modifier.clearAndSetSemantics {},
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.grey5
                             )
                         }
                     } else {
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(
-                                    style = MaterialTheme.typo.h4.copy(
-                                        color = MaterialTheme.colors.gray1
-                                    ).toSpanStyle()
-                                ) {
-                                    append("5월 24일 일 ")
-                                }
-                                withStyle(
-                                    style = MaterialTheme.typo.body1.copy(
-                                        color = MaterialTheme.colors.gray2
-                                    ).toSpanStyle()
-                                ) {
-                                    append(" 소만 ")
-                                }
-                                append(" 오늘")
-                            },
-                            style = MaterialTheme.typo.body1,
-                            color = MaterialTheme.colors.primary
+                        ScheduleCard(
+                            schedules = state.schedules
                         )
-                        Spacer(modifier = Modifier.height(36.dp))
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .onGloballyPositioned {
-                                    maxWidth = it.size.width
-                                },
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            val dummy = listOf(
-                                Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
-                                Triple("감자 물 관리 작업", "2024.05.16", "2024.05.21"),
-                                Triple("감자 물 관리 작업 감자 물 관리 작업", "2024.05.16", "2024.05.21"),
-                            )
-                            dummy.forEachIndexed { index, value ->
-                                ScheduleText(
-                                    parentWidth = maxWidth,
-                                    title = value.first,
-                                    startDate = value.second,
-                                    endDate = value.third
-                                )
-                                if (index != dummy.lastIndex)
-                                    HorizontalDivider(
-                                        thickness = 1.dp,
-                                        color = MaterialTheme.colors.gray8
-                                    )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(48.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "펼쳐보기",
-                                style = MaterialTheme.typo.label,
-                                color = MaterialTheme.colors.gray3
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Icon(
-                                modifier = Modifier.size(20.dp),
-                                imageVector = Icons.Filled.KeyboardArrowDown,
-                                contentDescription = "expand"
-                            )
-                        }
                     }
                 }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
 
+}
+
+@Composable
+private fun ScheduleCard(
+    schedules: List<HomeViewModel.State.Schedule>
+) {
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    schedules.groupBy { it.startDate }.apply {
+        firstNotNullOf { (startDate, schedules) ->
+            ScheduleContents(
+                startDate = startDate,
+                isToday = true,
+                schedules = schedules
+            )
+        }
+    }.entries.drop(1).forEach { (startDate, schedules) ->
+
+        if (expanded) {
+            Spacer(modifier = Modifier.height(48.dp))
+
+            ScheduleContents(
+                startDate = startDate,
+                schedules = schedules
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(48.dp))
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .noRippleClickable(onClick = { expanded = !expanded }),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = if (!expanded) "펼쳐보기" else "접기",
+            style = MaterialTheme.typo.label,
+            color = MaterialTheme.colors.gray3
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Icon(
+            modifier = Modifier.size(20.dp),
+            imageVector = if (!expanded) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowUp,
+            contentDescription = "expand",
+            tint = MaterialTheme.colors.gray5
+        )
+    }
+}
+
+@Composable
+private fun ScheduleContents(
+    startDate: LocalDate,
+    isToday: Boolean = false,
+    schedules: List<HomeViewModel.State.Schedule>,
+) {
+    var maxWidth by remember {
+        mutableIntStateOf(0)
+    }
+    Text(
+        text = buildAnnotatedString {
+            withStyle(
+                style = MaterialTheme.typo.h4.copy(
+                    color = MaterialTheme.colors.gray1
+                ).toSpanStyle()
+            ) {
+                startDate.apply {
+                    append(
+                        "${monthValue}월 ${dayOfMonth}일 ${
+                            dayOfWeek.getDisplayName(
+                                TextStyle.SHORT,
+                                Locale.KOREAN
+                            )
+                        } "
+                    )
+                }
+            }
+            withStyle(
+                style = MaterialTheme.typo.body1.copy(
+                    color = MaterialTheme.colors.gray2
+                ).toSpanStyle()
+            ) {
+                append("")
+            }
+            if (isToday) append(" 오늘")
+        },
+        style = MaterialTheme.typo.body1,
+        color = MaterialTheme.colors.primary
+    )
+    Spacer(modifier = Modifier.height(36.dp))
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .onGloballyPositioned {
+                maxWidth = it.size.width
+            },
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        schedules.forEachIndexed { index, schedule ->
+            ScheduleText(
+                parentWidth = maxWidth,
+                title = schedule.title,
+                startDate = schedule.startDate.toString(),
+                endDate = schedule.endDate.toString()
+            )
+            if (index < schedules.lastIndex)
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colors.gray8
+                )
+        }
+    }
 }
 
 @Composable
@@ -312,14 +374,15 @@ private fun WeatherCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
+                Icon(
                     modifier = Modifier
                         .size(
                             width = 104.dp,
                             height = 69.33.dp
                         ),
-                    painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_sunny),
-                    contentDescription = "weather state"
+                    imageVector = todayWeather.weather.let(WeatherSkyMapper::convert),
+                    contentDescription = "weather state",
+                    tint = Color.Unspecified
                 )
 
                 Column(
@@ -369,10 +432,11 @@ private fun WeatherCard(
             }
             Row(
                 modifier = Modifier
-                    .wrapContentSize()
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
                     .align(Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 WeatherMetrics.entries.forEachIndexed { index, value ->
                     WeatherState(
@@ -381,10 +445,10 @@ private fun WeatherCard(
                         },
                         title = value.label,
                         measure = when (value) {
-                            WeatherMetrics.Probability -> todayWeather.probability ?: 0
-                            WeatherMetrics.Precipitation -> todayWeather.precipitation ?: 0
-                            WeatherMetrics.Humidity -> todayWeather.humidity ?: 0
-                            WeatherMetrics.Wind -> todayWeather.wind ?: 0
+                            WeatherMetrics.Probability -> todayWeather.probability
+                            WeatherMetrics.Precipitation -> todayWeather.precipitation
+                            WeatherMetrics.Humidity -> todayWeather.humidity
+                            WeatherMetrics.Wind -> todayWeather.wind
                         },
                         unit = value.unit
                     )
@@ -402,55 +466,78 @@ private fun WeatherCard(
         }
 
         if (expanded) {
-            weatherList?.forEach {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+            Column {
+                Text(
+                    text = "주간 날씨",
+                    style = MaterialTheme.typo.h4,
+                    color = MaterialTheme.colors.gray1
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = it.day,
-                        style = MaterialTheme.typo.body1.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            lineHeight = 20.em,
-                        ),
-                        color = MaterialTheme.colors.gray1
-                    )
+                    weatherList?.forEachIndexed { index, it ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = it.day.dayOfWeek.getDisplayName(
+                                    TextStyle.FULL,
+                                    Locale.KOREAN
+                                ),
+                                style = MaterialTheme.typo.body1.copy(
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp,
+                                    lineHeight = 20.sp,
+                                ),
+                                color = MaterialTheme.colors.gray1
+                            )
 
-                    Spacer(modifier = Modifier.weight(1f))
+                            Spacer(modifier = Modifier.weight(1f))
 
-                    Image(
-                        modifier = Modifier.size(36.dp),
-                        painter = toSky(it.weather),
-                        contentDescription = it.weather
-                    )
+                            Icon(
+                                modifier = Modifier.size(36.dp),
+                                imageVector = it.weather.let(WeatherSkyMapper::convert),
+                                contentDescription = it.weather,
+                                tint = Color.Unspecified
+                            )
 
-                    Spacer(modifier = Modifier.weight(1f))
+                            Spacer(modifier = Modifier.weight(1f))
 
-                    Text(
-                        text = "${it.maxTemperature}°",
-                        style = MaterialTheme.typo.body1.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            lineHeight = 20.em,
-                        ),
-                        color = MaterialTheme.colors.red
-                    )
+                            Text(
+                                text = "${it.maxTemperature}°",
+                                style = MaterialTheme.typo.body1.copy(
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp,
+                                    lineHeight = 20.em,
+                                ),
+                                color = MaterialTheme.colors.red
+                            )
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(16.dp))
 
-                    Text(
-                        text = "${it.minTemperature}°",
-                        style = MaterialTheme.typo.body1.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            lineHeight = 20.em,
-                        ),
-                        color = MaterialTheme.colors.gray4
-                    )
+                            Text(
+                                text = "${it.minTemperature}°",
+                                style = MaterialTheme.typo.body1.copy(
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp,
+                                    lineHeight = 20.em,
+                                ),
+                                color = MaterialTheme.colors.gray4
+                            )
+
+                        }
+                        if (index != weatherList.lastIndex)
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = MaterialTheme.colors.gray8
+                            )
+                    }
                 }
             }
         }

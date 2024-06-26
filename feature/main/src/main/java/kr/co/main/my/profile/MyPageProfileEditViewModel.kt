@@ -30,11 +30,17 @@ internal class MyPageProfileEditViewModel @Inject constructor(
         copy(name = name)
     }
 
-    fun onAddressChanged(address: String) = updateState {
-        copy(address = address)
+    fun onAddressChanged(
+        address: String?,
+        bCode: String?
+    ) = updateState {
+        copy(
+            address = address,
+            bCode = bCode
+        )
     }
 
-    private fun onImageChanged(url: String) = updateState {
+    fun onImageChanged(url: String?) = updateState {
         copy(profileImageUrl = url)
     }
 
@@ -62,15 +68,16 @@ internal class MyPageProfileEditViewModel @Inject constructor(
                 copy(nameValid = this@run)
             }
             if (this) {
-                registerUserUseCase(
-                    UserEntity(
-                        name = currentState.name!!,
-                        profileImage = currentState.profileImageUrl,
-                        address = currentState.address,
-                        latitude = currentState.latitude,
-                        longitude = currentState.longitude
-                    )
-                )
+                UserEntity(
+                    name = currentState.name!!,
+                    profileImage = currentState.profileImageUrl?: "https://storage.googleapis.com/nbdream_bucket_1/default/default-profile.png",
+                    bjdCode = currentState.bCode,
+                    address = currentState.address,
+                    latitude = currentState.latitude,
+                    longitude = currentState.longitude
+                ).run {
+                    registerUserUseCase(this)
+                }
             } else {
                 throw IllegalArgumentException("InValid")
             }
@@ -88,8 +95,8 @@ internal class MyPageProfileEditViewModel @Inject constructor(
             fetchUserUseCase.invoke()
                 .collectLatest {
                     onNameChanged(it.name)
-                    onAddressChanged(it.address ?: "")
-                    onImageChanged(it.profileImage ?: "")
+                    onAddressChanged(it.address, it.bjdCode)
+                    onImageChanged(it.profileImage)
                 }
         }
     }
@@ -101,13 +108,14 @@ internal class MyPageProfileEditViewModel @Inject constructor(
         val nameValid: Boolean = true,
         val profileImageUrl: String? = null,
         val address: String? = null,
+        val bCode: String? = null,
         val latitude: Double? = null,
         val longitude: Double? = null,
     ) : BaseViewModel.State {
         val nameGuide: String?
             get() = when {
                 name.isNullOrBlank() -> "이름을 입력해주세요"
-                name.length < 2 || name.length > 12 -> "이름은 최소 2글자 이상 12글자 이하 이어야 합니다"
+                name.length < 2 || name.length > 16 -> "이름은 최소 2글자 이상 16글자 이하 이어야 합니다"
                 !nameValid -> "이름은 영문, 한글, 숫자만 가능합니다"
                 else -> null
             }

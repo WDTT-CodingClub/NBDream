@@ -4,7 +4,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainNav
 import kr.co.main.MainRoute
@@ -24,6 +26,8 @@ import kr.co.main.community.writing.BulletinWritingRoute
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
+import kr.co.main.my.community.bookmark.MyPageBookmarkRoute
+import kr.co.main.my.community.written.MyPageWriteRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
 import kr.co.main.my.setting.MyPageSettingRoute
 import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
@@ -75,11 +79,14 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.HOME.route
                 ) {
                     HomeRoute(
-                        navigateToChat = {
-                            navController.navigate(CHAT_ROUTE)
-                        },
                         navigateToNotification = {
                             navController.navigate(NOTIFICATION_ROUTE)
+                        },
+                        navigateToAddress = {
+                            navController.navigate(MyPageRoute.EDIT_ROUTE)
+                        },
+                        navigateToChat = {
+                            navController.navigate(CHAT_ROUTE)
                         },
                         navigateToCalendar = {
                             MainNav.controller.navigate(
@@ -159,14 +166,11 @@ fun NavGraphBuilder.mainNavGraph(
                             navController.navigate(MyPageRoute.SETTING_ROUTE)
                         },
                         navigateToBookmark = {
-
+                            navController.navigate(MyPageRoute.BOOKMARK_ROUTE)
                         },
                         navigateToWrite = {
-
+                            navController.navigate(MyPageRoute.WRITE_ROUTE)
                         },
-                        navigateToComment = {
-
-                        }
                     )
                 }
             }
@@ -258,18 +262,17 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = "${CommunityRoute.BULLETIN_DETAIL_ROUTE}/{id}"
-    ) { backStackEntry ->
-        val idString = backStackEntry.arguments?.getString("id")
-        val id = idString?.toLongOrNull()
-        if (id != null) {
-            BulletinDetailRoute(
-                popBackStack = navController::popBackStack,
-                id = id,
-            )
-        } else {
-            Timber.e("Invalid id")
-        }
+        route = "${CommunityRoute.BULLETIN_DETAIL_ROUTE}/{id}",
+        arguments = listOf(
+            navArgument("id") {
+                type = NavType.LongType
+                nullable = false
+            }
+        )
+    ) {
+        BulletinDetailRoute(
+            popBackStack = navController::popBackStack,
+        )
     }
 
     composable(
@@ -277,12 +280,7 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         MyPageProfileEditRoute(
             popBackStack = navController::popBackStack,
-            navigateToMyPage = {
-                navController.navigate(MAIN_ROUTE) {
-                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                    launchSingleTop = true
-                }
-            }
+            navigateToMyPage = navController::popBackStack,
         )
     }
 
@@ -323,12 +321,6 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = MyPageRoute.SETTING_LOGOUT_ROUTE
-    ) {
-
-    }
-
-    composable(
         route = MyPageRoute.SETTING_APP_INFO_ROUTE
     ) {
         MyPageSettingAppInfoRoute(
@@ -345,25 +337,24 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = MyPageRoute.SETTING_DELETE_VERIFY_ROUTE
-    ) {
-    }
-
-    composable(
         route = MyPageRoute.BOOKMARK_ROUTE
     ) {
-
+        MyPageBookmarkRoute(
+            popBackStack = navController::popBackStack,
+            navigateToBulletinDetail = {
+                navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$it")
+            }
+        )
     }
 
     composable(
         route = MyPageRoute.WRITE_ROUTE
     ) {
-
-    }
-
-    composable(
-        route = MyPageRoute.COMMENT_ROUTE
-    ) {
-
+        MyPageWriteRoute(
+            popBackStack = navController::popBackStack,
+            navigateToBulletinDetail = {
+                navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$it")
+            }
+        )
     }
 }
