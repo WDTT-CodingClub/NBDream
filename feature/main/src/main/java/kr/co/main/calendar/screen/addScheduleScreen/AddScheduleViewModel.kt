@@ -5,10 +5,16 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kr.co.domain.usecase.calendar.CreateDiaryUseCase
 import kr.co.domain.usecase.calendar.CreateScheduleUseCase
+import kr.co.domain.usecase.calendar.DeleteDiaryUseCase
+import kr.co.domain.usecase.calendar.DeleteScheduleUseCase
 import kr.co.domain.usecase.calendar.GetScheduleDetailUseCase
+import kr.co.domain.usecase.calendar.UpdateDiaryUseCase
 import kr.co.domain.usecase.calendar.UpdateScheduleUseCase
+import kr.co.main.mapper.calendar.HolidayModelMapper
 import kr.co.main.mapper.calendar.ScheduleModelTypeMapper
+import kr.co.main.mapper.calendar.WorkDescriptionModelMapper
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.ScheduleModelType
@@ -19,7 +25,9 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 internal interface AddScheduleScreenEvent {
-    fun onActionClick()
+    fun onPostClick()
+    fun onEditClick()
+    fun onDeleteClick()
 
     fun onTypeInput(type: ScheduleModelType)
     fun onTitleInput(title: String)
@@ -33,7 +41,8 @@ internal class AddScheduleViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getSchedule: GetScheduleDetailUseCase,
     private val createSchedule: CreateScheduleUseCase,
-    private val updateSchedule: UpdateScheduleUseCase
+    private val updateSchedule: UpdateScheduleUseCase,
+    private val deleteSchedule: DeleteScheduleUseCase
 ) : BaseViewModel<AddScheduleViewModel.AddScheduleScreenState>(savedStateHandle),
     AddScheduleScreenEvent {
     private val _scheduleId = MutableStateFlow<Long?>(null)
@@ -114,33 +123,38 @@ internal class AddScheduleViewModel @Inject constructor(
         }
     }
 
-    override fun onActionClick() {
-        when (currentState.screenMode) {
-            ScreenModeType.POST_MODE -> onPostClick()
-            ScreenModeType.EDIT_MODE -> onEditClick()
-        }
-    }
+    override fun onPostClick() {
+        if (!currentState.enableAction) return
 
-    private fun onPostClick() {
+        if(currentState.screenMode != ScreenModeType.POST_MODE)
+            throw IllegalStateException ("screen mode is not post mode")
+
         viewModelScopeEH.launch {
-            createSchedule(
-                CreateScheduleUseCase.Params(
-                    category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType),
-                    title = currentState.title,
-                    startDate = currentState.startDate.toString(),
-                    endDate = currentState.endDate.toString(),
-                    memo = currentState.memo
+            viewModelScopeEH.launch {
+                createSchedule(
+                    CreateScheduleUseCase.Params(
+                        category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType),
+                        title = currentState.title,
+                        startDate = currentState.startDate.toString(),
+                        endDate = currentState.endDate.toString(),
+                        memo = currentState.memo
+                    )
                 )
-            )
+            }
         }
     }
 
-    private fun onEditClick() {
+    override fun onEditClick() {
+        if (!currentState.enableAction) return
+
+        if(currentState.screenMode != ScreenModeType.EDIT_MODE)
+            throw IllegalStateException ("screen mode is not edit mode")
+        checkNotNull(currentState.scheduleId)
+
         viewModelScopeEH.launch {
             updateSchedule(
                 UpdateScheduleUseCase.Params(
-                    id = currentState.scheduleId
-                        ?: throw (IllegalArgumentException("schedule id is null")),
+                    id = currentState.scheduleId!!,
                     category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType),
                     title = currentState.title,
                     startDate = currentState.startDate.toString(),
@@ -148,6 +162,18 @@ internal class AddScheduleViewModel @Inject constructor(
                     memo = currentState.memo
                 )
             )
+        }
+    }
+
+    override fun onDeleteClick() {
+        if (!currentState.enableAction) return
+
+        if(currentState.screenMode != ScreenModeType.EDIT_MODE)
+            throw IllegalStateException ("screen mode is not edit mode")
+        checkNotNull(currentState.scheduleId)
+
+        viewModelScopeEH.launch {
+            deleteSchedule(DeleteScheduleUseCase.Params(currentState.scheduleId!!))
         }
     }
 

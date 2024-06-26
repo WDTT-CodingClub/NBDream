@@ -127,7 +127,6 @@ fun NavGraphBuilder.mainNavGraph(
                                 )
                             )
                         },
-                        navToNotification = { navController.navigate(NOTIFICATION_ROUTE) }
                     )
                 }
 

@@ -4,6 +4,8 @@
     <string name="feature_main_calendar_tab_title_diary">영농일지</string>
 
     <string name="feature_main_calendar_year_month">%d년 %d월</string>
+    <string name="feature_main_calendar_farm_work_crop_empty">재배 작물을 추가하고 농작업 일정을 확인해 보세요.</string>
+    <string name="feature_main_calendar_diary_crop_empty">재배 작물을 추가하고 영농 일지를 작성해 보세요.</string>
 
     <string name="feature_main_calendar_day_of_week_sun">일</string>
     <string name="feature_main_calendar_day_of_week_mon">월</string>
@@ -14,11 +16,13 @@
     <string name="feature_main_calendar_day_of_week_sat">토</string>
 
 <!-- top app bar-->
-    <string name="feature_main_calendar_top_app_bar_add_schedule">일정 추가</string>
-    <string name="feature_main_calendar_top_app_bar_add_diary">영농일지 추가</string>
+    <string name="feature_main_calendar_top_app_bar_add_schedule">일정 작성하기</string>
+    <string name="feature_main_calendar_top_app_bar_edit_schedule">일정 편집하기</string>
+    <string name="feature_main_calendar_top_app_bar_add_diary">영농일지 작성하기</string>
+    <string name="feature_main_calendar_top_app_bar_edit_diary">영농일지 편집하기</string>
     <string name="feature_main_calendar_top_app_bar_search_diary">영농일지 검색</string>
     <string name="feature_main_calendar_top_app_bar_post">등록</string>
-    <string name="feature_main_calendar_top_app_bar_edit">수정</string>
+    <string name="feature_main_calendar_top_app_bar_edit">편집</string>
 
 <!--    add diary screen-->
     <string name="feature_main_calendar_add_diary_header_date">일자</string>

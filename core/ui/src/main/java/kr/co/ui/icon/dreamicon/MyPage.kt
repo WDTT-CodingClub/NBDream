@@ -12,12 +12,12 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import kr.co.ui.icon.DreamIcon
 
-public val DreamIcon.Mypage: ImageVector
+public val DreamIcon.MyPage: ImageVector
     get() {
         if (_mypage != null) {
             return _mypage!!
         }
-        _mypage = Builder(name = "Mypage", defaultWidth = 32.0.dp, defaultHeight = 32.0.dp,
+        _mypage = Builder(name = "MyPage", defaultWidth = 32.0.dp, defaultHeight = 32.0.dp,
                 viewportWidth = 32.0f, viewportHeight = 32.0f).apply {
             path(fill = SolidColor(Color(0xFF5BA455)), stroke = null, strokeLineWidth = 0.0f,
                     strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,

@@ -8,17 +8,14 @@ internal object CalendarDesignToken {
 
     // schedule content/diary content
     const val DIARY_IMAGE_SIZE = 80
+
     // calendar screen
     const val CALENDAR_CROP_PICKER_WIDTH = 100
 
-
-    // farmwork calendar
+    // calendars
     const val FARM_WORK_ITEM_HEIGHT = 24
     const val FARM_WORK_ITEM_CORNER_RADIUS = 5
-
-    // inner calendar
-    const val INNER_CALENDAR_DATA_ITEM_HEIGHT = 24
-    const val INNER_CALENDAR_DATA_ITEM_CORNER_RADIUS = 50
+    const val CALENDAR_ITEM_SIZE = 50
 
     // add diary screen
     const val IMAGE_SIZE = 66

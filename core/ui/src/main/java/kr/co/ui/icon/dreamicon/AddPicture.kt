@@ -1,12 +1,9 @@
 package kr.co.ui.icon.dreamicon
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.PathFillType.Companion.NonZero
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeCap.Companion.Butt
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.StrokeJoin.Companion.Miter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.ImageVector.Builder
@@ -14,12 +11,12 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import kr.co.ui.icon.DreamIcon
 
-public val DreamIcon.Addpicture: ImageVector
+public val DreamIcon.AddPicture: ImageVector
     get() {
         if (_addpicture != null) {
             return _addpicture!!
         }
-        _addpicture = Builder(name = "Addpicture", defaultWidth = 41.0.dp, defaultHeight = 41.0.dp,
+        _addpicture = Builder(name = "AddPicture", defaultWidth = 41.0.dp, defaultHeight = 41.0.dp,
                 viewportWidth = 41.0f, viewportHeight = 41.0f).apply {
             path(fill = SolidColor(Color(0xFFffffff)), stroke = null, strokeLineWidth = 0.0f,
                     strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
