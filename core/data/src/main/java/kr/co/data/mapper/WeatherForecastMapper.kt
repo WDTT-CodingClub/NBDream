@@ -9,6 +9,7 @@ internal object WeatherForecastMapper
     override fun convert(param: WeatherForecastData): WeatherForecastEntity {
         return with(param) {
             WeatherForecastEntity(
+                weather = weather,
                 precipitation = precipitation,
                 probability = precipitationProbability,
                 temperature = temp,
@@ -17,7 +18,7 @@ internal object WeatherForecastMapper
                 maxTemperature = maxTemp,
                 humidity = humidity,
                 windSpeed = windSpeed,
-                weather = items.map {
+                weathers = items.map {
                     WeatherForecastEntity.Weather(
                         weather = it.weather,
                         minTemp = it.minTemp,

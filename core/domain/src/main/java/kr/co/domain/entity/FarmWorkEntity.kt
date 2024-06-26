@@ -12,6 +12,6 @@ data class FarmWorkEntity(
     val endEra: FarmWorkEraType,
     val type: FarmWorkType,
     val farmWork: String,
-    val videoUrl: String? = null
+    val videoUrl: String
 )
 

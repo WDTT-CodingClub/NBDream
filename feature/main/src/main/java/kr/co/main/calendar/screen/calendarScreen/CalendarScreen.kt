@@ -1,6 +1,7 @@
 package kr.co.main.calendar.screen.calendarScreen
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,9 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -30,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,51 +47,57 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import kr.co.main.R
-import kr.co.main.calendar.screen.calendarScreen.diaryTab.DiaryTab
-import kr.co.main.calendar.screen.calendarScreen.scheduleTab.ScheduleTab
 import kr.co.main.model.calendar.CropModel
+import kr.co.main.model.calendar.type.CalendarTabType
 import kr.co.main.model.calendar.type.CropModelColorType
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.ScreenModeType
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Bell
 import kr.co.ui.icon.dreamicon.Edit
+import kr.co.ui.icon.dreamicon.Search
 import kr.co.ui.icon.dreamicon.Spinner
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamTopAppBar
 
+
 @Composable
 internal fun CalendarRoute(
-    navToAddSchedule: (Int?, Int?, Int?) -> Unit,
-    navToAddDiary: (Int?, Int?, Int?) -> Unit,
-    navToSearchDiary: (Int?, Int?, Int?) -> Unit,
-    navToNotification: () -> Unit,
+    navToAddSchedule: (Int?, Int?, Long?) -> Unit,
+    navToAddDiary: (Int?, Int?, Long?) -> Unit,
+    navToSearchDiary: (Int?) -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     CalendarScreen(
         modifier = Modifier.fillMaxSize(),
         navToAddSchedule = navToAddSchedule,
         navToAddDiary = navToAddDiary,
         navToSearchDiary = navToSearchDiary,
-        navToNotification = navToNotification,
-        state = viewModel.state.collectAsState(),
+        state = state,
         event = viewModel.event
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CalendarScreen(
-    navToAddSchedule: (Int?, Int?, Int?) -> Unit,
-    navToAddDiary: (Int?, Int?, Int?) -> Unit,
-    navToSearchDiary: (Int?, Int?, Int?) -> Unit,
-    navToNotification: () -> Unit,
-    state: State<CalendarScreenViewModel.CalendarScreenState>,
+    navToAddSchedule: (Int?, Int?, Long?) -> Unit,
+    navToAddDiary: (Int?, Int?, Long?) -> Unit,
+    navToSearchDiary: (Int?) -> Unit,
+    state: CalendarScreenViewModel.CalendarScreenState,
     event: CalendarScreenEvent,
     modifier: Modifier = Modifier,
 ) {
+    val pagerState = rememberPagerState {
+        CalendarTabType.entries.size
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colors.gray9,
@@ -97,84 +106,74 @@ private fun CalendarScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = Paddings.large),
-                selectedTab = state.value.selectedTab,
-                onSelectTab = event::onSelectTab,
+                pagerState = pagerState,
                 navToAddSchedule = {
                     navToAddSchedule(
-                        state.value.calendarCrop?.type?.nameId,
+                        state.crop?.type?.nameId,
                         ScreenModeType.POST_MODE.id,
                         null
                     )
                 },
                 navToAddDiary = {
                     navToAddDiary(
-                        state.value.calendarCrop?.type?.nameId,
+                        state.crop?.type?.nameId,
                         ScreenModeType.POST_MODE.id,
                         null
                     )
                 },
-                navToNotification = navToNotification
+                navToSearchDiary = {
+                    navToSearchDiary(
+                        state.crop?.type?.nameId
+                    )
+                },
             )
         }
     ) { innerPadding ->
-        val scaffoldScrollState = rememberScrollState()
-
         Surface(
-            modifier = Modifier
-                .padding(innerPadding)
-                .verticalScroll(
-                    state = scaffoldScrollState
-                )
+            modifier = Modifier.padding(innerPadding)
         ) {
-            if (state.value.calendarCrop != null) {
-                Column {
-                    CalendarInfoPicker(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Paddings.large)
-                            .background(MaterialTheme.colors.gray9),
-                        userCrops = state.value.userCrops,
-                        calendarYear = state.value.calendarYear,
-                        calendarMonth = state.value.calendarMonth,
-                        calendarCrop = state.value.calendarCrop!!,
-                        onSelectYear = event::onSelectYear,
-                        onSelectMonth = event::onSelectMonth,
-                        onSelectCrop = event::onSelectCrop
-                    )
-                    when (state.value.selectedTab) {
-                        CalendarScreenViewModel.CalendarScreenState.CalendarTabType.SCHEDULE ->
+            Column {
+                CalendarInfoPicker(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Paddings.large)
+                        .background(MaterialTheme.colors.gray9),
+                    userCrops = state.userCrops,
+                    calendarYear = state.year,
+                    calendarMonth = state.month,
+                    calendarCrop = state.crop,
+                    onSelectYear = event::onYearSelect,
+                    onSelectMonth = event::onMonthSelect,
+                    onSelectCrop = event::onCropSelect
+                )
+
+                HorizontalPager(
+                    modifier = Modifier.background(MaterialTheme.colors.gray9),
+                    state = pagerState
+                ) {
+                    when (pagerState.currentPage) {
+                        CalendarTabType.SCHEDULE.pagerIndex ->
                             ScheduleTab(
-                                calendarCrop = state.value.calendarCrop,
-                                calendarYear = state.value.calendarYear,
-                                calendarMonth = state.value.calendarMonth,
-                                navToEditSchedule = { scheduleId ->
-                                    navToAddSchedule(
-                                        state.value.calendarCrop?.type?.nameId,
-                                        ScreenModeType.EDIT_MODE.id,
-                                        scheduleId
-                                    )
-                                }
+                                calendarCrop = state.crop,
+                                calendarYear = state.year,
+                                calendarMonth = state.month,
+                                selectedDate = state.selectedDate,
+                                onDateSelect = event::onDateSelect,
+                                farmWorks = state.farmWorks,
+                                holidays = state.holidays,
+                                allSchedules = state.allSchedules,
+                                cropSchedules = state.cropSchedules,
                             )
 
-                        CalendarScreenViewModel.CalendarScreenState.CalendarTabType.DIARY ->
+                        CalendarTabType.DIARY.pagerIndex ->
                             DiaryTab(
-                                calendarCrop = state.value.calendarCrop,
-                                calendarYear = state.value.calendarYear,
-                                calendarMonth = state.value.calendarMonth,
-                                navToEditDiary = { diaryId ->
-                                    navToAddDiary(
-                                        state.value.calendarCrop?.type?.nameId,
-                                        ScreenModeType.EDIT_MODE.id,
-                                        diaryId
-                                    )
-                                },
-                                navToSearchDiary = {
-                                    navToSearchDiary(
-                                        state.value.calendarCrop?.type?.nameId,
-                                        state.value.calendarYear,
-                                        state.value.calendarMonth
-                                    )
-                                }
+                                calendarCrop = state.crop,
+                                calendarYear = state.year,
+                                calendarMonth = state.month,
+                                selectedDate = state.selectedDate,
+                                onDateSelect = event::onDateSelect,
+                                holidays = state.holidays,
+                                diaries = state.diaries,
                             )
                     }
                 }
@@ -183,31 +182,41 @@ private fun CalendarScreen(
     }
 }
 
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CalendarScreenTopAppBar(
-    selectedTab: CalendarScreenViewModel.CalendarScreenState.CalendarTabType,
-    onSelectTab: (CalendarScreenViewModel.CalendarScreenState.CalendarTabType) -> Unit,
+    pagerState: PagerState,
     navToAddSchedule: () -> Unit,
     navToAddDiary: () -> Unit,
-    navToNotification: () -> Unit,
+    navToSearchDiary: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     DreamTopAppBar(
         modifier = modifier,
         title = {
             CalendarScreenTopAppBarTitle(
                 modifier = Modifier.wrapContentSize(),
-                selectedTab = selectedTab,
-                onSelectTab = onSelectTab
+                selectedTab = CalendarTabType.ofIndex(pagerState.currentPage),
+                onSelectTab = { calendarTabType ->
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(page = calendarTabType.pagerIndex)
+                    }
+                }
             )
         },
         actions = {
             CalendarScreenTopAppBarActions(
-                navToAddScreen = when (selectedTab) {
-                    CalendarScreenViewModel.CalendarScreenState.CalendarTabType.SCHEDULE -> navToAddSchedule
-                    CalendarScreenViewModel.CalendarScreenState.CalendarTabType.DIARY -> navToAddDiary
+                navToAddScreen = when (CalendarTabType.ofIndex(pagerState.currentPage)) {
+                    CalendarTabType.SCHEDULE -> navToAddSchedule
+                    CalendarTabType.DIARY -> navToAddDiary
                 },
-                navToNotification = navToNotification,
+                navToSearchScreen = when (CalendarTabType.ofIndex(pagerState.currentPage)) {
+                    CalendarTabType.SCHEDULE -> null
+                    CalendarTabType.DIARY -> navToSearchDiary
+                },
                 modifier = Modifier
             )
         }
@@ -216,15 +225,15 @@ private fun CalendarScreenTopAppBar(
 
 @Composable
 private fun CalendarScreenTopAppBarTitle(
-    selectedTab: CalendarScreenViewModel.CalendarScreenState.CalendarTabType,
-    onSelectTab: (CalendarScreenViewModel.CalendarScreenState.CalendarTabType) -> Unit,
+    selectedTab: CalendarTabType,
+    onSelectTab: (CalendarTabType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(Paddings.medium)
     ) {
-        CalendarScreenViewModel.CalendarScreenState.CalendarTabType.entries.forEach {
+        CalendarTabType.entries.forEach {
             CalendarScreenTopAppBarTitleItem(
                 modifier = Modifier
                     .wrapContentSize()
@@ -278,7 +287,7 @@ private fun measureTextWidth(text: String, style: TextStyle): Dp {
 @Composable
 private fun CalendarScreenTopAppBarActions(
     navToAddScreen: () -> Unit,
-    navToNotification: () -> Unit,
+    navToSearchScreen: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -289,12 +298,14 @@ private fun CalendarScreenTopAppBarActions(
                 contentDescription = ""
             )
         }
-        IconButton(onClick = navToNotification) {
-            Icon(
-                modifier = Modifier,
-                imageVector = DreamIcon.Bell,
-                contentDescription = ""
-            )
+        navToSearchScreen?.let {
+            IconButton(onClick = navToSearchScreen) {
+                Icon(
+                    modifier = Modifier,
+                    imageVector = DreamIcon.Search,
+                    contentDescription = ""
+                )
+            }
         }
     }
 }
@@ -304,7 +315,7 @@ private fun CalendarInfoPicker(
     userCrops: List<CropModel>,
     calendarYear: Int,
     calendarMonth: Int,
-    calendarCrop: CropModel,
+    calendarCrop: CropModel?,
     onSelectYear: (Int) -> Unit,
     onSelectMonth: (Int) -> Unit,
     onSelectCrop: (CropModel) -> Unit,
@@ -321,11 +332,13 @@ private fun CalendarInfoPicker(
             onSelectYear = onSelectYear,
             onSelectMonth = onSelectMonth
         )
-        CalendarCropPicker(
-            userCrops = userCrops,
-            calendarCrop = calendarCrop,
-            onSelectCrop = onSelectCrop
-        )
+        calendarCrop?.let {
+            CalendarCropPicker(
+                userCrops = userCrops,
+                calendarCrop = it,
+                onSelectCrop = onSelectCrop
+            )
+        }
     }
 }
 
@@ -479,7 +492,10 @@ private fun CalendarCropPickerPreview() {
     CalendarCropPicker(
         userCrops = listOf(
             CropModel(type = CropModelType.POTATO, color = CropModelColorType.POTATO),
-            CropModel(type = CropModelType.SWEET_POTATO, color = CropModelColorType.SWEET_POTATO),
+            CropModel(
+                type = CropModelType.SWEET_POTATO,
+                color = CropModelColorType.SWEET_POTATO
+            ),
             CropModel(type = CropModelType.APPLE, color = CropModelColorType.APPLE)
         ),
         calendarCrop = calendarCrop.value,

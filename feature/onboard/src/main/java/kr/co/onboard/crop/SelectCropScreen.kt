@@ -1,18 +1,21 @@
 package kr.co.onboard.crop
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,13 +48,16 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.NextButton
+import timber.log.Timber
 
 @Composable
 fun SelectCropScreen(
     modifier: Modifier = Modifier,
+    navigateToWelcome: () -> Unit = {},
     viewModel: SelectCropViewModel = hiltViewModel()
 ) {
     val crops by viewModel.crops.collectAsState()
+    val selectedIndexes = remember { mutableStateListOf<Int?>() }
 
     Scaffold(
         modifier = modifier.padding(Paddings.xlarge),
@@ -74,10 +82,24 @@ fun SelectCropScreen(
                 modifier = Modifier
             )
             DescriptionText(stringResource(id = kr.co.onboard.R.string.feature_onboard_my_farm_crops_description))
-            CropsList(crops)
+            Box(modifier = Modifier.weight(1f)) {
+                CropsList(
+                    cropList = crops,
+                    selectedIndexes = selectedIndexes.filterNotNull(),
+                    onItemClick = { index ->
+                        if (selectedIndexes.contains(index))
+                            selectedIndexes.remove(index)
+                        else
+                            selectedIndexes.add(index)
+                        Timber.d(selectedIndexes.joinToString())
+                    },
+                )
+            }
             NextButton(
                 skipId = kr.co.onboard.R.string.feature_onboard_my_farm_skip_select,
-                nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next
+                nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next,
+                onNextClick = { navigateToWelcome() },
+                onSkipClick = { navigateToWelcome() }
             )
         }
     }
@@ -96,51 +118,63 @@ fun StepText(
         Text(
             text,
             color = ColorSet.Dream.lightColors.grey6,
-            style = MaterialTheme.typo.labelL
-        ) // 피그마에 명시된 폰트가 없어서 임시로 제일 작고 얇은 폰트 적용
+            style = MaterialTheme.typo.labelL // 피그마에 명시된 폰트가 없어서 임시로 제일 작고 얇은 폰트 적용
+        )
     }
 }
 
 @Composable
 fun CropsList(
     cropList: List<CropItem>,
+    onItemClick: (Int) -> Unit,
+    selectedIndexes: List<Int> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(cropList.size) { index ->
+            val isSelected = selectedIndexes.contains(index)
+            val backgroundColor =
+                if (isSelected) ColorSet.Dream.lightColors.green4.copy(alpha = 0.3f) else Color.Transparent
             Card(
-                modifier = modifier
+                shape = CircleShape,
+                modifier = Modifier
                     .padding(Paddings.large)
-                    .fillMaxWidth(),
+                    .fillMaxWidth(1f / 3f)
+                    .aspectRatio(1f)
+                    .clickable {
+                        onItemClick(index)
+                    },
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent
+                    containerColor = backgroundColor
                 )
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier.padding(Paddings.xlarge)
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
                 ) {
                     Image(
                         painter = painterResource(id = cropList[index].imageRes),
                         contentDescription = cropList[index].name.name,
-                        modifier = modifier.size(64.dp)
-                    )
-                    Spacer(modifier = modifier.height(8.dp))
-                    Text(
-                        text = cropList[index].name.toKoreanName(),
-                        fontSize = 16.sp,
-                        color = ColorSet.Dream.lightColors.text2,
-                        textAlign = TextAlign.Center,
-                        modifier = modifier.fillMaxWidth()
+                        modifier = Modifier.size(64.dp)
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = cropList[index].name.toKoreanName(),
+                fontSize = 16.sp,
+                color = ColorSet.Dream.lightColors.text2,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+            )
         }
     }
 }
@@ -158,17 +192,19 @@ private fun LazyVerticalGridDemoPreview() {
         CropItem(CropType.GARLIC, R.drawable.img_logo),
         CropItem(CropType.LETTUCE, R.drawable.img_logo),
         CropItem(CropType.NAPPA_CABBAGE, R.drawable.img_logo),
+        CropItem(CropType.TOMATO, R.drawable.img_logo),
+        CropItem(CropType.LETTUCE, R.drawable.img_logo),
+        CropItem(CropType.NAPPA_CABBAGE, R.drawable.img_logo),
         CropItem(CropType.TOMATO, R.drawable.img_logo)
     )
     NBDreamTheme {
-        CropsList(crops, modifier = Modifier)
+        CropsList(crops, {}, modifier = Modifier)
     }
 }
-
-@Composable
-@Preview(showSystemUi = true)
-private fun SelectCropScreenPreview() {
-    NBDreamTheme {
-        SelectCropScreen()
-    }
-}
+//@Composable
+//@Preview(showSystemUi = true)
+//private fun SelectCropScreenPreview() {
+//    NBDreamTheme {
+//        SelectCropScreen()
+//    }
+//}

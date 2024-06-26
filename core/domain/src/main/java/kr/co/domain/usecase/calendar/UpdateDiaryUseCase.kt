@@ -14,6 +14,7 @@ class UpdateDiaryUseCase @Inject constructor(
 ): SuspendUseCase<UpdateDiaryUseCase.Params, Unit>() {
     data class Params(
         val id:Int,
+        val crop:String,
         val date: LocalDate,
         val holidayList: List<HolidayEntity>,
         val weatherForecast: String,
@@ -28,6 +29,7 @@ class UpdateDiaryUseCase @Inject constructor(
         checkNotNull(params)
         return repository.updateDiary(
             id = params.id,
+            crop = params.crop,
             date = params.date,
             holidayList = params.holidayList,
             weatherForecast = params.weatherForecast,

@@ -6,7 +6,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,17 +20,18 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,15 +43,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kr.co.domain.entity.BulletinEntity
+import kr.co.main.R
 import kr.co.main.community.SharingData
 import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
+import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
+import kr.co.ui.widget.DreamCenterTopAppBar
 import java.io.File
 
 @Composable
@@ -76,6 +83,7 @@ internal fun BulletinWritingRoute(
         onRemoveImageClick = viewModel::onRemoveImageClick,
         onFinishWritingClick = viewModel::onFinishWritingClick,
         setIsShowWaitingDialog = viewModel::setIsShowWaitingDialog,
+        onCategoryClick = viewModel::onCategoryClick,
     )
 }
 
@@ -90,168 +98,204 @@ internal fun BulletinWritingScreen(
     onRemoveImageClick: (model: WritingSelectedImageModel) -> Unit = {},
     onFinishWritingClick: (() -> Unit) -> Unit = {},
     setIsShowWaitingDialog: (Boolean) -> Unit = {},
+    onCategoryClick: (BulletinEntity.BulletinCategory) -> Unit = {},
 ) {
 
-    val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(),
-        onResult = { uris ->
-            onAddImagesClick(uris) { UriUtil.toPngFile(context, it) }
-        }
-    )
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        item {
-            Row {
-                IconButton(onClick = popBackStack) {
-                    Icon(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
-                        contentDescription = "뒤로가기 아이콘",
-                    )
-                }
-                Text(
-                    "${state.currentBoard.koreanName} 글쓰기",
-                    modifier = Modifier.weight(1f),
-                )
-                TextButton(onClick = {
-                    setIsShowWaitingDialog(true)
-                    onFinishWritingClick(popBackStack)
-                }) {
-//                TextButton(onClick = onFinishWritingClick) {
-                    Text(
-                        "등록",
-                        Modifier.padding(horizontal = 20.dp, vertical = 0.dp),
-                    )
-                }
-            }
-        }
-        item {
-            Card(
-                modifier = Modifier
-                    .height(40.dp)
-                    .border(
-                        width = 1.dp, color = Color(0), shape = RoundedCornerShape(12.dp)
-                    ),
-                colors = CardColors(
-                    containerColor = Color.Green,
-                    contentColor = Color.Black,
-                    disabledContainerColor = Color.LightGray,
-                    disabledContentColor = Color.Black,
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                ) {
-                    Text("자유 주제")
-                    // TODO: 디바이더에도 여백이 붙는데...
-                    VerticalDivider(
-                        thickness = 1.dp,
-                        color = Color.Red,
-                    )
-                    Text("질문")
-                    VerticalDivider(
-                        thickness = 1.dp,
-                        color = Color.Red,
-                    )
-                    Text("병해충")
-                }
-            }
-        }
-        item {
-            TextField(
-                value = state.bulletinWritingInput,
-                onValueChange = {
-                    if (it.length <= 3000) {
-                        onBulletinWritingInputChanged(it)
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            DreamCenterTopAppBar(
+                title = "글쓰기",
+                navigationIcon = {
+                    IconButton(onClick = popBackStack) {
+                        Icon(
+                            modifier = Modifier.size(32.dp),
+                            imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
+                            contentDescription = stringResource(R.string.feature_main_pop_back_stack)
+                        )
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                placeholder = { Text("내용을 입력하세요") },
+                actions = {
+                    TextButton(onClick = {
+                        setIsShowWaitingDialog(true)
+                        onFinishWritingClick(popBackStack)
+                    }) {
+                        Text(
+                            text = "등록",
+                            style = MaterialTheme.typo.body2,
+                            color = MaterialTheme.colors.gray3
+                        )
+                    }
+                },
             )
-        }
-        item {
-            Text("${state.bulletinWritingInput.length}/3000")
-        }
-        item {
-            Text("사진")
-        }
-        item {
-            LazyRow(
-                modifier = Modifier.height(120.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.LightGray)
-                            .clickable {
-                                multiplePhotoPickerLauncher.launch(
-                                    PickVisualMediaRequest(
-                                        ActivityResultContracts.PickVisualMedia.ImageOnly
-                                    )
-                                )
-                            },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.outline_photo_camera_24),
-                                contentDescription = "카메라 아이콘",
-                            )
-                            Text("사진 추가")
-                        }
+        },
+    ) { paddingValues ->
+
+        val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickMultipleVisualMedia(),
+            onResult = { uris ->
+                onAddImagesClick(uris) { UriUtil.toPngFile(context, it) }
+            },
+        )
+
+        LazyColumn(
+            modifier = Modifier.scaffoldBackground(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+//            item {
+//                Row {
+//                    IconButton(onClick = popBackStack) {
+//                        Icon(
+//                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_keyboard_arrow_left_24),
+//                            contentDescription = "뒤로가기 아이콘",
+//                        )
+//                    }
+//                    Text(
+//                        "${state.currentBoard.koreanName} 글쓰기",
+//                        modifier = Modifier.weight(1f),
+//                    )
+//                    TextButton(onClick = {
+//                        setIsShowWaitingDialog(true)
+//                        onFinishWritingClick(popBackStack)
+//                    }) {
+////                TextButton(onClick = onFinishWritingClick) {
+//                        Text(
+//                            "등록",
+//                            Modifier.padding(horizontal = 20.dp, vertical = 0.dp),
+//                        )
+//                    }
+//                }
+//            }
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    for (category in BulletinEntity.BulletinCategory.entries) {
+                        CategoryButton(
+                            onClick = { onCategoryClick(category) },
+                            text = category.koreanName,
+                            isSelected = state.currentCategory == category,
+                        )
                     }
                 }
-                items(state.writingImages) {
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.LightGray),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        AsyncImage(
-                            model = it.uri,
-                            contentDescription = "image",
-                            contentScale = ContentScale.Crop,
-                        )
-                        IconButton(
-                            onClick = { onRemoveImageClick(it) },
-                            modifier = Modifier.align(Alignment.TopEnd),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = Color(
-                                    0x99999999
-                                )
-                            ),
+            }
+            item {
+                TextField(
+                    value = state.bulletinWritingInput,
+                    onValueChange = {
+                        if (it.length <= 3000) {
+                            onBulletinWritingInputChanged(it)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp),
+                    placeholder = { Text("'${state.currentBoard.koreanName}'에 대해 이야기해보세요!") },
+                )
+            }
+            item {
+                Text("${state.bulletinWritingInput.length}/3000")
+            }
+            item {
+                Text("사진")
+            }
+            item {
+                LazyRow(
+                    modifier = Modifier.height(120.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color.LightGray)
+                                .clickable {
+                                    multiplePhotoPickerLauncher.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                                        )
+                                    )
+                                },
+                            contentAlignment = Alignment.Center,
                         ) {
-                            Icon(
-                                imageVector = Icons.Filled.Clear,
-                                contentDescription = "이미지 삭제 아이콘",
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.outline_photo_camera_24),
+                                    contentDescription = "카메라 아이콘",
+                                )
+                                Text("사진 추가")
+                            }
+                        }
+                    }
+                    items(state.writingImages) {
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color.LightGray),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            AsyncImage(
+                                model = it.uri,
+                                contentDescription = "image",
+                                contentScale = ContentScale.Crop,
                             )
+                            IconButton(
+                                onClick = { onRemoveImageClick(it) },
+                                modifier = Modifier.align(Alignment.TopEnd),
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = Color(
+                                        0x99999999
+                                    )
+                                ),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Clear,
+                                    contentDescription = "이미지 삭제 아이콘",
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+
+        if (state.isShowWaitingDialog) AlertDialogExample(
+            onDismissRequest = { setIsShowWaitingDialog(false) },
+            onConfirmation = {},
+            dialogTitle = "title",
+            dialogText = "text",
+            icon = null,
+        )
+
     }
+}
 
-    if (state.isShowWaitingDialog) AlertDialogExample(
-        onDismissRequest = { setIsShowWaitingDialog(false) },
-        onConfirmation = {},
-        dialogTitle = "title",
-        dialogText = "text",
-        icon = null,
-    )
-
+@Composable
+private fun CategoryButton(
+    onClick: () -> Unit,
+    text: String,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(40),
+        colors = if (isSelected) ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colors.gray4,
+        ) else ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colors.gray8,
+        ),
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 8.dp),
+            color = if (isSelected) MaterialTheme.colors.white else MaterialTheme.colors.gray4,
+        )
+    }
 }
 
 @Composable

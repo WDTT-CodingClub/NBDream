@@ -16,15 +16,18 @@ public val DreamIcon.Spinner: ImageVector
         if (_spinner != null) {
             return _spinner!!
         }
-        _spinner = Builder(name = "Spinner", defaultWidth = 11.0.dp, defaultHeight = 7.0.dp,
-                viewportWidth = 11.0f, viewportHeight = 7.0f).apply {
-            path(fill = SolidColor(Color(0xFF343434)), stroke = null, strokeLineWidth = 0.0f,
+        _spinner = Builder(name = "Spinner", defaultWidth = 10.0.dp, defaultHeight = 6.0.dp,
+                viewportWidth = 10.0f, viewportHeight = 6.0f).apply {
+            path(fill = SolidColor(Color(0xFF121212)), stroke = null, strokeLineWidth = 0.0f,
                     strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
                     pathFillType = NonZero) {
-                moveToRelative(0.0f, 0.0f)
-                lineToRelative(5.5f, 6.171f)
-                lineTo(11.0f, 0.0f)
-                horizontalLineTo(0.0f)
+                moveTo(5.6047f, 5.3017f)
+                curveTo(5.2857f, 5.6701f, 4.7143f, 5.6701f, 4.3953f, 5.3017f)
+                lineTo(0.9502f, 1.3237f)
+                curveTo(0.5015f, 0.8056f, 0.8696f, -0.0f, 1.555f, -0.0f)
+                lineTo(8.445f, -0.0f)
+                curveTo(9.1304f, -0.0f, 9.4985f, 0.8056f, 9.0498f, 1.3237f)
+                lineTo(5.6047f, 5.3017f)
                 close()
             }
         }

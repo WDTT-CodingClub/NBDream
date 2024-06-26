@@ -12,14 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import kr.co.common.util.toDateString
 import kr.co.main.calendar.common.CalendarCategoryIndicator
-import kr.co.main.providers.FakeScheduleModelProvider
 import kr.co.main.model.calendar.ScheduleModel
 import kr.co.main.model.calendar.type.ScheduleModelType
+import kr.co.main.providers.calendar.FakeScheduleModelProvider
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun ScheduleContent(
@@ -38,8 +38,8 @@ internal fun ScheduleContent(
                 title = schedule.title
             )
             ScheduleDate(
-                startDate = schedule.startDate.toDateString(),
-                endDate = schedule.endDate.toDateString()
+                startDate = schedule.startDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
+                endDate = schedule.endDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
             )
         }
         ScheduleMemo(

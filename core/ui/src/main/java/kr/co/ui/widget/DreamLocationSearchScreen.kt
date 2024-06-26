@@ -1,5 +1,6 @@
 package kr.co.ui.widget
 
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import android.webkit.JavascriptInterface
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import timber.log.Timber
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun DreamLocationSearchScreen(
     modifier: Modifier = Modifier,
@@ -38,7 +40,7 @@ fun DreamLocationSearchScreen(
                         }
                         webChromeClient = WebChromeClient()
                         addJavascriptInterface(WebAppInterface(onAddressSelected), "Android")
-                        loadUrl("https://seulseul-35d52.web.app")
+                        loadUrl("https://nbdream-18d68.web.app")
                     }
                 },
                 modifier = modifier.fillMaxSize()
@@ -51,10 +53,10 @@ class WebAppInterface(private val onAddressSelected: (String, String) -> Unit) {
     private val handler = Handler(Looper.getMainLooper())
 
     @JavascriptInterface
-    fun processDATA(fullRoadAddr: String, jibunAddr: String) {
+    fun processDATA(fullRoadAddress: String, bCode: String) {
         handler.post {
             try {
-                onAddressSelected(fullRoadAddr, jibunAddr)
+                onAddressSelected(fullRoadAddress, bCode)
             } catch (e: Exception) {
                 Timber.tag("WebAppInterface").e(e, "Error processing data")
             }

@@ -4,35 +4,30 @@ import kotlinx.coroutines.flow.Flow
 import kr.co.domain.entity.ScheduleEntity
 
 interface ScheduleRepository {
-    suspend fun getSchedules(crop: String, startDate: String):
+    suspend fun getSchedules(category: String, startDate: String):
             Flow<List<ScheduleEntity>>
 
-    suspend fun getSchedules(crop: String, year: Int, month: Int):
+    suspend fun getSchedules(category: String, year: Int, month: Int):
             Flow<List<ScheduleEntity>>
 
-    suspend fun getScheduleDetail(id:Int):ScheduleEntity
+    suspend fun getScheduleDetail(id:Long):ScheduleEntity
 
     suspend fun createSchedule(
         category: String,
         title: String,
         startDate: String,
         endDate: String,
-        memo: String,
-        isAlarmOn: Boolean,
-        alarmDateTime: String
+        memo: String
     )
 
     suspend fun updateSchedule(
-        id: Int,
+        id: Long,
         category: String,
         title: String,
         startDate: String,
         endDate: String,
-        memo: String,
-        isAlarmOn: Boolean,
-        alarmDateTime: String
-
+        memo: String
     )
 
-    suspend fun deleteSchedule(id: Int)
+    suspend fun deleteSchedule(id: Long)
 }

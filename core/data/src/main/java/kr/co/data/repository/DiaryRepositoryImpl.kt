@@ -49,6 +49,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
         }
 
     override suspend fun createDiary(
+        crop: String,
         date: LocalDate,
         holidayList: List<HolidayEntity>,
         weatherForecast: String,
@@ -59,6 +60,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
         memo: String
     ) {
         remote.create(
+            crop = crop,
             date = date.format(DateTimeFormatter.ofPattern("yyyyMMdd")),
             holidayList = holidayList.map {
                 HolidayMapper.toLeft(it)
@@ -76,6 +78,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
 
     override suspend fun updateDiary(
         id: Int,
+        crop:String,
         date: LocalDate,
         holidayList: List<HolidayEntity>,
         weatherForecast: String,
@@ -87,6 +90,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
     ) {
         remote.update(
             id = id,
+            crop = crop,
             date = date.format(DateTimeFormatter.ofPattern("yyyyMMdd")),
             holidayList = holidayList.map {
                 HolidayMapper.toLeft(it)

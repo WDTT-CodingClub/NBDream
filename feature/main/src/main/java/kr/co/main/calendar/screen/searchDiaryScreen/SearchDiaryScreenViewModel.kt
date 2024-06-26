@@ -4,6 +4,10 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kr.co.domain.usecase.calendar.SearchDiariesUseCase
+import kr.co.main.mapper.calendar.DiaryModelMapper
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.type.CropModelType
@@ -13,32 +17,29 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 internal interface SearchDiaryScreenEvent {
-    fun setCalendarCrop(crop: CropModel)
-
-    fun onSearch(query: String, startDate: LocalDate, endDate: LocalDate)
+    fun onQueryInput(query: String)
+    fun onStartDateInput(startDate: LocalDate)
+    fun onEndDateInput(endDate: LocalDate)
 }
 
 @HiltViewModel
 internal class SearchDiaryScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    //private val searchDiaries: SearchDiariesUseCase
+    private val searchDiaries: SearchDiariesUseCase
 ) : BaseViewModel<SearchDiaryScreenViewModel.SearchDiaryScreenState>(savedStateHandle),
     SearchDiaryScreenEvent {
+    val event: SearchDiaryScreenEvent = this@SearchDiaryScreenViewModel
+
     private val _query = MutableStateFlow("")
-    private val _searchDateRange = MutableStateFlow(
-        with(LocalDate.now()) {
-            (LocalDate.of(year, monthValue, 1)..LocalDate.of(year, monthValue, lengthOfMonth()))
-        },
-    )
+    private val _startDate = MutableStateFlow(LocalDate.now())
+    private val _endDate = MutableStateFlow(LocalDate.now())
 
     data class SearchDiaryScreenState(
         val calendarCrop: CropModel? = null,
-        val calendarYear: Int = LocalDate.now().year,
-        val calendarMonth: Int = LocalDate.now().monthValue,
+
         val query: String = "",
-        val searchDateRange: ClosedRange<LocalDate> = with(LocalDate.now()) {
-            (LocalDate.of(year, monthValue, 1)..LocalDate.of(year, monthValue, lengthOfMonth()))
-        },
+        val startDate: LocalDate = LocalDate.now(),
+        val endDate: LocalDate = LocalDate.now(),
         val diaries: List<DiaryModel> = emptyList()
     ) : State {
         override fun toParcelable(): Parcelable? {
@@ -47,7 +48,11 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
         }
     }
 
-    val event: SearchDiaryScreenEvent = this@SearchDiaryScreenViewModel
+    override fun createInitialState(savedState: Parcelable?): SearchDiaryScreenState =
+        savedState?.let {
+            // TODO "deserialize"
+            SearchDiaryScreenState()
+        } ?: SearchDiaryScreenState()
 
     init {
         with(savedStateHandle) {
@@ -56,73 +61,39 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
                     copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
                 }
             }
-            get<Int>(CalendarNavGraph.ARG_YEAR)?.let { year ->
-                updateState { copy(calendarYear = year) }
-            }?:throw IllegalArgumentException("calendar year is null")
-            get<Int>(CalendarNavGraph.ARG_MONTH)?.let { month ->
-                updateState { copy(calendarMonth = month) }
-            }?:throw IllegalArgumentException("calendar month is null")
         }
 
-//        loadingScope {
-//            currentState.calendarCrop?.let {
-//                searchDiaries(
-//                    SearchDiariesUseCase.Params(
-//                        crop = CropEntity.getCropEntity(it.name).name.koreanName,
-//                        query = currentState.query,
-//                        startDate = currentState.searchDateRange.start.toString(),
-//                        endDate = currentState.searchDateRange.endInclusive.toString()
-//                    )
-//                ).collect { diaries ->
-//                    updateState {
-//                        copy(diaries = diaries.map { diaryEntity ->
-//                            DiaryModelMapper.toRight(diaryEntity)
-//                        }
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//
-//        state.select { it.query }.bindState(_query)
-//        state.select { it.searchDateRange }.bindState(_searchDateRange)
-//        loadingScope {
-//            currentState.calendarCrop?.let {
-//                combine(_query, _searchDateRange) { query, searchDateRange ->
-//                    searchDiaries(
-//                        SearchDiariesUseCase.Params(
-//                            crop = CropEntity.getCropEntity(it.name).name.koreanName,
-//                            query = query,
-//                            startDate = searchDateRange.start.toString(),
-//                            endDate = searchDateRange.endInclusive.toString()
-//                        )
-//                    ).collect { diaries ->
-//                        updateState {
-//                            copy(diaries = diaries.map { diaryEntity ->
-//                                DiaryModelMapper.toRight(diaryEntity)
-//                            })
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        with(state) {
+            select { it.query }.bindState(_query)
+            select { it.startDate }.bindState(_startDate)
+            select { it.endDate }.bindState(_endDate)
+        }
+
+        combine(_query, _startDate, _endDate) { query, startDate, endDate ->
+            currentState.calendarCrop?.let { crop ->
+                searchDiaries(
+                    SearchDiariesUseCase.Params(
+                        crop = crop.type.name,
+                        query = query,
+                        startDate = startDate,
+                        endDate = endDate
+                    )
+                ).collect { diaries ->
+                    updateState { copy(diaries = diaries.map { DiaryModelMapper.toRight(it) }) }
+                }
+            }
+        }.launchIn(viewModelScopeEH)
     }
 
-    override fun createInitialState(savedState: Parcelable?): SearchDiaryScreenState =
-        savedState?.let {
-            // TODO "deserialize"
-            SearchDiaryScreenState()
-        } ?: SearchDiaryScreenState()
-
-    override fun setCalendarCrop(crop: CropModel) {
-        updateState {
-            copy(calendarCrop = crop)
-        }
+    override fun onQueryInput(query: String) {
+        updateState { copy(query = query) }
     }
 
-    override fun onSearch(query: String, startDate: LocalDate, endDate: LocalDate) {
-        updateState {
-            copy(query = query, searchDateRange = (startDate..endDate))
-        }
+    override fun onStartDateInput(startDate: LocalDate) {
+        updateState { copy(startDate = startDate) }
+    }
+
+    override fun onEndDateInput(endDate: LocalDate) {
+        updateState { copy(endDate = endDate) }
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -67,8 +68,7 @@ import java.util.Locale
 internal fun InputAddressScreen(
     modifier: Modifier,
     viewModel: InputAddressViewModel = hiltViewModel(),
-    navigateToCrop: () -> Unit = {},
-    navigateToWelcome: () -> Unit = {},
+    navigateToCrop: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -88,7 +88,9 @@ internal fun InputAddressScreen(
         DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title))
     }) { paddingValues ->
         Column(
-            modifier = modifier.padding(paddingValues)
+            modifier = modifier
+                .padding(paddingValues)
+                .fillMaxHeight()
         ) {
             DynamicStepProgressBars(
                 modifier, colors = listOf(MaterialTheme.colors.green2, Color.Transparent)
@@ -110,18 +112,23 @@ internal fun InputAddressScreen(
                 longitude = state.longitude
             )
 
+            Spacer(modifier = modifier.weight(1f))
+
             NextButton(
                 skipId = R.string.feature_onboard_my_farm_skip_input,
                 nextId = R.string.feature_onboard_my_farm_next,
-                onNextClick = viewModel::saveAddress,
-                onSkipClick = navigateToWelcome
+                onNextClick = {
+//                    viewModel::saveAddress
+                    navigateToCrop()
+                              },
+                onSkipClick = navigateToCrop
             )
         }
     }
 
     if (locationSearchVisible) {
-        DreamLocationSearchScreen { full, jibunAddress ->
-            viewModel.updateAddresses(full, jibunAddress)
+        DreamLocationSearchScreen { jibunAddress, bCode->
+            viewModel.updateAddresses(jibunAddress, bCode)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 geocoder.getFromLocationName(jibunAddress, 1) {
                     if (it.isNotEmpty()) {

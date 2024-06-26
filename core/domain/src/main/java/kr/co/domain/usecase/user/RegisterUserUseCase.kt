@@ -19,9 +19,10 @@ class RegisterUserUseCase @Inject constructor(
                 name = params.name,
                 address = params.address ?: it.address,
                 profileImage = params.profileImage ?: it.profileImage,
+                bjdCode = params.bjdCode ?: it.bjdCode,
                 longitude = params.longitude ?: it.longitude,
                 latitude = params.latitude ?: it.latitude,
-                crops = params.crops.ifEmpty { it.crops }
+                crops = params.crops ?: it.crops
             )
         }.also { user ->
             runCatching {

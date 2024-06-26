@@ -5,38 +5,34 @@ import kr.co.data.model.data.calendar.ScheduleData
 
 interface ScheduleRemoteDataSource {
     suspend fun fetchList(
-        crop:String,
+        category:String,
         weekStartDate:String
     ): Flow<List<ScheduleData>>
 
     suspend fun fetchList(
-        crop:String,
+        category:String,
         year:Int,
         month:Int
     ):  Flow<List<ScheduleData>>
 
-    suspend fun fetchDetail(id:Int):ScheduleData
+    suspend fun fetchDetail(id:Long):ScheduleData
 
     suspend fun create(
         category:String,
         title:String,
         startDate:String,
         endDate: String,
-        memo:String,
-        isAlarmOn:Boolean,
-        alarmDateTime:String
+        memo:String
     )
 
     suspend fun update(
-        id:Int,
+        id:Long,
         category:String,
         title:String,
         startDate:String,
         endDate: String,
-        memo:String,
-        isAlarmOn:Boolean,
-        alarmDateTime:String
+        memo:String
     )
 
-    suspend fun delete(id:Int)
+    suspend fun delete(id:Long)
 }

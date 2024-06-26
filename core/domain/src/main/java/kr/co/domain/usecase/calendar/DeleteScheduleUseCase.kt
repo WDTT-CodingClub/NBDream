@@ -10,7 +10,7 @@ class DeleteScheduleUseCase @Inject constructor(
     private val repository: ScheduleRepository
 ) : SuspendUseCase<DeleteScheduleUseCase.Params, Unit>() {
     data class Params(
-        val id: Int
+        val id: Long
     )
 
     override suspend fun build(params: Params?) {

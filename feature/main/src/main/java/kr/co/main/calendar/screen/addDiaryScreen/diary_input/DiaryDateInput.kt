@@ -5,7 +5,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import kr.co.main.calendar.common.CalendarDatePicker
+import kr.co.main.calendar.common.input.CalendarDatePicker
 import java.time.LocalDate
 
 @Composable

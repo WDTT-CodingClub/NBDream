@@ -14,12 +14,12 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import kr.co.ui.icon.DreamIcon
 
-public val DreamIcon.Checkcircle: ImageVector
+public val DreamIcon.CheckCircle: ImageVector
     get() {
         if (_checkcircle != null) {
             return _checkcircle!!
         }
-        _checkcircle = Builder(name = "Checkcircle", defaultWidth = 24.0.dp, defaultHeight =
+        _checkcircle = Builder(name = "CheckCircle", defaultWidth = 24.0.dp, defaultHeight =
                 24.0.dp, viewportWidth = 24.0f, viewportHeight = 24.0f).apply {
             path(fill = SolidColor(Color(0xFF424142)), stroke = null, strokeLineWidth = 0.0f,
                     strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,

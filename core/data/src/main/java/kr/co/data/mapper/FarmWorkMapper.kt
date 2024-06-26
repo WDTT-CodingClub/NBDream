@@ -17,7 +17,8 @@ internal object FarmWorkMapper
                 endMonth = endMonth,
                 endEra = FarmWorkEraType.ofValue(endEra),
                 type = FarmWorkType.ofValue(farmWorkCategory),
-                farmWork = farmWork
+                farmWork = farmWork,
+                videoUrl = videoUrl
             )
         }
 }

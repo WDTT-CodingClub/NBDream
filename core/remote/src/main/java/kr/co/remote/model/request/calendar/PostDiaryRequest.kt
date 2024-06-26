@@ -1,6 +1,7 @@
 package kr.co.remote.model.request.calendar
 
 internal data class PostDiaryRequest (
+    val crop:String,
     val date: String,
     val holidayList: List<HolidayRequest>,
     val weatherForecast: String,
