@@ -45,10 +45,20 @@ fun NavGraphBuilder.onboardNavGraph(
     composable(
         route = "SelectCropScreen/{fullRoadAddress}/{bCode}/{latitude}/{longitude}",
         arguments = listOf(
-            navArgument("fullRoadAddress") { type = NavType.StringType },
-            navArgument("bCode") { type = NavType.StringType },
-            navArgument("latitude") { type = NavType.FloatType },
-            navArgument("longitude") { type = NavType.FloatType }
+            navArgument("fullRoadAddress") {
+                type = NavType.StringType
+                nullable = true
+            },
+            navArgument("bCode") {
+                type = NavType.StringType
+                nullable = true
+            },
+            navArgument("latitude") {
+                type = NavType.FloatType
+            },
+            navArgument("longitude") {
+                type = NavType.FloatType
+            }
         )
     ) { backStackEntry ->
         val fullRoadAddress = backStackEntry.arguments?.getString("fullRoadAddress") ?: ""
@@ -68,13 +78,26 @@ fun NavGraphBuilder.onboardNavGraph(
     composable(
         route = "WelcomeScreen/{fullRoadAddress}/{bCode}/{latitude}/{longitude}/{cropsString}",
         arguments = listOf(
-            navArgument("fullRoadAddress") { type = NavType.StringType },
-            navArgument("bCode") { type = NavType.StringType },
-            navArgument("latitude") { type = NavType.FloatType },
-            navArgument("longitude") { type = NavType.FloatType },
-            navArgument("cropsString") { type = NavType.StringType },
-
-        )
+            navArgument("fullRoadAddress") {
+                type = NavType.StringType
+                nullable = true
+            },
+            navArgument("bCode") {
+                type = NavType.StringType
+                nullable = true
+            },
+            navArgument("latitude") {
+                type = NavType.FloatType
+                nullable = false
+            },
+            navArgument("longitude") {
+                type = NavType.FloatType
+                nullable = false
+            },
+            navArgument("cropsString") {
+                type = NavType.StringType
+                nullable = true
+            })
     ) { backStackEntry ->
         val fullRoadAddress = backStackEntry.arguments?.getString("fullRoadAddress") ?: ""
         val bCode = backStackEntry.arguments?.getString("bCode") ?: ""

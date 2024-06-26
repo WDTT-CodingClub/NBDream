@@ -62,14 +62,10 @@ fun SelectCropScreen(
     val selectedCropNames = remember { mutableStateListOf<String>() }
 
     val backStackEntry = navController.currentBackStackEntry
-    val fullRoadAddress = backStackEntry?.arguments?.getString("fullRoadAddress") ?: " "
-    val bCode = backStackEntry?.arguments?.getString("bCode") ?: " "
+    val fullRoadAddress = backStackEntry?.arguments?.getString("fullRoadAddress")
+    val bCode = backStackEntry?.arguments?.getString("bCode")
     val latitude = backStackEntry?.arguments?.getFloat("latitude") ?: 0F
     val longitude = backStackEntry?.arguments?.getFloat("longitude") ?: 0F
-    Timber.d("받은 fullRoadAddress: $fullRoadAddress")
-    Timber.d("받은 bCode: $bCode")
-    Timber.d("받은 latitude: $latitude")
-    Timber.d("받은 longitude: $longitude")
 
     Scaffold(
         modifier = modifier.padding(Paddings.xlarge),
@@ -89,10 +85,10 @@ fun SelectCropScreen(
                     ColorSet.Dream.lightColors.green2
                 )
             )
-            StepText(
-                stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second),
-                modifier = Modifier
-            )
+//            StepText(
+//                stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second),
+//                modifier = Modifier
+//            )
             DescriptionText(stringResource(id = kr.co.onboard.R.string.feature_onboard_my_farm_crops_description))
             Box(modifier = Modifier.weight(1f)) {
                 CropsList(
@@ -111,13 +107,13 @@ fun SelectCropScreen(
                 skipId = kr.co.onboard.R.string.feature_onboard_my_farm_skip_select,
                 nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next,
                 onNextClick = {
-                    val cropsString = selectedCropNames.joinToString(",")
+                    val cropsString = if(selectedCropNames.isEmpty()) null else selectedCropNames.joinToString(",")
                     Timber.d("cropsString: $cropsString")
                       navController.navigate(
                           "WelcomeScreen/$fullRoadAddress/$bCode/$latitude/$longitude/$cropsString"
                       ) },
                 onSkipClick = {
-                    val cropsString = " "
+                    val cropsString = null
                     navController.navigate(
                     "WelcomeScreen/$fullRoadAddress/$bCode/$latitude/$longitude/$cropsString"
                 ) }

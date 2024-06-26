@@ -9,7 +9,7 @@ internal object UserLocalMapper
     override fun toRight(model: UserData): UserEntity {
         return with(model) {
             UserEntity(
-                name = name,
+                name = name!!,
                 profileImage = profileImage,
                 address = address,
                 bjdCode = bjdCode,

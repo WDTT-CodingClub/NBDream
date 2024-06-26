@@ -76,7 +76,7 @@ internal class ChatViewModel @Inject constructor(
             fetchUserUseCase().first().also {
                 updateState {
                     copy(
-                        userName = it.name,
+                        userName = it.name!!,
                         address = it.address,
                         chats = listOf(true to "안녕하세요 ${it.name}님의 토지친구 토봇입니다^^ \n 궁금한 내용을 선택해 주세요!")
                     )

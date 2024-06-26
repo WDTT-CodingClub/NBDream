@@ -17,7 +17,7 @@ class SaveUserLocalUseCase @Inject constructor(
 
         userRepository.fetch().let {
             userRepository.save(it)
-            sessionRepository.save(it.name)
+            sessionRepository.save(it.name!!)
         }
     }
 }

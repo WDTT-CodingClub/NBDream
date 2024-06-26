@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,14 +39,18 @@ internal fun WelcomeScreen(
     val bCode = backStackEntry?.arguments?.getString("bCode") ?: ""
     val latitude = backStackEntry?.arguments?.getFloat("latitude") ?: 0F
     val longitude = backStackEntry?.arguments?.getFloat("longitude") ?: 0F
-    val cropsString = backStackEntry?.arguments?.getString("cropsString")?.split(",") ?: " "
+    val cropsString = backStackEntry?.arguments?.getString("cropsString") ?: " "
+    val cropsList = if (cropsString.isNotEmpty()) cropsString.split(",") else emptyList<String>()
 
-    Timber.d("받은2 fullRoadAddress: $fullRoadAddress")
-    Timber.d("받은2 bCode: $bCode")
-    Timber.d("받은2 latitude: $latitude")
-    Timber.d("받은2 longitude: $longitude")
-    Timber.d("받은2 cropsString 리스트: $cropsString")
-
+    LaunchedEffect(Unit) {
+        viewModel.setAddressInfo(
+            fullRoadAddress = fullRoadAddress,
+            bCode = bCode,
+            latitude = latitude,
+            longitude = longitude,
+            crops = cropsList
+        )
+    }
     Scaffold(
         modifier = modifier
             .padding(Paddings.xlarge)
@@ -70,7 +75,10 @@ internal fun WelcomeScreen(
             }
             InputCompleteButton(
                 text = stringResource(id = R.string.feature_onboard_start),
-                onNextClick = viewModel::onClickNext
+                onNextClick = {
+                    viewModel.onClickNext()
+                    viewModel.onClickConfirm()
+                }
             )
         }
     }
