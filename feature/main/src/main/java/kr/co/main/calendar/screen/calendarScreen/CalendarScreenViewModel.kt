@@ -103,13 +103,15 @@ internal class CalendarScreenViewModel @Inject constructor(
 
     private suspend fun updateUserCrops() {
         Timber.d("updateUserCrops) called")
-//        getUserCrops().collect { userCrops ->
-//            userCrops.map { CropModelMapper.toRight(it) }.let {
-//                updateState {
-//                    copy(userCrops = it)
+//        viewModelScopeEH.launch {
+//            getUserCrops().collect { userCrops ->
+//                userCrops.map { CropModelMapper.toRight(it) }.let {
+//                    updateState {
+//                        copy(userCrops = it)
+//                    }
 //                }
 //            }
-//        }
+//        }.join()
 //        updateCrop(currentState.userCrops.firstOrNull())
 
         val tmpUserCrops = listOf(
@@ -126,7 +128,9 @@ internal class CalendarScreenViewModel @Inject constructor(
         Timber.d("updateCrop) newCrop: $newCrop")
         if (currentState.crop == newCrop) return
 
-        updateState { copy(crop = newCrop) }
+        viewModelScopeEH.launch {
+            updateState { copy(crop = newCrop) }
+        }.join()
         updateFarmWorks()
         updateCropSchedules()
         updateDiaries()
@@ -136,7 +140,9 @@ internal class CalendarScreenViewModel @Inject constructor(
         Timber.d("updateYear) newYear: $newYear")
         if (currentState.year == newYear) return
 
-        updateState { copy(year = newYear) }
+        viewModelScopeEH.launch {
+            updateState { copy(year = newYear) }
+        }.join()
         updateHolidays()
         updateAllSchedules()
         updateCropSchedules()
@@ -147,7 +153,9 @@ internal class CalendarScreenViewModel @Inject constructor(
         Timber.d("updateMonth) newMonth: $newMonth")
         if (currentState.month == newMonth) return
 
-        updateState { copy(month = newMonth) }
+        viewModelScopeEH.launch {
+            updateState { copy(month = newMonth) }
+        }.join()
         updateFarmWorks()
         updateHolidays()
         updateAllSchedules()
@@ -168,7 +176,7 @@ internal class CalendarScreenViewModel @Inject constructor(
                 month = currentState.month
             )
         ).let { farmWorks ->
-            Timber.d("farmWorks: ${farmWorks.map{it.farmWork}}")
+            Timber.d("farmWorks: ${farmWorks.map { it.farmWork }}")
             updateState { copy(farmWorks = farmWorks.map { FarmWorkModelMapper.convert(it) }) }
         }
     }
