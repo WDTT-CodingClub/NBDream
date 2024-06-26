@@ -111,7 +111,10 @@ fun DreamDialog(
                 DiaButton(
                     modifier = Modifier.weight(1f),
                     text = confirmText,
-                    onClick = onConfirm
+                    onClick = {
+                        onDismissRequest()
+                        onConfirm()
+                    }
                 )
             }
         }

@@ -13,6 +13,7 @@ import kr.co.domain.usecase.user.FetchUserUseCase
 import kr.co.domain.usecase.user.RegisterUserUseCase
 import kr.co.domain.usecase.validate.ValidateNameUseCase
 import kr.co.ui.base.BaseViewModel
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -94,7 +95,7 @@ internal class MyPageProfileEditViewModel @Inject constructor(
         viewModelScopeEH.launch {
             fetchUserUseCase.invoke()
                 .collectLatest {
-                    onNameChanged(it.name)
+                    onNameChanged(it.name!!)
                     onAddressChanged(it.address, it.bjdCode)
                     onImageChanged(it.profileImage)
                 }
