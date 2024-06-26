@@ -99,6 +99,13 @@ val Typography = DreamTypography(
         fontSize = 20.sp,
         lineHeight = TextUnit.Unspecified,
     ),
+    mainDate = TextStyle(
+        fontFamily = DreamFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 18.sp,
+        lineHeight = 29.sp,
+        letterSpacing = TextUnit.Unspecified
+    ),
     displayB = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
@@ -240,6 +247,7 @@ data class DreamTypography(
     val name: TextStyle = TextStyle.Default,
     val weather: TextStyle = TextStyle.Default,
     val pageName: TextStyle = TextStyle.Default,
+    val mainDate: TextStyle = TextStyle.Default,
     val displayB: TextStyle = TextStyle.Default,
     val displaySB: TextStyle = TextStyle.Default,
     val headerB: TextStyle = TextStyle.Default,

@@ -17,14 +17,29 @@ internal class BulletinDetailViewModel @Inject constructor(
     private val communityRepository: CommunityRepository,
 ) : BaseViewModel<BulletinDetailViewModel.State>(savedStateHandle) {
 
+    private val id: Long = savedStateHandle.get<Long>("id") ?: 0L
     override fun createInitialState(savedState: Parcelable?) = State()
 
     data class State(
         val commentWritingInput: String = "",
         val currentDetailBulletinId: Long = 0L,
-        val isLoadDetailSuccessful: Boolean = false,
+        // TODO: 테스트용으로  true. false로 바꿔야댐.
+        val isLoadDetailSuccessful: Boolean = true,
         val currentDetailBulletin: BulletinEntity = BulletinEntity.dummy(),
+        val currentCategory: BulletinEntity.BulletinCategory = BulletinEntity.BulletinCategory.Free,
+        val isShowBulletinMoreBottomSheet: Boolean = false,
+        val isShowDeleteCheckDialog: Boolean = false,
+        val isShowFailedDialog: Boolean = false,
     ) : BaseViewModel.State
+
+    fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) =
+        updateState { copy(isShowBulletinMoreBottomSheet = boolean) }
+
+    fun setIsShowDeleteCheckDialog(boolean: Boolean) =
+        updateState { copy(isShowDeleteCheckDialog = boolean) }
+
+    fun setIsShowFailedDialog(boolean: Boolean) =
+        updateState { copy(isShowFailedDialog = boolean) }
 
     fun onCommentWritingInput(input: String) {
         updateState { copy(commentWritingInput = input) }
@@ -38,7 +53,7 @@ internal class BulletinDetailViewModel @Inject constructor(
         updateState { copy(currentDetailBulletin = entity) }
     }
 
-    fun loadBulletin(id: Long) {
+    init {
         viewModelScope.launch {
             setCurrentDetailBulletinId(id)
             Timber.d("loadBulletin 코루틴 시작, id: $id")
@@ -57,6 +72,21 @@ internal class BulletinDetailViewModel @Inject constructor(
                 updateState { copy(isLoadDetailSuccessful = false) }
             }
             Timber.d("loadBulletin 코루틴 끝, id: $id")
+        }
+    }
+
+    fun deleteBulletin(
+        popBackStack: () -> Unit,
+        onFail: () -> Unit,
+    ) {
+        loadingScope {
+            val isSuccessful =
+                communityRepository.deleteBulletin(state.value.currentDetailBulletinId)
+            if (!isSuccessful) {
+                onFail()
+            } else {
+                popBackStack()
+            }
         }
     }
 

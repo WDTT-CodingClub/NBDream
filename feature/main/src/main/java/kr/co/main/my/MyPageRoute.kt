@@ -40,19 +40,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import kr.co.nbdream.core.ui.R
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Defaultprofile
 import kr.co.ui.icon.dreamicon.Dots
-import kr.co.ui.icon.dreamicon.OutlineEdit
+import kr.co.ui.icon.dreamicon.Edit
+import kr.co.ui.icon.dreamicon.Tobot
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -65,7 +63,6 @@ internal fun MyPageRoute(
     navigateToSetting: () -> Unit = {},
     navigateToBookmark: () -> Unit = {},
     navigateToWrite: () -> Unit = {},
-    navigateToComment: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -79,7 +76,6 @@ internal fun MyPageRoute(
         navigateToSetting = navigateToSetting,
         navigateToBookmark = navigateToBookmark,
         navigateToWrite = navigateToWrite,
-        navigateToComment = navigateToComment,
         showCropModal = { showCropModal.invoke(true) }
     )
 }
@@ -92,7 +88,6 @@ private fun MyPageScreen(
     navigateToSetting: () -> Unit = {},
     navigateToBookmark: () -> Unit = {},
     navigateToWrite: () -> Unit = {},
-    navigateToComment: () -> Unit = {},
 ) {
     Surface {
         LazyColumn(
@@ -109,7 +104,7 @@ private fun MyPageScreen(
                         IconButton(onClick = navigateToProfileEdit) {
                             Icon(
                                 modifier = Modifier.size(32.dp),
-                                imageVector = DreamIcon.OutlineEdit,
+                                imageVector = DreamIcon.Edit,
                                 contentDescription = "edit"
                             )
                         }
@@ -127,9 +122,9 @@ private fun MyPageScreen(
 
             item {
                 ProfileCard(
-                    imageUrl = state.profileImageUrl?: "",
-                    userName = state.name?:"",
-                    address = state.address?: "주소를 설정해 주세요"
+                    imageUrl = state.profileImageUrl ?: "",
+                    userName = state.name ?: "",
+                    address = state.address ?: "주소를 설정해 주세요"
                 )
             }
 
@@ -138,7 +133,6 @@ private fun MyPageScreen(
                 CommunityCard(
                     navigateToBookmark = navigateToBookmark,
                     navigateToWrite = navigateToWrite,
-                    navigateToComment = navigateToComment
                 )
             }
 
@@ -157,7 +151,6 @@ private fun MyPageScreen(
 private fun CommunityCard(
     navigateToBookmark: () -> Unit = {},
     navigateToWrite: () -> Unit = {},
-    navigateToComment: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -183,8 +176,7 @@ private fun CommunityCard(
         ) {
             listOf(
                 "저장한 글 보러가기",
-                "작성한 글 보러가기",
-                "작성한 댓글 보러가기"
+                "작성한 글/댓글 보러가기",
             ).forEachIndexed { index, text ->
                 Row(
                     modifier = Modifier
@@ -193,7 +185,6 @@ private fun CommunityCard(
                             when (index) {
                                 0 -> navigateToBookmark()
                                 1 -> navigateToWrite()
-                                2 -> navigateToComment()
                             }
                         },
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -210,7 +201,7 @@ private fun CommunityCard(
                         tint = MaterialTheme.colors.gray5,
                     )
                 }
-                if (index < 2)
+                if (index < 1)
                     HorizontalDivider(
                         thickness = 1.dp,
                         color = MaterialTheme.colors.gray8
@@ -236,11 +227,11 @@ private fun BulletinCard(
             )
             .padding(24.dp),
     ) {
-        Row (
+        Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-        ){
+        ) {
             Text(
                 text = "재배 작물",
                 style = MaterialTheme.typo.h4,
@@ -380,10 +371,10 @@ private fun ProfileCard(
                 .size(88.dp)
                 .clip(CircleShape),
             model = imageUrl,
-            error = painterResource(id = R.drawable.img_deafault_profile),
+            error = rememberVectorPainter(image = DreamIcon.Tobot),
             contentDescription = "User's profile image",
             contentScale = ContentScale.Crop,
-            placeholder = painterResource(id = R.drawable.img_deafault_profile)
+            placeholder = rememberVectorPainter(image = DreamIcon.Tobot)
         )
 
         Column(

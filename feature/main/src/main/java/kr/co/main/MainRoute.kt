@@ -32,7 +32,7 @@ import kr.co.ui.ext.shadow
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Community
 import kr.co.ui.icon.dreamicon.Home
-import kr.co.ui.icon.dreamicon.Mypage
+import kr.co.ui.icon.dreamicon.MyPage
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 
@@ -45,7 +45,7 @@ internal enum class MainBottomRoute(
     CALENDAR("calendar", "Calendar", DreamIcon.Calendar),
     COMMUNITY("community", "Community", DreamIcon.Community),
     ACCOUNT("account", "Account", DreamIcon.Account),
-    MY_PAGE("myPage", "MyPage", DreamIcon.Mypage)
+    MY_PAGE("myPage", "MyPage", DreamIcon.MyPage)
 }
 
 @SuppressLint("StaticFieldLeak")

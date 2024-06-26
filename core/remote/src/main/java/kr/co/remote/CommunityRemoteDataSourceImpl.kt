@@ -9,6 +9,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import kr.co.data.source.remote.CommunityRemoteDataSource
+import kr.co.remote.model.Dto
 import kr.co.remote.model.request.community.BulletinReqDto
 import kr.co.remote.model.request.community.PostCommentRequest
 import kr.co.remote.model.response.ApiResponseLong
@@ -79,7 +80,7 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
     override suspend fun bookmarkBulletin(
         id: Long,
     ) = client.post("api/bulletins/$id/bookmark") {
-    }.body<ApiResponseVoid>().isCode200()
+    }.body<Dto<Int>>().let { it.data != 0 }
 
     override suspend fun getBulletins(
         keyword: String?,

@@ -3,6 +3,7 @@ package kr.co.data.model.data.community
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.CropEntity
 import kr.co.domain.entity.type.CropType
+import java.time.LocalDateTime
 
 data class BulletinResData(
     val authorId: Long? = null,
@@ -13,9 +14,11 @@ data class BulletinResData(
     val crop: String? = null,
     val imageUrls: List<String>? = null,
     val bulletinCategory: String? = null,
-    val createdTime: String? = null,
+    val createdTime: LocalDateTime? = null,
     val comments: List<CommentResData>? = null,
     val bookmarkedCount: Int? = null,
+    val author: Boolean? = null,
+    val bookmarked: Boolean? = null,
 )
 
 
@@ -28,7 +31,9 @@ internal fun BulletinResData.convertToEntity(): BulletinEntity? {
         this.crop == null ||
         this.bulletinCategory == null ||
         this.createdTime == null ||
-        this.bookmarkedCount == null
+        this.bookmarkedCount == null ||
+        this.author == null ||
+        this.bookmarked == null
     ) null
     else BulletinEntity(
         authorId = this.authorId,
@@ -42,6 +47,8 @@ internal fun BulletinResData.convertToEntity(): BulletinEntity? {
         createdTime = this.createdTime,
         comments = this.comments?.convertToEntities() ?: emptyList(),
         bookmarkedCount = this.bookmarkedCount,
+        author = this.author,
+        bookmarked = this.bookmarked,
     )
 }
 
