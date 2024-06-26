@@ -244,8 +244,8 @@ internal fun BulletinDetailScreen(
                     .imePadding(),
             ) {
                 AsyncImage(
-                    model = state.currentDetailBulletin.profileImageUrl,
-                    contentDescription = "글쓴이 프로필 사진",
+                    model = null,
+                    contentDescription = "본인 프로필 사진",
                     modifier = modifier
                         .width(40.dp)
                         .height(40.dp)
