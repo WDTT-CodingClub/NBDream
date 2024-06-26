@@ -46,6 +46,7 @@ import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import timber.log.Timber
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Period
@@ -76,8 +77,8 @@ internal fun ScheduleCalendar(
     modifier: Modifier = Modifier
 ) {
     val stateHolder = rememberScheduleCalendarStateHolder(
-        calendarMonth,
         calendarYear,
+        calendarMonth,
         selectedDate,
         onDateSelect,
         holidays,
@@ -180,6 +181,7 @@ private fun ScheduleCalendarDateRow(
     holidays: List<HolidayModel>,
     modifier: Modifier = Modifier
 ) {
+    Timber.d("ScheduleCalendarDateRow) calendarMonth: $calendarMonth, selectedDate : $selectedDate")
     Row(modifier = modifier) {
         for (date in weekDateRange) {
             ScheduleCalendarDateItem(

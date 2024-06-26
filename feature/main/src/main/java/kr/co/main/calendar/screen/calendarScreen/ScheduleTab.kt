@@ -155,6 +155,7 @@ private fun ScheduleCalendarCard(
                 .padding(vertical = Paddings.xlarge)
         ) {
             CategoryIndicatorList(
+                modifier = Modifier.padding(start = Paddings.xlarge),
                 crop = calendarCrop
             )
             ScheduleCalendar(
