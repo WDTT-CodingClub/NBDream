@@ -245,30 +245,32 @@ internal fun BulletinCard(
                         }
                     }
                 }
-                // TODO: 확인용, 나중에 지울 것.
-                else {
-                    Row {
-//                        Icon(
-//                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_comment_24),
-//                            contentDescription = "댓글 아이콘",
+
+//                // TODO: 확인용, 나중에 지울 것.
+//                else {
+//                    Row {
+////                        Icon(
+////                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_comment_24),
+////                            contentDescription = "댓글 아이콘",
+////                        )
+//                        Text("댓글 654개")
+//                    }
+//                    Row {
+//                        Image(
+//                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+//                            contentDescription = "댓글 프사",
+//                            modifier = Modifier
+//                                .background(
+//                                    color = Color.Gray,
+//                                    shape = CircleShape,
+//                                )
+//                                .padding(4.dp),
 //                        )
-                        Text("댓글 654개")
-                    }
-                    Row {
-                        Image(
-                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-                            contentDescription = "댓글 프사",
-                            modifier = Modifier
-                                .background(
-                                    color = Color.Gray,
-                                    shape = CircleShape,
-                                )
-                                .padding(4.dp),
-                        )
-                        Text("댓글닉네임")
-                    }
-                    Text("댓글 내용")
-                }
+//                        Text("댓글닉네임")
+//                    }
+//                    Text("댓글 내용")
+//                }
+
             }
         }
     }
