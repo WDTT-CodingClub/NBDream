@@ -263,9 +263,14 @@ private fun MyPageProfileEditScreen(
                     modifier = Modifier.fillMaxWidth(),
                     value = state.name ?: "",
                     onValueChange = onNameChanged,
+                    isError = state.nameGuide != null,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = MaterialTheme.colors.gray1,
                         unfocusedContainerColor = Color.Transparent,
+                        unfocusedIndicatorColor = MaterialTheme.colors.gray6,
+                        errorContainerColor = Color.Transparent,
+                        errorIndicatorColor = MaterialTheme.colors.error
                     ),
                 )
 

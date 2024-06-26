@@ -52,6 +52,8 @@ import kr.co.domain.entity.type.CropType
 import kr.co.main.R
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Tobot
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -173,11 +175,12 @@ private fun AiTalk(
                 horizontalArrangement = Arrangement.spacedBy(9.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Image(
+                Icon(
                     modifier = Modifier
                         .size(32.dp),
-                    painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_deafault_profile),
+                    imageVector = DreamIcon.Tobot,
                     contentDescription = "tobot",
+                    tint = Color.Unspecified
                 )
                 Text(
                     text = "토봇",

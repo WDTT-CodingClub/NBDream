@@ -24,6 +24,7 @@ import kr.co.main.community.writing.BulletinWritingRoute
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
+import kr.co.main.my.community.MyPageWriteRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
 import kr.co.main.my.setting.MyPageSettingRoute
 import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
@@ -166,11 +167,8 @@ fun NavGraphBuilder.mainNavGraph(
 
                         },
                         navigateToWrite = {
-
+                                          navController.navigate(MyPageRoute.WRITE_ROUTE)
                         },
-                        navigateToComment = {
-
-                        }
                     )
                 }
             }
@@ -357,7 +355,9 @@ fun NavGraphBuilder.mainNavGraph(
     composable(
         route = MyPageRoute.WRITE_ROUTE
     ) {
-
+        MyPageWriteRoute(
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(

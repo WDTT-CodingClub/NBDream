@@ -3,7 +3,6 @@
 package kr.co.main.my.community
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kr.co.core.ui.icon.buttericon.Bookmarkoff
@@ -57,8 +55,8 @@ import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 
 @Composable
-internal fun MyPageCommunityRoute(
-    viewModel: MyPageCommunityViewModel = hiltViewModel(),
+internal fun MyPageWriteRoute(
+    viewModel: MyPageWriteViewModel = hiltViewModel(),
     popBackStack: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -71,7 +69,7 @@ internal fun MyPageCommunityRoute(
 
 @Composable
 private fun MyPageCommunityScreen(
-    state: MyPageCommunityViewModel.State = MyPageCommunityViewModel.State(),
+    state: MyPageWriteViewModel.State = MyPageWriteViewModel.State(),
     pagerState: PagerState = rememberPagerState { 2 },
     scope: CoroutineScope = rememberCoroutineScope(),
     popBackStack: () -> Unit = {},
