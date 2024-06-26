@@ -1,26 +1,36 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package kr.co.main.my.community.bookmark
 
 import Bookmarkon
+import android.provider.MediaStore.Images.ImageColumns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,9 +38,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -65,8 +77,8 @@ private fun MyPageBookmarkScreen(
         containerColor = MaterialTheme.colors.background,
         topBar = {
             DreamCenterTopAppBar(
-                modifier = Modifier.background(MaterialTheme.colors.background),
                 title = "저장한 글 보기",
+                colorBackground = true,
                 navigationIcon = {
                     IconButton(
                         onClick = popBackStack
@@ -90,7 +102,9 @@ private fun MyPageBookmarkScreen(
                 .padding(top = 52.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
+            items(List(10){ 1 }) {
+                PostCard()
+            }
         }
     }
 }
@@ -109,7 +123,8 @@ private fun PostCard(
             .padding(
                 horizontal = 24.dp,
                 vertical = 16.dp
-            )
+            ),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -162,7 +177,7 @@ private fun PostCard(
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = "이건 내가 심은 감자이고 나는 말하는 감자이다..이건 내가 심은 감자이고 나는 말하는 감자이다..이건 내가 심은 감자이고 나는 말하는 감자이다..이건 내가 심은 감자이고 나는 말하는 감자이다..이건 내가 심은 감자이고 나는 말하는 감자이다..",
@@ -172,14 +187,185 @@ private fun PostCard(
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        ImageGrid(imageUrls = List(5) { "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoUYZj6uQB5p6HzmZzOpZ8kk1bKsmePhmCRQ&s" })
 
+        Text(
+            text = "댓글 29개",
+            fontFamily = MaterialTheme.typo.body1.fontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
+            lineHeight = 26.sp,
+            color = MaterialTheme.colors.gray5
+        )
+
+        CommentRow(
+
+        )
+    }
+}
+
+@Composable
+private fun CommentRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        AsyncImage(
+            modifier = Modifier.size(40.dp),
+            model = "",
+            contentDescription = "댓글 작성자 프로필 이미지"
+        )
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = "유바비",
+                style = MaterialTheme.typo.body1,
+                color = MaterialTheme.colors.gray1
+            )
+
+            Text(
+                text = "정말 좋은 생각이야",
+                style = MaterialTheme.typo.body1,
+                color = MaterialTheme.colors.gray1,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Composable
+private fun ImageGrid(imageUrls: List<String>) {
+    when (imageUrls.size) {
+        0 -> {}
+        1 -> {
+            AsyncImage(
+                model = imageUrls[0],
+                contentDescription = "게시글 이미지",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(294 / 218f)
+            )
+        }
+        2 -> {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                imageUrls.forEach { url ->
+                    AsyncImage(
+                        model = url,
+                        contentDescription = "게시글 이미지",
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(147 / 218f)
+                    )
+                }
+            }
+        }
+        3 -> {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(294 / 218f),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AsyncImage(
+                    model = imageUrls[0],
+                    contentDescription = "게시글 이미지",
+                    modifier = Modifier
+                        .fillMaxWidth(189/294f)
+                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    imageUrls.drop(1).forEach { url ->
+                        AsyncImage(
+                            model = url,
+                            contentDescription = "게시글 이미지",
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                        )
+                    }
+                }
+            }
+        }
+        else -> {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(294 / 218f),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AsyncImage(
+                    model = imageUrls[0],
+                    contentDescription = "게시글 이미지",
+                    modifier = Modifier
+                        .fillMaxWidth(189/294f)
+                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    AsyncImage(
+                        model = imageUrls[1],
+                        contentDescription = "게시글 이미지",
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(97 / 105f)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(97 / 105f)
+                    ) {
+                        AsyncImage(
+                            model = imageUrls[2],
+                            contentDescription = "게시글 이미지",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .background(MaterialTheme.colors.black.copy(alpha = 0.12f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "+${imageUrls.size - 3}",
+                                style = MaterialTheme.typo.h4,
+                                color = MaterialTheme.colors.white
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 @Preview
 @Composable
 private fun Preview() {
+    NBDreamTheme {
+        MyPageBookmarkScreen()
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewCard() {
     NBDreamTheme {
         PostCard()
     }

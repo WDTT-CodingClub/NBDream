@@ -89,6 +89,7 @@ private fun MyPageCommunityScreen(
         topBar = {
             DreamCenterTopAppBar(
                 modifier = Modifier.background(MaterialTheme.colors.background),
+                colorBackground = true,
                 title = "작성한 글/댓글 보기",
                 navigationIcon = {
                     IconButton(onClick = popBackStack) {
@@ -111,6 +112,7 @@ private fun MyPageCommunityScreen(
                 .background(MaterialTheme.colors.background)
         ) {
             TabRow(
+                containerColor = Color.Transparent,
                 selectedTabIndex = pagerState.currentPage,
                 indicator = { tabPositions ->
                     TabRowDefaults.SecondaryIndicator(

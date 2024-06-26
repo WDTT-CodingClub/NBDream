@@ -5,6 +5,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,6 +18,7 @@ import kr.co.ui.theme.typo
 fun DreamCenterTopAppBar(
     title: String,
     modifier: Modifier = Modifier,
+    colorBackground: Boolean = false,
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
@@ -29,6 +31,7 @@ fun DreamCenterTopAppBar(
                 color = MaterialTheme.colors.gray1
             )
         },
+        colors = if (colorBackground) TopAppBarDefaults.centerAlignedTopAppBarColors().copy(containerColor = MaterialTheme.colors.background)  else TopAppBarDefaults.centerAlignedTopAppBarColors(),
         navigationIcon = navigationIcon,
         actions = actions
     )
