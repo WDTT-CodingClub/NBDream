@@ -17,7 +17,7 @@ internal data class CommentResDto(
     val content: String? = null,
     @Serializable(with = LocalDateTimeSerializer::class)
     val createdDate: LocalDateTime,
-
+    // TODO: 나중에 rename
     @SerialName("lastModifiedDate")
     val lastModifiedTime: String? = null,
 )

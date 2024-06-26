@@ -48,11 +48,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.CommentEntity
 import kr.co.main.R
-import kr.co.main.community.BulletinDetailMoreBottomSheet
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
+import kr.co.ui.widget.DreamBottomSheetWithTextButtons
 import kr.co.ui.widget.DreamCenterTopAppBar
+import kr.co.ui.widget.TextAndOnClick
 import timber.log.Timber
 
 
@@ -66,12 +67,8 @@ internal fun BulletinDetailRoute(
     BulletinDetailScreen(
         modifier = modifier,
         state = state,
+        event = viewModel as BulletinDetailEvent,
         popBackStack = popBackStack,
-        onCommentWritingInput = viewModel::onCommentWritingInput,
-        setIsShowBulletinMoreBottomSheet = viewModel::setIsShowBulletinMoreBottomSheet,
-        setIsShowDeleteCheckDialog = viewModel::setIsShowDeleteCheckDialog,
-        deleteBulletin = viewModel::deleteBulletin,
-        setIsShowFailedDialog = viewModel::setIsShowFailedDialog,
     )
 }
 
@@ -80,13 +77,9 @@ internal fun BulletinDetailRoute(
 internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
     state: BulletinDetailViewModel.State = BulletinDetailViewModel.State(),
+    event: BulletinDetailEvent = BulletinDetailEvent.dummy,
     popBackStack: () -> Unit = {},
     id: Long = 0L,
-    onCommentWritingInput: (String) -> Unit = {},
-    setIsShowBulletinMoreBottomSheet: (Boolean) -> Unit = {},
-    setIsShowDeleteCheckDialog: (Boolean) -> Unit = {},
-    deleteBulletin: (() -> Unit, () -> Unit) -> Unit = { _, _ -> },
-    setIsShowFailedDialog: (Boolean) -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -155,7 +148,15 @@ internal fun BulletinDetailScreen(
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         IconButton(onClick = {
-                            setIsShowBulletinMoreBottomSheet(true)
+                            event.showBottomSheet(
+                                listOf(
+                                    TextAndOnClick("신고하기") { event.setIsShowFailedDialog(true) },
+                                    TextAndOnClick("수정하기") { event.setIsShowFailedDialog(true) },
+                                    TextAndOnClick("삭제하기") { event.setIsShowDeleteCheckDialog(true) },
+                                ),
+                            )
+
+                            event.setIsShowBulletinMoreBottomSheet(true)
                         }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
@@ -214,7 +215,13 @@ internal fun BulletinDetailScreen(
                     CommentItem(
                         comment = it,
                         isAuthor = state.currentDetailBulletin.authorId == it.memberId,
-                        onMoreVertClick = {},
+                        onMoreVertClick = {
+                            event.showBottomSheet(
+                                listOf(
+                                    TextAndOnClick("삭제하기") { event.deleteComment(it.commentId) },
+                                )
+                            )
+                        },
                     )
                 }
             }
@@ -233,9 +240,9 @@ internal fun BulletinDetailScreen(
                 )
                 TextField(
                     value = state.commentWritingInput,
-                    onValueChange = onCommentWritingInput
+                    onValueChange = event::onCommentWritingInput
                 )
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = event::onPostCommentClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Send,
                         contentDescription = "보내기 아이콘"
@@ -245,21 +252,19 @@ internal fun BulletinDetailScreen(
         }
 
         if (state.isShowBulletinMoreBottomSheet) {
-            BulletinDetailMoreBottomSheet(
-                onDismissRequest = { setIsShowBulletinMoreBottomSheet(false) },
-                onReportClick = { setIsShowFailedDialog(true) },
-                onEditClick = { setIsShowFailedDialog(true) },
-                onDeleteClick = { setIsShowDeleteCheckDialog(true) },
+            DreamBottomSheetWithTextButtons(
+                onDismissRequest = { event.setIsShowBulletinMoreBottomSheet(false) },
+                textAndOnClicks = state.bottomSheetItems,
             )
         }
 
         if (state.isShowDeleteCheckDialog) {
             DialogYesOrNo(
-                onDismissRequest = { setIsShowDeleteCheckDialog(false) },
+                onDismissRequest = { event.setIsShowDeleteCheckDialog(false) },
                 onConfirmation = {
-                    deleteBulletin(
+                    event.deleteBulletin(
                         popBackStack,
-                    ) { setIsShowFailedDialog(true) }
+                    ) { event.setIsShowFailedDialog(true) }
                 },
                 dialogTitle = "정말 삭제하시겠습니까?",
             )
@@ -267,7 +272,7 @@ internal fun BulletinDetailScreen(
 
         if (state.isShowFailedDialog) {
             DialogSimpleText(
-                onDismissRequest = { setIsShowFailedDialog(false) },
+                onDismissRequest = { event.setIsShowFailedDialog(false) },
                 text = "처리하지 못했습니다.",
             )
         }
