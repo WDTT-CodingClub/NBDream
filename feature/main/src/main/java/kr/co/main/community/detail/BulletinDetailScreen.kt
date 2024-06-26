@@ -102,7 +102,7 @@ internal fun BulletinDetailScreen(
                     val iconId =
                         if (state.currentDetailBulletin.bookmarked) kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_24
                         else kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_border_24
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = event::bookmarkBulletin) {
                         Icon(
                             painter = painterResource(id = iconId),
                             contentDescription = "북마크 아이콘",
