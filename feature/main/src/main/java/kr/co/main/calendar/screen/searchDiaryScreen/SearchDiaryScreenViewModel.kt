@@ -50,12 +50,7 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
         val startDate: LocalDate = LocalDate.now(),
         val endDate: LocalDate = LocalDate.now(),
         val diaries: List<DiaryModel> = emptyList(),
-    ) : State {
-        override fun toParcelable(): Parcelable? {
-            // TODO "serialize"
-            return null
-        }
-    }
+    ) : State
 
     override fun createInitialState(savedState: Parcelable?): SearchDiaryScreenState =
         savedState?.let {

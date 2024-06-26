@@ -100,7 +100,9 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
         lastBulletinId: Long?,
     ) = client.get(GET_MY_BULLETINS_URL) {
         url {
-            parameters.append("lastBulletinId", lastBulletinId.toString())
+            lastBulletinId?.toString()?.let { query ->
+                parameters.append("lastBulletinId", query)
+            }
         }
     }.body<ApiResponseBulletinsResDto>().convertToData()
 
@@ -108,7 +110,9 @@ internal class CommunityRemoteDataSourceImpl @Inject constructor(
         lastBulletinId: Long?,
     ) = client.get(GET_BOOKMARKS_URL) {
         url {
-            parameters.append("lastBulletinId", lastBulletinId.toString())
+            lastBulletinId?.toString()?.let { query ->
+                parameters.append("lastBulletinId", query)
+            }
         }
     }.body<ApiResponseBulletinsResDto>().convertToData()
 

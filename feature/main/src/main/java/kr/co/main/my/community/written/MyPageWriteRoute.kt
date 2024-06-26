@@ -159,7 +159,8 @@ private fun MyPageCommunityScreen(
                                 modifier = Modifier
                                     .border(
                                         width = 1.dp,
-                                        color = MaterialTheme.colors.gray7
+                                        color = MaterialTheme.colors.gray7,
+                                        shape = RoundedCornerShape(12.dp)
                                     ),
                                 bulletin = bulletin,
                                 navigateToBulletinDetail = navigateToBulletinDetail
@@ -174,7 +175,8 @@ private fun MyPageCommunityScreen(
                                 modifier = Modifier
                                     .border(
                                         width = 1.dp,
-                                        color = MaterialTheme.colors.gray7
+                                        color = MaterialTheme.colors.gray7,
+                                        shape = RoundedCornerShape(12.dp)
                                     ),
                                 comment = comment,
                                 navigateToBulletinDetail = navigateToBulletinDetail
