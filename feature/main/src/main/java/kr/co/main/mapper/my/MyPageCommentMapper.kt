@@ -2,7 +2,7 @@ package kr.co.main.mapper.my
 
 import kr.co.common.mapper.Mapper
 import kr.co.domain.entity.CommentEntity
-import kr.co.main.my.community.MyPageWriteViewModel
+import kr.co.main.my.community.written.MyPageWriteViewModel
 
 internal object MyPageCommentMapper
     :Mapper<CommentEntity, MyPageWriteViewModel.State.Comment>{

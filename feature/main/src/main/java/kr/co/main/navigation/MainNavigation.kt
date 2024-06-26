@@ -26,7 +26,7 @@ import kr.co.main.community.writing.BulletinWritingRoute
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
-import kr.co.main.my.community.MyPageWriteRoute
+import kr.co.main.my.community.written.MyPageWriteRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
 import kr.co.main.my.setting.MyPageSettingRoute
 import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
