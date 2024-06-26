@@ -1,6 +1,7 @@
 package kr.co.domain.entity
 
 data class WeatherForecastEntity(
+    val weather: String,
     val probability: Int,
     val precipitation: Int,
     val humidity: Int,
@@ -9,7 +10,7 @@ data class WeatherForecastEntity(
     val maxTemperature: Float,
     val day: String,
     val windSpeed: Int,
-    val weather: List<Weather>,
+    val weathers: List<Weather>,
 ) {
     data class Weather(
         val weather: String,

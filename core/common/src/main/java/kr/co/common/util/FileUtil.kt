@@ -1,13 +1,16 @@
 package kr.co.common.util
 
 import android.net.Uri
+import android.os.Environment
 import android.provider.OpenableColumns
 import android.text.TextUtils
+import androidx.core.content.FileProvider
 import kr.co.common.model.CustomException
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
+import java.time.LocalDate
 import kotlin.io.path.name
 
 object FileUtil : BaseUtil() {
@@ -71,6 +74,14 @@ object FileUtil : BaseUtil() {
         }
         trimFileName(res)
         return res.toString()
+    }
+
+    fun createImageUri(): Uri {
+        return FileProvider.getUriForFile(
+            applicationContext,
+            "${applicationContext.packageName}.provider",
+            File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_DCIM), "${LocalDate.now()}.jpg")
+        )
     }
 
     private fun isValidFileNameChar(c: Char): Boolean {
