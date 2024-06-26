@@ -34,6 +34,8 @@ internal interface BulletinDetailEvent {
         onDismiss: () -> Unit,
     )
 
+    fun bookmarkBulletin()
+
 
     companion object {
         val dummy = object : BulletinDetailEvent {
@@ -54,6 +56,8 @@ internal interface BulletinDetailEvent {
                 onDismiss: () -> Unit,
             ) {
             }
+
+            override fun bookmarkBulletin() {}
 
         }
     }
@@ -87,24 +91,6 @@ internal class BulletinDetailViewModel @Inject constructor(
         val dialogOnDismiss: () -> Unit = {},
     ) : BaseViewModel.State
 
-
-    override fun showDialog(
-        header: String,
-        description: String,
-        onConfirm: () -> Unit,
-        onDismiss: () -> Unit,
-    ) {
-        updateState {
-            copy(
-                dialogHeader = header,
-                dialogDescription = description,
-                dialogOnConfirm = onConfirm,
-                dialogOnDismiss = onDismiss,
-                isShowDialog = true,
-            )
-        }
-    }
-
     override fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) =
         updateState { copy(isShowBulletinMoreBottomSheet = boolean) }
 
@@ -127,6 +113,23 @@ internal class BulletinDetailViewModel @Inject constructor(
         updateState { copy(currentDetailBulletin = entity) }
 
     //---
+
+    override fun showDialog(
+        header: String,
+        description: String,
+        onConfirm: () -> Unit,
+        onDismiss: () -> Unit,
+    ) {
+        updateState {
+            copy(
+                dialogHeader = header,
+                dialogDescription = description,
+                dialogOnConfirm = onConfirm,
+                dialogOnDismiss = onDismiss,
+                isShowDialog = true,
+            )
+        }
+    }
 
     override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {
         updateState {
@@ -194,6 +197,16 @@ internal class BulletinDetailViewModel @Inject constructor(
             } else {
                 popBackStack()
             }
+        }
+    }
+
+    override fun bookmarkBulletin() {
+        loadingScope {
+            val changedBookmark =
+                communityRepository.bookmarkBulletin(state.value.currentDetailBulletinId)
+
+            // 귀찮다 그냥 로드하자
+            loadBulletin(state.value.currentDetailBulletinId)
         }
     }
 
