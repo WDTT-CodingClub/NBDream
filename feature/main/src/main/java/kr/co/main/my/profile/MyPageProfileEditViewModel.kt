@@ -115,7 +115,7 @@ internal class MyPageProfileEditViewModel @Inject constructor(
         val nameGuide: String?
             get() = when {
                 name.isNullOrBlank() -> "이름을 입력해주세요"
-                name.length < 2 || name.length > 12 -> "이름은 최소 2글자 이상 12글자 이하 이어야 합니다"
+                name.length < 2 || name.length > 16 -> "이름은 최소 2글자 이상 16글자 이하 이어야 합니다"
                 !nameValid -> "이름은 영문, 한글, 숫자만 가능합니다"
                 else -> null
             }
