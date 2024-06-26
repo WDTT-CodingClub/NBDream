@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -52,6 +53,7 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.model.DatePickerType
 import kr.co.main.accountbook.model.DateRangeOption
 import kr.co.main.accountbook.model.getDisplay
+import kr.co.main.accountbook.model.toCategoryEnum
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -67,8 +69,8 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountBookCategoryBottomSheet(
-    categories: List<AccountBookEntity.Category?>? = AccountBookEntity.Category.entries,
-    onSelectedListener: (AccountBookEntity.Category) -> Unit,
+    categories: List<String>,
+    onSelectedListener: (String?) -> Unit,
     dismissBottomSheet: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState()
@@ -84,7 +86,7 @@ internal fun AccountBookCategoryBottomSheet(
         Column(
             modifier = Modifier
                 .background(color = MaterialTheme.colors.white)
-                .padding(Paddings.xlarge)
+                .padding(horizontal = Paddings.xlarge)
                 .wrapContentHeight(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
@@ -92,24 +94,22 @@ internal fun AccountBookCategoryBottomSheet(
             Text(
                 text = "카테고리를 선택하세요",
                 fontSize = 18.sp,
-                style = TextStyle(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typo.h4,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(bottom = Paddings.large),
                 color = MaterialTheme.colors.gray1
             )
-            categories?.forEach { category ->
-                val categoryName = category.getDisplay()
-                val backgroundColor = Color.Transparent
+            Spacer(modifier = Modifier.height(8.dp))
+            categories.forEach { category ->
                 Text(
-                    text = categoryName,
+                    text = category,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            if (category != null) {
-                                onSelectedListener(category)
-                            }
+                            val selectedCategory = if (category == "전체") null else category.toCategoryEnum()?.name
+                            onSelectedListener(selectedCategory)
+                            dismissBottomSheet()
                         }
-                        .background(color = backgroundColor)
                         .padding(vertical = Paddings.medium),
                     textAlign = TextAlign.Start,
                     color = MaterialTheme.colors.black
@@ -119,6 +119,7 @@ internal fun AccountBookCategoryBottomSheet(
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -365,8 +366,6 @@ private fun CustomDatePickerDialog(
 
         DatePickerType.END -> endDate?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
             ?: System.currentTimeMillis()
-
-        else -> System.currentTimeMillis()
     }
 
     val datePickerState = rememberDatePickerState(
@@ -430,6 +429,24 @@ private fun CustomDatePickerDialog(
     ) {
         DatePicker(
             state = datePickerState,
+            colors = DatePickerDefaults.colors(
+                selectedDayContainerColor = MaterialTheme.colors.primary,
+                selectedYearContainerColor = MaterialTheme.colors.primary,
+                containerColor = MaterialTheme.colors.white,
+                dateTextFieldColors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = MaterialTheme.colors.primary,
+                    unfocusedIndicatorColor = MaterialTheme.colors.primary,
+                    disabledIndicatorColor = MaterialTheme.colors.primary,
+                    cursorColor = MaterialTheme.colors.primary,
+                    focusedTextColor = MaterialTheme.colors.primary,
+                    errorContainerColor = Color.Transparent,
+                    focusedLabelColor = MaterialTheme.colors.primary,
+                    unfocusedLabelColor = MaterialTheme.colors.primary,
+                    disabledLabelColor = MaterialTheme.colors.primary,
+                ),
+            )
         )
     }
 }
