@@ -259,7 +259,7 @@ private fun PostCard(
                 )
 
                 Text(
-                    text = bulletin.createdAt,
+                    text = bulletin.createdAt.format("yyyy/MM/dd HH:mm"),
                     style = MaterialTheme.typo.body2,
                     color = MaterialTheme.colors.gray5
                 )
