@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.type.ScheduleType
 import kr.co.domain.usecase.calendar.GetSchedulesUseCase
@@ -33,14 +32,18 @@ internal class HomeViewModel @Inject constructor(
 
     init {
         viewModelScopeEH.launch {
-            fetchUserUseCase.invoke().first().also {
+            fetchUserUseCase.invoke().collect() {
                 updateState {
                     copy(address = it.address)
                 }
             }
+        }
+
+        viewModelScopeEH.launch {
             weatherUseCase.invoke().also {
                 onTodayWeather(
                     State.WeatherDetail(
+                        weather = it.weather,
                         probability = it.probability,
                         precipitation = it.precipitation,
                         humidity = it.humidity,
@@ -51,7 +54,7 @@ internal class HomeViewModel @Inject constructor(
                     )
                 )
                 onWeatherList(
-                    it.weather.map { weather ->
+                    it.weathers.map { weather ->
                         State.WeatherSimple(
                             weather = weather.weather,
                             minTemperature = weather.minTemp,
@@ -86,6 +89,7 @@ internal class HomeViewModel @Inject constructor(
         val schedules: List<Schedule> = emptyList(),
     ) : BaseViewModel.State {
         data class WeatherDetail(
+            val weather: String = "",
             val probability: Int = 0,
             val precipitation: Int = 0,
             val humidity: Int = 0,

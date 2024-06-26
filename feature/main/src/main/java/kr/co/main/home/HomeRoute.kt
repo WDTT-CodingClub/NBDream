@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -54,11 +54,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.main.home.HomeViewModel.State.WeatherDetail
 import kr.co.main.home.HomeViewModel.State.WeatherSimple
+import kr.co.main.mapper.home.WeatherSkyMapper
 import kr.co.main.model.home.WeatherMetrics
-import kr.co.main.model.home.toSky
 import kr.co.ui.ext.noRippleClickable
-import kr.co.ui.icon.DreamIcon
-import kr.co.ui.icon.dreamicon.Bell
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -106,13 +104,14 @@ private fun HomeScreen(
                     description = state.address.let {
                         if (it.isNullOrBlank()) "산 좋고 물 좋 나만의 농장 1번지" else it
                     },
+                    descriptionAction = {},
                     actions = {
-                        IconButton(onClick = navigateToNotification) {
-                            Icon(
-                                imageVector = DreamIcon.Bell,
-                                contentDescription = "notification"
-                            )
-                        }
+//                        IconButton(onClick = navigateToNotification) {
+//                            Icon(
+//                                imageVector = DreamIcon.Bell,
+//                                contentDescription = "notification"
+//                            )
+//                        }
                     }
                 )
             }
@@ -193,7 +192,8 @@ private fun HomeScreen(
                             Icon(
                                 modifier = Modifier.clearAndSetSemantics {},
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.grey5
                             )
                         }
                     } else {
@@ -283,7 +283,14 @@ private fun ScheduleContents(
                 ).toSpanStyle()
             ) {
                 startDate.apply {
-                    append("${monthValue}월 ${dayOfMonth}일 ${dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN)} ")
+                    append(
+                        "${monthValue}월 ${dayOfMonth}일 ${
+                            dayOfWeek.getDisplayName(
+                                TextStyle.SHORT,
+                                Locale.KOREAN
+                            )
+                        } "
+                    )
                 }
             }
             withStyle(
@@ -367,14 +374,15 @@ private fun WeatherCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
+                Icon(
                     modifier = Modifier
                         .size(
                             width = 104.dp,
                             height = 69.33.dp
                         ),
-                    painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_sunny),
-                    contentDescription = "weather state"
+                    imageVector = todayWeather.weather.let(WeatherSkyMapper::convert),
+                    contentDescription = "weather state",
+                    tint = Color.Unspecified
                 )
 
                 Column(
@@ -424,10 +432,11 @@ private fun WeatherCard(
             }
             Row(
                 modifier = Modifier
-                    .wrapContentSize()
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
                     .align(Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 WeatherMetrics.entries.forEachIndexed { index, value ->
                     WeatherState(
@@ -436,10 +445,10 @@ private fun WeatherCard(
                         },
                         title = value.label,
                         measure = when (value) {
-                            WeatherMetrics.Probability -> todayWeather.probability ?: 0
-                            WeatherMetrics.Precipitation -> todayWeather.precipitation ?: 0
-                            WeatherMetrics.Humidity -> todayWeather.humidity ?: 0
-                            WeatherMetrics.Wind -> todayWeather.wind ?: 0
+                            WeatherMetrics.Probability -> todayWeather.probability
+                            WeatherMetrics.Precipitation -> todayWeather.precipitation
+                            WeatherMetrics.Humidity -> todayWeather.humidity
+                            WeatherMetrics.Wind -> todayWeather.wind
                         },
                         unit = value.unit
                     )
@@ -457,55 +466,78 @@ private fun WeatherCard(
         }
 
         if (expanded) {
-            weatherList?.forEach {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+            Column {
+                Text(
+                    text = "주간 날씨",
+                    style = MaterialTheme.typo.h4,
+                    color = MaterialTheme.colors.gray1
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = it.day.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN),
-                        style = MaterialTheme.typo.body1.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            lineHeight = 20.em,
-                        ),
-                        color = MaterialTheme.colors.gray1
-                    )
+                    weatherList?.forEachIndexed { index, it ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = it.day.dayOfWeek.getDisplayName(
+                                    TextStyle.FULL,
+                                    Locale.KOREAN
+                                ),
+                                style = MaterialTheme.typo.body1.copy(
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp,
+                                    lineHeight = 20.sp,
+                                ),
+                                color = MaterialTheme.colors.gray1
+                            )
 
-                    Spacer(modifier = Modifier.weight(1f))
+                            Spacer(modifier = Modifier.weight(1f))
 
-                    Image(
-                        modifier = Modifier.size(36.dp),
-                        painter = toSky(it.weather),
-                        contentDescription = it.weather
-                    )
+                            Icon(
+                                modifier = Modifier.size(36.dp),
+                                imageVector = it.weather.let(WeatherSkyMapper::convert),
+                                contentDescription = it.weather,
+                                tint = Color.Unspecified
+                            )
 
-                    Spacer(modifier = Modifier.weight(1f))
+                            Spacer(modifier = Modifier.weight(1f))
 
-                    Text(
-                        text = "${it.maxTemperature}°",
-                        style = MaterialTheme.typo.body1.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            lineHeight = 20.em,
-                        ),
-                        color = MaterialTheme.colors.red
-                    )
+                            Text(
+                                text = "${it.maxTemperature}°",
+                                style = MaterialTheme.typo.body1.copy(
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp,
+                                    lineHeight = 20.em,
+                                ),
+                                color = MaterialTheme.colors.red
+                            )
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(16.dp))
 
-                    Text(
-                        text = "${it.minTemperature}°",
-                        style = MaterialTheme.typo.body1.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            lineHeight = 20.em,
-                        ),
-                        color = MaterialTheme.colors.gray4
-                    )
+                            Text(
+                                text = "${it.minTemperature}°",
+                                style = MaterialTheme.typo.body1.copy(
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp,
+                                    lineHeight = 20.em,
+                                ),
+                                color = MaterialTheme.colors.gray4
+                            )
+
+                        }
+                        if (index != weatherList.lastIndex)
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = MaterialTheme.colors.gray8
+                            )
+                    }
                 }
             }
         }
