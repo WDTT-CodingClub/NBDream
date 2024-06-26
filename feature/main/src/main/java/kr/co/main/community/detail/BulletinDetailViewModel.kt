@@ -25,6 +25,7 @@ internal class BulletinDetailViewModel @Inject constructor(
         // TODO: 테스트용으로  true. false로 바꿔야댐.
         val isLoadDetailSuccessful: Boolean = true,
         val currentDetailBulletin: BulletinEntity = BulletinEntity.dummy(),
+        val currentCategory: BulletinEntity.BulletinCategory = BulletinEntity.BulletinCategory.Free,
         val isShowBulletinMoreBottomSheet: Boolean = false,
         val isShowDeleteCheckDialog: Boolean = false,
         val isShowFailedDialog: Boolean = false,
