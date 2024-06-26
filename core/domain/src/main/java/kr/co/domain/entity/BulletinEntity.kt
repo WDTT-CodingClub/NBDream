@@ -14,29 +14,39 @@ data class BulletinEntity(
     val createdTime: String,
     val comments: List<CommentEntity>,
     val bookmarkedCount: Int,
+    val author: Boolean,
+    val bookmarked: Boolean,
 ) {
     companion object {
         fun dummy(idx: Int = 0) = BulletinEntity(
             authorId = 22222220 + (idx).toLong(),
             bulletinId = 33333330 + (idx).toLong(),
             nickname = "nickname${idx}",
-            profileImageUrl = "https://profileImageUrl.com/${idx}",
+            profileImageUrl = "https://placehold.co/${70 + idx}x${70 + idx}",
             content = "content${idx}",
             crop = CropEntity(CropType.entries[(idx) % CropType.entries.size]),
-            imageUrls = emptyList(),
+            imageUrls = List(5) { "https://placehold.co/${220 + idx}x${220 + idx}" },
             bulletinCategory = BulletinCategory.entries[(idx) % BulletinCategory.entries.size],
             createdTime = "createdTime${idx}",
-            comments = emptyList(),
+            comments = List(5) { CommentEntity.dummy(it) },
             bookmarkedCount = 220 + idx,
+            author = idx % 2 == 0,
+            bookmarked = idx % 2 == 1,
         )
     }
 
     enum class BulletinCategory(
         val queryName: String,
+        val koreanName: String,
     ) {
-        Free("free"),
-        Qna("qna"),
-        Disease("bug"),
+        Free("free", "자유 주제"),
+        Qna("qna", "질문"),
+        Disease("bug", "병해충"),
+        ;
+
+        companion object {
+            fun fromKoreanName(koreanName: String) = entries.first { it.koreanName == koreanName }
+        }
     }
 
 }

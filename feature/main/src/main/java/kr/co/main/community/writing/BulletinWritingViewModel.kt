@@ -51,22 +51,25 @@ internal class BulletinWritingViewModel @Inject constructor(
         updateState { copy(isShowWaitingDialog = boolean) }
     }
 
+    fun onCategoryClick(category: BulletinEntity.BulletinCategory) {
+        setCurrentCategory(category)
+    }
+
     fun onAddImagesClick(uris: List<Uri>, uriToFile: (Uri) -> File) {
         for (uri in uris) {
             val model = WritingSelectedImageModel(uri = uri)
             addWritingImage(model)
             viewModelScope.launch {
-                Timber.d("uploadImage 코루틴 시작")
+                Timber.d("onAddImagesClick 코루틴 시작")
                 try {
                     val serverImageEntity = uploadImage(uriToFile(uri))
                     serverImageEntity?.let { replaceWritingImagesByUri(model.copy(url = it.url)) }
-                    Timber.d("uploadImage 코루틴 끝, url: $serverImageEntity")
+                    Timber.d("onAddImagesClick 코루틴 끝, url: $serverImageEntity")
                 } catch (e: Throwable) {
-                    Timber.e(e, "uploadImage 코루틴 에러")
+                    Timber.e(e, "onAddImagesClick 코루틴 에러")
                 }
             }
         }
-        Timber.d("addImages 끝")
     }
 
     private fun addWritingImage(model: WritingSelectedImageModel) {
@@ -119,8 +122,8 @@ internal class BulletinWritingViewModel @Inject constructor(
                     content = state.value.bulletinWritingInput,
                     crop = state.value.currentBoard,
                     bulletinCategory = state.value.currentCategory,
-//                    imageUrls = writingImages.value.map { it.url.toString() },
-                    imageUrls = emptyList(),  // temp
+                    imageUrls = state.value.writingImages.map { it.url.toString() },
+//                    imageUrls = emptyList(),  // temp
                 )
                 Timber.d("onFinishWritingClick 코루틴 끝, id: $uploadedBulletinId")
                 popBackStack()
