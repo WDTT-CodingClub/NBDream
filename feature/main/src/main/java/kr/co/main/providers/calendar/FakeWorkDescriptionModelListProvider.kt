@@ -1,4 +1,4 @@
-package kr.co.main.providers
+package kr.co.main.providers.calendar
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import kr.co.main.model.calendar.DiaryModel
