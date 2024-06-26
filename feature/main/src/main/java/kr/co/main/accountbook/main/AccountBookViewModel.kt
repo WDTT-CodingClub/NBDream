@@ -18,20 +18,25 @@ internal class AccountBookViewModel @Inject constructor(
 ) : BaseViewModel<AccountBookViewModel.State>(
     savedStateHandle = savedStateHandle
 ) {
-
     init {
         fetchAccountBooks()
     }
 
-    private fun fetchAccountBooks(lastContentsId: Long? = null) {
+    fun fetchAccountBooks(
+        lastContentsId: Long? = null,
+        category: String? = null,
+        sort: AccountBookEntity.SortOrder? = null,
+        transactionType: AccountBookEntity.TransactionType? = null,
+    ) {
         loadingScope {
             val (totalEntity, newAccountBooks) = repository.getAccountBooks(
                 lastContentsId = lastContentsId,
-                category = currentState.category,
-                sort = currentState.sort.name,
+                category = category ?: currentState.category,
+                sort = sort?.name ?: currentState.sort.name,
                 start = currentState.start,
                 end = currentState.end,
-                transactionType = currentState.transactionType?.name ?: ""
+                transactionType = transactionType?.name ?: (currentState.transactionType?.name
+                    ?: "")
             )
 
             val updatedAccountBooks = if (lastContentsId != null) {

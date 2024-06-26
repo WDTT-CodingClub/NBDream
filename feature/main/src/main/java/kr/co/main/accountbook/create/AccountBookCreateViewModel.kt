@@ -9,9 +9,9 @@ import kotlinx.coroutines.launch
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.domain.usecase.image.UploadImageUseCase
-import kr.co.main.accountbook.main.formatNumber
 import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
 import kr.co.main.accountbook.model.EntryType
+import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.formatReceiveDateTime
 import kr.co.main.accountbook.model.formatSendDateTime
 import kr.co.ui.base.BaseViewModel
@@ -28,15 +28,23 @@ internal class AccountBookCreateViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AccountBookCreateViewModel.State>(savedStateHandle) {
     private val id: Long? = savedStateHandle.get<String>("id")?.toLong()
-    private val entryType: EntryType = savedStateHandle.get<EntryType>("entryType") ?: EntryType.CREATE
+    private val _entryType: EntryType = savedStateHandle.get<String>("entryType")?.let {
+        when (it) {
+            EntryType.CREATE.name -> EntryType.CREATE
+            EntryType.UPDATE.name -> EntryType.UPDATE
+            else -> EntryType.CREATE
+        }
+    } ?: EntryType.CREATE
+    val entryType: EntryType get() = _entryType
 
-    private val _complete: MutableSharedFlow<Unit> = MutableSharedFlow()
+    private val _complete: MutableSharedFlow<Boolean> = MutableSharedFlow()
     val complete = _complete.asSharedFlow()
 
     init {
         id?.let {
             fetchAccountBookById(it)
         }
+        updateButtonText()
     }
 
     fun updateAmountText(newAmountText: String) {
@@ -76,6 +84,10 @@ internal class AccountBookCreateViewModel @Inject constructor(
         updateState { copy(imageUrls = imageUrls + url) }
     }
 
+    private fun updateButtonText() {
+        updateState { copy(buttonText = if (_entryType == EntryType.UPDATE) "수정" else "등록") }
+    }
+
     fun uploadImage(image: File) =
         loadingScope {
             uploadImageUseCase(
@@ -88,6 +100,14 @@ internal class AccountBookCreateViewModel @Inject constructor(
             }
         }
 
+    fun performAccountBook() =
+        if (entryType == EntryType.UPDATE) {
+            updateAccountBook()
+        } else {
+            createAccountBook()
+        }
+
+
     private fun updateAccountBook() = loadingScope {
         currentState.id?.let {
             accountBookRepository.updateAccountBook(
@@ -96,17 +116,15 @@ internal class AccountBookCreateViewModel @Inject constructor(
                 amount = currentState.amount ?: 0L,
                 category = currentState.category!!.name.lowercase(),
                 title = currentState.title ?: "",
-                registerDateTime = currentState.registerDateTime,
+                registerDateTime = currentState.registerDateTime.formatSendDateTime(),
                 imageUrls = currentState.imageUrls
             )
         }
-    }.invokeOnCompletion {
-        if (it == null) {
-            viewModelScopeEH.launch {
-                _complete.emit(Unit)
-            }
-        } else {
-            // TODO 작성 실패
+    }.invokeOnCompletion { throwable ->
+        viewModelScopeEH.launch {
+            _complete.emit(
+                throwable == null
+            )
         }
     }
 
@@ -120,7 +138,8 @@ internal class AccountBookCreateViewModel @Inject constructor(
                     category = accountBookDetail.category,
                     transactionType = accountBookDetail.transactionType,
                     amount = accountBookDetail.amount ?: 0,
-                    registerDateTime = accountBookDetail.registerDateTime?.formatReceiveDateTime() ?: "",
+                    registerDateTime = accountBookDetail.registerDateTime?.formatReceiveDateTime()
+                        ?: "",
                     imageUrls = accountBookDetail.imageUrl,
                     amountText = formatNumber(accountBookDetail.amount ?: 0)
                 )
@@ -128,7 +147,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
         }
 
 
-    fun createAccountBook() = loadingScope {
+    private fun createAccountBook() = loadingScope {
         accountBookRepository.createAccountBook(
             transactionType = currentState.transactionType!!.name.lowercase(),
             amount = currentState.amount ?: 0L,
@@ -137,13 +156,11 @@ internal class AccountBookCreateViewModel @Inject constructor(
             registerDateTime = currentState.registerDateTime.formatSendDateTime(),
             imageUrls = currentState.imageUrls
         )
-    }.invokeOnCompletion {
-        if (it == null) {
-            viewModelScopeEH.launch {
-                _complete.emit(Unit)
-            }
-        } else {
-            // TODO 작성 실패
+    }.invokeOnCompletion { throwable ->
+        viewModelScopeEH.launch {
+            _complete.emit(
+                throwable == null
+            )
         }
     }
 
@@ -162,7 +179,8 @@ internal class AccountBookCreateViewModel @Inject constructor(
             DATE_FORMAT_PATTERN,
             Locale.getDefault()
         ).format(Date()),
-        val imageUrls: List<String> = listOf()
+        val imageUrls: List<String> = listOf(),
+        val buttonText: String = "등록"
     ) : BaseViewModel.State
 
     private companion object {

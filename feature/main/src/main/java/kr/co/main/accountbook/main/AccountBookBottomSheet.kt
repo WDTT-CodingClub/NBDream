@@ -52,6 +52,7 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.model.DateRangeOption
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.theme.colors
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -117,6 +118,8 @@ internal fun AccountBookCategoryBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountBookCalendarBottomSheet(
+    startDate: LocalDate?,
+    endDate: LocalDate?,
     selectedOption: DateRangeOption,
     onOptionSelected: (DateRangeOption) -> Unit,
     onSelectedListener: (String, String) -> Unit,
@@ -311,13 +314,12 @@ private fun OptionBox(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CustomDatePickerDialog(
+    startDate: LocalDate? = LocalDate.now(),
+    endDate: LocalDate? = LocalDate.now(),
     datePickerType: String,
     onClickCancel: () -> Unit,
     onClickConfirm: (yyyyMMdd: String) -> Unit
 ) {
-    val startDate = remember { mutableStateOf(LocalDate.now()) }
-    val endDate = remember { mutableStateOf(LocalDate.now()) }
-
     val datePickerState = rememberDatePickerState(
         yearRange = IntRange(2000, 2050),
         initialDisplayMode = DisplayMode.Picker,
@@ -328,7 +330,6 @@ private fun CustomDatePickerDialog(
             }
         }
     )
-
     val initialSelectedDate = remember { datePickerState.selectedDateMillis }
     val context = LocalContext.current
 
@@ -342,7 +343,7 @@ private fun CustomDatePickerDialog(
                 if (datePickerType == "start") {
                     val selectedStartDate =
                         LocalDate.parse(formattedDate, DateTimeFormatter.BASIC_ISO_DATE)
-                    if (selectedStartDate.isAfter(endDate.value) || selectedStartDate == endDate.value) {
+                    if (selectedStartDate.isAfter(endDate) || selectedStartDate == endDate) {
                         Toast.makeText(
                             context,
                             "시작일이 종료일보다 이후입니다.",
@@ -351,11 +352,10 @@ private fun CustomDatePickerDialog(
                         onClickCancel()
                         return@LaunchedEffect
                     }
-                    startDate.value = selectedStartDate
                 } else {
                     val selectedEndDate =
                         LocalDate.parse(formattedDate, DateTimeFormatter.BASIC_ISO_DATE)
-                    if (selectedEndDate.isBefore(startDate.value) || selectedEndDate == startDate.value) {
+                    if (selectedEndDate.isBefore(startDate) || selectedEndDate == startDate) {
                         Toast.makeText(
                             context,
                             "종료일이 시작일보다 이전입니다.",
@@ -364,9 +364,7 @@ private fun CustomDatePickerDialog(
                         onClickCancel()
                         return@LaunchedEffect
                     }
-                    endDate.value = selectedEndDate
                 }
-
                 onClickConfirm(formattedDate)
             }
         }
@@ -376,12 +374,9 @@ private fun CustomDatePickerDialog(
         onDismissRequest = { onClickCancel() },
         confirmButton = {},
         colors = DatePickerDefaults.colors(
-            containerColor = Color.White,
-            selectedDayContentColor = MaterialTheme.colors.primary,
-            selectedDayContainerColor = MaterialTheme.colors.primary,
-            dayInSelectionRangeContentColor = MaterialTheme.colors.primary,
+            containerColor = Color.White
         ),
-        shape = RoundedCornerShape(6.dp),
+        shape = RoundedCornerShape(8.dp),
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         DatePicker(

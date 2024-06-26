@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DateRange
@@ -63,15 +62,18 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import kotlinx.coroutines.flow.collectLatest
 import kr.co.common.util.FileUtil
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
 import kr.co.main.accountbook.main.AccountBookOptionButton
-import kr.co.main.accountbook.main.formatNumber
+import kr.co.main.accountbook.main.CircleProgress
 import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
+import kr.co.main.accountbook.model.EntryType
+import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.nbdream.core.ui.R
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Arrowleft
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
@@ -87,36 +89,46 @@ import java.util.Locale
 internal fun AccountBookCreateRoute(
     popBackStack: () -> Unit,
     viewModel: AccountBookCreateViewModel = hiltViewModel(),
-    navigationToAccountBook: () -> Unit
+    navigationToAccountBook: () -> Unit,
+    navigationToContent: (Long) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
     LaunchedEffect(Unit) {
-        viewModel.complete.collectLatest {
-            navigationToAccountBook()
+        viewModel.complete.collect { complete ->
+            if (complete) {
+                when (viewModel.entryType) {
+                    EntryType.CREATE -> navigationToAccountBook()
+                    EntryType.UPDATE -> state.id?.let { id -> navigationToContent(id) }
+                }
+            }
         }
     }
 
     AccountBookCreateScreen(
         state = state,
+        isLoading = isLoading,
         popBackStack = popBackStack,
         onUploadImage = { viewModel.uploadImage(it) },
-        onCreateAccountBook = viewModel::createAccountBook,
+        onPerformAccountBook = viewModel::performAccountBook,
         onUpdateAmount = { viewModel.updateAmount(it) },
         onUpdateAmountText = { viewModel.updateAmountText(it) },
         onUpdateTransactionType = { viewModel.updateTransactionType(it) },
         onUpdateTitle = { viewModel.updateTitle(it) },
         onRemoveImageUrl = { viewModel.removeImageUrl(it) },
         onUpdateRegisterDateTime = { viewModel.updateRegisterDateTime(it) },
-        onUpdateCategory = { viewModel.updateCategory(it) }
+        onUpdateCategory = { viewModel.updateCategory(it) },
     )
 }
 
 @Composable
 internal fun AccountBookCreateScreen(
     state: AccountBookCreateViewModel.State = AccountBookCreateViewModel.State(),
+    isLoading: Boolean,
     popBackStack: () -> Unit,
     onUploadImage: (File) -> Unit = {},
-    onCreateAccountBook: () -> Unit = {},
+    onPerformAccountBook: () -> Unit = {},
     onUpdateAmount: (Long) -> Unit = {},
     onUpdateAmountText: (String) -> Unit = {},
     onUpdateTransactionType: (AccountBookEntity.TransactionType) -> Unit = {},
@@ -152,7 +164,7 @@ internal fun AccountBookCreateScreen(
                     navigationIcon = {
                         IconButton(onClick = popBackStack) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                imageVector = DreamIcon.Arrowleft,
                                 contentDescription = "뒤로가기",
                                 tint = Color.Black
                             )
@@ -161,16 +173,20 @@ internal fun AccountBookCreateScreen(
                     actions = {
                         Button(
                             onClick = {
-                                onCreateAccountBook()
+                                if (!isLoading) {
+                                    onPerformAccountBook()
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(Color.Transparent)
                         ) {
-                            Text("등록", color = MaterialTheme.colors.black)
+                            Text(
+                                text = state.buttonText,
+                                color = MaterialTheme.colors.black
+                            )
                         }
                     }
                 )
             }
-
             item {
                 Column(
                     modifier = Modifier.padding(top = Paddings.extra)
@@ -449,7 +465,11 @@ internal fun AccountBookCreateScreen(
                 }
             }
         }
+        if (isLoading) {
+            CircleProgress()
+        }
     }
+
     if (showDatePicker) {
         AccountBookDatePickerDialog(
             onClickCancel = { showDatePicker = false },
@@ -459,6 +479,7 @@ internal fun AccountBookCreateScreen(
             }
         )
     }
+
     if (showBottomSheet) {
         AccountBookCategoryBottomSheet(
             onSelectedListener = { category ->

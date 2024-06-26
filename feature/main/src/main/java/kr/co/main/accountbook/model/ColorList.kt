@@ -23,4 +23,4 @@ internal fun Int.getColorList(): List<Color> {
     return List(this) { index -> predefinedColors[index % predefinedColors.size] }
 }
 
-internal const val MAX_CATEGORY_COUNT = 2
+internal const val MAX_CATEGORY_COUNT = 4

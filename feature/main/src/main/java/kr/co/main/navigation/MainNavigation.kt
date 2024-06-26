@@ -1,9 +1,12 @@
 package kr.co.main.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.co.main.MainBottomRoute
+import kr.co.main.MainNav
 import kr.co.main.MainRoute
 import kr.co.main.accountbook.content.AccountBookContentRoute
 import kr.co.main.accountbook.create.AccountBookCreateRoute
@@ -14,6 +17,10 @@ import kr.co.main.calendar.screen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.screen.calendarScreen.CalendarRoute
 import kr.co.main.calendar.screen.searchDiaryScreen.SearchDiaryRoute
 import kr.co.main.community.CommunityRoute
+import kr.co.main.community.CommunityViewModel
+import kr.co.main.community.SharingData
+import kr.co.main.community.detail.BulletinDetailRoute
+import kr.co.main.community.writing.BulletinWritingRoute
 import kr.co.main.home.HomeRoute
 import kr.co.main.home.chat.ChatRoute
 import kr.co.main.my.MyPageRoute
@@ -24,9 +31,6 @@ import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
 import kr.co.main.my.setting.verify.MyPageSettingDeleteSocialVerifyRoute
-import kr.co.main.navigation.AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE
-import kr.co.main.navigation.AccountBookRoute.ACCOUNT_BOOK_CREATE_ROUTE
-import kr.co.main.navigation.AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE
 import kr.co.main.notification.NotificationRoute
 import timber.log.Timber
 
@@ -128,10 +132,12 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     AccountBookRoute(
                         navigationToRegister = {
-                            navController.navigate("$ACCOUNT_BOOK_CREATE_ROUTE?entryType=${EntryType.CREATE.name}")                        },
+                            navController.navigate("${AccountBookRoute.ACCOUNT_BOOK_CREATE_ROUTE}?entryType=${EntryType.CREATE.name}")
+                        },
                         navigationToContent = { id ->
-                            navController.navigate("$ACCOUNT_BOOK_CONTENT_ROUTE/$id")
-                        }
+                            navController.navigate("${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/$id")
+                        },
+                        navController = navController,
                     )
                 }
 
@@ -214,13 +220,29 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = ACCOUNT_BOOK_CREATE_ROUTE
+        route = "${AccountBookRoute.ACCOUNT_BOOK_CREATE_ROUTE}?entryType={entryType}"
     ) {
         AccountBookCreateRoute(
             popBackStack = navController::popBackStack,
             navigationToAccountBook = {
-                navController.navigate(MainBottomRoute.ACCOUNT.route) {
-                    popUpTo(navController.graph.startDestinationId) {
+                navController.previousBackStackEntry?.savedStateHandle?.set("reinitialize", true)
+                navController.popBackStack()
+            },
+            navigationToContent = {}
+        )
+    }
+
+    composable(
+        route = "${AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE}/{id}?entryType={entryType}"
+    ) {
+        AccountBookCreateRoute(
+            popBackStack = {
+                navController.previousBackStackEntry?.savedStateHandle?.set("reinitialize", true)
+            },
+            navigationToAccountBook = {},
+            navigationToContent = { id ->
+                navController.navigate("${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/$id") {
+                    popUpTo("${AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE}/{id}?entryType={entryType}") {
                         inclusive = true
                     }
                     launchSingleTop = true
@@ -230,27 +252,26 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = "$ACCOUNT_BOOK_UPDATE_ROUTE/{id}"
-    ) {
-        AccountBookCreateRoute(
-            popBackStack = navController::popBackStack,
-            navigationToAccountBook = {
-                navController.navigate(MainBottomRoute.ACCOUNT.route)
-            }
-        )
-    }
-
-    composable(
-        route = "$ACCOUNT_BOOK_CONTENT_ROUTE/{id}"
+        route = "${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/{id}"
     ) { backStackEntry ->
         val idString = backStackEntry.arguments?.getString("id")
         val id = idString?.toLongOrNull()
-
         if (id != null) {
             AccountBookContentRoute(
                 popBackStack = navController::popBackStack,
                 navigationToUpdate = {
-                    navController.navigate("$ACCOUNT_BOOK_UPDATE_ROUTE/$id?entryType=${EntryType.UPDATE.name}")
+                    navController.navigate(
+                        "${AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE}/$id?entryType=${EntryType.UPDATE.name}"
+                    ) {
+                        launchSingleTop = true
+                    }
+                },
+                navigationTopAccountBook = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "reinitialize",
+                        true
+                    )
+                    navController.popBackStack()
                 }
             )
         } else {
@@ -350,10 +371,7 @@ fun NavGraphBuilder.mainNavGraph(
         route = MyPageRoute.SETTING_DELETE_ACCOUNT_ROUTE
     ) {
         MyPageSettingDeleteAccountRoute(
-            popBackStack = navController::popBackStack,
-            navigateToSocialVerify = {
-                navController.navigate(MyPageRoute.SETTING_DELETE_VERIFY_ROUTE)
-            }
+            popBackStack = navController::popBackStack
         )
     }
 

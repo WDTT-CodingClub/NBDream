@@ -1,6 +1,7 @@
 package kr.co.main.accountbook.main
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,24 +28,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
 import kr.co.main.accountbook.model.DateRangeOption
 import kr.co.main.accountbook.model.MAX_CATEGORY_COUNT
+import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getColorList
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Arrowright
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamTopAppBar
-import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -54,9 +58,23 @@ internal fun AccountBookRoute(
     viewModel: AccountBookViewModel = hiltViewModel(),
     navigationToRegister: () -> Unit,
     navigationToContent: (Long?) -> Unit,
+    navController: NavController,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
+    val reinitialize =
+        navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("reinitialize") ?: false
+    LaunchedEffect(reinitialize) {
+        if (reinitialize) {
+            viewModel.fetchAccountBooks(
+                category = "",
+                sort = AccountBookEntity.SortOrder.EARLIEST,
+                transactionType = null
+            )
+        }
+        navController.currentBackStackEntry?.savedStateHandle?.set("reinitialize", false)
+    }
 
     AccountBookScreen(
         state = state,
@@ -132,8 +150,9 @@ internal fun AccountBookScreen(
                             .background(color = Color.White, shape = RoundedCornerShape(12.dp))
                             .padding(Paddings.extra)
                     ) {
-                        val amountPercent = if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
-                            state.expensePercent else state.revenuePercent
+                        val amountPercent =
+                            if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
+                                state.expensePercent else state.revenuePercent
 
                         GraphSection(
                             graphTransactionType = state.graphTransactionType,
@@ -182,7 +201,7 @@ internal fun AccountBookScreen(
 
                 if (state.accountBooks.isEmpty()) {
                     item {
-                        Box(
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(
@@ -194,17 +213,29 @@ internal fun AccountBookScreen(
                                         bottomEnd = 12.dp
                                     )
                                 ),
-                            contentAlignment = Alignment.Center
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "등록된 데이터가 없습니다.",
-                                style = MaterialTheme.typo.body1,
-                                color = MaterialTheme.colors.gray5,
+                                text = "장부를 작성해주세요!",
+                                style = MaterialTheme.typo.body2,
+                                color = MaterialTheme.colors.gray4,
                                 modifier = Modifier
+                                    .clickable {
+                                        navigationToRegister()
+                                    }
                                     .padding(
                                         vertical = Paddings.xlarge,
-                                        horizontal = Paddings.extra
+                                        horizontal = Paddings.medium
                                     )
+                            )
+                            Icon(
+                                imageVector = DreamIcon.Arrowright,
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.gray5,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .align(Alignment.CenterVertically)
                             )
                         }
                     }
@@ -274,7 +305,6 @@ private fun CalendarSection(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(top = Paddings.xlarge)
             .clickable { bottomSheetState = true }
     ) {
         Text(
@@ -292,6 +322,8 @@ private fun CalendarSection(
 
     if (bottomSheetState) {
         AccountBookCalendarBottomSheet(
+            startDate = startDate,
+            endDate = endDate,
             selectedOption = dateRangeOption,
             onOptionSelected = { newOption ->
                 onDateRangeOptionSelected(newOption)
@@ -307,6 +339,7 @@ private fun CalendarSection(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 private fun GraphSection(
     graphTransactionType: AccountBookEntity.TransactionType,
@@ -322,41 +355,52 @@ private fun GraphSection(
         modifier = Modifier.fillMaxWidth()
     ) {
         if (percents != null) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AccountBookOptionButton(
+                    option = "지출",
+                    isSelected = graphTransactionType == AccountBookEntity.TransactionType.EXPENSE,
+                    onSelected = {
+                        onGraphTransactionTypeSelected(AccountBookEntity.TransactionType.EXPENSE)
+                    }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                AccountBookOptionButton(
+                    option = "수입",
+                    isSelected = graphTransactionType == AccountBookEntity.TransactionType.REVENUE,
+                    onSelected = {
+                        onGraphTransactionTypeSelected(AccountBookEntity.TransactionType.REVENUE)
+                    }
+                )
+            }
             if (percents.isEmpty()) {
-                Box(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                        .fillMaxSize()
+                        .padding(top = Paddings.extra),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
+                    Image(
+                        painter = painterResource(
+                            id =
+                            kr.co.nbdream.core.ui.R.drawable.img_graph
+                        ),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.height(Paddings.extra))
                     Text(
-                        text = "등록된 데이터가 없습니다.",
-                        style = MaterialTheme.typo.body1,
+                        text = if (graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
+                            "이번 달은 어디서 많이 썼을까?"
+                        else
+                            "이번 달은 어디서 많이 벌었을까?",
+                        style = MaterialTheme.typo.body2,
                         color = MaterialTheme.colors.gray5
                     )
                 }
             } else {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    AccountBookOptionButton(
-                        option = "지출",
-                        isSelected = graphTransactionType == AccountBookEntity.TransactionType.EXPENSE,
-                        onSelected = {
-                            onGraphTransactionTypeSelected(AccountBookEntity.TransactionType.EXPENSE)
-                        }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    AccountBookOptionButton(
-                        option = "수입",
-                        isSelected = graphTransactionType == AccountBookEntity.TransactionType.REVENUE,
-                        onSelected = {
-                            onGraphTransactionTypeSelected(AccountBookEntity.TransactionType.REVENUE)
-                        }
-                    )
-                }
-
                 val colors = percents.size.getColorList()
                 Box(
                     modifier = Modifier
@@ -373,11 +417,13 @@ private fun GraphSection(
                 }
 
                 val total = percents.sum()
-                val categoryPercent = categories?.zip(percents)?.map { it.first to ((it.second / total) * 100).toInt() }
+                val categoryPercent = categories?.zip(percents)
+                    ?.map { it.first to String.format("%.1f", (it.second / total) * 100) }
                 var colorIndex = 0
-                Column(modifier = Modifier.padding(top = Paddings.xxlarge)) {
+                Column(modifier = Modifier.padding(vertical = Paddings.xxlarge)) {
                     val itemsToShow = if (showAll) categoryPercent else categoryPercent?.take(
-                        MAX_CATEGORY_COUNT)
+                        MAX_CATEGORY_COUNT
+                    )
 
                     itemsToShow?.chunked(2)?.forEach { rowItems ->
                         Row(
@@ -386,30 +432,30 @@ private fun GraphSection(
                                 .padding(vertical = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            rowItems.forEach { (category, percent) ->
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(12.dp)
-                                            .background(
-                                                colors[colorIndex % colors.size],
-                                                CircleShape
-                                            )
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = category,
-                                        style = MaterialTheme.typo.body1,
-                                        modifier = Modifier.padding(horizontal = 8.dp)
-                                    )
-                                    Text(
-                                        text = "$percent%",
-                                        style = MaterialTheme.typo.body1,
-                                        modifier = Modifier.padding(horizontal = 8.dp)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                GraphCategoryItem(
+                                    category = rowItems.first().first,
+                                    percent = rowItems.first().second,
+                                    color = colors[colorIndex % colors.size]
+                                )
+                            }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                if (rowItems.size > 1) {
+                                    Spacer(modifier = Modifier.width(16.dp))
+                                    GraphCategoryItem(
+                                        category = rowItems[1].first,
+                                        percent = rowItems[1].second,
+                                        color = colors[(colorIndex + 1) % colors.size]
                                     )
                                 }
-                                colorIndex++
                             }
+                            colorIndex += 2
                         }
                     }
                 }
@@ -418,7 +464,8 @@ private fun GraphSection(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = Paddings.extra, vertical = Paddings.xxlarge),
+                            .padding(horizontal = Paddings.extra)
+                            .clickable { setShowAll(!showAll) },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -428,7 +475,6 @@ private fun GraphSection(
                             color = MaterialTheme.colors.gray3,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
-                                .clickable { setShowAll(!showAll) }
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Icon(
@@ -441,39 +487,68 @@ private fun GraphSection(
                         )
                     }
                 }
+                Spacer(modifier = Modifier.height(Paddings.xlarge))
 
-                Row(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp)
-                        .background(
-                            color = MaterialTheme.colors.gray9,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .padding(horizontal = Paddings.extra),
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "${formatNumber(totalAmount ?: 0L)}원",
-                        style = MaterialTheme.typo.h3,
-                        color = MaterialTheme.colors.gray1,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Box(
+                    Column(
                         modifier = Modifier
-                            .width(1.dp)
-                            .height(22.dp)
-                            .background(color = MaterialTheme.colors.gray7)
-                    )
-                    Text(
-                        text = "합계: ${formatNumber(totalCost ?: 0L)}원",
-                        style = MaterialTheme.typo.h3,
-                        color = MaterialTheme.colors.gray1,
-                        modifier = Modifier.padding(start = Paddings.extra)
-                    )
+                            .background(
+                                color = MaterialTheme.colors.gray9,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Text(
+                            text = "${formatNumber(totalAmount ?: 0L)}원",
+                            style = MaterialTheme.typo.h3,
+                            color = MaterialTheme.colors.gray1,
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "합계: ${formatNumber(totalCost ?: 0L)}원",
+                            style = MaterialTheme.typo.h3,
+                            color = MaterialTheme.colors.gray1,
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+
+@Composable
+private fun GraphCategoryItem(
+    category: String,
+    percent: String,
+    color: Color
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(12.dp)
+                .background(
+                    color,
+                    CircleShape
+                )
+        )
+        Text(
+            text = category,
+            style = MaterialTheme.typo.body1,
+            maxLines = 1,
+            modifier = Modifier.padding(start = 8.dp)
+        )
+        Text(
+            text = "$percent%",
+            style = MaterialTheme.typo.body1,
+            maxLines = 1,
+            modifier = Modifier.padding(start = 8.dp)
+        )
     }
 }
 
@@ -649,78 +724,81 @@ private fun AccountBookItem(
     accountBook: AccountBookViewModel.State.AccountBook,
     onItemClicked: (Long) -> Unit
 ) {
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    vertical = Paddings.xlarge,
-                    horizontal = Paddings.extra
-                )
-                .clickable {
-                    onItemClicked(accountBook.id)
-                }
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "${accountBook.month ?: 0}월 ${accountBook.day ?: 0}일",
-                    style = MaterialTheme.typo.body2,
-                    color = MaterialTheme.colors.gray1
-                )
-                Text(
-                    text = accountBook.dayName ?: "",
-                    style = MaterialTheme.typo.body2,
-                    color = MaterialTheme.colors.gray1
-                )
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                vertical = Paddings.xlarge,
+                horizontal = Paddings.extra
+            )
+            .clickable {
+                onItemClicked(accountBook.id)
             }
-            Column(modifier = Modifier.weight(2f)) {
-                Text(
-                    text = accountBook.title ?: "",
-                    style = MaterialTheme.typo.body1,
-                    color = MaterialTheme.colors.gray1
-                )
-                Text(
-                    text = "${formatNumber(accountBook.amount ?: 0)}원",
-                    style = MaterialTheme.typo.body1,
-                    color = MaterialTheme.colors.gray1
-                )
-            }
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = accountBook.category.getDisplay(),
-                    style = MaterialTheme.typo.label,
-                    color = MaterialTheme.colors.gray5,
-                )
-            }
-
-            accountBook.imageUrl?.let {
-                Image(
-                    painter = rememberAsyncImagePainter(it),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(56.dp),
-                    contentScale = ContentScale.Crop
-                )
-            } ?: run {
-                Spacer(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .background(MaterialTheme.colors.gray8)
-                )
-            }
+    ) {
+        Column(modifier = Modifier.weight(2f)) {
+            Text(
+                text = "${accountBook.month ?: 0}월 ${accountBook.day ?: 0}일",
+                style = MaterialTheme.typo.body2,
+                color = MaterialTheme.colors.gray1
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = accountBook.dayName ?: "",
+                style = MaterialTheme.typo.body2,
+                color = MaterialTheme.colors.gray1
+            )
         }
-        HorizontalDivider(
+        Column(modifier = Modifier.weight(3f)) {
+            if (!accountBook.title.isNullOrBlank()) {
+                Text(
+                    text = accountBook.title,
+                    style = MaterialTheme.typo.body1,
+                    color = MaterialTheme.colors.gray1
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            Text(
+                text = "${formatNumber(accountBook.amount ?: 0)}원",
+                style = MaterialTheme.typo.body1,
+                color = MaterialTheme.colors.gray1
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = accountBook.category.getDisplay(),
+                style = MaterialTheme.typo.label,
+                color = MaterialTheme.colors.gray5,
+            )
+        }
+
+        Image(
+            painter = rememberAsyncImagePainter(accountBook.imageUrl?.first()),
+            contentDescription = null,
             modifier = Modifier
-                .fillMaxWidth(),
-            thickness = 1.dp,
-            color = MaterialTheme.colors.gray8
+                .size(56.dp),
+            contentScale = ContentScale.Crop
         )
     }
+    HorizontalDivider(
+        modifier = Modifier
+            .fillMaxWidth(),
+        thickness = 1.dp,
+        color = MaterialTheme.colors.gray8
+    )
 }
 
-fun formatNumber(number: Long): String {
-    val formatter = NumberFormat.getNumberInstance()
-    return formatter.format(number)
+@Composable
+internal fun CircleProgress() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colors.black.copy(alpha = 0.1f)),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = MaterialTheme.colors.primary
+        )
+    }
 }
