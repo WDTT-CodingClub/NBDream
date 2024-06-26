@@ -1,6 +1,7 @@
 package kr.co.domain.entity
 
 import kr.co.domain.entity.type.CropType
+import java.time.LocalDateTime
 
 data class BulletinEntity(
     val authorId: Long,
@@ -11,7 +12,7 @@ data class BulletinEntity(
     val crop: CropEntity,
     val imageUrls: List<String>,
     val bulletinCategory: BulletinCategory,
-    val createdTime: String,
+    val createdTime: LocalDateTime,
     val comments: List<CommentEntity>,
     val bookmarkedCount: Int,
     val author: Boolean,
@@ -27,7 +28,7 @@ data class BulletinEntity(
             crop = CropEntity(CropType.entries[(idx) % CropType.entries.size]),
             imageUrls = List(5) { "https://placehold.co/${220 + idx}x${220 + idx}" },
             bulletinCategory = BulletinCategory.entries[(idx) % BulletinCategory.entries.size],
-            createdTime = "createdTime${idx}",
+            createdTime = LocalDateTime.now(),
             comments = List(5) { CommentEntity.dummy(it) },
             bookmarkedCount = 220 + idx,
             author = idx % 2 == 0,

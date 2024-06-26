@@ -45,7 +45,7 @@ internal class MyPageWriteViewModel @Inject constructor(
             val id: Long,
             val content: String,
             val thumbnail: String?,
-            val createdAt: String,
+            val createdAt: LocalDateTime,
             val commentCount: Int,
             val bookmarkedCount: Int,
         )

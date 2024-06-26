@@ -52,6 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kr.co.common.util.format
 import kr.co.core.ui.icon.buttericon.Bookmarkoff
 import kr.co.main.R
 import kr.co.ui.ext.scaffoldBackground
@@ -258,7 +259,7 @@ private fun PostCard(
                 )
 
                 Text(
-                    text = bulletin.createdAt,
+                    text = bulletin.createdAt.format("yyyy/MM/dd HH:mm"),
                     style = MaterialTheme.typo.body2,
                     color = MaterialTheme.colors.gray5
                 )
@@ -340,7 +341,7 @@ private fun CommentCard(
         )
 
         Text(
-            text = comment.createAt.let { "${it.year}/${it.monthValue}/${it.dayOfMonth} ${it.hour}:${it.minute}" },
+            text = comment.createAt.format("yyyy/MM/dd HH:mm"),
             style = MaterialTheme.typo.body2,
             color = MaterialTheme.colors.gray5
         )
