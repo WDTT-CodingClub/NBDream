@@ -1,7 +1,7 @@
 package kr.co.ui.icon
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import kr.co.ui.icon.dreamicon.Spinner
+import kr.co.ui.icon.dreamicon.Apple
 import kotlin.collections.List as ____KtList
 
 public object DreamIcon
@@ -13,6 +13,6 @@ public val DreamIcon.AllIcons: ____KtList<ImageVector>
     if (__AllIcons != null) {
       return __AllIcons!!
     }
-    __AllIcons= listOf(Spinner)
+    __AllIcons= listOf(Apple)
     return __AllIcons!!
   }
