@@ -4,7 +4,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import kr.co.main.MainBottomRoute
 import kr.co.main.MainNav
 import kr.co.main.MainRoute
@@ -167,7 +169,7 @@ fun NavGraphBuilder.mainNavGraph(
 
                         },
                         navigateToWrite = {
-                                          navController.navigate(MyPageRoute.WRITE_ROUTE)
+                            navController.navigate(MyPageRoute.WRITE_ROUTE)
                         },
                     )
                 }
@@ -260,18 +262,17 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = "${CommunityRoute.BULLETIN_DETAIL_ROUTE}/{id}"
-    ) { backStackEntry ->
-        val idString = backStackEntry.arguments?.getString("id")
-        val id = idString?.toLongOrNull()
-        if (id != null) {
-            BulletinDetailRoute(
-                popBackStack = navController::popBackStack,
-                id = id,
-            )
-        } else {
-            Timber.e("Invalid id")
-        }
+        route = "${CommunityRoute.BULLETIN_DETAIL_ROUTE}/{id}",
+        arguments = listOf(
+            navArgument("id") {
+                type = NavType.LongType
+                nullable = false
+            }
+        )
+    ) {
+        BulletinDetailRoute(
+            popBackStack = navController::popBackStack,
+        )
     }
 
     composable(
@@ -356,7 +357,10 @@ fun NavGraphBuilder.mainNavGraph(
         route = MyPageRoute.WRITE_ROUTE
     ) {
         MyPageWriteRoute(
-            popBackStack = navController::popBackStack
+            popBackStack = navController::popBackStack,
+            navigateToBulletinDetail = {
+                navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$it")
+            }
         )
     }
 
