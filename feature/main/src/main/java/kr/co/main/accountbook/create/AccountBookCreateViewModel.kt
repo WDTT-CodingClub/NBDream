@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
+import kr.co.domain.usecase.image.DeleteImageUseCase
 import kr.co.domain.usecase.image.UploadImageUseCase
 import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
 import kr.co.main.accountbook.model.EntryType
@@ -25,6 +26,7 @@ import javax.inject.Inject
 internal class AccountBookCreateViewModel @Inject constructor(
     private val accountBookRepository: AccountBookRepository,
     private val uploadImageUseCase: UploadImageUseCase,
+    private val deleteImageUseCase: DeleteImageUseCase,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AccountBookCreateViewModel.State>(savedStateHandle) {
     private val id: Long? = savedStateHandle.get<String>("id")?.toLong()
@@ -76,17 +78,26 @@ internal class AccountBookCreateViewModel @Inject constructor(
         updateState { copy(registerDateTime = registerDateTime) }
     }
 
-    fun removeImageUrl(uri: String) {
-        updateState { copy(imageUrls = imageUrls - uri) }
+    private fun removeImageUrl(uri: String) {
+        updateState { copy(newImageUrls = newImageUrls - uri) }
     }
 
     private fun updateImageUrl(url: String) {
-        updateState { copy(imageUrls = imageUrls + url) }
+        updateState { copy(newImageUrls = newImageUrls + url) }
     }
 
     private fun updateButtonText() {
         updateState { copy(buttonText = if (_entryType == EntryType.UPDATE) "수정" else "등록") }
     }
+
+    fun deleteImage(url: String) =
+        loadingScope {
+            deleteImageUseCase(url)
+        }.invokeOnCompletion {
+            if (it == null) {
+                removeImageUrl(url)
+            }
+        }
 
     fun uploadImage(image: File) =
         loadingScope {
@@ -117,7 +128,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
                 category = currentState.category!!.name.lowercase(),
                 title = currentState.title ?: "",
                 registerDateTime = currentState.registerDateTime.formatSendDateTime(),
-                imageUrls = currentState.imageUrls
+                imageUrls = getImageList()
             )
         }
     }.invokeOnCompletion { throwable ->
@@ -126,6 +137,22 @@ internal class AccountBookCreateViewModel @Inject constructor(
                 throwable == null
             )
         }
+    }
+
+    private fun getImageList(): List<String> {
+        val imageUrls = currentState.imageUrls
+        val newImageUrls = currentState.newImageUrls.toMutableList()
+
+        imageUrls.forEach { imageUrl ->
+            if (!newImageUrls.contains(imageUrl)) {
+                newImageUrls.add(imageUrl)
+            }
+        }
+
+        newImageUrls.removeAll { imageUrl ->
+            imageUrls.contains(imageUrl)
+        }
+        return newImageUrls
     }
 
     private fun fetchAccountBookById(id: Long) =
@@ -141,6 +168,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
                     registerDateTime = accountBookDetail.registerDateTime?.formatReceiveDateTime()
                         ?: "",
                     imageUrls = accountBookDetail.imageUrl,
+                    newImageUrls = accountBookDetail.imageUrl,
                     amountText = formatNumber(accountBookDetail.amount ?: 0)
                 )
             }
@@ -154,7 +182,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
             category = currentState.category!!.name.lowercase(),
             title = currentState.title ?: "",
             registerDateTime = currentState.registerDateTime.formatSendDateTime(),
-            imageUrls = currentState.imageUrls
+            imageUrls = getImageList()
         )
     }.invokeOnCompletion { throwable ->
         viewModelScopeEH.launch {
@@ -180,6 +208,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
             Locale.getDefault()
         ).format(Date()),
         val imageUrls: List<String> = listOf(),
+        val newImageUrls: List<String> = listOf(),
         val buttonText: String = "등록"
     ) : BaseViewModel.State
 

@@ -116,7 +116,7 @@ internal fun AccountBookCreateRoute(
         onUpdateAmountText = { viewModel.updateAmountText(it) },
         onUpdateTransactionType = { viewModel.updateTransactionType(it) },
         onUpdateTitle = { viewModel.updateTitle(it) },
-        onRemoveImageUrl = { viewModel.removeImageUrl(it) },
+        onRemoveImageUrl = { viewModel.deleteImage(it) },
         onUpdateRegisterDateTime = { viewModel.updateRegisterDateTime(it) },
         onUpdateCategory = { viewModel.updateCategory(it) },
     )
@@ -162,7 +162,7 @@ internal fun AccountBookCreateScreen(
                 DreamCenterTopAppBar(
                     title = "장부 작성하기",
                     navigationIcon = {
-                        IconButton(onClick = popBackStack) {
+                        IconButton(onClick = { popBackStack() }) {
                             Icon(
                                 imageVector = DreamIcon.Arrowleft,
                                 contentDescription = "뒤로가기",
@@ -424,7 +424,7 @@ internal fun AccountBookCreateScreen(
                     LazyRow(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(state.imageUrls) { imageUrl ->
+                        items(state.newImageUrls) { imageUrl ->
                             Box(
                                 modifier = Modifier
                                     .padding(start = Paddings.large)
