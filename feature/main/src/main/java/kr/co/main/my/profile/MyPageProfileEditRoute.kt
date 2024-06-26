@@ -191,9 +191,11 @@ private fun MyPageProfileEditScreen(
     state: MyPageProfileEditViewModel.State = MyPageProfileEditViewModel.State(),
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
                 title = stringResource(R.string.feature_main_profile_edit),
+                colorBackground = true,
                 navigationIcon = {
                     IconButton(onClick = popBackStack) {
                         Icon(
