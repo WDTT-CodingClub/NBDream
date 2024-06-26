@@ -82,9 +82,11 @@ private fun ChatScreen(
     onSelectedCrop: (String) -> Unit ={}
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
                 title = "내 토지 상태 알아보기",
+                colorBackground = true,
                 navigationIcon = {
                     Icon(
                         modifier = Modifier

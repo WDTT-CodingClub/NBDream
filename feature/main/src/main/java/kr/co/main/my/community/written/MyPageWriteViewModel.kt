@@ -9,6 +9,7 @@ import kr.co.domain.usecase.community.GetMyCommentsUseCase
 import kr.co.main.mapper.my.MyPageBulletinMapper
 import kr.co.main.mapper.my.MyPageCommentMapper
 import kr.co.ui.base.BaseViewModel
+import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -45,7 +46,7 @@ internal class MyPageWriteViewModel @Inject constructor(
             val id: Long,
             val content: String,
             val thumbnail: String?,
-            val createdAt: LocalDateTime,
+            val createdAt: LocalDate,
             val commentCount: Int,
             val bookmarkedCount: Int,
         )

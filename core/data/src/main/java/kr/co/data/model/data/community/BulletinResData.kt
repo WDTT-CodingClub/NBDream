@@ -3,6 +3,7 @@ package kr.co.data.model.data.community
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.CropEntity
 import kr.co.domain.entity.type.CropType
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class BulletinResData(
@@ -14,7 +15,7 @@ data class BulletinResData(
     val crop: String? = null,
     val imageUrls: List<String>? = null,
     val bulletinCategory: String? = null,
-    val createdTime: LocalDateTime? = null,
+    val createdTime: LocalDate? = null,
     val comments: List<CommentResData>? = null,
     val bookmarkedCount: Int? = null,
     val author: Boolean? = null,

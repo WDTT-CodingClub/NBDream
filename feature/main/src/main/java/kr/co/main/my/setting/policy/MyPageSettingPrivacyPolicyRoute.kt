@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,6 +22,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import kr.co.main.R
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.colors
 import kr.co.ui.widget.DreamCenterTopAppBar
 
 @Composable
@@ -37,9 +39,11 @@ private fun MyPageSettingPrivacyPolicyScreen(
     popBackStack: () -> Unit,
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
                 title = "약관 및 개인정보 처리 방침",
+                colorBackground = true,
                 navigationIcon = {
                     IconButton(onClick = popBackStack) {
                         Icon(

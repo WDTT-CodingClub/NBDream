@@ -63,12 +63,9 @@ internal fun MyPageRoute(
     navigateToSetting: () -> Unit = {},
     navigateToBookmark: () -> Unit = {},
     navigateToWrite: () -> Unit = {},
+    navigateToCropSelect: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    val (isCropModalVisible, showCropModal) = remember {
-        mutableStateOf(false)
-    }
 
     MyPageScreen(
         state = state,
@@ -76,18 +73,18 @@ internal fun MyPageRoute(
         navigateToSetting = navigateToSetting,
         navigateToBookmark = navigateToBookmark,
         navigateToWrite = navigateToWrite,
-        showCropModal = { showCropModal.invoke(true) }
+        navigateToCropSelect = navigateToCropSelect
     )
 }
 
 @Composable
 private fun MyPageScreen(
     state: MyPageViewModel.State = MyPageViewModel.State(),
-    showCropModal: () -> Unit = {},
     navigateToProfileEdit: () -> Unit = {},
     navigateToSetting: () -> Unit = {},
     navigateToBookmark: () -> Unit = {},
     navigateToWrite: () -> Unit = {},
+    navigateToCropSelect: () -> Unit = {},
 ) {
     Surface {
         LazyColumn(
@@ -140,7 +137,7 @@ private fun MyPageScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 BulletinCard(
                     crops = state.crops,
-                    showCropModal = showCropModal
+                    showCropModal = navigateToCropSelect
                 )
             }
         }

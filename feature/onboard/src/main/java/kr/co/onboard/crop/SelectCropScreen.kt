@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import kr.co.domain.entity.type.CropType
 import kr.co.nbdream.core.ui.R
 import kr.co.onboard.address.DescriptionText
@@ -52,12 +53,19 @@ import timber.log.Timber
 
 @Composable
 fun SelectCropScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
     navigateToWelcome: () -> Unit = {},
     viewModel: SelectCropViewModel = hiltViewModel()
 ) {
     val crops by viewModel.crops.collectAsState()
-    val selectedIndexes = remember { mutableStateListOf<Int?>() }
+    val selectedCropNames = remember { mutableStateListOf<String>() }
+
+    val backStackEntry = navController.currentBackStackEntry
+    val fullRoadAddress = backStackEntry?.arguments?.getString("fullRoadAddress")
+    val bCode = backStackEntry?.arguments?.getString("bCode")
+    val latitude = backStackEntry?.arguments?.getFloat("latitude") ?: 0F
+    val longitude = backStackEntry?.arguments?.getFloat("longitude") ?: 0F
 
     Scaffold(
         modifier = modifier.padding(Paddings.xlarge),
@@ -77,29 +85,38 @@ fun SelectCropScreen(
                     ColorSet.Dream.lightColors.green2
                 )
             )
-            StepText(
-                stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second),
-                modifier = Modifier
-            )
+//            StepText(
+//                stringResource(id = kr.co.onboard.R.string.feature_onboard_step_bar_second),
+//                modifier = Modifier
+//            )
             DescriptionText(stringResource(id = kr.co.onboard.R.string.feature_onboard_my_farm_crops_description))
             Box(modifier = Modifier.weight(1f)) {
                 CropsList(
                     cropList = crops,
-                    selectedIndexes = selectedIndexes.filterNotNull(),
+                    selectedCropNames = selectedCropNames,
                     onItemClick = { index ->
-                        if (selectedIndexes.contains(index))
-                            selectedIndexes.remove(index)
+                        if (selectedCropNames.contains(CropType.values()[index].toKoreanName()))
+                            selectedCropNames.remove(CropType.values()[index].toKoreanName())
                         else
-                            selectedIndexes.add(index)
-                        Timber.d(selectedIndexes.joinToString())
+                            selectedCropNames.add(CropType.values()[index].toKoreanName())
+                        Timber.d(selectedCropNames.joinToString())
                     },
                 )
             }
             NextButton(
                 skipId = kr.co.onboard.R.string.feature_onboard_my_farm_skip_select,
                 nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next,
-                onNextClick = { navigateToWelcome() },
-                onSkipClick = { navigateToWelcome() }
+                onNextClick = {
+                    val cropsString = if(selectedCropNames.isEmpty()) null else selectedCropNames.joinToString(",")
+                    Timber.d("cropsString: $cropsString")
+                      navController.navigate(
+                          "WelcomeScreen/$fullRoadAddress/$bCode/$latitude/$longitude/$cropsString"
+                      ) },
+                onSkipClick = {
+                    val cropsString = null
+                    navController.navigate(
+                    "WelcomeScreen/$fullRoadAddress/$bCode/$latitude/$longitude/$cropsString"
+                ) }
             )
         }
     }
@@ -127,7 +144,7 @@ fun StepText(
 fun CropsList(
     cropList: List<CropItem>,
     onItemClick: (Int) -> Unit,
-    selectedIndexes: List<Int> = emptyList(),
+    selectedCropNames: List<String> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
@@ -137,7 +154,7 @@ fun CropsList(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(cropList.size) { index ->
-            val isSelected = selectedIndexes.contains(index)
+            val isSelected = selectedCropNames.contains(cropList[index].name.toKoreanName())
             val backgroundColor =
                 if (isSelected) ColorSet.Dream.lightColors.green4.copy(alpha = 0.3f) else Color.Transparent
             Card(

@@ -95,9 +95,11 @@ private fun MyPageSettingDeleteAccountScreen(
     onDeleteClick: () -> Unit = {}
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
                 title = "회원 탈퇴",
+                colorBackground = true,
                 navigationIcon = {
                     IconButton(onClick = popBackStack) {
                         Icon(

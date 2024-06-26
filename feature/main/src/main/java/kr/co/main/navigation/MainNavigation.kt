@@ -29,6 +29,7 @@ import kr.co.main.my.MyPageRoute
 import kr.co.main.my.community.bookmark.MyPageBookmarkRoute
 import kr.co.main.my.community.written.MyPageWriteRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
+import kr.co.main.my.setting.crop.MyPageCropSelectRoute
 import kr.co.main.my.setting.MyPageSettingRoute
 import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
 import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
@@ -58,17 +59,17 @@ internal data object CommunityRoute {
 
 internal data object MyPageRoute {
     const val EDIT_ROUTE = "myPageProfileEditRoute"
+
     const val SETTING_ROUTE = "myPageSettingRoute"
     const val SETTING_NOTIFICATION_ROUTE = "myPageSettingNotificationRoute"
     const val SETTING_PRIVACY_POLICY_ROUTE = "myPageSettingPrivacyPolicyRoute"
     const val SETTING_LOGOUT_ROUTE = "myPageSettingLogoutRoute"
     const val SETTING_APP_INFO_ROUTE = "myPageSettingAppInfoRoute"
     const val SETTING_DELETE_ACCOUNT_ROUTE = "myPageSettingDeleteAccountRoute"
-    const val SETTING_DELETE_VERIFY_ROUTE = "myPageSettingDeleteVerifyRoute"
 
     const val BOOKMARK_ROUTE = "myPageBookmarkRoute"
     const val WRITE_ROUTE = "myPageWriteRoute"
-    const val COMMENT_ROUTE = "myPageCommentRoute"
+    const val CROP_SELECT_ROUTE = "myPageCropSelectRoute"
 }
 
 
@@ -175,6 +176,9 @@ fun NavGraphBuilder.mainNavGraph(
                         navigateToWrite = {
                             navController.navigate(MyPageRoute.WRITE_ROUTE)
                         },
+                        navigateToCropSelect = {
+                            navController.navigate(MyPageRoute.CROP_SELECT_ROUTE)
+                        }
                     )
                 }
             }
@@ -385,6 +389,15 @@ fun NavGraphBuilder.mainNavGraph(
             navigateToBulletinDetail = {
                 navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$it")
             }
+        )
+    }
+
+    composable(
+        route = MyPageRoute.CROP_SELECT_ROUTE
+    ) {
+        MyPageCropSelectRoute(
+            popBackStack = navController::popBackStack,
+            navigateToMyPage = navController::popBackStack,
         )
     }
 }

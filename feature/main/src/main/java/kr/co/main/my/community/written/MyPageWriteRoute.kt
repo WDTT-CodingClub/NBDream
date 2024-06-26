@@ -86,10 +86,9 @@ private fun MyPageCommunityScreen(
     navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     Scaffold(
-        containerColor = MaterialTheme.colors.background,
+        containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
-                modifier = Modifier.background(MaterialTheme.colors.background),
                 colorBackground = true,
                 title = "작성한 글/댓글 보기",
                 navigationIcon = {
@@ -110,7 +109,7 @@ private fun MyPageCommunityScreen(
                     scaffoldPadding = scaffoldPadding,
                     padding = PaddingValues(0.dp)
                 )
-                .background(MaterialTheme.colors.background)
+                .background(MaterialTheme.colors.white)
         ) {
             TabRow(
                 containerColor = Color.Transparent,
@@ -215,7 +214,7 @@ private fun EmptyCard(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typo.h4,
+            style = MaterialTheme.typo.h3,
             color = MaterialTheme.colors.gray5
         )
     }
@@ -259,7 +258,7 @@ private fun PostCard(
                 )
 
                 Text(
-                    text = bulletin.createdAt.format("yyyy/MM/dd HH:mm"),
+                    text = bulletin.createdAt.format("yyyy/MM/dd"),
                     style = MaterialTheme.typo.body2,
                     color = MaterialTheme.colors.gray5
                 )
