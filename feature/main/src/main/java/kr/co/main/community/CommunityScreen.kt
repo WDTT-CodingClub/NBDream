@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -12,9 +14,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,12 +39,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.domain.entity.BulletinEntity
+import kr.co.domain.entity.type.CropType
 import kr.co.main.ui.DreamMainPostCard
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import kr.co.ui.widget.DreamBottomSheetWithTextButtons
 import kr.co.ui.widget.DreamTopAppBar
+import kr.co.ui.widget.TextAndOnClick
 
 @Composable
 internal fun CommunityRoute(
@@ -60,6 +68,7 @@ internal fun CommunityRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CommunityScreen(
     modifier: Modifier = Modifier,
@@ -73,15 +82,43 @@ internal fun CommunityScreen(
         modifier = modifier,
         topBar = {
             DreamTopAppBar(
-                title = "${state.currentBoard.koreanName} 게시판",
+                title = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "${state.currentBoard.koreanName} 게시판",
+                            style = MaterialTheme.typo.h2
+                        )
+                        IconButton(onClick = {
+                            event.showBottomSheet(
+                                CropType.entries.map {
+                                    TextAndOnClick(
+                                        text = it.koreanName,
+                                        onClick = { event.onSelectBoard(it) }
+                                    )
+                                }
+                            )
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = "게시판 선택 ArrowDropDown",
+                                modifier = Modifier
+                                    .width(32.dp)
+                                    .height(32.dp),
+                            )
+                        }
+                    }
+                },
                 modifier = Modifier.padding(horizontal = 16.dp),
             ) {
                 Row(
-                    modifier = Modifier.clickable(onClick = navigateToWriting)
+                    modifier = Modifier
+                        .heightIn(min = 48.dp)
+                        .clickable(onClick = navigateToWriting),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "게시판 탑바 Add 아이콘")
-//                    TextButton(onClick = navigateToWriting) {
-//                    }
                     Text("글 쓰기")
                 }
             }
@@ -130,140 +167,17 @@ internal fun CommunityScreen(
             item { /* 최하단 여백용 */ }
         }
     }
-}
 
-//@Composable
-//internal fun BulletinCard(
-//    bulletin: BulletinEntity,
-//    navigateToBulletinDetail: (Long) -> Unit,
-//    modifier: Modifier = Modifier,
-//) {
-//    Card(
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .clickable {
-//                navigateToBulletinDetail(bulletin.bulletinId)
-//            },
-//        colors = CardDefaults.cardColors(
-//            containerColor = Color.White,
-//        ),
-//        elevation = CardDefaults.elevatedCardElevation(
-//            defaultElevation = 0.dp,
-//        ),  // ?
-//    ) {
-//        Box(
-//            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-//        ) {
-//            Column {
-//                Row(
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-//                        contentDescription = "프로필 사진",
-//                        modifier = Modifier
-//                            .width(54.dp)
-//                            .height(54.dp)
-//                            .background(
-//                                color = Color.Gray,
-//                                shape = CircleShape,
-//                            )
-//                            .padding(4.dp),
-//                    )
-//                    Spacer(modifier = Modifier.width(12.dp))
-//                    Column {
-//                        Text("${bulletin.authorId}의닉네임")
-//                        Text(
-//                            text = bulletin.createdTime.toString(),
-//                            color = Color.Gray,
-//                        )
-//                    }
-//                    Spacer(modifier = Modifier.weight(1f))
-//                    // TODO: FilledIconToggleButton 으로 변경
-//                    if (bulletin.bookmarked) Icon(
-//                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_24),
-//                        contentDescription = "북마크 채워진 아이콘",
-//                    )
-//                    else Icon(
-//                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_border_24),
-//                        contentDescription = "북마크 빈 아이콘",
-//                    )
-//                    Text("${bulletin.bookmarkedCount}")
-//                }
-//                Spacer(modifier = Modifier.height(32.dp))
-//                Text(bulletin.content)
-//                // TODO: 사진 0~3개 표시하는 컴포저블
-//                if (bulletin.imageUrls.isNotEmpty()) {
-//                    Spacer(modifier = Modifier.height(12.dp))
-//                    AsyncImage(
-//                        model = bulletin.imageUrls[0],
-//                        contentDescription = "글 사진",
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(300.dp),
-//                        contentScale = ContentScale.Crop,
-//                    )
-//                }
-//                if (bulletin.comments.isNotEmpty()) {
-//                    val comment = bulletin.comments[0]
-//                    Spacer(modifier = Modifier.height(12.dp))
-//                    Row {
-//                        Text(
-//                            text = "댓글 ${bulletin.comments.size}개",
-//                            color = Color.Gray,
-//                        )
-//                    }
-//                    Spacer(modifier = Modifier.height(12.dp))
-//                    // TODO: 댓글 컴포저블
-//                    Row {
-//                        Image(
-//                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-//                            contentDescription = "댓글 프사",
-//                            modifier = Modifier
-//                                .width(40.dp)
-//                                .height(40.dp)
-//                                .background(
-//                                    color = Color.Gray,
-//                                    shape = CircleShape,
-//                                )
-//                                .padding(4.dp),
-//                        )
-//                        Spacer(modifier = Modifier.width(12.dp))
-//                        Column {
-//                            Text(comment.nickname)
-//                            Text(comment.content)
-//                        }
-//                    }
-//                }
-//
-////                // TODO: 확인용, 나중에 지울 것.
-////                else {
-////                    Row {
-//////                        Icon(
-//////                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_comment_24),
-//////                            contentDescription = "댓글 아이콘",
-//////                        )
-////                        Text("댓글 654개")
-////                    }
-////                    Row {
-////                        Image(
-////                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-////                            contentDescription = "댓글 프사",
-////                            modifier = Modifier
-////                                .background(
-////                                    color = Color.Gray,
-////                                    shape = CircleShape,
-////                                )
-////                                .padding(4.dp),
-////                        )
-////                        Text("댓글닉네임")
-////                    }
-////                    Text("댓글 내용")
-////                }
-//
-//            }
-//        }
-//    }
-//}
+    if (state.isShowBottomSheet) {
+        DreamBottomSheetWithTextButtons(
+            onDismissRequest = { event.setIsShowBottomSheet(false) },
+            textAndOnClicks = state.bottomSheetItems,
+        )
+    }
+
+    if (!state.isEnable) CommunityDisableScreen()
+
+}
 
 @Composable
 private fun CommunityCategoryTabLayout(
@@ -326,17 +240,6 @@ private fun CommunityCategoryTabLayoutItem(
     }
 }
 
-
-//@Preview
-//@Composable
-//private fun BulletinCardPreview() {
-//    NBDreamTheme {
-//        BulletinCard(
-//            bulletin = BulletinEntity.dummy(),
-//            navigateToBulletinDetail = {},
-//        )
-//    }
-//}
 
 @Preview
 @Composable
