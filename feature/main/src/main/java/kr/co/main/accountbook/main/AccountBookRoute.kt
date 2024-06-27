@@ -796,7 +796,8 @@ private fun AccountBookItem(
         }
         HorizontalDivider(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = Paddings.extra),
             thickness = 1.dp,
             color = MaterialTheme.colors.gray8
         )

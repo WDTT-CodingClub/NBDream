@@ -198,7 +198,7 @@ internal fun AccountBookCreateScreen(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(48.dp)
+                                .height(52.dp)
                                 .background(
                                     color = MaterialTheme.colors.gray10,
                                     shape = Shapes.medium
@@ -291,7 +291,7 @@ internal fun AccountBookCreateScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(52.dp)
                             .background(
                                 color = MaterialTheme.colors.gray10,
                                 shape = Shapes.medium
@@ -325,7 +325,7 @@ internal fun AccountBookCreateScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(52.dp)
                             .background(
                                 color = MaterialTheme.colors.gray10,
                                 shape = Shapes.medium
@@ -358,7 +358,7 @@ internal fun AccountBookCreateScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(52.dp)
                             .background(
                                 color = MaterialTheme.colors.gray10,
                                 shape = Shapes.medium

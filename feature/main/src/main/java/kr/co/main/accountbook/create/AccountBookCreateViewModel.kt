@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
-import kr.co.domain.usecase.image.DeleteImageUseCase
 import kr.co.domain.usecase.image.UploadImageUseCase
 import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
 import kr.co.main.accountbook.model.EntryType
@@ -26,7 +25,6 @@ import javax.inject.Inject
 internal class AccountBookCreateViewModel @Inject constructor(
     private val accountBookRepository: AccountBookRepository,
     private val uploadImageUseCase: UploadImageUseCase,
-    private val deleteImageUseCase: DeleteImageUseCase,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AccountBookCreateViewModel.State>(savedStateHandle) {
     private val id: Long? = savedStateHandle.get<String>("id")?.toLong()
