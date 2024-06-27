@@ -26,12 +26,15 @@ internal class BulletinWritingViewModel @Inject constructor(
     override fun createInitialState(savedState: Parcelable?) = State()
 
     private val savedStateHandleCrop =
-        savedStateHandle.get<Int>("crop").also { Timber.d("savedStateHandleCrop: $it") }
-            ?.let { CropType.entries[it] } ?: throw IllegalArgumentException("CropType is null")
+        savedStateHandle.get<String>("crop").also { Timber.d("savedStateHandleCrop: $it") }
+            ?.toIntOrNull()
+            ?.let { if (it in CropType.entries.indices) CropType.entries[it] else null }
+            ?: CropType.PEPPER
     private val savedStateHandleCategory =
-        savedStateHandle.get<Int>("category").also { Timber.d("savedStateHandleCategory: $it") }
-            ?.let { BulletinEntity.BulletinCategory.entries[it] }
-            ?: throw IllegalArgumentException("BulletinCategory is null")
+        savedStateHandle.get<String>("category").also { Timber.d("savedStateHandleCategory: $it") }
+            ?.toIntOrNull()
+            ?.let { if (it in BulletinEntity.BulletinCategory.entries.indices) BulletinEntity.BulletinCategory.entries[it] else null }
+            ?: BulletinEntity.BulletinCategory.Free
 
     init {
         updateState {

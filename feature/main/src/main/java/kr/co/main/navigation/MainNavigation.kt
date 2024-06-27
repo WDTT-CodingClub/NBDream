@@ -279,12 +279,12 @@ fun NavGraphBuilder.mainNavGraph(
         route = "${CommunityRoute.WRITING_ROUTE}?crop={crop}&category={category}",
         arguments = listOf(
             navArgument("crop") {
-                type = NavType.IntType
-                defaultValue = -1
+                type = NavType.StringType
+                nullable = true
             },
             navArgument("category") {
-                type = NavType.IntType
-                defaultValue = -1
+                type = NavType.StringType
+                nullable = true
             },
         ),
     ) {
