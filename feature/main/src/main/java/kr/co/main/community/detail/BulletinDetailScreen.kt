@@ -475,7 +475,7 @@ private fun BottomCommentWritingBar(
             )
             .padding(
                 horizontal = 20.dp,
-                vertical = 8.dp,
+                vertical = 4.dp
             ),
         value = state.commentWritingInput,
         onValueChange = event::onCommentWritingInput,
