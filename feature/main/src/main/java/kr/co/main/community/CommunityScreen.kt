@@ -1,26 +1,18 @@
 package kr.co.main.community
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,9 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
@@ -43,7 +33,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
 import kr.co.main.ui.DreamMainPostCard
 import kr.co.ui.ext.scaffoldBackground
@@ -129,11 +118,9 @@ internal fun CommunityScreen(
                     Text("게시물이 없습니다.")
                 }
             }
-            // TODO: 나중에 테스트 필요 없어지면 index 필요 없음.
-            itemsIndexed(
+            items(
                 state.bulletinEntities
-            ) { idx, bulletin ->
-                // TODO: -ing
+            ) { bulletin ->
                 DreamMainPostCard(
                     bulletin = bulletin,
                     onPostClick = { navigateToBulletinDetail(bulletin.bulletinId) },
@@ -144,138 +131,138 @@ internal fun CommunityScreen(
     }
 }
 
-@Composable
-internal fun BulletinCard(
-    bulletin: BulletinEntity,
-    navigateToBulletinDetail: (Long) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable {
-                navigateToBulletinDetail(bulletin.bulletinId)
-            },
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White,
-        ),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 0.dp,
-        ),  // ?
-    ) {
-        Box(
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-        ) {
-            Column {
-                Row(
-                ) {
-                    Image(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-                        contentDescription = "프로필 사진",
-                        modifier = Modifier
-                            .width(54.dp)
-                            .height(54.dp)
-                            .background(
-                                color = Color.Gray,
-                                shape = CircleShape,
-                            )
-                            .padding(4.dp),
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text("${bulletin.authorId}의닉네임")
-                        Text(
-                            text = bulletin.createdTime.toString(),
-                            color = Color.Gray,
-                        )
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    // TODO: FilledIconToggleButton 으로 변경
-                    if (bulletin.bookmarked) Icon(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_24),
-                        contentDescription = "북마크 채워진 아이콘",
-                    )
-                    else Icon(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_border_24),
-                        contentDescription = "북마크 빈 아이콘",
-                    )
-                    Text("${bulletin.bookmarkedCount}")
-                }
-                Spacer(modifier = Modifier.height(32.dp))
-                Text(bulletin.content)
-                // TODO: 사진 0~3개 표시하는 컴포저블
-                if (bulletin.imageUrls.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    AsyncImage(
-                        model = bulletin.imageUrls[0],
-                        contentDescription = "글 사진",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp),
-                        contentScale = ContentScale.Crop,
-                    )
-                }
-                if (bulletin.comments.isNotEmpty()) {
-                    val comment = bulletin.comments[0]
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row {
-                        Text(
-                            text = "댓글 ${bulletin.comments.size}개",
-                            color = Color.Gray,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    // TODO: 댓글 컴포저블
-                    Row {
-                        Image(
-                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-                            contentDescription = "댓글 프사",
-                            modifier = Modifier
-                                .width(40.dp)
-                                .height(40.dp)
-                                .background(
-                                    color = Color.Gray,
-                                    shape = CircleShape,
-                                )
-                                .padding(4.dp),
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(comment.nickname)
-                            Text(comment.content)
-                        }
-                    }
-                }
-
-//                // TODO: 확인용, 나중에 지울 것.
-//                else {
-//                    Row {
-////                        Icon(
-////                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_comment_24),
-////                            contentDescription = "댓글 아이콘",
-////                        )
-//                        Text("댓글 654개")
+//@Composable
+//internal fun BulletinCard(
+//    bulletin: BulletinEntity,
+//    navigateToBulletinDetail: (Long) -> Unit,
+//    modifier: Modifier = Modifier,
+//) {
+//    Card(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .clickable {
+//                navigateToBulletinDetail(bulletin.bulletinId)
+//            },
+//        colors = CardDefaults.cardColors(
+//            containerColor = Color.White,
+//        ),
+//        elevation = CardDefaults.elevatedCardElevation(
+//            defaultElevation = 0.dp,
+//        ),  // ?
+//    ) {
+//        Box(
+//            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+//        ) {
+//            Column {
+//                Row(
+//                ) {
+//                    Image(
+//                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+//                        contentDescription = "프로필 사진",
+//                        modifier = Modifier
+//                            .width(54.dp)
+//                            .height(54.dp)
+//                            .background(
+//                                color = Color.Gray,
+//                                shape = CircleShape,
+//                            )
+//                            .padding(4.dp),
+//                    )
+//                    Spacer(modifier = Modifier.width(12.dp))
+//                    Column {
+//                        Text("${bulletin.authorId}의닉네임")
+//                        Text(
+//                            text = bulletin.createdTime.toString(),
+//                            color = Color.Gray,
+//                        )
 //                    }
+//                    Spacer(modifier = Modifier.weight(1f))
+//                    // TODO: FilledIconToggleButton 으로 변경
+//                    if (bulletin.bookmarked) Icon(
+//                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_24),
+//                        contentDescription = "북마크 채워진 아이콘",
+//                    )
+//                    else Icon(
+//                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_bookmark_border_24),
+//                        contentDescription = "북마크 빈 아이콘",
+//                    )
+//                    Text("${bulletin.bookmarkedCount}")
+//                }
+//                Spacer(modifier = Modifier.height(32.dp))
+//                Text(bulletin.content)
+//                // TODO: 사진 0~3개 표시하는 컴포저블
+//                if (bulletin.imageUrls.isNotEmpty()) {
+//                    Spacer(modifier = Modifier.height(12.dp))
+//                    AsyncImage(
+//                        model = bulletin.imageUrls[0],
+//                        contentDescription = "글 사진",
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(300.dp),
+//                        contentScale = ContentScale.Crop,
+//                    )
+//                }
+//                if (bulletin.comments.isNotEmpty()) {
+//                    val comment = bulletin.comments[0]
+//                    Spacer(modifier = Modifier.height(12.dp))
+//                    Row {
+//                        Text(
+//                            text = "댓글 ${bulletin.comments.size}개",
+//                            color = Color.Gray,
+//                        )
+//                    }
+//                    Spacer(modifier = Modifier.height(12.dp))
+//                    // TODO: 댓글 컴포저블
 //                    Row {
 //                        Image(
 //                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
 //                            contentDescription = "댓글 프사",
 //                            modifier = Modifier
+//                                .width(40.dp)
+//                                .height(40.dp)
 //                                .background(
 //                                    color = Color.Gray,
 //                                    shape = CircleShape,
 //                                )
 //                                .padding(4.dp),
 //                        )
-//                        Text("댓글닉네임")
+//                        Spacer(modifier = Modifier.width(12.dp))
+//                        Column {
+//                            Text(comment.nickname)
+//                            Text(comment.content)
+//                        }
 //                    }
-//                    Text("댓글 내용")
 //                }
-
-            }
-        }
-    }
-}
+//
+////                // TODO: 확인용, 나중에 지울 것.
+////                else {
+////                    Row {
+//////                        Icon(
+//////                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_comment_24),
+//////                            contentDescription = "댓글 아이콘",
+//////                        )
+////                        Text("댓글 654개")
+////                    }
+////                    Row {
+////                        Image(
+////                            painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+////                            contentDescription = "댓글 프사",
+////                            modifier = Modifier
+////                                .background(
+////                                    color = Color.Gray,
+////                                    shape = CircleShape,
+////                                )
+////                                .padding(4.dp),
+////                        )
+////                        Text("댓글닉네임")
+////                    }
+////                    Text("댓글 내용")
+////                }
+//
+//            }
+//        }
+//    }
+//}
 
 @Composable
 private fun CommunityCategoryTabLayout(
@@ -339,16 +326,16 @@ private fun CommunityCategoryTabLayoutItem(
 }
 
 
-@Preview
-@Composable
-private fun BulletinCardPreview() {
-    NBDreamTheme {
-        BulletinCard(
-            bulletin = BulletinEntity.dummy(),
-            navigateToBulletinDetail = {},
-        )
-    }
-}
+//@Preview
+//@Composable
+//private fun BulletinCardPreview() {
+//    NBDreamTheme {
+//        BulletinCard(
+//            bulletin = BulletinEntity.dummy(),
+//            navigateToBulletinDetail = {},
+//        )
+//    }
+//}
 
 @Preview
 @Composable

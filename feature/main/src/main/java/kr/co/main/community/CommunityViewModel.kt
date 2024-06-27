@@ -101,7 +101,16 @@ internal class CommunityViewModel @Inject constructor(
     }
 
     init {
-        updateState { copy(bulletinEntities = List(10) { i -> BulletinEntity.dummy(i) }) }
+        loadingScope {
+            val bulletins = communityRepository.getBulletins(
+                keyword = null,
+                bulletinCategory = state.value.currentCategory,
+                crop = state.value.currentBoard,
+                lastBulletinId = null,
+            )
+            setBulletinEntities(bulletins)
+            Timber.d("init 코루틴 성공, $bulletins")
+        }
     }
 
 }
