@@ -623,7 +623,7 @@ private fun SelectorSection(
     category: AccountBookEntity.Category?,
     categories: List<AccountBookEntity.Category?>?,
     sortOrder: AccountBookEntity.SortOrder,
-    onCategoryChange: (AccountBookEntity.Category??) -> Unit,
+    onCategoryChange: (AccountBookEntity.Category?) -> Unit,
     onSortOrderChange: (AccountBookEntity.SortOrder) -> Unit,
     onTransactionChange: (AccountBookEntity.TransactionType?) -> Unit
 ) {

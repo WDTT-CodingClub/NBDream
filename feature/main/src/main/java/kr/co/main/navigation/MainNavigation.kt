@@ -36,7 +36,6 @@ import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
 import kr.co.main.notification.NotificationRoute
-import timber.log.Timber
 
 
 const val MAIN_ROUTE = "mainRoute"

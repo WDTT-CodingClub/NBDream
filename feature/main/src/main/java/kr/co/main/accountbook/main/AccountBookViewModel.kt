@@ -6,9 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.main.accountbook.model.DateRangeOption
-import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.base.BaseViewModel
-import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
