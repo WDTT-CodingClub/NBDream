@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kr.co.common.util.FileUtil
 import kr.co.main.R
 import kr.co.main.model.my.MyPageProfileDialog
@@ -64,6 +66,7 @@ import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.DreamListDialog
 import kr.co.ui.widget.DreamLocationSearchScreen
+import kr.co.ui.widget.DreamProgress
 import java.util.Locale
 
 @Composable
@@ -74,6 +77,8 @@ internal fun MyPageProfileEditRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
+    val scope = rememberCoroutineScope()
 
     val geocoder = Geocoder(LocalContext.current, Locale.KOREA)
 
@@ -164,21 +169,23 @@ internal fun MyPageProfileEditRoute(
                         )
                     }
                 }
+            } else {
+                scope.launch {
+                    geocoder.getFromLocationName(address, 1).let {
+                        if (!it.isNullOrEmpty()) {
+                            viewModel.onCoordinateChanged(
+                                latitude = it[0].latitude,
+                                longitude = it[0].longitude
+                            )
+                        }
+                    }
+                }
             }
             setAddressVisible(false)
         }
     }
 
-    if (isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                color = MaterialTheme.colors.primary
-            )
-        }
-    }
+    DreamProgress(isVisible = isLoading)
 }
 
 @Composable

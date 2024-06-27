@@ -31,7 +31,7 @@
     <string name="feature_main_calendar_add_diary_header_image">사진</string>
     <string name="feature_main_calendar_add_diary_header_memo">메모</string>
 
-    <string name="feature_main_calendar_diary_overview">%d명\/%d시간\/%d평</string>
+    <string name="feature_main_calendar_diary_overview">%d명 \| %d시간 \| %d평</string>
 
     <string name="feature_main_calendar_add_diary_work_laborer">작업 인원</string>
     <string name="feature_main_calendar_add_diary_work_hour">작업 시간</string>

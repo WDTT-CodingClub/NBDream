@@ -1,6 +1,8 @@
 package kr.co.main.accountbook.model
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -17,6 +19,16 @@ internal fun String?.formatReceiveDateTime(): String {
     val date = if (this.isNullOrBlank()) Date() else inputFormat.parse(this)
     return outputFormat.format(date)
 }
+
+internal fun String.parseLocalDate(): LocalDate? {
+    val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN)
+    return try {
+        LocalDate.parse(this, formatter)
+    } catch (e: Exception) {
+        null
+    }
+}
+
 
 
 internal const val DATE_FORMAT_PATTERN = "yyyy.MM.dd"

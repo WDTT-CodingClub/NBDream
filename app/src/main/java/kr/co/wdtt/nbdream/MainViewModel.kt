@@ -3,6 +3,7 @@ package kr.co.wdtt.nbdream
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -24,6 +25,7 @@ internal class MainViewModel @Inject constructor(
     init {
         viewModelScopeEH.launch {
             checkLoginUseCase()
+            delay(SPLASH_DELAY)
         }.invokeOnCompletion {
             viewModelScopeEH.launch {
                 fetchAuthUseCase()
@@ -37,4 +39,8 @@ internal class MainViewModel @Inject constructor(
     data object State: BaseViewModel.State
 
     override fun createInitialState(savedState: Parcelable?): State = State
+
+    private companion object {
+        const val SPLASH_DELAY = 2_000L
+    }
 }

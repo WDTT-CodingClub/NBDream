@@ -4,6 +4,7 @@ package kr.co.main.my.community.written
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -155,6 +156,12 @@ private fun MyPageCommunityScreen(
                         emptyText = "아직 작성한 게시글이 없어요",
                         content = { bulletin ->
                             PostCard(
+                                modifier = Modifier
+                                    .border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colors.gray7,
+                                        shape = RoundedCornerShape(12.dp)
+                                    ),
                                 bulletin = bulletin,
                                 navigateToBulletinDetail = navigateToBulletinDetail
                             )
@@ -165,6 +172,12 @@ private fun MyPageCommunityScreen(
                         emptyText = "아직 작성한 댓글이 없어요",
                         content = { comment ->
                             CommentCard(
+                                modifier = Modifier
+                                    .border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colors.gray7,
+                                        shape = RoundedCornerShape(12.dp)
+                                    ),
                                 comment = comment,
                                 navigateToBulletinDetail = navigateToBulletinDetail
                             )
@@ -223,10 +236,11 @@ private fun EmptyCard(
 @Composable
 private fun PostCard(
     bulletin: MyPageWriteViewModel.State.Bulletin,
+    modifier: Modifier = Modifier,
     navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable { navigateToBulletinDetail(bulletin.id) }
             .background(
@@ -309,10 +323,11 @@ private fun PostCard(
 @Composable
 private fun CommentCard(
     comment: MyPageWriteViewModel.State.Comment,
+    modifier: Modifier = Modifier,
     navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable { navigateToBulletinDetail(comment.bulletinId) }
             .background(

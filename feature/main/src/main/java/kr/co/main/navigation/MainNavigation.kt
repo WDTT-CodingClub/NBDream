@@ -36,7 +36,6 @@ import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
 import kr.co.main.notification.NotificationRoute
-import timber.log.Timber
 
 
 const val MAIN_ROUTE = "mainRoute"
@@ -45,9 +44,11 @@ internal const val CHAT_ROUTE = "chatRoute"
 
 internal const val NOTIFICATION_ROUTE = "notificationRoute"
 
-internal const val ACCOUNT_BOOK_ROUTE = "accountBookRoute"
-internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
-internal const val ACCOUNT_BOOK_UPDATE_ROUTE = "accountBookUpdateRoute"
+internal data object AccountBookRoute {
+    internal const val ACCOUNT_BOOK_CREATE_ROUTE = "accountBookCreateRoute"
+    internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
+    internal const val ACCOUNT_BOOK_UPDATE_ROUTE = "accountBookUpdateRoute"
+}
 
 internal data object CommunityRoute {
     const val WRITING_ROUTE = "community_writing_route"
@@ -136,11 +137,12 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     AccountBookRoute(
                         navigationToRegister = {
-                            navController.navigate("$ACCOUNT_BOOK_ROUTE?entryType=${EntryType.CREATE.name}")
+                            navController.navigate("${AccountBookRoute.ACCOUNT_BOOK_CREATE_ROUTE}?entryType=${EntryType.CREATE.name}")
                         },
                         navigationToContent = { id ->
-                            navController.navigate("$ACCOUNT_BOOK_CONTENT_ROUTE/$id")
-                        }
+                            navController.navigate("${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/$id")
+                        },
+                        navController = navController,
                     )
                 }
 
@@ -223,37 +225,55 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = ACCOUNT_BOOK_ROUTE
+        route = "${AccountBookRoute.ACCOUNT_BOOK_CREATE_ROUTE}?entryType={entryType}"
     ) {
         AccountBookCreateRoute(
-            popBackStack = navController::popBackStack
+            popBackStack = navController::popBackStack,
+            navigationToAccountBook = {
+                navController.previousBackStackEntry?.savedStateHandle?.set("reinitialize", true)
+                navController.popBackStack()
+            },
+            navigationToContent = {}
         )
     }
 
     composable(
-        route = "$ACCOUNT_BOOK_UPDATE_ROUTE/{id}"
+        route = "${AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE}/{id}?entryType={entryType}"
     ) {
         AccountBookCreateRoute(
-            popBackStack = navController::popBackStack
+            popBackStack = navController::popBackStack,
+            navigationToAccountBook = {},
+            navigationToContent = { id ->
+                navController.popBackStack()
+                navController.navigate("${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/$id") {
+                    launchSingleTop = true
+                }
+            }
         )
     }
 
     composable(
-        route = "$ACCOUNT_BOOK_CONTENT_ROUTE/{id}"
+        route = "${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/{id}"
     ) { backStackEntry ->
         val idString = backStackEntry.arguments?.getString("id")
         val id = idString?.toLongOrNull()
-
-        if (id != null) {
-            AccountBookContentRoute(
-                popBackStack = navController::popBackStack,
-                navigationToUpdate = {
-                    navController.navigate("$ACCOUNT_BOOK_UPDATE_ROUTE/$id?entryType=${EntryType.UPDATE.name}")
+        AccountBookContentRoute(
+            popBackStack = navController::popBackStack,
+            navigationToUpdate = {
+                navController.navigate(
+                    "${AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE}/$id?entryType=${EntryType.UPDATE.name}"
+                ) {
+                    launchSingleTop = true
                 }
-            )
-        } else {
-            Timber.e("Invalid id")
-        }
+            },
+            navigationTopAccountBook = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    "reinitialize",
+                    true
+                )
+                navController.popBackStack()
+            }
+        )
     }
 
     composable(

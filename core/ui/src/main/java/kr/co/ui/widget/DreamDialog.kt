@@ -46,8 +46,7 @@ fun DreamDialog(
         Column(
             modifier = Modifier
                 .background(
-                    color = Color(0xFFF2F2F7),
-                    shape = RoundedCornerShape(12.dp)
+                    color = MaterialTheme.colors.white
                 )
         ) {
             header?.let { header ->
@@ -70,27 +69,16 @@ fun DreamDialog(
                     textAlign = TextAlign.Center,
                     color = Color(0xFF0A84FF)
                 )
-            }
+            } ?: Spacer(modifier = Modifier.height(20.dp))
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
                     .padding(bottom = 20.dp),
                 text = description,
-                style = MaterialTheme.typo.body1.copy(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 13.sp,
-                    color = MaterialTheme.colors.gray1,
-                    lineHeight = 20.8.sp,
-                    letterSpacing = (-0.01).sp
-                ),
+                style = MaterialTheme.typo.body1,
                 textAlign = TextAlign.Center
             )
-            HorizontalDivider(
-                thickness = 1.dp,
-                color = Color(0xFF3C3C43).copy(alpha = 0.36f)
-            )
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -103,10 +91,6 @@ fun DreamDialog(
                     onClick = onDismiss
                 )
 
-                VerticalDivider(
-                    thickness = 1.dp,
-                    color = Color(0xFF3C3C43).copy(alpha = 0.36f)
-                )
 
                 DiaButton(
                     modifier = Modifier.weight(1f),
