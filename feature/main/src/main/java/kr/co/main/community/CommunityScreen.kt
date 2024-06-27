@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -85,51 +86,57 @@ internal fun CommunityScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            DreamTopAppBar(
-                title = {
+            Column {
+                DreamTopAppBar(
+                    title = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = "${state.currentBoard.koreanName} 게시판",
+                                style = MaterialTheme.typo.h2
+                            )
+                            IconButton(onClick = {
+                                event.showBottomSheet(
+                                    CropType.entries.map {
+                                        TextAndOnClick(
+                                            text = it.koreanName,
+                                            onClick = { event.onSelectBoard(it) }
+                                        )
+                                    }
+                                )
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "게시판 선택 ArrowDropDown",
+                                    modifier = Modifier
+                                        .width(32.dp)
+                                        .height(32.dp),
+                                )
+                            }
+                        }
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                ) {
                     Row(
+                        modifier = Modifier
+                            .heightIn(min = 48.dp)
+                            .clickable(onClick = {
+                                navigateToWriting(
+                                    state.currentBoard,
+                                    state.currentCategory,
+                                )
+                            }),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = "${state.currentBoard.koreanName} 게시판",
-                            style = MaterialTheme.typo.h2
-                        )
-                        IconButton(onClick = {
-                            event.showBottomSheet(
-                                CropType.entries.map {
-                                    TextAndOnClick(
-                                        text = it.koreanName,
-                                        onClick = { event.onSelectBoard(it) }
-                                    )
-                                }
-                            )
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "게시판 선택 ArrowDropDown",
-                                modifier = Modifier
-                                    .width(32.dp)
-                                    .height(32.dp),
-                            )
-                        }
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "게시판 탑바 Add 아이콘")
+                        Text("글 쓰기")
                     }
-                },
-                modifier = Modifier.padding(horizontal = 16.dp),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .heightIn(min = 48.dp)
-                        .clickable(onClick = {
-                            navigateToWriting(
-                                state.currentBoard,
-                                state.currentCategory,
-                            )
-                        }),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "게시판 탑바 Add 아이콘")
-                    Text("글 쓰기")
                 }
+                CommunityCategoryTabLayout(
+                    selectedTab = state.currentCategory,
+                    onSelectTab = { event.onCategoryClick(it) },
+                )
             }
         },
         containerColor = MaterialTheme.colors.gray9,
@@ -140,12 +147,7 @@ internal fun CommunityScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
 
-            item {
-                CommunityCategoryTabLayout(
-                    selectedTab = state.currentCategory,
-                    onSelectTab = { event.onCategoryClick(it) },
-                )
-            }
+            item { Spacer(modifier = Modifier.height(8.dp)) }
             item {
                 val keyboardController = LocalSoftwareKeyboardController.current
                 TextField(
@@ -200,21 +202,32 @@ private fun CommunityCategoryTabLayout(
     onSelectTab: (BulletinEntity.BulletinCategory) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        BulletinEntity.BulletinCategory.entries.forEach {
-            CommunityCategoryTabLayoutItem(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clickable {
-                        onSelectTab(it)
-                    },
-                title = it.koreanName,
-                isSelected = (it == selectedTab)
-            )
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            BulletinEntity.BulletinCategory.entries.forEach {
+                CommunityCategoryTabLayoutItem(
+                    modifier = Modifier
+                        .weight(1f)
+                        .wrapContentSize()
+                        .clickable {
+                            onSelectTab(it)
+                        },
+                    title = it.koreanName,
+                    isSelected = (it == selectedTab)
+                )
+            }
         }
+        HorizontalDivider(
+            color = MaterialTheme.colors.gray7,
+        )
+//        Spacer(modifier = Modifier
+//            .fillMaxWidth()
+//            .height(8.dp)
+//            .background(Color.Black))
+//        Spacer(modifier = Modifier.fillMaxWidth().height(8.dp).background(MaterialTheme.colors.gray7))
     }
 }
 
@@ -233,7 +246,7 @@ private fun CommunityCategoryTabLayoutItem(
 ) {
     val textWidth = measureTextWidth(
         text = title,
-        style = MaterialTheme.typo.h2
+        style = MaterialTheme.typo.mainDate,
     )
 
     Column(
@@ -243,8 +256,8 @@ private fun CommunityCategoryTabLayoutItem(
         Text(
             modifier = Modifier.width(textWidth),
             text = title,
-            style = MaterialTheme.typo.h2,
-            color = if (isSelected) MaterialTheme.colors.text1 else MaterialTheme.colors.text2,
+            style = MaterialTheme.typo.mainDate,
+            color = if (isSelected) MaterialTheme.colors.gray1 else MaterialTheme.colors.gray1,
             textAlign = TextAlign.Center
         )
         HorizontalDivider(
