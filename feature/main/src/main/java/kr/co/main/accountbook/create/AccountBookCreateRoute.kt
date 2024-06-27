@@ -26,21 +26,14 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DisplayMode
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,7 +49,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -65,10 +57,11 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
 import kr.co.main.accountbook.main.AccountBookOptionButton
 import kr.co.main.accountbook.main.CircleProgress
-import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
+import kr.co.main.accountbook.model.CustomDatePickerDialog
 import kr.co.main.accountbook.model.EntryType
 import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay
+import kr.co.main.accountbook.model.parseLocalDate
 import kr.co.nbdream.core.ui.R
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Arrowleft
@@ -80,9 +73,6 @@ import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 
 @Composable
@@ -495,7 +485,8 @@ internal fun AccountBookCreateScreen(
     }
 
     if (showDatePicker) {
-        AccountBookDatePickerDialog(
+        CustomDatePickerDialog(
+            date = state.registerDateTime.parseLocalDate(),
             onClickCancel = { showDatePicker = false },
             onClickConfirm = { selectedDate ->
                 onUpdateRegisterDateTime(selectedDate)
@@ -585,51 +576,5 @@ internal fun AccountBookCreateButton(
                 )
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AccountBookDatePickerDialog(
-    onClickCancel: () -> Unit,
-    onClickConfirm: (yyyyMMdd: String) -> Unit
-) {
-    val datePickerState = rememberDatePickerState(
-        yearRange = IntRange(2000, 2050),
-        initialDisplayMode = DisplayMode.Picker,
-        initialSelectedDateMillis = System.currentTimeMillis(),
-        selectableDates = object : SelectableDates {
-            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                return true
-            }
-        }
-    )
-    val initialSelectedDate = remember { datePickerState.selectedDateMillis }
-    LaunchedEffect(datePickerState.selectedDateMillis) {
-        if (initialSelectedDate != datePickerState.selectedDateMillis) {
-            datePickerState.selectedDateMillis?.let { selectedDateMillis ->
-                val date = Date(selectedDateMillis)
-                val formatter = SimpleDateFormat(DATE_FORMAT_PATTERN, Locale.getDefault())
-                val formattedDate = formatter.format(date)
-
-                onClickConfirm(formattedDate)
-            }
-        }
-    }
-    DatePickerDialog(
-        onDismissRequest = onClickCancel,
-        confirmButton = {},
-        colors = DatePickerDefaults.colors(
-            containerColor = Color.White,
-            selectedDayContentColor = MaterialTheme.colors.primary2,
-            selectedDayContainerColor = MaterialTheme.colors.primary2,
-            dayInSelectionRangeContentColor = MaterialTheme.colors.primary2,
-        ),
-        shape = Shapes.small,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        DatePicker(
-            state = datePickerState,
-        )
     }
 }
