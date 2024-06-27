@@ -52,6 +52,7 @@ import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Apple
+import kr.co.ui.icon.dreamicon.Arrowleft
 import kr.co.ui.icon.dreamicon.Garlic
 import kr.co.ui.icon.dreamicon.Lettuce
 import kr.co.ui.icon.dreamicon.Nappacabbage
@@ -100,7 +101,7 @@ internal fun SelectCropScreen(
                     ) {
                         Icon(
                             modifier = Modifier.size(32.dp),
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            imageVector = DreamIcon.Arrowleft,
                             contentDescription = "arrowleft"
                         )
                     }
