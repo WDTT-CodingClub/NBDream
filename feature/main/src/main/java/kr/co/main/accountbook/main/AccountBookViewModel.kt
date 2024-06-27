@@ -88,6 +88,8 @@ internal class AccountBookViewModel @Inject constructor(
         }
     }
 
+    fun refreshItem() = fetchAccountBooks()
+
     fun updatePage(lastContentsId: Long) {
         if (lastContentsId == currentState.lastContentsId) return
         updateState { copy(lastContentsId = lastContentsId) }
