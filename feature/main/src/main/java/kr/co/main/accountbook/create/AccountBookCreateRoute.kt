@@ -21,11 +21,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -63,15 +60,20 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import kotlinx.coroutines.flow.collectLatest
 import kr.co.common.util.FileUtil
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
 import kr.co.main.accountbook.main.AccountBookOptionButton
-import kr.co.main.accountbook.main.formatNumber
+import kr.co.main.accountbook.main.CircleProgress
 import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
+import kr.co.main.accountbook.model.EntryType
+import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.nbdream.core.ui.R
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Arrowleft
+import kr.co.ui.icon.dreamicon.DatePicker
+import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
@@ -86,36 +88,47 @@ import java.util.Locale
 @Composable
 internal fun AccountBookCreateRoute(
     popBackStack: () -> Unit,
-    viewModel: AccountBookCreateViewModel = hiltViewModel()
+    viewModel: AccountBookCreateViewModel = hiltViewModel(),
+    navigationToAccountBook: () -> Unit,
+    navigationToContent: (Long) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
     LaunchedEffect(Unit) {
-        viewModel.complete.collectLatest {
-            // TODO
+        viewModel.complete.collect { complete ->
+            if (complete) {
+                when (viewModel.entryType) {
+                    EntryType.CREATE -> navigationToAccountBook()
+                    EntryType.UPDATE -> state.id?.let { id -> navigationToContent(id) }
+                }
+            }
         }
     }
 
     AccountBookCreateScreen(
         state = state,
+        isLoading = isLoading,
         popBackStack = popBackStack,
         onUploadImage = { viewModel.uploadImage(it) },
-        onCreateAccountBook = viewModel::createAccountBook,
+        onPerformAccountBook = viewModel::performAccountBook,
         onUpdateAmount = { viewModel.updateAmount(it) },
         onUpdateAmountText = { viewModel.updateAmountText(it) },
         onUpdateTransactionType = { viewModel.updateTransactionType(it) },
         onUpdateTitle = { viewModel.updateTitle(it) },
-        onRemoveImageUrl = { viewModel.removeImageUrl(it) },
+        onRemoveImageUrl = { viewModel.deleteImage(it) },
         onUpdateRegisterDateTime = { viewModel.updateRegisterDateTime(it) },
-        onUpdateCategory = { viewModel.updateCategory(it) }
+        onUpdateCategory = { viewModel.updateCategory(it) },
     )
 }
 
 @Composable
 internal fun AccountBookCreateScreen(
     state: AccountBookCreateViewModel.State = AccountBookCreateViewModel.State(),
+    isLoading: Boolean,
     popBackStack: () -> Unit,
     onUploadImage: (File) -> Unit = {},
-    onCreateAccountBook: () -> Unit = {},
+    onPerformAccountBook: () -> Unit = {},
     onUpdateAmount: (Long) -> Unit = {},
     onUpdateAmountText: (String) -> Unit = {},
     onUpdateTransactionType: (AccountBookEntity.TransactionType) -> Unit = {},
@@ -143,15 +156,14 @@ internal fun AccountBookCreateScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = Paddings.xlarge)
         ) {
             item {
                 DreamCenterTopAppBar(
-                    title = "장부 작성하기",
+                    title = state.contentTitle,
                     navigationIcon = {
                         IconButton(onClick = popBackStack) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                imageVector = DreamIcon.Arrowleft,
                                 contentDescription = "뒤로가기",
                                 tint = Color.Black
                             )
@@ -160,19 +172,27 @@ internal fun AccountBookCreateScreen(
                     actions = {
                         Button(
                             onClick = {
-                                onCreateAccountBook()
+                                if (!isLoading) {
+                                    onPerformAccountBook()
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(Color.Transparent)
                         ) {
-                            Text("등록", color = MaterialTheme.colors.black)
+                            Text(
+                                text = "등록",
+                                color = MaterialTheme.colors.black
+                            )
                         }
                     }
                 )
             }
-
             item {
                 Column(
-                    modifier = Modifier.padding(top = Paddings.extra)
+                    modifier = Modifier.padding(
+                        start = Paddings.xlarge,
+                        end = Paddings.xlarge,
+                        top = Paddings.extra
+                    )
                 ) {
                     Text(
                         text = "금액",
@@ -218,7 +238,7 @@ internal fun AccountBookCreateScreen(
                         }
                         Spacer(modifier = Modifier.width(Paddings.xlarge))
                         Icon(
-                            imageVector = Icons.Default.Edit,
+                            imageVector = DreamIcon.Edit,
                             contentDescription = null,
                             tint = MaterialTheme.colors.gray4
                         )
@@ -227,7 +247,11 @@ internal fun AccountBookCreateScreen(
             }
             item {
                 Column(
-                    modifier = Modifier.padding(top = Paddings.extra)
+                    modifier = Modifier.padding(
+                        start = Paddings.xlarge,
+                        end = Paddings.xlarge,
+                        top = Paddings.extra
+                    )
                 ) {
                     Text(
                         text = "분류",
@@ -261,7 +285,11 @@ internal fun AccountBookCreateScreen(
 
             item {
                 Column(
-                    modifier = Modifier.padding(top = Paddings.extra)
+                    modifier = Modifier.padding(
+                        start = Paddings.xlarge,
+                        end = Paddings.xlarge,
+                        top = Paddings.extra
+                    )
                 ) {
                     Text(
                         text = "카테고리",
@@ -291,7 +319,11 @@ internal fun AccountBookCreateScreen(
 
             item {
                 Column(
-                    modifier = Modifier.padding(top = Paddings.extra)
+                    modifier = Modifier.padding(
+                        start = Paddings.xlarge,
+                        end = Paddings.xlarge,
+                        top = Paddings.extra
+                    )
                 ) {
                     Text(
                         text = "내역",
@@ -320,7 +352,11 @@ internal fun AccountBookCreateScreen(
 
             item {
                 Column(
-                    modifier = Modifier.padding(top = Paddings.extra)
+                    modifier = Modifier.padding(
+                        start = Paddings.xlarge,
+                        end = Paddings.xlarge,
+                        top = Paddings.extra
+                    )
                 ) {
                     Text(
                         text = "일자",
@@ -341,7 +377,7 @@ internal fun AccountBookCreateScreen(
                             onClick = { showDatePicker = true },
                             text = state.registerDateTime,
                             buttonColors = ButtonDefaults.buttonColors(Color.Transparent),
-                            icon = Icons.Default.DateRange
+                            icon = DreamIcon.DatePicker
                         )
                     }
                 }
@@ -349,7 +385,11 @@ internal fun AccountBookCreateScreen(
 
             item {
                 Column(
-                    modifier = Modifier.padding(top = Paddings.extra)
+                    modifier = Modifier.padding(
+                        start = Paddings.xlarge,
+                        end = Paddings.xlarge,
+                        top = Paddings.extra
+                    )
                 ) {
                     Text(
                         text = "사진",
@@ -359,7 +399,8 @@ internal fun AccountBookCreateScreen(
                 }
                 Spacer(modifier = Modifier.height(Paddings.large))
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(start = Paddings.xlarge),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -407,7 +448,7 @@ internal fun AccountBookCreateScreen(
                     LazyRow(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(state.imageUrls) { imageUrl ->
+                        items(state.newImageUrls) { imageUrl ->
                             Box(
                                 modifier = Modifier
                                     .padding(start = Paddings.large)
@@ -448,7 +489,11 @@ internal fun AccountBookCreateScreen(
                 }
             }
         }
+        if (isLoading) {
+            CircleProgress()
+        }
     }
+
     if (showDatePicker) {
         AccountBookDatePickerDialog(
             onClickCancel = { showDatePicker = false },
@@ -458,10 +503,13 @@ internal fun AccountBookCreateScreen(
             }
         )
     }
+
     if (showBottomSheet) {
         AccountBookCategoryBottomSheet(
             onSelectedListener = { category ->
-                onUpdateCategory(category)
+                onUpdateCategory(
+                    category ?: AccountBookEntity.Category.OTHER
+                )
                 showBottomSheet = false
             },
             dismissBottomSheet = { showBottomSheet = false }
