@@ -9,19 +9,19 @@ import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.type.CropType
 import kr.co.domain.repository.CommunityRepository
 import kr.co.ui.base.BaseViewModel
+import kr.co.ui.widget.TextAndOnClick
 import timber.log.Timber
 import javax.inject.Inject
-
-internal interface SharingData {
-    val getCurrentBoard: () -> CropType
-    val getCurrentCategory: () -> BulletinEntity.BulletinCategory
-}
 
 internal interface CommunityScreenEvent {
     fun onSearchInputChanged(input: String)
     fun setBulletinEntities(entities: List<BulletinEntity>)
     fun bookmarkBulletin(id: Long)
     fun onCategoryClick(category: BulletinEntity.BulletinCategory)
+    fun setIsShowBottomSheet(boolean: Boolean)
+    fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>)
+    fun onSelectBoard(crop: CropType)
+    fun onSearchRun()
 
     companion object {
         val dummy = object : CommunityScreenEvent {
@@ -29,6 +29,10 @@ internal interface CommunityScreenEvent {
             override fun setBulletinEntities(entities: List<BulletinEntity>) {}
             override fun bookmarkBulletin(id: Long) {}
             override fun onCategoryClick(category: BulletinEntity.BulletinCategory) {}
+            override fun setIsShowBottomSheet(boolean: Boolean) {}
+            override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {}
+            override fun onSelectBoard(crop: CropType) {}
+            override fun onSearchRun() {}
 
         }
     }
@@ -38,7 +42,7 @@ internal interface CommunityScreenEvent {
 internal class CommunityViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val communityRepository: CommunityRepository,
-) : BaseViewModel<CommunityViewModel.State>(savedStateHandle), CommunityScreenEvent, SharingData {
+) : BaseViewModel<CommunityViewModel.State>(savedStateHandle), CommunityScreenEvent {
 
     override fun createInitialState(savedState: Parcelable?) = State()
 
@@ -49,12 +53,13 @@ internal class CommunityViewModel @Inject constructor(
         val bulletinWritingInput: String = "",
         val bulletinEntities: List<BulletinEntity> = emptyList(),
         val isLoadDetailSuccessful: Boolean = false,
+        val isEnable: Boolean = true,
+        val isShowBottomSheet: Boolean = false,
+        val bottomSheetItems: List<TextAndOnClick> = emptyList(),
     ) : BaseViewModel.State
 
-    override val getCurrentBoard: () -> CropType
-        get() = { state.value.currentBoard }
-    override val getCurrentCategory: () -> BulletinEntity.BulletinCategory
-        get() = { state.value.currentCategory }
+    override fun setIsShowBottomSheet(boolean: Boolean) =
+        updateState { copy(isShowBottomSheet = boolean) }
 
     override fun onSearchInputChanged(input: String) = updateState { copy(searchInput = input) }
 
@@ -64,12 +69,63 @@ internal class CommunityViewModel @Inject constructor(
     private fun setCurrentCategory(category: BulletinEntity.BulletinCategory) =
         updateState { copy(currentCategory = category) }
 
-    // TODO: bulletinEntities 게시글 하나 갱신하는거
+    // TODO: 게시판에서 북마크 처리용 bulletinEntities 게시글 하나 갱신하는거
     fun aa() {
         val aa = state.value.bulletinEntities.indexOfFirst { true }
         updateState { copy(bulletinEntities = bulletinEntities) }
     }
 
+    //---
+
+    override fun onSearchRun() {
+        Timber.d("onSearchRun 시작, searchInput: ${state.value.searchInput}")
+        updateState { copy(isEnable = false) }
+        loadingScope {
+            val bulletins = communityRepository.getBulletins(
+                keyword = state.value.searchInput,
+                bulletinCategory = state.value.currentCategory,
+                crop = state.value.currentBoard,
+                lastBulletinId = null,
+            )
+            Timber.d("onSearchRun 코루틴 성공, $bulletins")
+            updateState {
+                copy(
+                    isEnable = true,
+                    bulletinEntities = bulletins,
+                )
+            }
+        }
+    }
+
+    override fun onSelectBoard(crop: CropType) {
+        updateState { copy(isEnable = false) }
+        loadingScope {
+            val bulletins = communityRepository.getBulletins(
+                keyword = null,
+                bulletinCategory = state.value.currentCategory,
+                crop = crop,
+                lastBulletinId = null,
+            )
+            Timber.d("onSelectBoard 코루틴 성공, $bulletins")
+            updateState {
+                copy(
+                    isShowBottomSheet = false,
+                    isEnable = true,
+                    currentBoard = crop,
+                    bulletinEntities = bulletins,
+                )
+            }
+        }
+    }
+
+    override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {
+        updateState {
+            copy(
+                isShowBottomSheet = true,
+                bottomSheetItems = bottomSheetItems,
+            )
+        }
+    }
 
     override fun onCategoryClick(category: BulletinEntity.BulletinCategory) {
         viewModelScope.launch {
@@ -89,13 +145,13 @@ internal class CommunityViewModel @Inject constructor(
         }
     }
 
+    // TODO:
     override fun bookmarkBulletin(id: Long) {
-//        // TODO: -ing : postCard 얹고 다시.
 //        loadingScope {
 //            val changedBookmark =
 //                communityRepository.bookmarkBulletin(id)
 //
-////            // 귀찮다 그냥 로드하자
+////            // 그냥 로드하자
 ////            loadBulletin(state.value.currentDetailBulletinId)
 //        }
     }
