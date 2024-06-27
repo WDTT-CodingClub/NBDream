@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,6 +58,8 @@ import kotlinx.coroutines.launch
 import kr.co.onboard.BuildConfig
 import kr.co.onboard.R
 import kr.co.ui.ext.scaffoldBackground
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Arrowleft
 import kr.co.ui.theme.ColorSet.Dream.lightColors
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
@@ -104,7 +104,7 @@ internal fun InputAddressScreen(
                     ) {
                         Icon(
                             modifier = Modifier.size(32.dp),
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            imageVector = DreamIcon.Arrowleft,
                             contentDescription = "arrowleft"
                         )
                     }
@@ -137,8 +137,8 @@ internal fun InputAddressScreen(
                     fullRoadAddr = state.fullRoadAddress,
                     onFullRoadAddrChange = {},
                     onSearchClick = {
-                    setLocationSearchVisible(true)
-                })
+                        setLocationSearchVisible(true)
+                    })
 
                 KakaoMapScreen(
                     modifier = modifier,
