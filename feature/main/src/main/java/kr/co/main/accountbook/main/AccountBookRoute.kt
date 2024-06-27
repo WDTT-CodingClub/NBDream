@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.paging.log
 import coil.compose.rememberAsyncImagePainter
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
@@ -50,7 +49,6 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamTopAppBar
-import timber.log.Timber
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

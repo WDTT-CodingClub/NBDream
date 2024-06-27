@@ -72,7 +72,6 @@ import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
-import timber.log.Timber
 import java.io.File
 
 
