@@ -35,7 +35,11 @@ internal interface BulletinDetailEvent {
     )
 
     fun bookmarkBulletin()
+    fun showReportBottomSheet()
 
+    // simple dialog
+    fun setIsShowSimpleDialog(boolean: Boolean)
+    fun showSimpleDialog(text: String)
 
     companion object {
         val dummy = object : BulletinDetailEvent {
@@ -58,10 +62,12 @@ internal interface BulletinDetailEvent {
             }
 
             override fun bookmarkBulletin() {}
+            override fun setIsShowSimpleDialog(boolean: Boolean) {}
+            override fun showSimpleDialog(text: String) {}
+            override fun showReportBottomSheet() {}
 
         }
     }
-
 }
 
 @HiltViewModel
@@ -80,16 +86,27 @@ internal class BulletinDetailViewModel @Inject constructor(
         val isLoadDetailSuccessful: Boolean = true,
         val currentDetailBulletin: BulletinEntity = BulletinEntity.dummy(),
         val currentCategory: BulletinEntity.BulletinCategory = BulletinEntity.BulletinCategory.Free,
-        val isShowBulletinMoreBottomSheet: Boolean = false,
         val isShowDeleteCheckDialog: Boolean = false,
         val isShowFailedDialog: Boolean = false,
+
+        // bottom sheet
+        val isShowBulletinMoreBottomSheet: Boolean = false,
         val bottomSheetItems: List<TextAndOnClick> = emptyList(),
+
+        // dream dialog
         val isShowDialog: Boolean = false,
         val dialogHeader: String = "dialogHeader",
         val dialogDescription: String = "dialogDescription",
         val dialogOnConfirm: () -> Unit = {},
         val dialogOnDismiss: () -> Unit = {},
+
+        // simple dialog
+        val isShowSimpleDialog: Boolean = false,
+        val simpleDialogText: String = "",
     ) : BaseViewModel.State
+
+    override fun setIsShowSimpleDialog(boolean: Boolean) =
+        updateState { copy(isShowSimpleDialog = boolean) }
 
     override fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) =
         updateState { copy(isShowBulletinMoreBottomSheet = boolean) }
@@ -113,6 +130,43 @@ internal class BulletinDetailViewModel @Inject constructor(
         updateState { copy(currentDetailBulletin = entity) }
 
     //---
+
+    override fun showReportBottomSheet() {
+        updateState {
+            copy(
+                isShowBulletinMoreBottomSheet = true,
+                bottomSheetItems = listOf(
+                    "유출/사칭/사기",
+                    "욕설/비하",
+                    "불법촬영물 등의 유통",
+                    "정당/정치인 비하 및 선거운동",
+                    "음란물/불건전한 만남 및 대화",
+                    "낚시/놀람/도배",
+                    "상업적 광고 및 판매"
+                ).map {
+                    TextAndOnClick(
+                        it,
+                    ) {
+                        showDialog(
+                            header = "",
+                            description = "\"$it\"으로 신고하시겠습니까?",
+                            onConfirm = { showSimpleDialog("신고되었습니다") },
+                            onDismiss = { setIsShowDialog(false) },
+                        )
+                    }
+                },
+            )
+        }
+    }
+
+    override fun showSimpleDialog(text: String) {
+        updateState {
+            copy(
+                isShowSimpleDialog = true,
+                simpleDialogText = text,
+            )
+        }
+    }
 
     override fun showDialog(
         header: String,
