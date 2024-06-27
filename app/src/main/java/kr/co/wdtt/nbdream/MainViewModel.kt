@@ -31,7 +31,7 @@ internal class MainViewModel @Inject constructor(
                 fetchAuthUseCase()
                     .distinctUntilChanged()
                     .collectLatest {
-                        _isAuthorized.emit(it == null)
+                        _isAuthorized.emit(it != null)
                     }
             }
         }

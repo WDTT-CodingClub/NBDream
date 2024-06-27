@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import kr.co.domain.entity.type.AuthType
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.typo
@@ -29,7 +30,6 @@ internal fun Login(
             .background(color = Color.White)
             .padding(Paddings.xlarge),
     ) {
-        Logo("농부의 꿈")
         SocialLoginButtons(
             onSocialLoginClick = onSocialLoginClick,
         )
@@ -85,7 +85,7 @@ internal fun SocialLoginButtons(
         contentAlignment = Alignment.BottomCenter
     ) {
         Column(
-            modifier = Modifier.padding(Paddings.xlarge)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             AuthType.entries.forEach {
                 DreamSocialButton(type = it.ordinal) {

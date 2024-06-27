@@ -66,7 +66,7 @@ internal fun DreamApp(
     navController: NavHostController = rememberNavController(),
 ) {
     var navRoute by remember { mutableStateOf(DreamNavRoute.SPLASH) }
-    var (splashVisible, setSplashVisible) = remember { mutableStateOf(false) }
+    val (splashVisible, setSplashVisible) = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         setSplashVisible(true)
