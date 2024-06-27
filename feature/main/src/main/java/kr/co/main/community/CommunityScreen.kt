@@ -1,7 +1,9 @@
 package kr.co.main.community
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,16 +11,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,7 +30,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,6 +37,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -47,6 +53,8 @@ import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.type.CropType
 import kr.co.main.ui.DreamMainPostCard
 import kr.co.ui.ext.scaffoldBackground
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Search
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -150,22 +158,52 @@ internal fun CommunityScreen(
             item { Spacer(modifier = Modifier.height(8.dp)) }
             item {
                 val keyboardController = LocalSoftwareKeyboardController.current
-                TextField(
+                BasicTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = Color.White,
+                            shape = CircleShape
+                        )
+                        .padding(
+                            horizontal = 20.dp,
+                            vertical = 8.dp
+                        )
+                        .semantics {
+                            contentDescription = "영농일지 검색"
+                        },
                     value = state.searchInput,
                     onValueChange = {
                         if ("\n" !in it) event.onSearchInputChanged(it)
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("검색어를 입력하세요") },
-                    leadingIcon = {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "search icon")
-                    },
+                    textStyle = MaterialTheme.typo.body1.copy(color = MaterialTheme.colors.gray1),
+                    singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = {
                         event.onSearchRun()
                         keyboardController?.hide()
                     }),
-                )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
+                    ) {
+                        Box(
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            it()
+                        }
+                        Icon(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clearAndSetSemantics { },
+                            imageVector = DreamIcon.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.gray6,
+                        )
+                    }
+                }
             }
             if (state.bulletinEntities.isEmpty()) {
                 item {
