@@ -41,6 +41,6 @@ internal class MainViewModel @Inject constructor(
     override fun createInitialState(savedState: Parcelable?): State = State
 
     private companion object {
-        const val SPLASH_DELAY = 951_500L
+        const val SPLASH_DELAY = 2_000L
     }
 }
