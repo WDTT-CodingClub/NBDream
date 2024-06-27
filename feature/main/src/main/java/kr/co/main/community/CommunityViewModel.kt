@@ -21,6 +21,7 @@ internal interface CommunityScreenEvent {
     fun setIsShowBottomSheet(boolean: Boolean)
     fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>)
     fun onSelectBoard(crop: CropType)
+    fun onSearchRun()
 
     companion object {
         val dummy = object : CommunityScreenEvent {
@@ -31,6 +32,7 @@ internal interface CommunityScreenEvent {
             override fun setIsShowBottomSheet(boolean: Boolean) {}
             override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {}
             override fun onSelectBoard(crop: CropType) {}
+            override fun onSearchRun() {}
 
         }
     }
@@ -74,6 +76,26 @@ internal class CommunityViewModel @Inject constructor(
     }
 
     //---
+
+    override fun onSearchRun() {
+        Timber.d("onSearchRun 시작, searchInput: ${state.value.searchInput}")
+        updateState { copy(isEnable = false) }
+        loadingScope {
+            val bulletins = communityRepository.getBulletins(
+                keyword = state.value.searchInput,
+                bulletinCategory = state.value.currentCategory,
+                crop = state.value.currentBoard,
+                lastBulletinId = null,
+            )
+            Timber.d("onSearchRun 코루틴 성공, $bulletins")
+            updateState {
+                copy(
+                    isEnable = true,
+                    bulletinEntities = bulletins,
+                )
+            }
+        }
+    }
 
     override fun onSelectBoard(crop: CropType) {
         updateState { copy(isEnable = false) }
