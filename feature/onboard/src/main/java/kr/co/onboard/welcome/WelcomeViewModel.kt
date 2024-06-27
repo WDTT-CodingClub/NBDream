@@ -28,7 +28,6 @@ internal class WelcomeViewModel @Inject constructor(
 
     fun onClickConfirm() = loadingScope {
         val currentState = state.value
-        Timber.d("onClick 안 profileImageUrl: ${currentState.profileImageUrl} bjdCode: ${currentState.bCode} address: ${currentState.address} latitude: ${currentState.latitude} longitude: ${currentState.longitude} crops: ${currentState.crops}")
         UserEntity(
             address = currentState.address,
             bjdCode = currentState.bCode,
@@ -63,7 +62,6 @@ internal class WelcomeViewModel @Inject constructor(
     }
 
     data class State(
-        val profileImageUrl: String? = null,
         val address: String? = null,
         val bCode: String? = null,
         val latitude: Double? = null,

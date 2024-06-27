@@ -51,6 +51,7 @@ internal fun WelcomeScreen(
             crops = cropsList
         )
     }
+
     Scaffold(
         modifier = modifier
             .padding(Paddings.xlarge)

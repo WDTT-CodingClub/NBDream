@@ -32,6 +32,7 @@ internal class OnBoardViewModel @Inject constructor(
                 loginUseCase(LoginUseCase.Params(it.type, it.token))
             }
         }.invokeOnCompletion {
+            if (it == null)
             viewModelScopeEH.launch {
                 _showAddressScreen.emit(Unit)
             }
