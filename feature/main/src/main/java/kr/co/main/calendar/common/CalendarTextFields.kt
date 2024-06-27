@@ -81,7 +81,7 @@ internal fun CalendarContainerTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS.dp))
-                .background(MaterialTheme.colors.gray10),
+                .background(MaterialTheme.colors.gray9),
         ) {
             Box(modifier = Modifier.padding(Paddings.xlarge)) {
                 if (value.isEmpty()) placeHolder()

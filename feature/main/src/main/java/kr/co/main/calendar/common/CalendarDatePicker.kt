@@ -1,4 +1,4 @@
-package kr.co.main.calendar.common.input
+package kr.co.main.calendar.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kr.co.main.calendar.CalendarDesignToken
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.DatePicker
@@ -33,8 +34,8 @@ internal fun CalendarDatePicker(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS))
-            .background(MaterialTheme.colors.gray10)
+            .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS.dp))
+            .background(MaterialTheme.colors.gray9)
             .clickable {
                 //TODO Date Picker 띄우기 - 수빈님 PR 올리시면 참고
             }
@@ -59,6 +60,7 @@ internal fun CalendarDatePicker(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 private fun CalendarDatePickerPreview() {
@@ -67,5 +69,4 @@ private fun CalendarDatePickerPreview() {
         date = LocalDate.now(),
         onDateInput = {}
     )
-
 }

@@ -5,6 +5,7 @@ internal object CalendarDesignToken {
 
     // common ui
     const val CROP_COLOR_SHAPE_SIZE = 8
+    const val INPUT_BOX_CORNER_RADIUS = 12
 
     // schedule content/diary content
     const val DIARY_IMAGE_SIZE = 80
@@ -17,16 +18,8 @@ internal object CalendarDesignToken {
     const val FARM_WORK_ITEM_CORNER_RADIUS = 5
     const val CALENDAR_ITEM_SIZE = 50
 
-    // add schedule screen
-    const val INPUT_BOX_CORNER_RADIUS = 12
-
     // add diary screen
-    const val IMAGE_SIZE = 66
-    const val ADD_IMAGE_BUTTON_SIZE = 66
-    const val DELETE_IMAGE_BUTTON_SIZE = 16
-    const val DELETE_IMAGE_BUTTON_OFFSET = 2
 
-    const val WORK_TYPE_SPINNER_ICON_SIZE = 20
-    const val WORK_TYPE_SPINNER_DROP_DOWN_OFFSET = 50
-    const val WORK_TYPE_SPINNER_DROP_DOWN_HEIGHT = 300
+    const val WORK_TYPE_DROP_DOWN_ICON_SIZE = 20
+    const val WORK_TYPE_PICKER_DROP_DOWN_HEIGHT = 300
 }
