@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import kr.co.main.R
 import kr.co.main.calendar.common.AddScreenCenterTopAppBar
 
 @Composable
@@ -47,8 +48,9 @@ private fun AddDiaryScreen(
             AddScreenCenterTopAppBar(
                 modifier = Modifier.fillMaxWidth(),
                 screenMode = state.value.screenMode,
-                postModeTitleId = kr.co.main.R.string.feature_main_calendar_top_app_bar_add_diary,
-                editModeTitleId = kr.co.main.R.string.feature_main_calendar_top_app_bar_edit_diary,
+                postModeTitleId = R.string.feature_main_calendar_top_app_bar_add_diary,
+                editModeTitleId = R.string.feature_main_calendar_top_app_bar_edit_diary,
+                actionHintId = R.string.feature_main_calendar_add_diary_input_hint_memo,
                 popBackStack = popBackStack,
                 onPostClick = event::onPostClick,
                 onEditClick = event::onEditClick,
