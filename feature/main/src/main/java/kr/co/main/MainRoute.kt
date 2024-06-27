@@ -107,7 +107,7 @@ private fun MainBottomBar(
                 offsetY = 2.dp,
                 offsetX = 2.dp
             ),
-        containerColor = MaterialTheme.colors.white
+        containerColor = MaterialTheme.colors.white,
     ) {
         MainBottomRoute.entries.forEach { screen ->
             NavigationBarItem(
@@ -130,10 +130,8 @@ private fun MainBottomBar(
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colors.primary4,
                     unselectedIconColor = MaterialTheme.colors.grey4,
-                    indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
-                        LocalAbsoluteTonalElevation.current
-                    )
-                )
+                    indicatorColor = MaterialTheme.colors.white
+                ),
             )
         }
     }
