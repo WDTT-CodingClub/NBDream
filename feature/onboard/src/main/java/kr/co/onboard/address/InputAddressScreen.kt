@@ -13,17 +13,19 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -55,10 +57,10 @@ import com.kakao.vectormap.camera.CameraUpdateFactory
 import kotlinx.coroutines.launch
 import kr.co.onboard.BuildConfig
 import kr.co.onboard.R
-import kr.co.onboard.crop.StepText
-import kr.co.onboard.navigation.CROP_ROUTE
+import kr.co.ui.ext.scaffoldBackground
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Arrowleft
 import kr.co.ui.theme.ColorSet.Dream.lightColors
-import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -72,6 +74,7 @@ import java.util.Locale
 internal fun InputAddressScreen(
     modifier: Modifier,
     viewModel: InputAddressViewModel = hiltViewModel(),
+    popBackStack: () -> Unit = {},
     navController: NavController
 ) {
     val state by viewModel.state.collectAsState()
@@ -92,58 +95,85 @@ internal fun InputAddressScreen(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colors.white,
         topBar = {
-        DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title))
-    }) { paddingValues ->
-        Column(
-            modifier = modifier
-                .padding(paddingValues)
-                .fillMaxHeight()
-        ) {
-            DynamicStepProgressBars(
-                modifier, colors = listOf(MaterialTheme.colors.green2, Color.Transparent)
-            )
-            DescriptionText(stringResource(id = R.string.feature_onboard_my_farm_address_description))
-
-            Address(modifier, fullRoadAddr = state.fullRoadAddress, onFullRoadAddrChange = {
-                Timber.d("onFullRoadAddrChange called with: $it")
-            }, onSearchClick = {
-                setLocationSearchVisible(true)
-            })
-
-            KakaoMapScreen(
-                modifier = modifier,
-                latitude = state.latitude,
-                longitude = state.longitude
-            )
-
-            Spacer(modifier = modifier.weight(1f))
-
-            NextButton(
-                skipId = R.string.feature_onboard_my_farm_skip_input,
-                nextId = R.string.feature_onboard_my_farm_next,
-                onNextClick = {
-                    val fullRoadAddress = state.fullRoadAddress
-                    val bCode = state.bCode
-                    val latitude = state.latitude ?: 0.0
-                    val longitude = state.longitude ?: 0.0
-
-                    Timber.d("fullRoadAddress: $fullRoadAddress, bCode: $bCode, latitude: $latitude, longitude: $longitude")
-                    navController.navigate(
-                        "SelectCropScreen/$fullRoadAddress/$bCode/$latitude/$longitude"
-                    )
-                },
-                onSkipClick = {
-                    val fullRoadAddress = state.fullRoadAddress
-                    val bCode = state.bCode
-                    val latitude = state.latitude ?: 0.0
-                    val longitude = state.longitude ?: 0.0
-
-                    navController.navigate(
-                        "SelectCropScreen/$fullRoadAddress/$bCode/$latitude/$longitude"
-                    )
+            DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title),
+                navigationIcon = {
+                    IconButton(
+                        onClick = popBackStack
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(32.dp),
+                            imageVector = DreamIcon.Arrowleft,
+                            contentDescription = "arrowleft"
+                        )
+                    }
                 }
             )
+        }) { scaffoldPadding ->
+        Column(
+            modifier = Modifier
+                .scaffoldBackground(scaffoldPadding)
+        ) {
+            DynamicStepProgressBars(
+                modifier, colors = listOf(MaterialTheme.colors.green4, MaterialTheme.colors.gray9)
+            )
+
+            Spacer(modifier = Modifier.height(52.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                DescriptionText(stringResource(id = R.string.feature_onboard_my_farm_address_description))
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Address(
+                    modifier,
+                    fullRoadAddr = state.fullRoadAddress,
+                    onFullRoadAddrChange = {},
+                    onSearchClick = {
+                        setLocationSearchVisible(true)
+                    })
+
+                KakaoMapScreen(
+                    modifier = modifier,
+                    latitude = state.latitude,
+                    longitude = state.longitude
+                )
+
+                Spacer(modifier = modifier.weight(0.3f))
+
+                NextButton(
+                    skipId = R.string.feature_onboard_my_farm_skip_input,
+                    nextId = R.string.feature_onboard_my_farm_next,
+                    onNextClick = {
+                        val fullRoadAddress = state.fullRoadAddress
+                        val bCode = state.bCode
+                        val latitude = state.latitude ?: 0.0
+                        val longitude = state.longitude ?: 0.0
+
+                        Timber.d("fullRoadAddress: $fullRoadAddress, bCode: $bCode, latitude: $latitude, longitude: $longitude")
+                        navController.navigate(
+                            "SelectCropScreen/$fullRoadAddress/$bCode/$latitude/$longitude"
+                        )
+                    },
+                    onSkipClick = {
+                        val fullRoadAddress = state.fullRoadAddress
+                        val bCode = state.bCode
+                        val latitude = state.latitude ?: 0.0
+                        val longitude = state.longitude ?: 0.0
+
+                        navController.navigate(
+                            "SelectCropScreen/$fullRoadAddress/$bCode/$latitude/$longitude"
+                        )
+                    }
+                )
+            }
         }
     }
 
@@ -195,27 +225,35 @@ private fun Address(
                 onValueChange = {
                     onFullRoadAddrChange(it)
                 },
-                modifier = modifier.weight(3f),
+                modifier = Modifier
+                    .fillMaxWidth(0.75f)
+                    .background(
+                        color = MaterialTheme.colors.gray10,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 12.dp
+                    ),
                 placeholder = stringResource(id = R.string.feature_onboard_my_farm_address_placeholder)
             )
-            Button(
-                onClick = onSearchClick,
-                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
-                shape = RoundedCornerShape(12.dp),
+            TextButton(
+                modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent, contentColor = lightColors.secondary
+                    containerColor = MaterialTheme.colors.white,
+                    contentColor = MaterialTheme.colors.gray1
                 ),
-                modifier = modifier
-                    .padding(start = 8.dp)
-                    .border(1.dp, lightColors.secondary, RoundedCornerShape(12.dp))
-                    .weight(1f)
-                    .height(35.dp)
-
+                shape = RoundedCornerShape(12.dp),
+                onClick = onSearchClick,
+                contentPadding = PaddingValues(
+                    vertical = 4.dp,
+                    horizontal = 12.dp
+                )
             ) {
                 Text(
                     stringResource(id = R.string.feature_onboard_my_farm_address_find),
                     style = MaterialTheme.typo.body1,
-                    color = MaterialTheme.colors.secondary
+                    color = MaterialTheme.colors.primary
                 )
             }
         }
@@ -392,12 +430,6 @@ private fun CustomTextField(
                     }
                     innerTextField()
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(Color.Gray)
-                )
             }
         })
 }

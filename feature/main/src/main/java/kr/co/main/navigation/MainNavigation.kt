@@ -1,6 +1,5 @@
 package kr.co.main.navigation
 
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
@@ -19,8 +18,6 @@ import kr.co.main.calendar.screen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.screen.calendarScreen.CalendarRoute
 import kr.co.main.calendar.screen.searchDiaryScreen.SearchDiaryRoute
 import kr.co.main.community.CommunityRoute
-import kr.co.main.community.CommunityViewModel
-import kr.co.main.community.SharingData
 import kr.co.main.community.detail.BulletinDetailRoute
 import kr.co.main.community.writing.BulletinWritingRoute
 import kr.co.main.home.HomeRoute
@@ -29,8 +26,8 @@ import kr.co.main.my.MyPageRoute
 import kr.co.main.my.community.bookmark.MyPageBookmarkRoute
 import kr.co.main.my.community.written.MyPageWriteRoute
 import kr.co.main.my.profile.MyPageProfileEditRoute
-import kr.co.main.my.setting.crop.MyPageCropSelectRoute
 import kr.co.main.my.setting.MyPageSettingRoute
+import kr.co.main.my.setting.crop.MyPageCropSelectRoute
 import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
 import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
@@ -150,7 +147,9 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.COMMUNITY.route
                 ) {
                     CommunityRoute(
-                        navigateToWriting = { navController.navigate(CommunityRoute.WRITING_ROUTE) },
+                        navigateToWriting = { crop, category ->
+                            navController.navigate("${CommunityRoute.WRITING_ROUTE}?crop=${crop.ordinal}&category=${category.ordinal}")
+                        },
                         navigateToNotification = {},
                         navigateToBulletinDetail = { id ->
                             navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$id")
@@ -277,11 +276,20 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = CommunityRoute.WRITING_ROUTE
+        route = "${CommunityRoute.WRITING_ROUTE}?crop={crop}&category={category}",
+        arguments = listOf(
+            navArgument("crop") {
+                type = NavType.StringType
+                nullable = true
+            },
+            navArgument("category") {
+                type = NavType.StringType
+                nullable = true
+            },
+        ),
     ) {
         BulletinWritingRoute(
             popBackStack = navController::popBackStack,
-            sharingData = hiltViewModel<CommunityViewModel>(it) as SharingData,
         )
     }
 
@@ -291,8 +299,8 @@ fun NavGraphBuilder.mainNavGraph(
             navArgument("id") {
                 type = NavType.LongType
                 nullable = false
-            }
-        )
+            },
+        ),
     ) {
         BulletinDetailRoute(
             popBackStack = navController::popBackStack,
