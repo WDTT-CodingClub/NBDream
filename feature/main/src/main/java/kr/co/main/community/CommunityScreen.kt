@@ -127,6 +127,7 @@ internal fun CommunityScreen(
                     onBookMarkClick = { event.bookmarkBulletin(bulletin.bulletinId) },
                 )
             }
+            item { /* 최하단 여백용 */ }
         }
     }
 }
