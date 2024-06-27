@@ -364,7 +364,7 @@ private fun ImageViewPager(
                 modifier = Modifier.align(Alignment.CenterStart),
             )
         }
-        if (pagerState.currentPage != pagerState.pageCount - 1) {
+        if (pagerState.currentPage < pagerState.pageCount - 1) {
             PagerArrowBox(
                 true,
                 modifier = Modifier.align(Alignment.CenterEnd),
