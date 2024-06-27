@@ -33,7 +33,6 @@ internal class MyPageCropSelectViewModel @Inject constructor(
     fun onConfirmClick() {
         viewModelScopeEH.launch {
             UserEntity(
-                name = currentState.name,
                 crops = currentState.crops
             ).apply {
                 registerUserUseCase(this)
@@ -57,7 +56,6 @@ internal class MyPageCropSelectViewModel @Inject constructor(
     }
 
     data class State(
-        val name: String = "",
         val crops: List<String> = emptyList()
     ): BaseViewModel.State
 

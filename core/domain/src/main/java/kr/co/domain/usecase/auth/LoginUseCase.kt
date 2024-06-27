@@ -11,11 +11,11 @@ import javax.inject.Singleton
 @Singleton
 class LoginUseCase @Inject constructor(
     private val authRepository: AuthRepository,
-) : SuspendUseCase<LoginUseCase.Params, Unit>() {
-    override suspend fun build(params: Params?) {
+) : SuspendUseCase<LoginUseCase.Params, Int>() {
+    override suspend fun build(params: Params?): Int {
         checkNotNull(params)
 
-        authRepository.login(params.type, params.token)
+        return authRepository.login(params.type, params.token)
     }
 
     data class Params(

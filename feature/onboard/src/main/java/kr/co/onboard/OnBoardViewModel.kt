@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import kr.co.domain.entity.type.AuthType
 import kr.co.domain.proivder.SocialLoginProvider
 import kr.co.domain.usecase.auth.LoginUseCase
+import kr.co.domain.usecase.user.SaveUserLocalUseCase
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
 import javax.inject.Inject
@@ -20,6 +21,7 @@ internal class OnBoardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val socialLoginProvider: SocialLoginProvider,
     private val loginUseCase: LoginUseCase,
+    private val saveUserLocalUseCase: SaveUserLocalUseCase,
 ) : BaseViewModel<OnBoardViewModel.State>(savedStateHandle) {
 
     private val _showAddressScreen = MutableSharedFlow<Unit>()
@@ -28,12 +30,19 @@ internal class OnBoardViewModel @Inject constructor(
 
     fun onSocialLoginClick(authType: AuthType) {
         viewModelScopeEH.launch {
-            socialLoginProvider.login(authType).also {
+            socialLoginProvider.login(authType).let {
                 loginUseCase(LoginUseCase.Params(it.type, it.token))
-            }
-        }.invokeOnCompletion {
-            viewModelScopeEH.launch {
-                _showAddressScreen.emit(Unit)
+                    .run {
+                        when (this) {
+                            200 -> {
+                                saveUserLocalUseCase()
+                            }
+
+                            201 -> {
+                                _showAddressScreen.emit(Unit)
+                            }
+                        }
+                    }
             }
         }
     }

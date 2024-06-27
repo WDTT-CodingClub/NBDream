@@ -26,6 +26,7 @@ internal val Project.libs get() = the<LibrariesForLibs>()
 fun Project.App(){
     project.dependencies {
         implementations(
+            libs.androidx.core.splashscreen,
             libs.compose.activity,
             libs.compose.lifecycle.runtime,
             libs.compose.navigation,
