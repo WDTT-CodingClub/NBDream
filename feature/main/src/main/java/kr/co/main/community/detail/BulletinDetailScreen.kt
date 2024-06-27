@@ -25,7 +25,6 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +52,7 @@ import kr.co.main.R
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamBottomSheetWithTextButtons
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.DreamDialog
@@ -82,7 +82,6 @@ internal fun BulletinDetailScreen(
     state: BulletinDetailViewModel.State = BulletinDetailViewModel.State(),
     event: BulletinDetailEvent = BulletinDetailEvent.dummy,
     popBackStack: () -> Unit = {},
-    id: Long = 0L,
 ) {
     Scaffold(
         modifier = modifier,
@@ -106,6 +105,7 @@ internal fun BulletinDetailScreen(
                         Icon(
                             painter = painterResource(id = iconId),
                             contentDescription = "북마크 아이콘",
+                            modifier = Modifier.size(32.dp),
                         )
                     }
                 },
@@ -129,11 +129,17 @@ internal fun BulletinDetailScreen(
         Timber.d(state.currentDetailBulletin.content)
 
         Column(
-            modifier = Modifier.scaffoldBackground(PaddingValues(top = paddingValues.calculateTopPadding())),
+            modifier = Modifier.scaffoldBackground(
+                scaffoldPadding = PaddingValues(top = paddingValues.calculateTopPadding()),
+                padding = PaddingValues(horizontal = 24.dp),
+            ),
         ) {
             LazyColumn(
                 modifier = Modifier.weight(1f),
             ) {
+                item {
+                    Spacer(modifier = Modifier.height(52.dp))
+                }
                 item {
                     Row {
                         AsyncImage(
@@ -145,9 +151,19 @@ internal fun BulletinDetailScreen(
                                 .clip(CircleShape),
                             placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
                         )
+                        Spacer(modifier = Modifier.width(12.dp))
                         Column {
-                            Text(state.currentDetailBulletin.nickname)
-                            Text(state.currentDetailBulletin.createdTime.toString())
+                            Text(
+                                state.currentDetailBulletin.nickname,
+                                color = MaterialTheme.colors.gray1,
+                                style = MaterialTheme.typo.body1,
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                state.currentDetailBulletin.createdTime.toString(),
+                                color = MaterialTheme.colors.gray5,
+                                style = MaterialTheme.typo.body2,
+                            )
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         IconButton(onClick = {
@@ -164,13 +180,19 @@ internal fun BulletinDetailScreen(
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
                                 contentDescription = "글 MoreVert",
+                                tint = MaterialTheme.colors.gray5,
                             )
                         }
                     }
                 }
                 item {
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+                item {
                     Text(
                         state.currentDetailBulletin.content,
+                        color = MaterialTheme.colors.black,
+                        style = MaterialTheme.typo.body1,
                     )
                 }
                 item { Spacer(modifier = Modifier.height(12.dp)) }
@@ -195,11 +217,17 @@ internal fun BulletinDetailScreen(
                 item { Spacer(modifier = Modifier.height(40.dp)) }
                 item {
                     Row {
-                        Text("댓글 ${state.currentDetailBulletin.comments.size}개")
-
-                        // TODO: 북마크 개수 표시 미정
-                        Spacer(modifier = Modifier.width(24.dp))
-                        Text("북마크 ${state.currentDetailBulletin.bookmarkedCount}개")
+                        Text(
+                            "댓글 ${state.currentDetailBulletin.comments.size}개",
+                            color = MaterialTheme.colors.gray1,
+                            style = MaterialTheme.typo.h4,
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            "북마크 ${state.currentDetailBulletin.bookmarkedCount}개",
+                            color = MaterialTheme.colors.gray1,
+                            style = MaterialTheme.typo.h4,
+                        )
 
 //                        Card {
 //                            Row {
@@ -213,10 +241,10 @@ internal fun BulletinDetailScreen(
                     }
                 }
                 item {
-                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
                 items(state.currentDetailBulletin.comments) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     CommentItem(
                         comment = it,
                         isAuthor = state.currentDetailBulletin.authorId == it.memberId,
@@ -256,12 +284,12 @@ internal fun BulletinDetailScreen(
                 )
                 TextField(
                     value = state.commentWritingInput,
-                    onValueChange = event::onCommentWritingInput
+                    onValueChange = event::onCommentWritingInput,
                 )
                 IconButton(onClick = event::onPostCommentClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Send,
-                        contentDescription = "보내기 아이콘"
+                        contentDescription = "보내기 아이콘",
                     )
                 }
             }
@@ -322,27 +350,43 @@ private fun CommentItem(
                 .clip(CircleShape),
             placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
         )
+        Spacer(modifier = Modifier.width(16.dp))
         Column {
             Row {
-                Text(comment.nickname)
+                Text(
+                    comment.nickname,
+                    color = MaterialTheme.colors.gray1,
+                    style = MaterialTheme.typo.body1,
+                )
                 if (isAuthor) {
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = "작성자",
-                        fontSize = 12.sp,
                         color = MaterialTheme.colors.primary,
+                        style = MaterialTheme.typo.body2,
                     )
                 }
             }
-            Text(comment.content)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                comment.content,
+                color = MaterialTheme.colors.gray1,
+                style = MaterialTheme.typo.body1,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
             // TODO: 몇 분 전 형태 표시
-            Text(comment.lastModifiedTime)
+            Text(
+                comment.lastModifiedTime,
+                color = MaterialTheme.colors.gray5,
+                style = MaterialTheme.typo.body2,
+            )
         }
         Spacer(modifier = Modifier.weight(1f))
         IconButton(onClick = onMoreVertClick) {
             Icon(
                 painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_more_vert_24),
                 contentDescription = "더보기",
+                tint = MaterialTheme.colors.gray5,
             )
         }
     }
