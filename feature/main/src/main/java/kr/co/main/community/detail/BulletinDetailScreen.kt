@@ -333,7 +333,7 @@ private fun ImageViewPager(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(MaterialTheme.shapes.medium),
-                placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.place_holder_1),  // 테스트용
+//                placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.place_holder_1),  // 테스트용
 //            error = painterResource(id = kr.co.nbdream.core.ui.R.drawable.place_holder_1),  // 왜 로딩이 되기 전에 먼저 뜨는지 모르겠다...
             )
         }
