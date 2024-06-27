@@ -19,15 +19,9 @@ internal class WelcomeViewModel @Inject constructor(
     saveStateHandle: SavedStateHandle,
     private val registerInfoUseCase: RegisterInfoUseCase,
     private val saveUserLocalUseCase: SaveUserLocalUseCase,
-    ) : BaseViewModel<WelcomeViewModel.State>(saveStateHandle) {
-    private val _complete: MutableSharedFlow<Unit> = MutableSharedFlow()
-    val complete = _complete.asSharedFlow()
-    fun onClickNext() = loadingScope {
-        saveUserLocalUseCase.invoke()
-    }
+) : BaseViewModel<WelcomeViewModel.State>(saveStateHandle) {
 
     fun onClickConfirm() = loadingScope {
-        val currentState = state.value
         UserEntity(
             address = currentState.address,
             bjdCode = currentState.bCode,
@@ -38,11 +32,10 @@ internal class WelcomeViewModel @Inject constructor(
             registerInfoUseCase(this)
         }
     }.invokeOnCompletion {
-        if (it == null) {
-            viewModelScope.launch {
-                saveUserLocalUseCase.invoke()
+        if (it == null)
+            viewModelScopeEH.launch {
+                saveUserLocalUseCase()
             }
-        }
     }
 
     fun setAddressInfo(
@@ -50,7 +43,7 @@ internal class WelcomeViewModel @Inject constructor(
         bCode: String,
         latitude: Float,
         longitude: Float,
-        crops: List<String>
+        crops: List<String>,
     ) = updateState {
         copy(
             address = fullRoadAddress,
