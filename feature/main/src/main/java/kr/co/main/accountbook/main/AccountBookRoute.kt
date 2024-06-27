@@ -558,6 +558,19 @@ private fun GraphCategoryItem(
     percent: String,
     color: Color
 ) {
+    if (category.length < 4) {
+        GraphCategoryRowItem(category, percent, color)
+    } else {
+        GraphCategoryColumnItem(category, percent, color)
+    }
+}
+
+@Composable
+private fun GraphCategoryColumnItem(
+    category: String,
+    percent: String,
+    color: Color
+) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
@@ -581,7 +594,7 @@ private fun GraphCategoryItem(
             style = MaterialTheme.typo.body1,
             color = MaterialTheme.colors.gray5,
             maxLines = 1,
-            modifier = Modifier.padding(start = Paddings.xxlarge)
+            modifier = Modifier.padding(start = Paddings.xxlarge, top = Paddings.medium)
         )
     }
 }
