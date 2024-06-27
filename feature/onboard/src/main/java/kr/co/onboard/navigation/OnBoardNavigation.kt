@@ -34,10 +34,8 @@ fun NavGraphBuilder.onboardNavGraph(
         route = ADDRESS_ROUTE
     ) {
         InputAddressScreen(
+            popBackStack = navController::popBackStack,
             modifier = Modifier,
-//            navigateToCrop = {
-//                navController.navigate(CROP_ROUTE)
-//            }
             navController = navController
         )
     }
@@ -68,10 +66,8 @@ fun NavGraphBuilder.onboardNavGraph(
         Timber.d("fullRoadAddress: $fullRoadAddress, bCode: $bCode, latitude: $latitude, longitude: $longitude")
 
         SelectCropScreen(
-            navController = navController,
-            navigateToWelcome = {
-                navController.navigate(WELCOME_ROUTE)
-            }
+            popBackStack = navController::popBackStack,
+            navController = navController
         )
     }
 
