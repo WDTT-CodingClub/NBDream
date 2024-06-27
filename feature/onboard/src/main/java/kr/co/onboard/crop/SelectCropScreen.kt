@@ -3,7 +3,6 @@ package kr.co.onboard.crop
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +48,7 @@ import kr.co.nbdream.core.ui.R
 import kr.co.onboard.address.DynamicStepProgressBars
 import kr.co.onboard.crop.model.CropItem
 import kr.co.onboard.crop.model.toKoreanName
+import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Apple
@@ -157,17 +156,14 @@ internal fun SelectCropScreen(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center,
-                                modifier = Modifier.pointerInput(Unit){
-                                    detectTapGestures(
-                                        onTap = {
-                                            if (isSelected)
-                                                selectedCropNames.remove(crop.value)
-                                            else
-                                                selectedCropNames.add(crop.value)
-                                            onCropSelected(crop.value)
-                                        }
-                                    )
-                                }
+                                modifier = Modifier
+                                    .noRippleClickable {
+                                        if (isSelected)
+                                            selectedCropNames.remove(crop.value)
+                                        else
+                                            selectedCropNames.add(crop.value)
+                                        onCropSelected(crop.value)
+                                    }
                             ) {
                                 Box(
                                     modifier = Modifier
@@ -215,6 +211,23 @@ internal fun SelectCropScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun StepText(
+    text: String,
+    modifier: Modifier
+) {
+    Box(
+        modifier.fillMaxWidth(),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Text(
+            text,
+            color = ColorSet.Dream.lightColors.grey6,
+            style = MaterialTheme.typo.labelL // 피그마에 명시된 폰트가 없어서 임시로 제일 작고 얇은 폰트 적용
+        )
     }
 }
 
@@ -341,6 +354,5 @@ private enum class Crops(
         value = "토마토",
         icon = DreamIcon.Tomato
     )
-    ;
 
 }
