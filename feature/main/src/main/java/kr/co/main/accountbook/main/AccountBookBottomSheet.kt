@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -47,20 +45,19 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import dreamicon.Calendar
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.model.DatePickerType
 import kr.co.main.accountbook.model.DateRangeOption
 import kr.co.main.accountbook.model.getDisplay
-import kr.co.main.accountbook.model.toCategoryEnum
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.DatePicker
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -69,11 +66,12 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountBookCategoryBottomSheet(
-    categories: List<String>,
-    onSelectedListener: (String?) -> Unit,
+    categories: List<AccountBookEntity.Category?>? = null,
+    onSelectedListener: (AccountBookEntity.Category?) -> Unit,
     dismissBottomSheet: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState()
+    val items = categories ?: AccountBookEntity.Category.entries
 
     ModalBottomSheet(
         onDismissRequest = dismissBottomSheet,
@@ -86,31 +84,43 @@ internal fun AccountBookCategoryBottomSheet(
         Column(
             modifier = Modifier
                 .background(color = MaterialTheme.colors.white)
-                .padding(horizontal = Paddings.xlarge)
+                .padding(horizontal = Paddings.xlarge, vertical = Paddings.xlarge)
                 .wrapContentHeight(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "카테고리를 선택하세요",
-                fontSize = 18.sp,
+                text = "카테고리",
                 style = MaterialTheme.typo.h4,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(bottom = Paddings.large),
                 color = MaterialTheme.colors.gray1
             )
             Spacer(modifier = Modifier.height(8.dp))
-            categories.forEach { category ->
+            if (categories != null) {
                 Text(
-                    text = category,
+                    text = "전체",
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            val selectedCategory = if (category == "전체") null else category.toCategoryEnum()?.name
-                            onSelectedListener(selectedCategory)
+                            onSelectedListener(null)
                             dismissBottomSheet()
                         }
-                        .padding(vertical = Paddings.medium),
+                        .padding(vertical = Paddings.large),
+                    textAlign = TextAlign.Start,
+                    color = MaterialTheme.colors.black
+                )
+            }
+            items.forEach { category ->
+                Text(
+                    text = category.getDisplay(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onSelectedListener(category)
+                            dismissBottomSheet()
+                        }
+                        .padding(vertical = Paddings.large),
                     textAlign = TextAlign.Start,
                     color = MaterialTheme.colors.black
                 )
@@ -314,7 +324,7 @@ private fun DateRow(
         )
         Spacer(modifier = Modifier.weight(0.1f))
         Icon(
-            imageVector = Icons.Default.DateRange,
+            imageVector = DreamIcon.DatePicker,
             contentDescription = null,
             tint = MaterialTheme.colors.gray4,
             modifier = Modifier.padding(end = Paddings.medium)

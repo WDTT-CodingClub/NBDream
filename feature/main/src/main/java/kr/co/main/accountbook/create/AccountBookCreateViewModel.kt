@@ -87,7 +87,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
     }
 
     private fun updateButtonText() {
-        updateState { copy(buttonText = if (_entryType == EntryType.UPDATE) "수정" else "등록") }
+        updateState { copy(contentTitle = if (_entryType == EntryType.UPDATE) "장부 편집하기" else "장부 작성하기") }
     }
 
     fun deleteImage(url: String) =
@@ -209,7 +209,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
         ).format(Date()),
         val imageUrls: List<String> = listOf(),
         val newImageUrls: List<String> = listOf(),
-        val buttonText: String = "등록"
+        val contentTitle: String = ""
     ) : BaseViewModel.State
 
     private companion object {

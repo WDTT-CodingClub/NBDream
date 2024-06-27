@@ -35,7 +35,6 @@ import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
 import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
-import kr.co.main.my.setting.verify.MyPageSettingDeleteSocialVerifyRoute
 import kr.co.main.notification.NotificationRoute
 import timber.log.Timber
 
@@ -243,15 +242,11 @@ fun NavGraphBuilder.mainNavGraph(
         route = "${AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE}/{id}?entryType={entryType}"
     ) {
         AccountBookCreateRoute(
-            popBackStack = {
-                navController.previousBackStackEntry?.savedStateHandle?.set("reinitialize", true)
-            },
+            popBackStack = navController::popBackStack,
             navigationToAccountBook = {},
             navigationToContent = { id ->
+                navController.popBackStack()
                 navController.navigate("${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/$id") {
-                    popUpTo("${AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE}/{id}?entryType={entryType}") {
-                        inclusive = true
-                    }
                     launchSingleTop = true
                 }
             }
@@ -263,27 +258,23 @@ fun NavGraphBuilder.mainNavGraph(
     ) { backStackEntry ->
         val idString = backStackEntry.arguments?.getString("id")
         val id = idString?.toLongOrNull()
-        if (id != null) {
-            AccountBookContentRoute(
-                popBackStack = navController::popBackStack,
-                navigationToUpdate = {
-                    navController.navigate(
-                        "${AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE}/$id?entryType=${EntryType.UPDATE.name}"
-                    ) {
-                        launchSingleTop = true
-                    }
-                },
-                navigationTopAccountBook = {
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "reinitialize",
-                        true
-                    )
-                    navController.popBackStack()
+        AccountBookContentRoute(
+            popBackStack = navController::popBackStack,
+            navigationToUpdate = {
+                navController.navigate(
+                    "${AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE}/$id?entryType=${EntryType.UPDATE.name}"
+                ) {
+                    launchSingleTop = true
                 }
-            )
-        } else {
-            Timber.e("Invalid id")
-        }
+            },
+            navigationTopAccountBook = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    "reinitialize",
+                    true
+                )
+                navController.popBackStack()
+            }
+        )
     }
 
     composable(

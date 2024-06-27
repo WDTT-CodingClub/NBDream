@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.main.accountbook.model.DateRangeOption
+import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
 import java.time.LocalDate
@@ -31,7 +32,7 @@ internal class AccountBookViewModel @Inject constructor(
         loadingScope {
             val (totalEntity, newAccountBooks) = repository.getAccountBooks(
                 lastContentsId = lastContentsId,
-                category = category ?: currentState.category,
+                category = category ?: currentState.category?.name ?: "",
                 sort = sort?.name ?: currentState.sort.name,
                 start = currentState.start,
                 end = currentState.end,
@@ -89,12 +90,12 @@ internal class AccountBookViewModel @Inject constructor(
     }
 
     fun updatePage(lastContentsId: Long) {
+        if (lastContentsId == currentState.lastContentsId) return
         updateState { copy(lastContentsId = lastContentsId) }
         fetchAccountBooks(lastContentsId)
-        Timber.d("$lastContentsId")
     }
 
-    fun updateCategory(newCategory: String) {
+    fun updateCategory(newCategory: AccountBookEntity.Category?) {
         updateState { copy(category = newCategory) }
         fetchAccountBooks()
     }
@@ -127,7 +128,7 @@ internal class AccountBookViewModel @Inject constructor(
 
     data class State(
         val lastContentsId: Long? = null,
-        val category: String = "",
+        val category: AccountBookEntity.Category? = null,
         val sort: AccountBookEntity.SortOrder = AccountBookEntity.SortOrder.EARLIEST,
         val start: String = LocalDate.now().withDayOfMonth(1).toString(),
         val end: String = LocalDate.now().toString(),

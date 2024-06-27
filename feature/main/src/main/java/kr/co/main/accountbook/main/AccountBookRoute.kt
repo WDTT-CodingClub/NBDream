@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
@@ -44,6 +43,7 @@ import kr.co.main.accountbook.model.getColorList
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Arrowright
+import kr.co.ui.icon.dreamicon.DatePicker
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
@@ -100,7 +100,7 @@ internal fun AccountBookScreen(
     onUpdateDateRangeOption: (DateRangeOption) -> Unit = {},
     onUpdateDateRange: (String, String) -> Unit = { _, _ -> },
     onUpdateGraphTransactionType: (AccountBookEntity.TransactionType) -> Unit = {},
-    onUpdateCategory: (String) -> Unit = {},
+    onUpdateCategory: (AccountBookEntity.Category?) -> Unit = {},
     onUpdateSortOrder: (AccountBookEntity.SortOrder) -> Unit = {},
     onUpdateTransactionType: (AccountBookEntity.TransactionType?) -> Unit = {},
     onUpdatePage: (Long) -> Unit = {},
@@ -271,7 +271,7 @@ internal fun AccountBookScreen(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(16.dp),
+                                        .padding(Paddings.xlarge),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     CircularProgressIndicator(
@@ -314,7 +314,7 @@ private fun CalendarSection(
             color = MaterialTheme.colors.gray1
         )
         Icon(
-            imageVector = Icons.Filled.DateRange,
+            imageVector = DreamIcon.DatePicker,
             contentDescription = null,
             tint = MaterialTheme.colors.gray4
         )
@@ -620,10 +620,10 @@ fun AccountBookOptionButton(
 @Composable
 private fun SelectorSection(
     transactionType: AccountBookEntity.TransactionType?,
-    category: String,
+    category: AccountBookEntity.Category?,
     categories: List<AccountBookEntity.Category?>?,
     sortOrder: AccountBookEntity.SortOrder,
-    onCategoryChange: (String) -> Unit,
+    onCategoryChange: (AccountBookEntity.Category??) -> Unit,
     onSortOrderChange: (AccountBookEntity.SortOrder) -> Unit,
     onTransactionChange: (AccountBookEntity.TransactionType?) -> Unit
 ) {
@@ -636,9 +636,9 @@ private fun SelectorSection(
 
 @Composable
 private fun CategorySelector(
-    category: String?,
+    category: AccountBookEntity.Category?,
     categories: List<AccountBookEntity.Category?>?,
-    onCategoryChange: (String) -> Unit
+    onCategoryChange: (AccountBookEntity.Category?) -> Unit
 ) {
     var bottomSheetState by remember { mutableStateOf(false) }
 
@@ -646,7 +646,6 @@ private fun CategorySelector(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
-            .width(120.dp)
             .height(32.dp)
             .border(
                 width = 1.dp,
@@ -656,15 +655,16 @@ private fun CategorySelector(
             .clickable { bottomSheetState = true }
     ) {
         Text(
-            text = "카테고리",
-            modifier = Modifier.padding(end = Paddings.xlarge),
+            text = category?.getDisplay() ?: "전체",
             style = MaterialTheme.typo.body1,
-            color = MaterialTheme.colors.gray2
+            color = MaterialTheme.colors.gray2,
+            modifier = Modifier.padding(start = Paddings.medium, end = Paddings.large),
         )
         Icon(
             imageVector = Icons.Default.ArrowDropDown,
             contentDescription = null,
-            tint = MaterialTheme.colors.gray1
+            tint = MaterialTheme.colors.gray1,
+            modifier = Modifier.padding(end = Paddings.medium),
         )
     }
 
@@ -673,7 +673,7 @@ private fun CategorySelector(
             AccountBookCategoryBottomSheet(
                 categories = categories,
                 onSelectedListener = { selectedCategory ->
-                    onCategoryChange(selectedCategory.name)
+                    onCategoryChange(selectedCategory)
                     bottomSheetState = false
                 },
                 dismissBottomSheet = { bottomSheetState = false }
@@ -722,69 +722,71 @@ private fun AccountBookItem(
     accountBook: AccountBookViewModel.State.AccountBook,
     onItemClicked: (Long) -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                vertical = Paddings.xlarge,
-                horizontal = Paddings.extra
-            )
-            .clickable {
-                onItemClicked(accountBook.id)
-            }
-    ) {
-        Column(modifier = Modifier.weight(2f)) {
-            Text(
-                text = "${accountBook.month ?: 0}월 ${accountBook.day ?: 0}일",
-                style = MaterialTheme.typo.body2,
-                color = MaterialTheme.colors.gray1
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = accountBook.dayName ?: "",
-                style = MaterialTheme.typo.body2,
-                color = MaterialTheme.colors.gray1
-            )
-        }
-        Column(modifier = Modifier.weight(3f)) {
-            if (!accountBook.title.isNullOrBlank()) {
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    vertical = Paddings.xlarge,
+                    horizontal = Paddings.extra
+                )
+                .clickable {
+                    onItemClicked(accountBook.id)
+                }
+        ) {
+            Column(modifier = Modifier.weight(2f)) {
                 Text(
-                    text = accountBook.title,
-                    style = MaterialTheme.typo.body1,
+                    text = "${accountBook.month ?: 0}월 ${accountBook.day ?: 0}일",
+                    style = MaterialTheme.typo.body2,
                     color = MaterialTheme.colors.gray1
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = accountBook.dayName ?: "",
+                    style = MaterialTheme.typo.body2,
+                    color = MaterialTheme.colors.gray1
+                )
             }
-            Text(
-                text = "${formatNumber(accountBook.amount ?: 0)}원",
-                style = MaterialTheme.typo.body1,
-                color = MaterialTheme.colors.gray1
-            )
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = accountBook.category.getDisplay(),
-                style = MaterialTheme.typo.label,
-                color = MaterialTheme.colors.gray5,
-            )
-        }
+            Column(modifier = Modifier.weight(3f)) {
+                if (!accountBook.title.isNullOrBlank()) {
+                    Text(
+                        text = accountBook.title,
+                        style = MaterialTheme.typo.body1,
+                        color = MaterialTheme.colors.gray1
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+                Text(
+                    text = "${formatNumber(accountBook.amount ?: 0)}원",
+                    style = MaterialTheme.typo.body1,
+                    color = MaterialTheme.colors.gray1
+                )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = accountBook.category.getDisplay(),
+                    style = MaterialTheme.typo.label,
+                    color = MaterialTheme.colors.gray5,
+                )
+            }
 
-        Image(
-            painter = rememberAsyncImagePainter(accountBook.imageUrl?.first()),
-            contentDescription = null,
+            Image(
+                painter = rememberAsyncImagePainter(accountBook.imageUrl?.first()),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(56.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
+        HorizontalDivider(
             modifier = Modifier
-                .size(56.dp),
-            contentScale = ContentScale.Crop
+                .fillMaxWidth(),
+            thickness = 1.dp,
+            color = MaterialTheme.colors.gray8
         )
     }
-    HorizontalDivider(
-        modifier = Modifier
-            .fillMaxWidth(),
-        thickness = 1.dp,
-        color = MaterialTheme.colors.gray8
-    )
 }
 
 @Composable

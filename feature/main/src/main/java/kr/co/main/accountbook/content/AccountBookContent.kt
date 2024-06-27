@@ -99,7 +99,6 @@ internal fun AccountBookContentScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = Paddings.xlarge)
         ) {
             item {
                 DreamCenterTopAppBar(
@@ -157,14 +156,26 @@ internal fun AccountBookContentScreen(
 
             if (isLoading) {
                 items(5) {
-                    LoadingShimmerEffect {
-                        ShimmerGridItem(brush = it)
+                    Column(
+                        modifier = Modifier.padding(
+                            start = Paddings.xlarge,
+                            end = Paddings.xlarge,
+                            top = Paddings.extra
+                        )
+                    ) {
+                        LoadingShimmerEffect {
+                            ShimmerGridItem(brush = it)
+                        }
                     }
                 }
             } else {
                 item {
                     Column(
-                        modifier = Modifier.padding(top = Paddings.xextra)
+                        modifier = Modifier.padding(
+                            start = Paddings.xlarge,
+                            end = Paddings.xlarge,
+                            top = Paddings.extra
+                        )
                     ) {
                         Text(
                             text = state.transactionType.getTransactionType(),
@@ -189,7 +200,11 @@ internal fun AccountBookContentScreen(
                 item {
                     Row(
                         modifier = Modifier
-                            .padding(top = Paddings.xextra)
+                            .padding(
+                                start = Paddings.xlarge,
+                                end = Paddings.xlarge,
+                                top = Paddings.extra
+                            )
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -221,7 +236,11 @@ internal fun AccountBookContentScreen(
                 item {
                     Row(
                         modifier = Modifier
-                            .padding(top = Paddings.xextra)
+                            .padding(
+                                start = Paddings.xlarge,
+                                end = Paddings.xlarge,
+                                top = Paddings.extra
+                            )
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -241,7 +260,11 @@ internal fun AccountBookContentScreen(
                 item {
                     Row(
                         modifier = Modifier
-                            .padding(top = Paddings.xextra)
+                            .padding(
+                                start = Paddings.xlarge,
+                                end = Paddings.xlarge,
+                                top = Paddings.extra
+                            )
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -260,7 +283,11 @@ internal fun AccountBookContentScreen(
 
                 item {
                     Column(
-                        modifier = Modifier.padding(top = Paddings.xextra)
+                        modifier = Modifier.padding(
+                            start = Paddings.xlarge,
+                            end = Paddings.xlarge,
+                            top = Paddings.extra
+                        )
                     ) {
                         Text(
                             text = "사진",
