@@ -89,7 +89,7 @@ internal fun AccountBookCreateRoute(
 
     LaunchedEffect(Unit) {
         viewModel.complete.collect { complete ->
-            if (!complete) {
+            if (complete) {
                 when (viewModel.entryType) {
                     EntryType.CREATE -> navigationToAccountBook()
                     EntryType.UPDATE -> state.id?.let { id -> navigationToContent(id) }
