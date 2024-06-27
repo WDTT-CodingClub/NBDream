@@ -57,6 +57,7 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
 import kr.co.main.accountbook.main.AccountBookOptionButton
 import kr.co.main.accountbook.main.CircleProgress
+import kr.co.main.accountbook.model.AccountBookDialog
 import kr.co.main.accountbook.model.CustomDatePickerDialog
 import kr.co.main.accountbook.model.EntryType
 import kr.co.main.accountbook.model.formatNumber
@@ -84,14 +85,17 @@ internal fun AccountBookCreateRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.complete.collect { complete ->
-            if (complete) {
+            if (!complete) {
                 when (viewModel.entryType) {
                     EntryType.CREATE -> navigationToAccountBook()
                     EntryType.UPDATE -> state.id?.let { id -> navigationToContent(id) }
                 }
+            } else {
+                showErrorDialog = true
             }
         }
     }
@@ -110,6 +114,17 @@ internal fun AccountBookCreateRoute(
         onUpdateRegisterDateTime = { viewModel.updateRegisterDateTime(it) },
         onUpdateCategory = { viewModel.updateCategory(it) },
     )
+
+    if (showErrorDialog) {
+        AccountBookDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = "작성 실패",
+            message = "오류가 발생하여 작성을 완료할 수 없습니다.",
+            onConfirm = {
+                showErrorDialog = false
+            }
+        )
+    }
 }
 
 @Composable

@@ -25,7 +25,6 @@ internal class AccountBookContentViewModel @Inject constructor(
 
     init {
         fetchAccountBookById(id)
-        Timber.d("contentviewmodel = $id")
     }
 
     fun deleteAccountBookById() {

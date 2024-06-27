@@ -182,7 +182,11 @@ internal fun AccountBookScreen(
                                     bottomEnd = 0.dp
                                 )
                             )
-                            .padding(Paddings.extra)
+                            .padding(
+                                start = Paddings.extra,
+                                end = Paddings.extra,
+                                top = Paddings.extra
+                            )
                     ) {
                         Column(
                             modifier = Modifier.fillMaxWidth()
@@ -505,7 +509,7 @@ private fun GraphSection(
                                 color = MaterialTheme.colors.gray9,
                                 shape = RoundedCornerShape(8.dp)
                             )
-                            .padding(16.dp),
+                            .padding(Paddings.xlarge),
                         horizontalAlignment = Alignment.End
                     ) {
                         Text(

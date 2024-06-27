@@ -37,12 +37,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.main.accountbook.main.CircleProgress
+import kr.co.main.accountbook.model.AccountBookDialog
 import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.main.accountbook.model.getTransactionType
@@ -329,48 +329,12 @@ internal fun AccountBookContentScreen(
     }
 
     if (showDeleteDialog) {
-        AlertDialog(
+        AccountBookDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = {
-                Text(
-                    text = "삭제 확인",
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typo.h4
-                )
-            },
-            text = {
-                Text(
-                    text = "정말 삭제하시겠습니까?",
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typo.body1
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        onRemoveItem()
-                        showDeleteDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colors.black
-                    ),
-                    modifier = Modifier.widthIn(min = 72.dp)
-                ) {
-                    Text("네")
-                }
-            },
-            dismissButton = {
-                Button(
-                    onClick = { showDeleteDialog = false },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colors.black
-                    ),
-                    modifier = Modifier.widthIn(min = 72.dp)
-                ) {
-                    Text("아니오")
-                }
+            title = "삭제 확인",
+            message = "정말 삭제하시겠습니까?",
+            onConfirm = {
+                onRemoveItem()
             }
         )
     }
