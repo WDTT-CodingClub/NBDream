@@ -94,10 +94,11 @@ private fun CalendarScreen(
     event: CalendarScreenEvent,
     modifier: Modifier = Modifier,
 ) {
+    // TODO 일정/영농일지 추가 후 화면 새로고침
+
     val pagerState = rememberPagerState {
         CalendarTabType.entries.size
     }
-
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colors.gray9,

@@ -20,6 +20,7 @@
     <string name="feature_onboard_step_bar_second">2/2</string>
     <string name="feature_onboard_my_farm_address_description">내 농장의 주소지를 입력해주세요</string>
     <string name="feature_onboard_my_farm_address_placeholder">주소를 찾아주세요</string>
-    <string name="feature_onboard_my_farm_crops_description">재배 작물을 선택해주세요(중복 선택 가능)</string>
+    <string name="feature_onboard_my_farm_crops_first_description">재배 작물을 선택해주세요</string>
+    <string name="feature_onboard_my_farm_crops_second_description">(중복 선택 가능)</string>
 
 </resources>

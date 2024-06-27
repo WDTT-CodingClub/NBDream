@@ -15,6 +15,7 @@ import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.main.model.calendar.type.ScreenModeType
 import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
+import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -27,7 +28,7 @@ internal interface AddScheduleScreenEvent {
     fun onTitleInput(title: String)
     fun onStartDateSelect(startDate: LocalDate)
     fun onEndDateSelect(endDate: LocalDate)
-    fun onMemoSelect(memo: String)
+    fun onMemoInput(memo: String)
 }
 
 @HiltViewModel
@@ -70,19 +71,22 @@ internal class AddScheduleViewModel @Inject constructor(
                 updateState {
                     copy(calendarCrop = CropModel.create(CropModelType.ofValue(cropNameId)))
                 }
+                Timber.d("init) calendarCrop: ${currentState.calendarCrop?.type}")
             }
             get<Int>(CalendarNavGraph.ARG_SCREEN_MODE_ID)?.let { screenModeId ->
                 updateState {
                     copy(screenMode = ScreenModeType.ofValue(screenModeId))
                 }
+                Timber.d("init) screenMode: ${currentState.screenMode}")
             } ?: throw IllegalArgumentException("screen mode id is null")
             get<String>(CalendarNavGraph.ARG_SCHEDULE_ID)?.toLongOrNull()?.let { scheduleId ->
                 updateState {
                     copy(scheduleId = scheduleId)
                 }
-
+                Timber.d("init) scheduleId: ${currentState.scheduleId}")
                 viewModelScopeEH.launch {
                     getSchedule(GetScheduleDetailUseCase.Params(scheduleId)).let {
+                        Timber.d("init) schedule: $it")
                         updateState {
                             copy(
                                 scheduleType = ScheduleModelTypeMapper.toRight(it.type),
@@ -162,7 +166,7 @@ internal class AddScheduleViewModel @Inject constructor(
         updateState { copy(endDate = endDate) }
     }
 
-    override fun onMemoSelect(memo: String) {
+    override fun onMemoInput(memo: String) {
         updateState { copy(memo = memo) }
     }
 }

@@ -1,5 +1,6 @@
 package kr.co.main.calendar.common
 
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import kr.co.main.R
 import kr.co.main.model.calendar.type.ScreenModeType
@@ -30,12 +32,16 @@ internal fun AddScreenCenterTopAppBar(
     screenMode: ScreenModeType,
     @StringRes postModeTitleId: Int,
     @StringRes editModeTitleId: Int,
+    @StringRes actionHintId: Int,
     popBackStack: () -> Unit,
     onPostClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enableAction: Boolean = true
 ) {
+    val context = LocalContext.current
+
     DreamCenterTopAppBar(
         modifier = modifier,
         title = stringResource(
@@ -57,13 +63,11 @@ internal fun AddScreenCenterTopAppBar(
         actions = {
             when (screenMode) {
                 ScreenModeType.POST_MODE -> {
-                    Text(
-                        modifier = Modifier.clickable {
-                            onPostClick()
-                        },
-                        text = stringResource(id = R.string.feature_main_calendar_top_app_bar_post),
-                        style = MaterialTheme.typo.bodyM,
-                        color = MaterialTheme.colors.gray5
+                    TopAppBarActionText(
+                        actionTitleId = R.string.feature_main_calendar_top_app_bar_post,
+                        actionHintId = actionHintId,
+                        onClick = onPostClick,
+                        enableAction = enableAction
                     )
                 }
 
@@ -71,16 +75,11 @@ internal fun AddScreenCenterTopAppBar(
                     var expandDropDown by remember { mutableStateOf(false) }
 
                     Column {
-                        Text(
-                            modifier = Modifier.clickable {
-                                expandDropDown = true
-                            },
-                            text = stringResource(
-                                id =
-                                R.string.feature_main_calendar_top_app_bar_edit
-                            ),
-                            style = MaterialTheme.typo.bodyM,
-                            color = MaterialTheme.colors.gray5
+                        TopAppBarActionText(
+                            actionTitleId = R.string.feature_main_calendar_top_app_bar_edit,
+                            actionHintId = actionHintId,
+                            onClick = {expandDropDown = true},
+                            enableAction = enableAction
                         )
 
                         DropdownMenu(
@@ -100,6 +99,35 @@ internal fun AddScreenCenterTopAppBar(
                 }
             }
         }
+    )
+}
+
+@Composable
+private fun TopAppBarActionText(
+    @StringRes actionTitleId: Int,
+    @StringRes actionHintId: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enableAction: Boolean = true
+) {
+    val context = LocalContext.current
+    Text(
+        modifier = modifier.clickable {
+            if (enableAction) {
+                onClick()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(actionHintId),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        },
+        text = stringResource(id = actionTitleId),
+        style = MaterialTheme.typo.bodyM,
+        color =
+        if (enableAction) MaterialTheme.colors.primary
+        else MaterialTheme.colors.gray5
     )
 }
 

@@ -15,17 +15,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import kr.co.onboard.R
-import kr.co.onboard.login.Logo
 import kr.co.onboard.login.WelcomeLogo
 import kr.co.ui.theme.Paddings
-import kr.co.ui.theme.background
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.InputCompleteButton
-import timber.log.Timber
 
 @Composable
 internal fun WelcomeScreen(
@@ -52,8 +50,8 @@ internal fun WelcomeScreen(
         )
     }
     Scaffold(
+        containerColor = MaterialTheme.colors.white,
         modifier = modifier
-            .padding(Paddings.xlarge)
             .background(MaterialTheme.colors.white),
     ) { paddingValues ->
         Column(
@@ -74,6 +72,7 @@ internal fun WelcomeScreen(
                 WelcomeLogo()
             }
             InputCompleteButton(
+                modifier = Modifier.padding(Paddings.xlarge),
                 text = stringResource(id = R.string.feature_onboard_start),
                 onNextClick = {
                     viewModel.onClickNext()
@@ -90,15 +89,7 @@ fun WelcomeText(
 ) {
     Text(
         text = "반갑습니다\n말하는 감자님!",
-        style = MaterialTheme.typo.headerSB,
-        modifier = modifier.padding(Paddings.xlarge)
+        style = MaterialTheme.typo.displaySB,
+        modifier = modifier.padding(start = 48.dp, top = 80.dp)
     )
 }
-
-//@Composable
-//@Preview(showSystemUi = true)
-//private fun SelectCropScreenPreview() {
-//    NBDreamTheme {
-//        WelcomeScreen()
-//    }
-//}

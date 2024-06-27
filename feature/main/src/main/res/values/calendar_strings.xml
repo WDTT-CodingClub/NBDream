@@ -47,7 +47,7 @@
     <string name="feature_main_calendar_add_diary_input_image">사진 추가</string>
 
     <string name="feature_main_calendar_add_diary_input_hint_work_description">작업 내용을 입력해 주세요.</string>
-    <string name="feature_main_calendar_add_diary_input_hint_memo">메모를 입력해 주세요.</string>
+    <string name="feature_main_calendar_add_diary_input_hint_memo">일지를 입력해 주세요.</string>
 
 <!--add schedule screen-->
     <string name="feature_main_calendar_add_schedule_header_category">분류</string>
