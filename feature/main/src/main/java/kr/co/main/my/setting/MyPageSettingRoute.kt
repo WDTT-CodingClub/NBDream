@@ -59,10 +59,9 @@ internal fun MyPageSettingRoute(
 
     if (isModalVisible) {
         DreamDialog(
-            header = "로그아웃 하시겠어요?",
-            description = "언제든지 다시 로그인 하실 수 있어요.",
-            confirmText = "로그아웃",
-            dismissText = "다음에",
+            description = "로그아웃 하시겠습니까?",
+            confirmText = "확인",
+            dismissText = "취소",
             onConfirm = {
                 viewModel.onLogout()
                 setModalVisible(false)

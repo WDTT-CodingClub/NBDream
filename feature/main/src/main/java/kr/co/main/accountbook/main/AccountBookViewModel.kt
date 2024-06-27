@@ -7,7 +7,6 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.main.accountbook.model.DateRangeOption
 import kr.co.ui.base.BaseViewModel
-import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -18,20 +17,25 @@ internal class AccountBookViewModel @Inject constructor(
 ) : BaseViewModel<AccountBookViewModel.State>(
     savedStateHandle = savedStateHandle
 ) {
-
     init {
         fetchAccountBooks()
     }
 
-    private fun fetchAccountBooks(lastContentsId: Long? = null) {
+    fun fetchAccountBooks(
+        lastContentsId: Long? = null,
+        category: String? = null,
+        sort: AccountBookEntity.SortOrder? = null,
+        transactionType: AccountBookEntity.TransactionType? = null,
+    ) {
         loadingScope {
             val (totalEntity, newAccountBooks) = repository.getAccountBooks(
                 lastContentsId = lastContentsId,
-                category = currentState.category,
-                sort = currentState.sort.name,
+                category = category ?: currentState.category?.name ?: "",
+                sort = sort?.name ?: currentState.sort.name,
                 start = currentState.start,
                 end = currentState.end,
-                transactionType = currentState.transactionType?.name ?: ""
+                transactionType = transactionType?.name ?: (currentState.transactionType?.name
+                    ?: "")
             )
 
             val updatedAccountBooks = if (lastContentsId != null) {
@@ -84,12 +88,12 @@ internal class AccountBookViewModel @Inject constructor(
     }
 
     fun updatePage(lastContentsId: Long) {
+        if (lastContentsId == currentState.lastContentsId) return
         updateState { copy(lastContentsId = lastContentsId) }
         fetchAccountBooks(lastContentsId)
-        Timber.d("$lastContentsId")
     }
 
-    fun updateCategory(newCategory: String) {
+    fun updateCategory(newCategory: AccountBookEntity.Category?) {
         updateState { copy(category = newCategory) }
         fetchAccountBooks()
     }
@@ -122,7 +126,7 @@ internal class AccountBookViewModel @Inject constructor(
 
     data class State(
         val lastContentsId: Long? = null,
-        val category: String = "",
+        val category: AccountBookEntity.Category? = null,
         val sort: AccountBookEntity.SortOrder = AccountBookEntity.SortOrder.EARLIEST,
         val start: String = LocalDate.now().withDayOfMonth(1).toString(),
         val end: String = LocalDate.now().toString(),

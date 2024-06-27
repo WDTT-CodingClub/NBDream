@@ -8,10 +8,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
+import kr.co.domain.usecase.image.DeleteImageUseCase
 import kr.co.domain.usecase.image.UploadImageUseCase
-import kr.co.main.accountbook.main.formatNumber
 import kr.co.main.accountbook.model.DATE_FORMAT_PATTERN
 import kr.co.main.accountbook.model.EntryType
+import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.formatReceiveDateTime
 import kr.co.main.accountbook.model.formatSendDateTime
 import kr.co.ui.base.BaseViewModel
@@ -25,18 +26,27 @@ import javax.inject.Inject
 internal class AccountBookCreateViewModel @Inject constructor(
     private val accountBookRepository: AccountBookRepository,
     private val uploadImageUseCase: UploadImageUseCase,
+    private val deleteImageUseCase: DeleteImageUseCase,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<AccountBookCreateViewModel.State>(savedStateHandle) {
     private val id: Long? = savedStateHandle.get<String>("id")?.toLong()
-    private val entryType: EntryType = savedStateHandle.get<EntryType>("entryType") ?: EntryType.CREATE
+    private val _entryType: EntryType = savedStateHandle.get<String>("entryType")?.let {
+        when (it) {
+            EntryType.CREATE.name -> EntryType.CREATE
+            EntryType.UPDATE.name -> EntryType.UPDATE
+            else -> EntryType.CREATE
+        }
+    } ?: EntryType.CREATE
+    val entryType: EntryType get() = _entryType
 
-    private val _complete: MutableSharedFlow<Unit> = MutableSharedFlow()
+    private val _complete: MutableSharedFlow<Boolean> = MutableSharedFlow()
     val complete = _complete.asSharedFlow()
 
     init {
         id?.let {
             fetchAccountBookById(it)
         }
+        updateButtonText()
     }
 
     fun updateAmountText(newAmountText: String) {
@@ -68,13 +78,26 @@ internal class AccountBookCreateViewModel @Inject constructor(
         updateState { copy(registerDateTime = registerDateTime) }
     }
 
-    fun removeImageUrl(uri: String) {
-        updateState { copy(imageUrls = imageUrls - uri) }
+    private fun removeImageUrl(uri: String) {
+        updateState { copy(newImageUrls = newImageUrls - uri) }
     }
 
     private fun updateImageUrl(url: String) {
-        updateState { copy(imageUrls = imageUrls + url) }
+        updateState { copy(newImageUrls = newImageUrls + url) }
     }
+
+    private fun updateButtonText() {
+        updateState { copy(contentTitle = if (_entryType == EntryType.UPDATE) "장부 편집하기" else "장부 작성하기") }
+    }
+
+    fun deleteImage(url: String) =
+        loadingScope {
+            deleteImageUseCase(url)
+        }.invokeOnCompletion {
+            if (it == null) {
+                removeImageUrl(url)
+            }
+        }
 
     fun uploadImage(image: File) =
         loadingScope {
@@ -88,6 +111,14 @@ internal class AccountBookCreateViewModel @Inject constructor(
             }
         }
 
+    fun performAccountBook() =
+        if (entryType == EntryType.UPDATE) {
+            updateAccountBook()
+        } else {
+            createAccountBook()
+        }
+
+
     private fun updateAccountBook() = loadingScope {
         currentState.id?.let {
             accountBookRepository.updateAccountBook(
@@ -96,18 +127,32 @@ internal class AccountBookCreateViewModel @Inject constructor(
                 amount = currentState.amount ?: 0L,
                 category = currentState.category!!.name.lowercase(),
                 title = currentState.title ?: "",
-                registerDateTime = currentState.registerDateTime,
-                imageUrls = currentState.imageUrls
+                registerDateTime = currentState.registerDateTime.formatSendDateTime(),
+                imageUrls = getImageList()
             )
         }
-    }.invokeOnCompletion {
-        if (it == null) {
-            viewModelScopeEH.launch {
-                _complete.emit(Unit)
-            }
-        } else {
-            // TODO 작성 실패
+    }.invokeOnCompletion { throwable ->
+        viewModelScopeEH.launch {
+            _complete.emit(
+                throwable == null
+            )
         }
+    }
+
+    private fun getImageList(): List<String> {
+        val imageUrls = currentState.imageUrls
+        val newImageUrls = currentState.newImageUrls.toMutableList()
+
+        imageUrls.forEach { imageUrl ->
+            if (!newImageUrls.contains(imageUrl)) {
+                newImageUrls.add(imageUrl)
+            }
+        }
+
+        newImageUrls.removeAll { imageUrl ->
+            imageUrls.contains(imageUrl)
+        }
+        return newImageUrls
     }
 
     private fun fetchAccountBookById(id: Long) =
@@ -120,30 +165,30 @@ internal class AccountBookCreateViewModel @Inject constructor(
                     category = accountBookDetail.category,
                     transactionType = accountBookDetail.transactionType,
                     amount = accountBookDetail.amount ?: 0,
-                    registerDateTime = accountBookDetail.registerDateTime?.formatReceiveDateTime() ?: "",
+                    registerDateTime = accountBookDetail.registerDateTime?.formatReceiveDateTime()
+                        ?: "",
                     imageUrls = accountBookDetail.imageUrl,
+                    newImageUrls = accountBookDetail.imageUrl,
                     amountText = formatNumber(accountBookDetail.amount ?: 0)
                 )
             }
         }
 
 
-    fun createAccountBook() = loadingScope {
+    private fun createAccountBook() = loadingScope {
         accountBookRepository.createAccountBook(
             transactionType = currentState.transactionType!!.name.lowercase(),
             amount = currentState.amount ?: 0L,
             category = currentState.category!!.name.lowercase(),
             title = currentState.title ?: "",
             registerDateTime = currentState.registerDateTime.formatSendDateTime(),
-            imageUrls = currentState.imageUrls
+            imageUrls = getImageList()
         )
-    }.invokeOnCompletion {
-        if (it == null) {
-            viewModelScopeEH.launch {
-                _complete.emit(Unit)
-            }
-        } else {
-            // TODO 작성 실패
+    }.invokeOnCompletion { throwable ->
+        viewModelScopeEH.launch {
+            _complete.emit(
+                throwable == null
+            )
         }
     }
 
@@ -162,7 +207,9 @@ internal class AccountBookCreateViewModel @Inject constructor(
             DATE_FORMAT_PATTERN,
             Locale.getDefault()
         ).format(Date()),
-        val imageUrls: List<String> = listOf()
+        val imageUrls: List<String> = listOf(),
+        val newImageUrls: List<String> = listOf(),
+        val contentTitle: String = ""
     ) : BaseViewModel.State
 
     private companion object {

@@ -4,3 +4,7 @@ internal enum class EntryType {
     CREATE,
     UPDATE
 }
+
+internal enum class DatePickerType {
+    START, END
+}
