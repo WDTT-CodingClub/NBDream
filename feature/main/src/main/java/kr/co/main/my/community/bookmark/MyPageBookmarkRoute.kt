@@ -2,12 +2,15 @@
 
 package kr.co.main.my.community.bookmark
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,8 +18,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +33,7 @@ import kr.co.main.ui.DreamMainPostCard
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 
 @Composable
@@ -52,7 +58,7 @@ private fun MyPageBookmarkScreen(
     navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     Scaffold(
-        containerColor = MaterialTheme.colors.background,
+        containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
                 title = "저장한 글 보기",
@@ -71,6 +77,21 @@ private fun MyPageBookmarkScreen(
             )
         }
     ) { scaffoldPadding ->
+
+        if (state.bulletin.isEmpty()) {
+            Box(
+                modifier = Modifier
+                .scaffoldBackground(scaffoldPadding),
+                contentAlignment = Alignment.Center
+            ){
+                Text(
+                    text = "저장한 글이 없습니다.",
+                    style = MaterialTheme.typo.h3,
+                    color = MaterialTheme.colors.gray5
+                )
+            }
+        }
+
         LazyColumn(
             modifier = Modifier
                 .scaffoldBackground(
@@ -82,6 +103,12 @@ private fun MyPageBookmarkScreen(
         ) {
             items(state.bulletin) {
                 DreamMainPostCard(
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colors.gray5
+                        ),
                     bulletin = it,
                     onPostClick = navigateToBulletinDetail
                 )

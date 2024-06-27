@@ -4,6 +4,7 @@ package kr.co.main.my.community.written
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -86,10 +87,9 @@ private fun MyPageCommunityScreen(
     navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     Scaffold(
-        containerColor = MaterialTheme.colors.background,
+        containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
-                modifier = Modifier.background(MaterialTheme.colors.background),
                 colorBackground = true,
                 title = "작성한 글/댓글 보기",
                 navigationIcon = {
@@ -110,7 +110,7 @@ private fun MyPageCommunityScreen(
                     scaffoldPadding = scaffoldPadding,
                     padding = PaddingValues(0.dp)
                 )
-                .background(MaterialTheme.colors.background)
+                .background(MaterialTheme.colors.white)
         ) {
             TabRow(
                 containerColor = Color.Transparent,
@@ -156,6 +156,12 @@ private fun MyPageCommunityScreen(
                         emptyText = "아직 작성한 게시글이 없어요",
                         content = { bulletin ->
                             PostCard(
+                                modifier = Modifier
+                                    .border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colors.gray7,
+                                        shape = RoundedCornerShape(12.dp)
+                                    ),
                                 bulletin = bulletin,
                                 navigateToBulletinDetail = navigateToBulletinDetail
                             )
@@ -166,6 +172,12 @@ private fun MyPageCommunityScreen(
                         emptyText = "아직 작성한 댓글이 없어요",
                         content = { comment ->
                             CommentCard(
+                                modifier = Modifier
+                                    .border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colors.gray7,
+                                        shape = RoundedCornerShape(12.dp)
+                                    ),
                                 comment = comment,
                                 navigateToBulletinDetail = navigateToBulletinDetail
                             )
@@ -215,7 +227,7 @@ private fun EmptyCard(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typo.h4,
+            style = MaterialTheme.typo.h3,
             color = MaterialTheme.colors.gray5
         )
     }
@@ -224,10 +236,11 @@ private fun EmptyCard(
 @Composable
 private fun PostCard(
     bulletin: MyPageWriteViewModel.State.Bulletin,
+    modifier: Modifier = Modifier,
     navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable { navigateToBulletinDetail(bulletin.id) }
             .background(
@@ -259,7 +272,7 @@ private fun PostCard(
                 )
 
                 Text(
-                    text = bulletin.createdAt.format("yyyy/MM/dd HH:mm"),
+                    text = bulletin.createdAt.format("yyyy/MM/dd"),
                     style = MaterialTheme.typo.body2,
                     color = MaterialTheme.colors.gray5
                 )
@@ -310,10 +323,11 @@ private fun PostCard(
 @Composable
 private fun CommentCard(
     comment: MyPageWriteViewModel.State.Comment,
+    modifier: Modifier = Modifier,
     navigateToBulletinDetail: (Long) -> Unit = {}
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable { navigateToBulletinDetail(comment.bulletinId) }
             .background(

@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Apple
 import kr.co.ui.icon.dreamicon.Garlic
 import kr.co.ui.icon.dreamicon.Lettuce
 import kr.co.ui.icon.dreamicon.Nappacabbage
@@ -129,7 +130,7 @@ private enum class Crops(
     ),
     APPLE(
         value = "사과",
-        icon = DreamIcon.Sunny,
+        icon = DreamIcon.Apple,
     ),
     STRAWBERRY(
         value = "딸기",

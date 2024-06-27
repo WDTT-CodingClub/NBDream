@@ -54,9 +54,11 @@ private fun MyPageSettingNotificationScreen(
     state: MyPageSettingNotificationViewModel.State = MyPageSettingNotificationViewModel.State()
 ) {
    Scaffold(
+       containerColor = MaterialTheme.colors.white,
        topBar = {
            DreamCenterTopAppBar(
                title = stringResource(id = R.string.feature_main_my_setting_notification),
+               colorBackground = true,
                navigationIcon = {
                    IconButton(onClick = popBackStack) {
                        Icon(

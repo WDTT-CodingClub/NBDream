@@ -31,7 +31,7 @@ fun DreamCenterTopAppBar(
                 color = MaterialTheme.colors.gray1
             )
         },
-        colors = if (colorBackground) TopAppBarDefaults.centerAlignedTopAppBarColors().copy(containerColor = MaterialTheme.colors.background)  else TopAppBarDefaults.centerAlignedTopAppBarColors(),
+        colors = if (colorBackground) TopAppBarDefaults.centerAlignedTopAppBarColors().copy(containerColor = MaterialTheme.colors.white)  else TopAppBarDefaults.centerAlignedTopAppBarColors(),
         navigationIcon = navigationIcon,
         actions = actions
     )

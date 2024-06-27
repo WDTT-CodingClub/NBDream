@@ -8,14 +8,67 @@ import kotlinx.coroutines.launch
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.repository.CommunityRepository
 import kr.co.ui.base.BaseViewModel
+import kr.co.ui.widget.TextAndOnClick
 import timber.log.Timber
 import javax.inject.Inject
+
+internal interface BulletinDetailEvent {
+    fun setIsShowBulletinMoreBottomSheet(boolean: Boolean)
+    fun setIsShowDeleteCheckDialog(boolean: Boolean)
+    fun setIsShowFailedDialog(boolean: Boolean)
+    fun setIsShowDialog(boolean: Boolean)
+    fun onCommentWritingInput(input: String)
+    fun onPostCommentClick()
+    fun loadBulletin(id: Long)
+    fun deleteBulletin(
+        popBackStack: () -> Unit,
+        onFail: () -> Unit,
+    )
+
+    fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>)
+    fun deleteComment(id: Long)
+    fun showDialog(
+        header: String,
+        description: String,
+        onConfirm: () -> Unit,
+        onDismiss: () -> Unit,
+    )
+
+    fun bookmarkBulletin()
+
+
+    companion object {
+        val dummy = object : BulletinDetailEvent {
+            override fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) {}
+            override fun setIsShowDeleteCheckDialog(boolean: Boolean) {}
+            override fun setIsShowFailedDialog(boolean: Boolean) {}
+            override fun setIsShowDialog(boolean: Boolean) {}
+            override fun onCommentWritingInput(input: String) {}
+            override fun onPostCommentClick() {}
+            override fun loadBulletin(id: Long) {}
+            override fun deleteBulletin(popBackStack: () -> Unit, onFail: () -> Unit) {}
+            override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {}
+            override fun deleteComment(id: Long) {}
+            override fun showDialog(
+                header: String,
+                description: String,
+                onConfirm: () -> Unit,
+                onDismiss: () -> Unit,
+            ) {
+            }
+
+            override fun bookmarkBulletin() {}
+
+        }
+    }
+
+}
 
 @HiltViewModel
 internal class BulletinDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val communityRepository: CommunityRepository,
-) : BaseViewModel<BulletinDetailViewModel.State>(savedStateHandle) {
+) : BaseViewModel<BulletinDetailViewModel.State>(savedStateHandle), BulletinDetailEvent {
 
     private val id: Long = savedStateHandle.get<Long>("id") ?: 0L
     override fun createInitialState(savedState: Parcelable?) = State()
@@ -30,30 +83,87 @@ internal class BulletinDetailViewModel @Inject constructor(
         val isShowBulletinMoreBottomSheet: Boolean = false,
         val isShowDeleteCheckDialog: Boolean = false,
         val isShowFailedDialog: Boolean = false,
+        val bottomSheetItems: List<TextAndOnClick> = emptyList(),
+        val isShowDialog: Boolean = false,
+        val dialogHeader: String = "dialogHeader",
+        val dialogDescription: String = "dialogDescription",
+        val dialogOnConfirm: () -> Unit = {},
+        val dialogOnDismiss: () -> Unit = {},
     ) : BaseViewModel.State
 
-    fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) =
+    override fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) =
         updateState { copy(isShowBulletinMoreBottomSheet = boolean) }
 
-    fun setIsShowDeleteCheckDialog(boolean: Boolean) =
+    override fun setIsShowDeleteCheckDialog(boolean: Boolean) =
         updateState { copy(isShowDeleteCheckDialog = boolean) }
 
-    fun setIsShowFailedDialog(boolean: Boolean) =
+    override fun setIsShowFailedDialog(boolean: Boolean) =
         updateState { copy(isShowFailedDialog = boolean) }
 
-    fun onCommentWritingInput(input: String) {
+    override fun setIsShowDialog(boolean: Boolean) =
+        updateState { copy(isShowDialog = boolean) }
+
+    override fun onCommentWritingInput(input: String) =
         updateState { copy(commentWritingInput = input) }
-    }
 
-    private fun setCurrentDetailBulletinId(id: Long) {
+    private fun setCurrentDetailBulletinId(id: Long) =
         updateState { copy(currentDetailBulletinId = id) }
-    }
 
-    private fun setCurrentDetailBulletin(entity: BulletinEntity) {
+    private fun setCurrentDetailBulletin(entity: BulletinEntity) =
         updateState { copy(currentDetailBulletin = entity) }
+
+    //---
+
+    override fun showDialog(
+        header: String,
+        description: String,
+        onConfirm: () -> Unit,
+        onDismiss: () -> Unit,
+    ) {
+        updateState {
+            copy(
+                dialogHeader = header,
+                dialogDescription = description,
+                dialogOnConfirm = onConfirm,
+                dialogOnDismiss = onDismiss,
+                isShowDialog = true,
+            )
+        }
     }
 
-    init {
+    override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {
+        updateState {
+            copy(
+                isShowBulletinMoreBottomSheet = true,
+                bottomSheetItems = bottomSheetItems,
+            )
+        }
+    }
+
+    override fun onPostCommentClick() {
+        loadingScope {
+            val postedCommentId = communityRepository.postComment(
+                id = state.value.currentDetailBulletinId,
+                commentDetail = state.value.commentWritingInput,
+            )
+            Timber.d("onPostCommentClick 코루틴) postedCommentId: $postedCommentId")
+
+            // 댓글 달면 글 다시 조회해서 댓글까지 갱신하도록.
+            loadBulletin(state.value.currentDetailBulletinId)
+        }
+    }
+
+    override fun deleteComment(id: Long) {
+        loadingScope {
+            val resultString = communityRepository.deleteComment(id)
+            Timber.d("deleteComment 코루틴) resultString: $resultString")
+
+            // 글 다시 조회해서 댓글까지 갱신하도록.
+            loadBulletin(state.value.currentDetailBulletinId)
+        }
+    }
+
+    override fun loadBulletin(id: Long) {
         viewModelScope.launch {
             setCurrentDetailBulletinId(id)
             Timber.d("loadBulletin 코루틴 시작, id: $id")
@@ -75,7 +185,7 @@ internal class BulletinDetailViewModel @Inject constructor(
         }
     }
 
-    fun deleteBulletin(
+    override fun deleteBulletin(
         popBackStack: () -> Unit,
         onFail: () -> Unit,
     ) {
@@ -88,6 +198,20 @@ internal class BulletinDetailViewModel @Inject constructor(
                 popBackStack()
             }
         }
+    }
+
+    override fun bookmarkBulletin() {
+        loadingScope {
+            val changedBookmark =
+                communityRepository.bookmarkBulletin(state.value.currentDetailBulletinId)
+
+            // 귀찮다 그냥 로드하자
+            loadBulletin(state.value.currentDetailBulletinId)
+        }
+    }
+
+    init {
+        loadBulletin(id)
     }
 
 }

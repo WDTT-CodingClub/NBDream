@@ -1,10 +1,8 @@
 package kr.co.ui.widget
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kr.co.nbdream.core.ui.R
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 
@@ -65,6 +62,7 @@ fun SkipButton(
         contentColor = MaterialTheme.colors.secondary
     )
 }
+
 @Composable
 fun InputCompleteButton(
     modifier: Modifier = Modifier,
@@ -76,7 +74,7 @@ fun InputCompleteButton(
         onClick = onNextClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp)
+            .height(60.dp)
             .padding(top = 8.dp),
         shape = RoundedCornerShape(12.dp),
         containerColor = MaterialTheme.colors.primary,
@@ -127,16 +125,19 @@ private fun TestCropButton(
         contentColor = MaterialTheme.colors.secondary
     )
 }
+
 @Preview
 @Composable
 private fun ButtonPreview() {
     TestCropButton(text = "농작물")
 }
+
 @Preview
 @Composable
 private fun SkipButtonPreview() {
     SkipButton(text = "나중에 입력할게요")
 }
+
 @Preview
 @Composable
 private fun InputCompleteButtonPreview() {

@@ -24,9 +24,9 @@ class InputAddressViewModel @Inject constructor(
         )
     }
 
-    fun updateAddresses(fullRoadAddress: String, jibunAddress: String) {
+    fun updateAddresses(fullRoadAddress: String, bCode: String) {
         updateState {
-            copy(fullRoadAddress = fullRoadAddress, jibunAddress = jibunAddress)
+            copy(fullRoadAddress = fullRoadAddress, bCode = bCode)
         }
     }
 
@@ -34,9 +34,14 @@ class InputAddressViewModel @Inject constructor(
 
     }
 
+    fun loadAddress(): State {
+        Timber.d("state.value: ${state.value}")
+        return state.value
+    }
+
     data class State(
-        val fullRoadAddress: String = "",
-        val jibunAddress: String = "",
+        val fullRoadAddress: String? = null,
+        val bCode: String? = null,
         val latitude: Double? = null,
         val longitude: Double? = null,
     ): BaseViewModel.State

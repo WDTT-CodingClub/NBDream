@@ -82,9 +82,11 @@ private fun MyPageSettingScreen(
     navigateToDeleteAccount: () -> Unit = {},
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
                 title = "설정",
+                colorBackground = true,
                 navigationIcon = {
                     IconButton(
                         onClick = popBackStack

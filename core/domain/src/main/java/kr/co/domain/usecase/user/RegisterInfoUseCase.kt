@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RegisterUserUseCase @Inject constructor(
+class RegisterInfoUseCase @Inject constructor(
     private val userRepository: UserRepository,
 ) : SuspendUseCase<UserEntity, Unit>() {
     override suspend fun build(params: UserEntity?) {
@@ -16,9 +16,7 @@ class RegisterUserUseCase @Inject constructor(
 
         userRepository.fetchLocal().first().let {
             it.copy(
-                name = params.name ?: it.name,
                 address = params.address ?: it.address,
-                profileImage = params.profileImage ?: it.profileImage,
                 bjdCode = params.bjdCode ?: it.bjdCode,
                 longitude = params.longitude ?: it.longitude,
                 latitude = params.latitude ?: it.latitude,
