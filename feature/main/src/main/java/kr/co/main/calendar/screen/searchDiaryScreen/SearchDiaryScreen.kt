@@ -173,8 +173,8 @@ private fun SearchDiaryScreen(
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        DateTab(LocalDate.now().format("yyyy.MM.dd"))
-                        DateTab(LocalDate.now().format("yyyy.MM.dd"))
+                        DateTab(state.startDate.format("yyyy.MM.dd"))
+                        DateTab(state.endDate.format("yyyy.MM.dd"))
                     }
                 }
             }
