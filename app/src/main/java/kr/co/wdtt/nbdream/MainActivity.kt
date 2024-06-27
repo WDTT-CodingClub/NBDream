@@ -17,7 +17,9 @@ import kr.co.wdtt.nbdream.ui.DreamApp
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+
         super.onCreate(savedInstanceState)
+
         ContextManager.setContext(this)
         FileUtil.initialize(this)
 

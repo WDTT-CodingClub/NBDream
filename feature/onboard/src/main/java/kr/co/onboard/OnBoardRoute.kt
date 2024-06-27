@@ -10,7 +10,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,7 +45,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.type.AuthType
-import kr.co.onboard.login.Login
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.widget.DreamSocialButton
 
@@ -55,8 +53,6 @@ internal fun OnBoardRoute(
     viewModel: OnBoardViewModel = hiltViewModel(),
     navigateToAddress: () -> Unit = {},
 ) {
-
-
     val scope = rememberCoroutineScope()
 
     val (wink, setWink) = remember { mutableStateOf(false) }
@@ -227,7 +223,7 @@ private fun OnBoardScreen(
                         modifier = Modifier.navigationBarsPadding(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        AuthType.entries.forEach {
+                        AuthType.entries.dropLast(1).forEach {
                             DreamSocialButton(type = it.ordinal) {
                                 onSocialLoginClick(it)
                             }

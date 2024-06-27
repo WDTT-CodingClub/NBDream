@@ -39,7 +39,8 @@ material = "1.12.0"
 kakao-maps = "2.9.5"
 
 kakao = "2.20.1"
-google-auth = "21.3.0"
+google-location = "21.3.0"
+google-auth = "21.2.0"
 naver-auth = "5.9.1"
 
 androidDesugarJdkLibs = "2.0.4"
@@ -130,7 +131,8 @@ retrofit-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-
 kakao-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakao"}
 kakao-cert = { group = "com.kakao.sdk", name = "v2-cert", version.ref = "kakao"}
 
-google-auth = { group = "com.google.android.gms", name = "play-services-location", version.ref = "google-auth"}
+google-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "google-auth"}
+google-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "google-auth"}
 
 naver-auth = { group = "com.navercorp.nid", name = "oauth", version.ref = "naver-auth"}
 
@@ -183,8 +185,8 @@ ktors = [
 social = [
     "kakao-user",
     "kakao-cert",
-    "google-auth",
-    "naver-auth"
+    "naver-auth",
+    "google-auth"
 ]
 
 

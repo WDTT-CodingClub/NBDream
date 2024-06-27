@@ -91,7 +91,8 @@ internal fun InputAddressScreen(
         }
     }
 
-    Scaffold(modifier = modifier.padding(Paddings.xlarge), topBar = {
+    Scaffold(
+        topBar = {
         DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title))
     }) { paddingValues ->
         Column(
