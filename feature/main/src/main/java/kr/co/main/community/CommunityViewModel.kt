@@ -13,11 +13,6 @@ import kr.co.ui.widget.TextAndOnClick
 import timber.log.Timber
 import javax.inject.Inject
 
-internal interface SharingData {
-    val getCurrentBoard: () -> CropType
-    val getCurrentCategory: () -> BulletinEntity.BulletinCategory
-}
-
 internal interface CommunityScreenEvent {
     fun onSearchInputChanged(input: String)
     fun setBulletinEntities(entities: List<BulletinEntity>)
@@ -45,7 +40,7 @@ internal interface CommunityScreenEvent {
 internal class CommunityViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val communityRepository: CommunityRepository,
-) : BaseViewModel<CommunityViewModel.State>(savedStateHandle), CommunityScreenEvent, SharingData {
+) : BaseViewModel<CommunityViewModel.State>(savedStateHandle), CommunityScreenEvent {
 
     override fun createInitialState(savedState: Parcelable?) = State()
 
@@ -60,11 +55,6 @@ internal class CommunityViewModel @Inject constructor(
         val isShowBottomSheet: Boolean = false,
         val bottomSheetItems: List<TextAndOnClick> = emptyList(),
     ) : BaseViewModel.State
-
-    override val getCurrentBoard: () -> CropType
-        get() = { state.value.currentBoard }
-    override val getCurrentCategory: () -> BulletinEntity.BulletinCategory
-        get() = { state.value.currentCategory }
 
     override fun setIsShowBottomSheet(boolean: Boolean) =
         updateState { copy(isShowBottomSheet = boolean) }

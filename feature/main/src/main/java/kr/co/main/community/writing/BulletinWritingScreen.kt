@@ -33,7 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +50,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
 import kr.co.main.R
-import kr.co.main.community.SharingData
 import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.ext.scaffoldBackground
@@ -64,13 +62,9 @@ import java.io.File
 @Composable
 internal fun BulletinWritingRoute(
     popBackStack: () -> Unit,
-    sharingData: SharingData,
     modifier: Modifier = Modifier,
     viewModel: BulletinWritingViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(key1 = sharingData) {
-        viewModel.setSharingData(sharingData)
-    }
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     BulletinWritingScreen(

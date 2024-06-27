@@ -10,7 +10,6 @@ import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.type.CropType
 import kr.co.domain.repository.CommunityRepository
 import kr.co.domain.repository.ServerImageRepository
-import kr.co.main.community.SharingData
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
@@ -26,6 +25,23 @@ internal class BulletinWritingViewModel @Inject constructor(
 
     override fun createInitialState(savedState: Parcelable?) = State()
 
+    private val savedStateHandleCrop =
+        savedStateHandle.get<Int>("crop").also { Timber.d("savedStateHandleCrop: $it") }
+            ?.let { CropType.entries[it] } ?: throw IllegalArgumentException("CropType is null")
+    private val savedStateHandleCategory =
+        savedStateHandle.get<Int>("category").also { Timber.d("savedStateHandleCategory: $it") }
+            ?.let { BulletinEntity.BulletinCategory.entries[it] }
+            ?: throw IllegalArgumentException("BulletinCategory is null")
+
+    init {
+        updateState {
+            copy(
+                currentBoard = savedStateHandleCrop,
+                currentCategory = savedStateHandleCategory,
+            )
+        }
+    }
+
     data class State(
         val writingImages: List<WritingSelectedImageModel> = emptyList(),
         val bulletinWritingInput: String = "",
@@ -34,17 +50,8 @@ internal class BulletinWritingViewModel @Inject constructor(
         val isShowWaitingDialog: Boolean = false,
     ) : BaseViewModel.State
 
-    private fun setCurrentBoard(crop: CropType) {
-        updateState { copy(currentBoard = crop) }
-    }
-
     private fun setCurrentCategory(category: BulletinEntity.BulletinCategory) {
         updateState { copy(currentCategory = category) }
-    }
-
-    fun setSharingData(sharingData: SharingData) {
-        setCurrentBoard(sharingData.getCurrentBoard())
-        setCurrentCategory(sharingData.getCurrentCategory())
     }
 
     fun setIsShowWaitingDialog(boolean: Boolean) {

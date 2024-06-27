@@ -51,7 +51,7 @@ import kr.co.ui.widget.TextAndOnClick
 
 @Composable
 internal fun CommunityRoute(
-    navigateToWriting: () -> Unit,
+    navigateToWriting: (CropType, BulletinEntity.BulletinCategory) -> Unit,
     navigateToNotification: () -> Unit,
     navigateToBulletinDetail: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -74,7 +74,7 @@ internal fun CommunityScreen(
     modifier: Modifier = Modifier,
     state: CommunityViewModel.State = CommunityViewModel.State(),
     event: CommunityScreenEvent = CommunityScreenEvent.dummy,
-    navigateToWriting: () -> Unit = {},
+    navigateToWriting: (CropType, BulletinEntity.BulletinCategory) -> Unit = { _, _ -> },
     navigateToNotification: () -> Unit = {},
     navigateToBulletinDetail: (Long) -> Unit = {},
 ) {
@@ -115,7 +115,12 @@ internal fun CommunityScreen(
                 Row(
                     modifier = Modifier
                         .heightIn(min = 48.dp)
-                        .clickable(onClick = navigateToWriting),
+                        .clickable(onClick = {
+                            navigateToWriting(
+                                state.currentBoard,
+                                state.currentCategory,
+                            )
+                        }),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "게시판 탑바 Add 아이콘")
