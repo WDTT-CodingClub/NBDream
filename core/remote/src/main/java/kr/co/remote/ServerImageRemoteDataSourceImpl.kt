@@ -27,7 +27,7 @@ internal class ServerImageRemoteDataSourceImpl @Inject constructor(
     private companion object {
         const val IMG = "image"
         const val IMG_UPLOAD_URL = "api/images/upload/"
-        const val IMG_DELETE_URL = "api/images/"
+        const val IMG_DELETE_URL = "api/images"
     }
 
     override suspend fun upload(domain: String, image: File): ServerImageResult {

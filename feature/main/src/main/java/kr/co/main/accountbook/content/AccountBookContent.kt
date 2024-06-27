@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -27,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,9 +42,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import kr.co.main.accountbook.main.formatNumber
+import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.main.accountbook.model.getTransactionType
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Arrowleft
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
@@ -61,17 +63,22 @@ import java.util.Locale
 internal fun AccountBookContentRoute(
     viewModel: AccountBookContentViewModel = hiltViewModel(),
     navigationToUpdate: (Long?) -> Unit,
+    navigationTopAccountBook: () -> Unit,
     popBackStack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-
+    LaunchedEffect(Unit) {
+        viewModel.complete.collect {
+            navigationTopAccountBook()
+        }
+    }
     AccountBookContentScreen(
         state = state,
         isLoading = isLoading,
         navigationToUpdate = navigationToUpdate,
         popBackStack = popBackStack,
-        onDeleteItem = viewModel::deleteAccountBookById
+        onRemoveItem = viewModel::deleteAccountBookById
     )
 }
 
@@ -81,7 +88,7 @@ internal fun AccountBookContentScreen(
     isLoading: Boolean,
     navigationToUpdate: (Long?) -> Unit,
     popBackStack: () -> Unit,
-    onDeleteItem: () -> Unit = {}
+    onRemoveItem: () -> Unit = {}
 ) {
     var showDropDownMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -92,7 +99,6 @@ internal fun AccountBookContentScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = Paddings.xlarge)
         ) {
             item {
                 DreamCenterTopAppBar(
@@ -100,7 +106,7 @@ internal fun AccountBookContentScreen(
                     navigationIcon = {
                         IconButton(onClick = popBackStack) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                imageVector = DreamIcon.Arrowleft,
                                 contentDescription = null,
                                 tint = Color.Black
                             )
@@ -150,14 +156,26 @@ internal fun AccountBookContentScreen(
 
             if (isLoading) {
                 items(5) {
-                    LoadingShimmerEffect {
-                        ShimmerGridItem(brush = it)
+                    Column(
+                        modifier = Modifier.padding(
+                            start = Paddings.xlarge,
+                            end = Paddings.xlarge,
+                            top = Paddings.extra
+                        )
+                    ) {
+                        LoadingShimmerEffect {
+                            ShimmerGridItem(brush = it)
+                        }
                     }
                 }
             } else {
                 item {
                     Column(
-                        modifier = Modifier.padding(top = Paddings.xextra)
+                        modifier = Modifier.padding(
+                            start = Paddings.xlarge,
+                            end = Paddings.xlarge,
+                            top = Paddings.extra
+                        )
                     ) {
                         Text(
                             text = state.transactionType.getTransactionType(),
@@ -182,7 +200,11 @@ internal fun AccountBookContentScreen(
                 item {
                     Row(
                         modifier = Modifier
-                            .padding(top = Paddings.xextra)
+                            .padding(
+                                start = Paddings.xlarge,
+                                end = Paddings.xlarge,
+                                top = Paddings.extra
+                            )
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -214,7 +236,11 @@ internal fun AccountBookContentScreen(
                 item {
                     Row(
                         modifier = Modifier
-                            .padding(top = Paddings.xextra)
+                            .padding(
+                                start = Paddings.xlarge,
+                                end = Paddings.xlarge,
+                                top = Paddings.extra
+                            )
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -234,7 +260,11 @@ internal fun AccountBookContentScreen(
                 item {
                     Row(
                         modifier = Modifier
-                            .padding(top = Paddings.xextra)
+                            .padding(
+                                start = Paddings.xlarge,
+                                end = Paddings.xlarge,
+                                top = Paddings.extra
+                            )
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -253,7 +283,11 @@ internal fun AccountBookContentScreen(
 
                 item {
                     Column(
-                        modifier = Modifier.padding(top = Paddings.xextra)
+                        modifier = Modifier.padding(
+                            start = Paddings.xlarge,
+                            end = Paddings.xlarge,
+                            top = Paddings.extra
+                        )
                     ) {
                         Text(
                             text = "사진",
@@ -306,7 +340,7 @@ internal fun AccountBookContentScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        onDeleteItem()
+                        onRemoveItem()
                         showDeleteDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(
