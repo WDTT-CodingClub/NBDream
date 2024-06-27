@@ -77,7 +77,6 @@ internal fun WelcomeScreen(
             InputCompleteButton(
                 text = stringResource(id = R.string.feature_onboard_start),
                 onNextClick = {
-                    viewModel.onClickNext()
                     viewModel.onClickConfirm()
                 }
             )

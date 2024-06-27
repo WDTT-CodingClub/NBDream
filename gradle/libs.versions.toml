@@ -19,6 +19,8 @@ lifecycleRuntimeKtx = "2.8.0"
 activityCompose = "1.9.0"
 composeBom = "2024.05.00"
 
+coreSplashscreen = "1.0.1"
+
 retrofit = "2.11.0"
 loggingInterceptor = "4.12.0"
 okhttp = "4.12.0"
@@ -63,6 +65,7 @@ android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 
 mockito = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mock"}
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockK"}

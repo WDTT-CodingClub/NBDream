@@ -40,7 +40,7 @@ internal class WelcomeViewModel @Inject constructor(
     }.invokeOnCompletion {
         if (it == null) {
             viewModelScope.launch {
-                _complete.emit(Unit)
+                saveUserLocalUseCase.invoke()
             }
         }
     }
