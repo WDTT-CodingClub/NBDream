@@ -45,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
+import kr.co.main.ui.DreamMainPostCard
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -63,11 +64,10 @@ internal fun CommunityRoute(
     CommunityScreen(
         modifier = modifier,
         state = state,
+        event = viewModel as CommunityScreenEvent,
         navigateToWriting = navigateToWriting,
         navigateToNotification = navigateToNotification,
         navigateToBulletinDetail = navigateToBulletinDetail,
-        onSearchInputChanged = viewModel::onSearchInputChanged,
-        onCategoryClick = viewModel::onCategoryClick,
     )
 }
 
@@ -75,11 +75,10 @@ internal fun CommunityRoute(
 internal fun CommunityScreen(
     modifier: Modifier = Modifier,
     state: CommunityViewModel.State = CommunityViewModel.State(),
+    event: CommunityScreenEvent = CommunityScreenEvent.dummy,
     navigateToWriting: () -> Unit = {},
     navigateToNotification: () -> Unit = {},
     navigateToBulletinDetail: (Long) -> Unit = {},
-    onSearchInputChanged: (String) -> Unit = {},
-    onCategoryClick: (BulletinEntity.BulletinCategory) -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -109,14 +108,14 @@ internal fun CommunityScreen(
             item {
                 CommunityCategoryTabLayout(
                     selectedTab = state.currentCategory,
-                    onSelectTab = { onCategoryClick(it) },
+                    onSelectTab = { event.onCategoryClick(it) },
                 )
             }
             item {
                 TextField(
                     value = state.searchInput,
                     onValueChange = {
-                        if ("\n" !in it) onSearchInputChanged(it)
+                        if ("\n" !in it) event.onSearchInputChanged(it)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("검색어를 입력하세요") },
@@ -134,9 +133,11 @@ internal fun CommunityScreen(
             itemsIndexed(
                 state.bulletinEntities
             ) { idx, bulletin ->
-                BulletinCard(
+                // TODO: -ing
+                DreamMainPostCard(
                     bulletin = bulletin,
-                    navigateToBulletinDetail = navigateToBulletinDetail
+                    onPostClick = { navigateToBulletinDetail(bulletin.bulletinId) },
+                    onBookMarkClick = { event.bookmarkBulletin(bulletin.bulletinId) },
                 )
             }
         }
