@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kr.co.common.util.format
 import kr.co.domain.entity.CommentEntity
 import kr.co.main.R
 import kr.co.ui.ext.scaffoldBackground
@@ -264,6 +265,9 @@ internal fun BulletinDetailScreen(
                         },
                     )
                 }
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
 
             // 댓글 작성란
@@ -272,6 +276,7 @@ internal fun BulletinDetailScreen(
                 modifier = Modifier
                     .navigationBarsPadding()
                     .imePadding(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 AsyncImage(
                     model = null,
@@ -285,11 +290,13 @@ internal fun BulletinDetailScreen(
                 TextField(
                     value = state.commentWritingInput,
                     onValueChange = event::onCommentWritingInput,
+                    modifier = Modifier.weight(1f),
                 )
                 IconButton(onClick = event::onPostCommentClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Send,
                         contentDescription = "보내기 아이콘",
+                        modifier = Modifier.size(32.dp),
                     )
                 }
             }
@@ -376,7 +383,7 @@ private fun CommentItem(
             Spacer(modifier = Modifier.height(4.dp))
             // TODO: 몇 분 전 형태 표시
             Text(
-                comment.lastModifiedTime,
+                comment.createdTime.format("yyyy/MM/dd HH:mm:ss"),
                 color = MaterialTheme.colors.gray5,
                 style = MaterialTheme.typo.body2,
             )
