@@ -26,6 +26,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -350,6 +352,41 @@ private fun ImageViewPager(
                 )
             }
         }
+        if (pagerState.currentPage != 0) {
+            PagerArrowBox(
+                false,
+                modifier = Modifier.align(Alignment.CenterStart),
+            )
+        }
+        if (pagerState.currentPage != pagerState.pageCount - 1) {
+            PagerArrowBox(
+                true,
+                modifier = Modifier.align(Alignment.CenterEnd),
+            )
+        }
+    }
+}
+
+@Composable
+private fun PagerArrowBox(
+    isRight: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val icon =
+        if (isRight) Icons.AutoMirrored.Rounded.KeyboardArrowRight else Icons.AutoMirrored.Rounded.KeyboardArrowLeft
+    Box(
+        modifier = modifier
+            .size(32.dp)
+            .background(Color(0x22000000)),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = "뷰페이저 화살표 아이콘",
+            modifier = Modifier
+                .size(32.dp)
+                .align(Alignment.Center),
+            tint = Color.White,
+        )
     }
 }
 
