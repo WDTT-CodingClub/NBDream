@@ -1,5 +1,6 @@
 package kr.co.main.my.setting
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -107,7 +108,6 @@ private fun MyPageSettingScreen(
                     padding = PaddingValues(horizontal = 24.dp)
                 )
                 .padding(top = 52.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             MyPageSetting.entries.forEachIndexed { index, myPageSetting ->
                 SettingRow(
@@ -148,7 +148,8 @@ private fun SettingRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .noRippleClickable(onClick = navigateTo),
+            .clickable(onClick = navigateTo)
+            .padding(vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

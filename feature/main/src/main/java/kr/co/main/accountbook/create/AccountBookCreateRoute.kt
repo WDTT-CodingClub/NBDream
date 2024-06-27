@@ -57,6 +57,7 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
 import kr.co.main.accountbook.main.AccountBookOptionButton
 import kr.co.main.accountbook.main.CircleProgress
+import kr.co.main.accountbook.model.AccountBookDialog
 import kr.co.main.accountbook.model.CustomDatePickerDialog
 import kr.co.main.accountbook.model.EntryType
 import kr.co.main.accountbook.model.formatNumber
@@ -84,6 +85,7 @@ internal fun AccountBookCreateRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.complete.collect { complete ->
@@ -92,6 +94,8 @@ internal fun AccountBookCreateRoute(
                     EntryType.CREATE -> navigationToAccountBook()
                     EntryType.UPDATE -> state.id?.let { id -> navigationToContent(id) }
                 }
+            } else {
+                showErrorDialog = true
             }
         }
     }
@@ -110,6 +114,17 @@ internal fun AccountBookCreateRoute(
         onUpdateRegisterDateTime = { viewModel.updateRegisterDateTime(it) },
         onUpdateCategory = { viewModel.updateCategory(it) },
     )
+
+    if (showErrorDialog) {
+        AccountBookDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = "작성 실패",
+            message = "오류가 발생하여 작성을 완료할 수 없습니다.",
+            onConfirm = {
+                showErrorDialog = false
+            }
+        )
+    }
 }
 
 @Composable
@@ -197,7 +212,7 @@ internal fun AccountBookCreateScreen(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(48.dp)
+                                .height(52.dp)
                                 .background(
                                     color = MaterialTheme.colors.gray10,
                                     shape = Shapes.medium
@@ -205,7 +220,7 @@ internal fun AccountBookCreateScreen(
                             contentAlignment = Alignment.CenterStart
                         ) {
                             AccountBookCreateTextField(
-                                value = state.amountText,
+                                value = state.amountText ?: "",
                                 onValueChange = { newText ->
                                     val cleanedText = newText.replace(",", "")
                                     if (cleanedText.all { it.isDigit() }) {
@@ -290,7 +305,7 @@ internal fun AccountBookCreateScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(52.dp)
                             .background(
                                 color = MaterialTheme.colors.gray10,
                                 shape = Shapes.medium
@@ -318,13 +333,13 @@ internal fun AccountBookCreateScreen(
                     Text(
                         text = "내역",
                         style = MaterialTheme.typo.h4,
-                        color = MaterialTheme.colors.gray1
+                        color = MaterialTheme.colors.gray1,
                     )
                     Spacer(modifier = Modifier.height(Paddings.large))
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(52.dp)
                             .background(
                                 color = MaterialTheme.colors.gray10,
                                 shape = Shapes.medium
@@ -357,7 +372,7 @@ internal fun AccountBookCreateScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(52.dp)
                             .background(
                                 color = MaterialTheme.colors.gray10,
                                 shape = Shapes.medium
@@ -438,7 +453,7 @@ internal fun AccountBookCreateScreen(
                     LazyRow(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(state.newImageUrls) { imageUrl ->
+                        items(state.imageUrls) { imageUrl ->
                             Box(
                                 modifier = Modifier
                                     .padding(start = Paddings.large)

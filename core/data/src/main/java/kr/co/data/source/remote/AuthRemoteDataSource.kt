@@ -12,7 +12,7 @@ interface AuthRemoteDataSource {
     suspend fun login(
         type: AuthTypeData,
         token: String
-    ): Auth
+    ): Pair<Auth, Int>
 
     suspend fun register(
         type: AuthTypeData,

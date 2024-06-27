@@ -42,7 +42,6 @@ fun DreamSocialButton(
                 textColor = Color.Black,
                 onClick = onClick
             )
-            Spacer(modifier = Modifier.height(10.dp))
         }
         1 -> {
             LoginButton(
@@ -52,7 +51,6 @@ fun DreamSocialButton(
                 textColor = Color.White,
                 onClick = onClick
             )
-            Spacer(modifier = Modifier.height(10.dp))
         }
         2 -> {
             LoginButton(

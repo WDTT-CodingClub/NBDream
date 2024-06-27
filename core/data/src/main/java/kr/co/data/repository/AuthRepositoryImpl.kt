@@ -12,13 +12,14 @@ internal class AuthRepositoryImpl @Inject constructor(
     private val session: SessionLocalDataSource
 ) : AuthRepository {
 
-    override suspend fun login(type: AuthType, token: String) {
+    override suspend fun login(type: AuthType, token: String): Int {
         remote.login(
             type = type.let(AuthTypeDataMapper::toLeft),
             token = token
-        ).also {
+        ).also { (it, code) ->
             session.updateAccessToken(it.accessToken)
             session.updateRefreshToken(it.refreshToken)
+            return code
         }
     }
 

@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.domain.repository.AccountBookRepository
 import kr.co.main.accountbook.model.DateRangeOption
+import kr.co.main.accountbook.model.getEndOfMonth
 import kr.co.ui.base.BaseViewModel
 import java.time.LocalDate
 import javax.inject.Inject
@@ -129,7 +130,7 @@ internal class AccountBookViewModel @Inject constructor(
         val category: AccountBookEntity.Category? = null,
         val sort: AccountBookEntity.SortOrder = AccountBookEntity.SortOrder.EARLIEST,
         val start: String = LocalDate.now().withDayOfMonth(1).toString(),
-        val end: String = LocalDate.now().toString(),
+        val end: String = getEndOfMonth(),
         val dateRangeOption: DateRangeOption = DateRangeOption.ONE_MONTH,
         val transactionType: AccountBookEntity.TransactionType? = null,
         val accountBooks: List<AccountBook> = emptyList(),
