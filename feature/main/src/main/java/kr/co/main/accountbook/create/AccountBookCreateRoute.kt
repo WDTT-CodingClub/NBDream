@@ -72,6 +72,7 @@ import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import timber.log.Timber
 import java.io.File
 
 
@@ -205,7 +206,7 @@ internal fun AccountBookCreateScreen(
                             contentAlignment = Alignment.CenterStart
                         ) {
                             AccountBookCreateTextField(
-                                value = state.amountText,
+                                value = state.amountText ?: "",
                                 onValueChange = { newText ->
                                     val cleanedText = newText.replace(",", "")
                                     if (cleanedText.all { it.isDigit() }) {
@@ -318,7 +319,7 @@ internal fun AccountBookCreateScreen(
                     Text(
                         text = "내역",
                         style = MaterialTheme.typo.h4,
-                        color = MaterialTheme.colors.gray1
+                        color = MaterialTheme.colors.gray1,
                     )
                     Spacer(modifier = Modifier.height(Paddings.large))
                     Box(
@@ -438,7 +439,7 @@ internal fun AccountBookCreateScreen(
                     LazyRow(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(state.newImageUrls) { imageUrl ->
+                        items(state.imageUrls) { imageUrl ->
                             Box(
                                 modifier = Modifier
                                     .padding(start = Paddings.large)

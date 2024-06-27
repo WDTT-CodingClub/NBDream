@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kr.co.main.accountbook.main.CircleProgress
 import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.main.accountbook.model.getTransactionType
@@ -68,6 +69,8 @@ internal fun AccountBookContentRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val isDeleteLoading by viewModel.isDeleteLoading.collectAsStateWithLifecycle(initialValue = false)
+
     LaunchedEffect(Unit) {
         viewModel.complete.collect {
             navigationTopAccountBook()
@@ -76,6 +79,7 @@ internal fun AccountBookContentRoute(
     AccountBookContentScreen(
         state = state,
         isLoading = isLoading,
+        isDeleteLoading = isDeleteLoading,
         navigationToUpdate = navigationToUpdate,
         popBackStack = popBackStack,
         onRemoveItem = viewModel::deleteAccountBookById
@@ -86,6 +90,7 @@ internal fun AccountBookContentRoute(
 internal fun AccountBookContentScreen(
     state: AccountBookContentViewModel.State = AccountBookContentViewModel.State(),
     isLoading: Boolean,
+    isDeleteLoading: Boolean,
     navigationToUpdate: (Long?) -> Unit,
     popBackStack: () -> Unit,
     onRemoveItem: () -> Unit = {}
@@ -154,7 +159,7 @@ internal fun AccountBookContentScreen(
                 )
             }
 
-            if (isLoading) {
+            if (isLoading && isDeleteLoading.not()) {
                 items(5) {
                     Column(
                         modifier = Modifier.padding(
@@ -318,6 +323,9 @@ internal fun AccountBookContentScreen(
                 }
             }
         }
+        if (isDeleteLoading) {
+            CircleProgress()
+        }
     }
 
     if (showDeleteDialog) {
@@ -373,8 +381,6 @@ internal fun formatDate(dateString: String): String {
     return try {
         val originalFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val targetFormat = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
-        Timber.d("$originalFormat")
-        Timber.d("$targetFormat")
         val date: Date? = originalFormat.parse(dateString)
         if (date != null) {
             targetFormat.format(date)

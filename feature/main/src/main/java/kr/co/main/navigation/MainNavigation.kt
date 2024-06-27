@@ -36,6 +36,7 @@ import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
 import kr.co.main.notification.NotificationRoute
+import timber.log.Timber
 
 
 const val MAIN_ROUTE = "mainRoute"
@@ -245,26 +246,39 @@ fun NavGraphBuilder.mainNavGraph(
             navigationToAccountBook = {},
             navigationToContent = { id ->
                 navController.popBackStack()
-                navController.navigate("${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/$id") {
-                    launchSingleTop = true
+                navController.navigate(
+                    "${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/$id?isUpdate=true"
+                ) {
+                    popUpTo("${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/$id") {
+                        inclusive = true
+                    }
                 }
+
             }
         )
     }
 
     composable(
-        route = "${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/{id}"
+        route = "${AccountBookRoute.ACCOUNT_BOOK_CONTENT_ROUTE}/{id}?isUpdate={isUpdate}"
     ) { backStackEntry ->
         val idString = backStackEntry.arguments?.getString("id")
         val id = idString?.toLongOrNull()
+        val isUpdateString = backStackEntry.arguments?.getString("isUpdate")
+        val isUpdate = isUpdateString?.toBoolean() ?: false
+        Timber.d("isUpdate=$isUpdate")
+
         AccountBookContentRoute(
-            popBackStack = navController::popBackStack,
+            popBackStack = {
+                if (isUpdate) {
+                    navController.previousBackStackEntry?.savedStateHandle?.set("reinitialize", true)
+                }
+                navController.popBackStack()
+
+            },
             navigationToUpdate = {
                 navController.navigate(
                     "${AccountBookRoute.ACCOUNT_BOOK_UPDATE_ROUTE}/$id?entryType=${EntryType.UPDATE.name}"
-                ) {
-                    launchSingleTop = true
-                }
+                )
             },
             navigationTopAccountBook = {
                 navController.previousBackStackEntry?.savedStateHandle?.set(
@@ -275,6 +289,7 @@ fun NavGraphBuilder.mainNavGraph(
             }
         )
     }
+
 
     composable(
         route = CommunityRoute.WRITING_ROUTE

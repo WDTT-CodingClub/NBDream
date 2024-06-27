@@ -54,12 +54,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
     }
 
     fun updateAmount(amount: Long) {
-        updateState {
-            copy(
-                amount = amount,
-                amountText = formatNumber(amount)
-            )
-        }
+        updateState { copy(amount = amount) }
     }
 
     fun updateTransactionType(transactionType: AccountBookEntity.TransactionType) {
@@ -78,26 +73,17 @@ internal class AccountBookCreateViewModel @Inject constructor(
         updateState { copy(registerDateTime = registerDateTime) }
     }
 
-    private fun removeImageUrl(uri: String) {
-        updateState { copy(newImageUrls = newImageUrls - uri) }
-    }
-
     private fun updateImageUrl(url: String) {
-        updateState { copy(newImageUrls = newImageUrls + url) }
+        updateState { copy(imageUrls = imageUrls + url) }
     }
 
     private fun updateButtonText() {
         updateState { copy(contentTitle = if (_entryType == EntryType.UPDATE) "장부 편집하기" else "장부 작성하기") }
     }
 
-    fun deleteImage(url: String) =
-        loadingScope {
-            deleteImageUseCase(url)
-        }.invokeOnCompletion {
-            if (it == null) {
-                removeImageUrl(url)
-            }
-        }
+    fun deleteImage(url: String) {
+        updateState { copy(imageUrls = imageUrls - url) }
+    }
 
     fun uploadImage(image: File) =
         loadingScope {
@@ -128,7 +114,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
                 category = currentState.category!!.name.lowercase(),
                 title = currentState.title ?: "",
                 registerDateTime = currentState.registerDateTime.formatSendDateTime(),
-                imageUrls = getImageList()
+                imageUrls = currentState.imageUrls
             )
         }
     }.invokeOnCompletion { throwable ->
@@ -137,22 +123,6 @@ internal class AccountBookCreateViewModel @Inject constructor(
                 throwable == null
             )
         }
-    }
-
-    private fun getImageList(): List<String> {
-        val imageUrls = currentState.imageUrls
-        val newImageUrls = currentState.newImageUrls.toMutableList()
-
-        imageUrls.forEach { imageUrl ->
-            if (!newImageUrls.contains(imageUrl)) {
-                newImageUrls.add(imageUrl)
-            }
-        }
-
-        newImageUrls.removeAll { imageUrl ->
-            imageUrls.contains(imageUrl)
-        }
-        return newImageUrls
     }
 
     private fun fetchAccountBookById(id: Long) =
@@ -168,7 +138,6 @@ internal class AccountBookCreateViewModel @Inject constructor(
                     registerDateTime = accountBookDetail.registerDateTime?.formatReceiveDateTime()
                         ?: "",
                     imageUrls = accountBookDetail.imageUrl,
-                    newImageUrls = accountBookDetail.imageUrl,
                     amountText = formatNumber(accountBookDetail.amount ?: 0)
                 )
             }
@@ -182,7 +151,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
             category = currentState.category!!.name.lowercase(),
             title = currentState.title ?: "",
             registerDateTime = currentState.registerDateTime.formatSendDateTime(),
-            imageUrls = getImageList()
+            imageUrls = currentState.imageUrls
         )
     }.invokeOnCompletion { throwable ->
         viewModelScopeEH.launch {
@@ -197,7 +166,7 @@ internal class AccountBookCreateViewModel @Inject constructor(
     data class State(
         val id: Long? = null,
         val amount: Long? = 0,
-        val amountText: String = formatNumber(amount ?: 0),
+        val amountText: String? = "",
         val transactionType: AccountBookEntity.TransactionType? =
             AccountBookEntity.TransactionType.EXPENSE,
         val category: AccountBookEntity.Category? =
@@ -208,7 +177,6 @@ internal class AccountBookCreateViewModel @Inject constructor(
             Locale.getDefault()
         ).format(Date()),
         val imageUrls: List<String> = listOf(),
-        val newImageUrls: List<String> = listOf(),
         val contentTitle: String = ""
     ) : BaseViewModel.State
 
