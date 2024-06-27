@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -42,7 +45,7 @@ import kr.co.main.calendar.common.CalendarCategoryIndicator
 import kr.co.main.calendar.common.CalendarContainerTextField
 import kr.co.main.calendar.common.TEXT_FIELD_LIMIT_MULTI
 import kr.co.main.calendar.common.TEXT_FIELD_LIMIT_SINGLE
-import kr.co.main.calendar.common.input.CalendarDatePicker
+import kr.co.main.calendar.common.CalendarDatePicker
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.ui.icon.DreamIcon
@@ -83,6 +86,7 @@ private fun AddScheduleScreen(
 
     Scaffold(
         modifier = modifier,
+        containerColor = Color.White,
         topBar = {
             AddScreenCenterTopAppBar(
                 modifier = Modifier.fillMaxWidth(),
@@ -91,8 +95,8 @@ private fun AddScheduleScreen(
                 editModeTitleId = R.string.feature_main_calendar_top_app_bar_edit_schedule,
                 actionHintId = R.string.feature_main_calendar_add_schedule_input_hint_title,
                 enableAction = enableAction,
-                onPostClick = event::onPostClick,
                 popBackStack = popBackStack,
+                onPostClick = event::onPostClick,
                 onEditClick = event::onEditClick,
                 onDeleteClick = event::onDeleteClick
             )
@@ -105,6 +109,7 @@ private fun AddScheduleScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = Paddings.extra)
+                    .verticalScroll(rememberScrollState())
             ) {
                 ScheduleCategoryPicker(
                     modifier = Modifier.fillMaxWidth(),
@@ -119,7 +124,7 @@ private fun AddScheduleScreen(
                     onTitleInput = event::onTitleInput
                 )
                 Spacer(modifier = Modifier.height(Paddings.extra))
-                ScheduleDateInput(
+                ScheduleDatePicker(
                     modifier = Modifier.fillMaxWidth(),
                     startDate = state.startDate,
                     endDate = state.endDate,
@@ -158,8 +163,8 @@ private fun ScheduleCategoryPicker(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS))
-                .background(MaterialTheme.colors.gray10)
+                .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS.dp))
+                .background(MaterialTheme.colors.gray9)
                 .apply {
                     if (calendarCrop != null) clickable { expandDropDown = true }
                 }
@@ -272,7 +277,7 @@ private fun ScheduleTitleInput(
 }
 
 @Composable
-private fun ScheduleDateInput(
+private fun ScheduleDatePicker(
     startDate: LocalDate,
     endDate: LocalDate,
     onStartDateSelect: (LocalDate) -> Unit,

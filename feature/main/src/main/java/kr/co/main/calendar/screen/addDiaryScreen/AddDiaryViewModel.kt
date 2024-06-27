@@ -33,15 +33,11 @@ internal interface AddDiaryScreenEvent {
     fun onEditClick()
     fun onDeleteClick()
 
-    fun onDateInput(date: LocalDate)
+    fun onDateSelect(date: LocalDate)
     fun onAddImage(imageUris: List<Uri>)
-
     fun onDeleteImage(imageUrl: String)
     fun onMemoInput(memo: String)
-    fun onAddWorkDescription(
-        workCategory: WorkDescriptionModelType,
-        workDescription: String
-    )
+    fun onAddWorkDescription(workDescription: DiaryModel.WorkDescriptionModel)
 
     fun onDeleteWorkDescription(index: Int)
     fun onWorkLaborerInput(workLaborer: Int)
@@ -238,7 +234,7 @@ internal class AddDiaryViewModel @Inject constructor(
         }
     }
 
-    override fun onDateInput(date: LocalDate) {
+    override fun onDateSelect(date: LocalDate) {
         updateState { copy(date = date) }
     }
 
@@ -269,14 +265,11 @@ internal class AddDiaryViewModel @Inject constructor(
         updateState { copy(memo = memo) }
     }
 
-    override fun onAddWorkDescription(
-        workCategory: WorkDescriptionModelType,
-        workDescription: String
-    ) {
+    override fun onAddWorkDescription(workDescription: DiaryModel.WorkDescriptionModel) {
         updateState {
             copy(
                 workDescriptions =
-                workDescriptions + DiaryModel.WorkDescriptionModel(workCategory, workDescription)
+                workDescriptions + workDescription
             )
         }
     }

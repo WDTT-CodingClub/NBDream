@@ -4,6 +4,7 @@
     <string name="feature_main_calendar_tab_title_diary">영농일지</string>
 
     <string name="feature_main_calendar_year_month">%d년 %d월</string>
+
     <string name="feature_main_calendar_farm_work_crop_empty">재배 작물을 추가하고 농작업 일정을 확인해 보세요.</string>
     <string name="feature_main_calendar_farm_work_empty">농작업 일정을 불러오지 못 했습니다.</string>
     <string name="feature_main_calendar_diary_crop_empty">재배 작물을 추가하고 영농 일지를 작성해 보세요.</string>
@@ -27,27 +28,27 @@
 
 <!--    add diary screen-->
     <string name="feature_main_calendar_add_diary_header_date">일자</string>
-    <string name="feature_main_calendar_add_diary_header_work">작업</string>
     <string name="feature_main_calendar_add_diary_header_image">사진</string>
-    <string name="feature_main_calendar_add_diary_header_memo">메모</string>
+    <string name="feature_main_calendar_add_diary_header_memo">일지</string>
+    <string name="feature_main_calendar_add_diary_header_work_description">작업 내용</string>
+    <string name="feature_main_calendar_add_diary_header_work_laborer">작업 인원</string>
+    <string name="feature_main_calendar_add_diary_header_work_hour">작업 시간</string>
+    <string name="feature_main_calendar_add_diary_header_work_area">작업 면적</string>
 
-    <string name="feature_main_calendar_diary_overview">%d명 \| %d시간 \| %d평</string>
-
-    <string name="feature_main_calendar_add_diary_work_laborer">작업 인원</string>
-    <string name="feature_main_calendar_add_diary_work_hour">작업 시간</string>
-    <string name="feature_main_calendar_add_diary_work_area">작업 면접</string>
 
     <string name="feature_main_calendar_add_diary_work_laborer_digit">명</string>
     <string name="feature_main_calendar_add_diary_work_hour_digit">시간</string>
     <string name="feature_main_calendar_add_diary_work_area_digit">평</string>
 
-    <string name="feature_main_calendar_add_diary_input_work_category">분류 선택</string>
     <string name="feature_main_calendar_add_diary_add_work">추가</string>
 
     <string name="feature_main_calendar_add_diary_input_image">사진 추가</string>
 
-    <string name="feature_main_calendar_add_diary_input_hint_work_description">작업 내용을 입력해 주세요.</string>
     <string name="feature_main_calendar_add_diary_input_hint_memo">일지를 입력해 주세요.</string>
+    <string name="feature_main_calendar_add_diary_input_hint_work_description">작업 내용을 입력해 주세요.</string>
+    <string name="feature_main_calendar_add_diary_input_hint_work_type">작업 분류를 선택해 주세요.</string>
+<!--    diary-->
+    <string name="feature_main_calendar_diary_work_laborer_hour_area">%d명 \| %d시간 \| %d평</string>
 
 <!--add schedule screen-->
     <string name="feature_main_calendar_add_schedule_header_category">분류</string>
