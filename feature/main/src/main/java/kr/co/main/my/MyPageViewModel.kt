@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.UserEntity
 import kr.co.domain.usecase.user.FetchUserUseCase
-import kr.co.domain.usecase.user.RegisterUserUseCase
+import kr.co.domain.usecase.user.UpdateUserUseCase
 import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ import javax.inject.Inject
 internal class MyPageViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchUserUseCase: FetchUserUseCase,
-    private val registerUserUseCase: RegisterUserUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
 ) : BaseViewModel<MyPageViewModel.State>(savedStateHandle) {
 
     fun onCropDeleteClick(crop: String) {
@@ -23,7 +23,7 @@ internal class MyPageViewModel @Inject constructor(
             UserEntity(
                 crops = currentState.crops?.filter { it != crop }
             ).apply {
-                registerUserUseCase(this)
+                updateUserUseCase(this)
             }
         }.invokeOnCompletion {
             if (it == null)
