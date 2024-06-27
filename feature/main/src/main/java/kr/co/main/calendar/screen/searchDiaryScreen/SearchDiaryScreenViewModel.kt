@@ -47,10 +47,11 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
         val query: String = "",
         val sortType: CalendarSortType = CalendarSortType.RECENCY,
 
-        val startDate: LocalDate = LocalDate.now(),
+        val startDate: LocalDate = LocalDate.now().minusWeeks(1),
         val endDate: LocalDate = LocalDate.now(),
         val diaries: List<DiaryModel> = emptyList(),
-    ) : State
+    ) : State {
+    }
 
     override fun createInitialState(savedState: Parcelable?): SearchDiaryScreenState =
         savedState?.let {
@@ -87,19 +88,19 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
                     endDate,
                 ->
                 Timber.d("$query, $startDate, $endDate")
+                Triple(query, startDate, endDate)
+            }.collect { diaries ->
                 currentState.calendarCrop?.let { crop ->
                     SearchDiariesUseCase.Params(
                         crop = crop.type.name,
-                        query = query,
-                        startDate = startDate,
-                        endDate = endDate
+                        query = diaries.first,
+                        startDate = diaries.second,
+                        endDate = diaries.third
                     ).run {
                         searchDiaries(this)
                     }
-                }
-            }.collect { diaries ->
-                diaries?.collectLatest {
-                    updateState { copy(diaries = it.map(DiaryModelMapper::toRight)) }
+                }?.collect { diaries ->
+                    updateState { copy(diaries = diaries.map(DiaryModelMapper::toRight)) }
                 }
             }
         }
