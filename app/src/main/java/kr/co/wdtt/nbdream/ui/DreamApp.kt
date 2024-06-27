@@ -12,9 +12,12 @@ import androidx.compose.animation.slideIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,9 +27,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -39,8 +47,6 @@ import kr.co.main.navigation.MAIN_ROUTE
 import kr.co.main.navigation.mainNavGraph
 import kr.co.onboard.navigation.ONBOARD_ROUTE
 import kr.co.onboard.navigation.onboardNavGraph
-import kr.co.ui.theme.colors
-import kr.co.ui.theme.typo
 import kr.co.wdtt.nbdream.MainViewModel
 import kr.co.wdtt.nbdream.R
 
@@ -84,6 +90,7 @@ private fun DreamAppScreen(
     splashVisible: Boolean,
     startDestination: DreamNavRoute = DreamNavRoute.SPLASH,
 ) {
+
     NavHost(
         navController = navController,
         startDestination = startDestination.route,
@@ -93,50 +100,7 @@ private fun DreamAppScreen(
         popExitTransition = { ExitTransition.None }
     ) {
         composable(DreamNavRoute.SPLASH.route) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colors.primary),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AnimatedVisibility(
-                    visible = splashVisible,
-                    enter = slideIn(
-                        animationSpec = spring(
-                            stiffness = 1000f,
-                            visibilityThreshold = IntOffset.VisibilityThreshold
-                        ),
-                        initialOffset = { IntOffset(0, 400) }
-                    ) + fadeIn(animationSpec = tween(1000)),
-                    exit = fadeOut(animationSpec = tween(1000))
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.app_name),
-                        style = MaterialTheme.typo.h1.copy(
-                            fontSize = 72.sp
-                        ),
-                        color = MaterialTheme.colors.white
-                    )
-                }
-
-                AnimatedVisibility(
-                    visible = splashVisible,
-                    enter = slideIn(
-                        animationSpec = spring(
-                            stiffness = 1000f,
-                            visibilityThreshold = IntOffset.VisibilityThreshold
-                        ),
-                        initialOffset = { IntOffset(0, 800) }
-                    ) + fadeIn(animationSpec = tween(1000)),
-                    exit = fadeOut(animationSpec = tween(1000))
-                ) {
-                    Image(
-                        painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_splash_empty),
-                        contentDescription = "logo"
-                    )
-                }
-            }
+            Splash(splashVisible)
         }
 
         mainNavGraph(navController)
