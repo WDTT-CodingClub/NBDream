@@ -34,6 +34,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
 import kr.co.main.R
-import kr.co.main.accountbook.create.AccountBookCreateTextField
+import kr.co.main.accountbook.model.EntryType
 import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.ext.scaffoldBackground
@@ -65,11 +66,21 @@ import java.io.File
 @Composable
 internal fun BulletinWritingRoute(
     popBackStack: () -> Unit,
+    navigationToDetail: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BulletinWritingViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.complete.collect { complete ->
+            if (complete) {
+                state.id?.let { id -> navigationToDetail(id) } ?: run { popBackStack }
+            }
+        }
+    }
+
     BulletinWritingScreen(
         modifier = modifier,
         state = state,
@@ -78,7 +89,7 @@ internal fun BulletinWritingRoute(
         onAddImagesClick = viewModel::onAddImagesClick,
         onBulletinWritingInputChanged = viewModel::onBulletinWritingInputChanged,
         onRemoveImageClick = viewModel::onRemoveImageClick,
-        onFinishWritingClick = viewModel::onFinishWritingClick,
+        onFinishWritingClick = viewModel::onPerformBulletin,
         setIsShowWaitingDialog = viewModel::setIsShowWaitingDialog,
         onCategoryClick = viewModel::onCategoryClick,
     )
@@ -306,15 +317,6 @@ internal fun BulletinWritingScreen(
                 }
             }
         }
-
-        if (state.isShowWaitingDialog) AlertDialogExample(
-            onDismissRequest = { setIsShowWaitingDialog(false) },
-            onConfirmation = {},
-            dialogTitle = "title",
-            dialogText = "text",
-            icon = null,
-        )
-
     }
 }
 

@@ -62,6 +62,7 @@ import coil.compose.AsyncImage
 import kr.co.common.util.format
 import kr.co.domain.entity.CommentEntity
 import kr.co.main.R
+import kr.co.main.accountbook.main.CircleProgress
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -75,26 +76,32 @@ import timber.log.Timber
 
 @Composable
 internal fun BulletinDetailRoute(
+    navigateToUpdate: (Long) -> Unit,
     popBackStack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BulletinDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     BulletinDetailScreen(
         modifier = modifier,
         state = state,
         event = viewModel as BulletinDetailEvent,
         popBackStack = popBackStack,
+        navigateToUpdate = navigateToUpdate,
+        isLoading = isLoading
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
     state: BulletinDetailViewModel.State = BulletinDetailViewModel.State(),
     event: BulletinDetailEvent = BulletinDetailEvent.dummy,
     popBackStack: () -> Unit = {},
+    navigateToUpdate: (Long) -> Unit,
+    isLoading: Boolean
 ) {
     Scaffold(
         modifier = modifier,
@@ -184,7 +191,9 @@ internal fun BulletinDetailScreen(
                             event.showBottomSheet(
                                 listOf(
                                     TextAndOnClick("신고하기") { event.setIsShowFailedDialog(true) },
-                                    TextAndOnClick("수정하기") { event.setIsShowFailedDialog(true) },
+                                    TextAndOnClick("수정하기") {
+                                        navigateToUpdate(state.currentDetailBulletinId)
+                                    },
                                     TextAndOnClick("삭제하기") { event.setIsShowDeleteCheckDialog(true) },
                                 ),
                             )
@@ -266,6 +275,9 @@ internal fun BulletinDetailScreen(
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
+            }
+            if (isLoading) {
+                CircleProgress()
             }
 
             BottomCommentWritingBar(state, event)
@@ -632,6 +644,8 @@ private fun BulletinDetailScreenPreview() {
     NBDreamTheme {
         BulletinDetailScreen(
             popBackStack = {},
+            navigateToUpdate = {},
+            isLoading = false
         )
     }
 }
