@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RegisterUserUseCase @Inject constructor(
+class UpdateUserUseCase @Inject constructor(
     private val userRepository: UserRepository,
 ) : SuspendUseCase<UserEntity, Unit>() {
     override suspend fun build(params: UserEntity?) {

@@ -10,10 +10,9 @@ import kotlinx.coroutines.launch
 import kr.co.domain.entity.UserEntity
 import kr.co.domain.usecase.image.UploadImageUseCase
 import kr.co.domain.usecase.user.FetchUserUseCase
-import kr.co.domain.usecase.user.RegisterUserUseCase
+import kr.co.domain.usecase.user.UpdateUserUseCase
 import kr.co.domain.usecase.validate.ValidateNameUseCase
 import kr.co.ui.base.BaseViewModel
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -21,7 +20,7 @@ import javax.inject.Inject
 internal class MyPageProfileEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchUserUseCase: FetchUserUseCase,
-    private val registerUserUseCase: RegisterUserUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
     private val uploadImageUseCase: UploadImageUseCase,
     private val validateNameUseCase: ValidateNameUseCase
 ) : BaseViewModel<MyPageProfileEditViewModel.State>(savedStateHandle) {
@@ -77,7 +76,7 @@ internal class MyPageProfileEditViewModel @Inject constructor(
                     latitude = currentState.latitude,
                     longitude = currentState.longitude
                 ).run {
-                    registerUserUseCase(this)
+                    updateUserUseCase(this)
                 }
             } else {
                 throw IllegalArgumentException("InValid")
