@@ -65,6 +65,7 @@ internal fun AccountBookRoute(
 
     val reinitialize =
         navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("reinitialize") ?: false
+
     LaunchedEffect(reinitialize) {
         if (reinitialize) {
             viewModel.fetchAccountBooks(
@@ -181,7 +182,11 @@ internal fun AccountBookScreen(
                                     bottomEnd = 0.dp
                                 )
                             )
-                            .padding(Paddings.extra)
+                            .padding(
+                                start = Paddings.extra,
+                                end = Paddings.extra,
+                                top = Paddings.extra
+                            )
                     ) {
                         Column(
                             modifier = Modifier.fillMaxWidth()
@@ -352,7 +357,7 @@ private fun GraphSection(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        if (percents != null) {
+        if (percents != null && categories != null && percents.size == categories.size) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -383,8 +388,7 @@ private fun GraphSection(
                 ) {
                     Image(
                         painter = painterResource(
-                            id =
-                            kr.co.nbdream.core.ui.R.drawable.img_graph
+                            id = kr.co.nbdream.core.ui.R.drawable.img_graph
                         ),
                         contentDescription = null
                     )
@@ -400,6 +404,17 @@ private fun GraphSection(
                 }
             } else {
                 val colors = percents.size.getColorList()
+                val total = percents.sum()
+                val categoryPercent = categories.zip(percents)
+                    .sortedByDescending { it.second }
+                    .mapIndexed { index, (category, percent) ->
+                        Triple(
+                            category,
+                            String.format("%.1f", (percent / total) * 100),
+                            if (index < colors.size) colors[index] else MaterialTheme.colors.gray7
+                        )
+                    }
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -409,21 +424,21 @@ private fun GraphSection(
                     AccountBookGraph(
                         modifier = Modifier.fillMaxSize(),
                         colors = colors,
-                        data = percents,
+                        data = categoryPercent.map { it.second.toFloat() },
                         graphHeight = 150
                     )
                 }
 
-                val total = percents.sum()
-                val categoryPercent = categories?.zip(percents)
-                    ?.map { it.first to String.format("%.1f", (it.second / total) * 100) }
-                var colorIndex = 0
-                Column(modifier = Modifier.padding(vertical = Paddings.xxlarge)) {
-                    val itemsToShow = if (showAll) categoryPercent else categoryPercent?.take(
-                        MAX_CATEGORY_COUNT
+                Column(
+                    modifier = Modifier.padding(
+                        top = Paddings.xxlarge,
+                        bottom = Paddings.xlarge
                     )
+                ) {
+                    val itemsToShow =
+                        if (showAll) categoryPercent else categoryPercent.take(MAX_CATEGORY_COUNT)
 
-                    itemsToShow?.chunked(2)?.forEach { rowItems ->
+                    itemsToShow.chunked(2).forEach { rowItems ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -437,32 +452,30 @@ private fun GraphSection(
                                 GraphCategoryItem(
                                     category = rowItems.first().first,
                                     percent = rowItems.first().second,
-                                    color = colors[colorIndex % colors.size]
+                                    color = rowItems.first().third
                                 )
                             }
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                if (rowItems.size > 1) {
+                            if (rowItems.size > 1) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.weight(1f)
+                                ) {
                                     Spacer(modifier = Modifier.width(16.dp))
                                     GraphCategoryItem(
                                         category = rowItems[1].first,
                                         percent = rowItems[1].second,
-                                        color = colors[(colorIndex + 1) % colors.size]
+                                        color = rowItems[1].third
                                     )
                                 }
                             }
-                            colorIndex += 2
                         }
                     }
                 }
 
-                if ((categoryPercent?.size ?: 0) > MAX_CATEGORY_COUNT) {
+                if (categoryPercent.size > MAX_CATEGORY_COUNT) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = Paddings.extra)
                             .clickable { setShowAll(!showAll) },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
@@ -470,15 +483,14 @@ private fun GraphSection(
                         Text(
                             text = if (showAll) "접기" else "더보기",
                             style = MaterialTheme.typo.h3,
-                            color = MaterialTheme.colors.gray3,
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
+                            color = MaterialTheme.colors.gray5,
+                            modifier = Modifier.align(Alignment.CenterVertically)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Icon(
                             imageVector = if (showAll) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                             contentDescription = null,
-                            tint = MaterialTheme.colors.gray3,
+                            tint = MaterialTheme.colors.gray5,
                             modifier = Modifier
                                 .size(24.dp)
                                 .align(Alignment.CenterVertically)
@@ -488,8 +500,7 @@ private fun GraphSection(
                 Spacer(modifier = Modifier.height(Paddings.xlarge))
 
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -498,7 +509,7 @@ private fun GraphSection(
                                 color = MaterialTheme.colors.gray9,
                                 shape = RoundedCornerShape(8.dp)
                             )
-                            .padding(16.dp),
+                            .padding(Paddings.xlarge),
                         horizontalAlignment = Alignment.End
                     ) {
                         Text(
@@ -526,28 +537,33 @@ private fun GraphCategoryItem(
     percent: String,
     color: Color
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            modifier = Modifier
-                .size(12.dp)
-                .background(
-                    color,
-                    CircleShape
-                )
-        )
-        Text(
-            text = category,
-            style = MaterialTheme.typo.body1,
-            maxLines = 1,
-            modifier = Modifier.padding(start = 8.dp)
-        )
+    Column {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .background(
+                        color,
+                        CircleShape
+                    )
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = category,
+                style = MaterialTheme.typo.body1,
+                color = MaterialTheme.colors.gray1,
+                maxLines = 1,
+            )
+        }
         Text(
             text = "$percent%",
             style = MaterialTheme.typo.body1,
+            color = MaterialTheme.colors.gray5,
             maxLines = 1,
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier.padding(start = 20.dp)
         )
     }
+
 }
 
 @Composable
@@ -782,7 +798,8 @@ private fun AccountBookItem(
         }
         HorizontalDivider(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = Paddings.extra),
             thickness = 1.dp,
             color = MaterialTheme.colors.gray8
         )

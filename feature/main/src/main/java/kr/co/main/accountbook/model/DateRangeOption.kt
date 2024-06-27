@@ -1,7 +1,8 @@
 package kr.co.main.accountbook.model
 
-import java.text.NumberFormat
+import java.text.DecimalFormat
 import java.time.LocalDate
+import java.time.YearMonth
 
 internal enum class DateRangeOption(val label: String) {
     TODAY("당일"),
@@ -33,6 +34,16 @@ internal enum class DateRangeOption(val label: String) {
 }
 
 internal fun formatNumber(number: Long): String {
-    val formatter = NumberFormat.getNumberInstance()
+    val formatter = DecimalFormat("#,###")
     return formatter.format(number)
+}
+
+internal fun getEndOfMonth(): String {
+    val today = LocalDate.now()
+    val year = today.year
+    val month = today.monthValue
+    val lastDay = YearMonth.of(year, month).lengthOfMonth()
+    val endOfMonth = LocalDate.of(year, month, lastDay)
+
+    return endOfMonth.toString()
 }

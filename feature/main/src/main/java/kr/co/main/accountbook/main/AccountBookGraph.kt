@@ -17,9 +17,8 @@ internal fun AccountBookGraph(
     data: List<Float>,
     graphHeight: Int
 ) {
-    val total = data.sumOf { it.toInt() }
-    val angleInterval = if (data.size > 1) 1f else 0f
-    val angles = data.map { it / total * (360f - data.size * angleInterval) }
+    val total = data.sum()
+    val angles = data.map { it / total * 360f }
 
     Canvas(modifier = modifier.height(graphHeight.dp)) {
         val strokeWidth = graphHeight.dp.toPx() / 4
@@ -27,14 +26,13 @@ internal fun AccountBookGraph(
         val centerX = size.width / 2f
         val centerY = radius + strokeWidth / 2
 
-        drawGraph(angles, colors, angleInterval, radius, strokeWidth, centerX, centerY)
+        drawGraph(angles, colors, radius, strokeWidth, centerX, centerY)
     }
 }
 
 private fun DrawScope.drawGraph(
     angles: List<Float>,
     colors: List<Color>,
-    angleInterval: Float,
     radius: Float,
     strokeWidth: Float,
     centerX: Float,
@@ -55,6 +53,6 @@ private fun DrawScope.drawGraph(
             size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2)
         )
 
-        startAngle += angle + angleInterval
+        startAngle += angle
     }
 }
