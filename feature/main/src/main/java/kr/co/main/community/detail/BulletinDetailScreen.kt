@@ -23,6 +23,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -45,8 +48,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -93,6 +98,7 @@ internal fun BulletinDetailScreen(
 ) {
     Scaffold(
         modifier = modifier,
+        containerColor = Color.White,
         topBar = {
             DreamCenterTopAppBar(
                 title = state.currentCategory.koreanName,
@@ -451,6 +457,62 @@ private fun CommentItem(
 
 @Composable
 private fun BottomCommentWritingBar(
+    state: BulletinDetailViewModel.State,
+    event: BulletinDetailEvent,
+    modifier: Modifier = Modifier,
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    BasicTextField(
+        modifier = modifier
+            .background(Color.Transparent)
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .imePadding()
+            .padding(bottom = 12.dp)
+            .background(
+                color = MaterialTheme.colors.gray9,
+                shape = CircleShape,
+            )
+            .padding(
+                horizontal = 20.dp,
+                vertical = 8.dp,
+            ),
+        value = state.commentWritingInput,
+        onValueChange = event::onCommentWritingInput,
+        textStyle = MaterialTheme.typo.body1.copy(color = MaterialTheme.colors.gray1),
+        singleLine = true,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = {
+            event.onPostCommentClick()
+            keyboardController?.hide()
+        }),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+        ) {
+            Box(
+                modifier = Modifier.weight(1f),
+            ) {
+                it()
+            }
+            TextButton(onClick = {
+                event.onPostCommentClick()
+                keyboardController?.hide()
+            }) {
+                Text(
+                    "보내기",
+                    color = MaterialTheme.colors.gray5,
+                    style = MaterialTheme.typo.button,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun BottomCommentWritingBar_old(
     state: BulletinDetailViewModel.State,
     event: BulletinDetailEvent,
     modifier: Modifier = Modifier,
