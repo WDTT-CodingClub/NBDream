@@ -53,6 +53,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
         date: LocalDate,
         holidayList: List<HolidayEntity>,
         weatherForecast: String,
+        imageUrls: List<String>,
         workLaborer: Int,
         workHours: Int,
         workArea: Int,
@@ -61,11 +62,12 @@ internal class DiaryRepositoryImpl @Inject constructor(
     ) {
         remote.create(
             crop = crop,
-            date = date.format(DateTimeFormatter.ofPattern("yyyyMMdd")),
+            date = date,
             holidayList = holidayList.map {
                 HolidayMapper.toLeft(it)
             },
             weatherForecast = weatherForecast,
+            imageUrls = imageUrls,
             workLaborer = workLaborer,
             workHours = workHours,
             workArea = workArea,

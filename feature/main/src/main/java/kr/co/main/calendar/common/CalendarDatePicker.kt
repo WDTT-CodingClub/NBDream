@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 internal fun CalendarDatePicker(
     date: LocalDate,
-    onDateInput: (LocalDate) -> Unit,
+    onDateInput: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -36,9 +36,7 @@ internal fun CalendarDatePicker(
             .fillMaxWidth()
             .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS.dp))
             .background(MaterialTheme.colors.gray9)
-            .clickable {
-                //TODO Date Picker 띄우기 - 수빈님 PR 올리시면 참고
-            }
+            .clickable(onClick = onDateInput)
     ) {
         Row(
             modifier = modifier.padding(Paddings.xlarge),

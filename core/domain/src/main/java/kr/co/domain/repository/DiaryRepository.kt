@@ -26,6 +26,7 @@ interface DiaryRepository {
         date: LocalDate,
         holidayList: List<HolidayEntity>,
         weatherForecast: String,
+        imageUrls: List<String>,
         workLaborer: Int,
         workHours: Int,
         workArea: Int,

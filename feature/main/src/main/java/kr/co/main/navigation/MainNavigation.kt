@@ -212,7 +212,11 @@ fun NavGraphBuilder.mainNavGraph(
         arguments = CalendarNavGraph.AddDiaryRoute.arguments
     ) {
         AddDiaryRoute(
-            popBackStack = navController::popBackStack
+            popBackStack = navController::popBackStack,
+            navigateToPrevious = {
+                navController.previousBackStackEntry?.savedStateHandle?.set("init", true)
+                navController.popBackStack()
+            },
         )
     }
     composable(

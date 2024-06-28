@@ -80,8 +80,8 @@ private fun AddScheduleScreen(
 ) {
     Timber.d("state: $state")
 
-    val enableAction by remember {
-        derivedStateOf { state.title.isNotEmpty() }
+    val enableAction by remember(state.title) {
+        mutableStateOf(state.title.isNotEmpty())
     }
 
     Scaffold(
@@ -294,7 +294,7 @@ private fun ScheduleDatePicker(
         CalendarDatePicker(
             modifier = Modifier.fillMaxWidth(),
             date = startDate,
-            onDateInput = onStartDateSelect
+            onDateInput = { onStartDateSelect }
         )
         Spacer(modifier = Modifier.height(Paddings.extra))
         Text(
@@ -307,7 +307,7 @@ private fun ScheduleDatePicker(
         CalendarDatePicker(
             modifier = Modifier.fillMaxWidth(),
             date = endDate,
-            onDateInput = onEndDateSelect
+            onDateInput = { onEndDateSelect }
         )
     }
 }

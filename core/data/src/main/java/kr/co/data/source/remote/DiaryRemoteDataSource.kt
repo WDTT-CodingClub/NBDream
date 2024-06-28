@@ -3,6 +3,7 @@ package kr.co.data.source.remote
 import kotlinx.coroutines.flow.Flow
 import kr.co.data.model.data.calendar.DiaryData
 import kr.co.data.model.data.calendar.HolidayData
+import java.time.LocalDate
 
 interface DiaryRemoteDataSource {
     suspend fun fetchList(
@@ -20,18 +21,6 @@ interface DiaryRemoteDataSource {
         endDate: String
     ): Flow<List<DiaryData>>
 
-    suspend fun create(
-        crop: String,
-        date: String,
-        holidayList: List<HolidayData>,
-        weatherForecast: String,
-        workLaborer: Int,
-        workHours: Int,
-        workArea: Int,
-        workDescriptions: List<DiaryData.WorkDescriptionData>,
-        memo: String
-    )
-
     suspend fun update(
         id: Int,
         crop: String,
@@ -46,4 +35,17 @@ interface DiaryRemoteDataSource {
     )
 
     suspend fun delete(id: Int)
+
+    suspend fun create(
+        crop: String,
+        date: LocalDate,
+        holidayList: List<HolidayData>,
+        weatherForecast: String,
+        imageUrls: List<String>,
+        workLaborer: Int,
+        workHours: Int,
+        workArea: Int,
+        workDescriptions: List<DiaryData.WorkDescriptionData>,
+        memo: String
+    )
 }
