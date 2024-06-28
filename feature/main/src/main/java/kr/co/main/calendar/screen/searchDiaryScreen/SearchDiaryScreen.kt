@@ -100,6 +100,7 @@ internal fun SearchDiaryRoute(
 
     SearchDiaryScreen(
         state = state,
+        snackBarHostState = snackBarState,
         onQueryChange = viewModel.event::onQueryInput,
         onSortChange = viewModel.event::onSortChange,
         onSearchClick = viewModel.event::onSearchClick,

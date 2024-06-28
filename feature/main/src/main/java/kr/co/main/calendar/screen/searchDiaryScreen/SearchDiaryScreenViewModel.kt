@@ -109,7 +109,7 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
     }
 
     override fun onStartDateInput(startDate: LocalDate) {
-        if (startDate >= currentState.endDate) {
+        if (startDate > currentState.endDate) {
             viewModelScopeEH.launch {
                 _showToast.emit("시작일은 종료일보다 작아야 합니다.")
             }
@@ -119,7 +119,7 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
     }
 
     override fun onEndDateInput(endDate: LocalDate) {
-        if (endDate <= currentState.startDate) {
+        if (endDate < currentState.startDate) {
             viewModelScopeEH.launch {
                 _showToast.emit("종료일은 시작일보다 커야 합니다.")
             }
