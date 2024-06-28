@@ -108,7 +108,7 @@ private fun DiaryTitle(
                 ) {
                     if (!isToday) append("  오늘")
                 }
-                append("  " + holidays.first().name)
+                append("  " + (holidays.firstOrNull()?.name?:""))
             },
             style = MaterialTheme.typo.body1.copy(
                 color = MaterialTheme.colors.black.copy(0.4f)

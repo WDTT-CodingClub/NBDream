@@ -22,7 +22,7 @@ class GetDiariesUseCase @Inject constructor(
     override suspend fun build(params: Params?): Flow<List<DiaryEntity>> {
         checkNotNull(params)
         return repository.getDiaries(
-            crop = params.crop.type.koreanName,
+            crop = params.crop.type.name.lowercase(),
             year = params.year,
             month = params.month
         )

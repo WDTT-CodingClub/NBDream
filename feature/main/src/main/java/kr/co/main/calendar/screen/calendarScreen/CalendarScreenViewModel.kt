@@ -6,6 +6,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kr.co.domain.usecase.calendar.GetDiariesUseCase
 import kr.co.domain.usecase.calendar.GetFarmWorksUseCase
@@ -49,9 +51,6 @@ internal class CalendarScreenViewModel @Inject constructor(
     CalendarScreenEvent {
     val event: CalendarScreenEvent = this@CalendarScreenViewModel
 
-    private val _initialized = MutableStateFlow(savedStateHandle.get<Boolean>("init") ?: true)
-    val initialized = _initialized.asSharedFlow()
-
     data class CalendarScreenState(
         val userCrops: List<CropModel> = emptyList(),
         val crop: CropModel? = null,
@@ -71,31 +70,14 @@ internal class CalendarScreenViewModel @Inject constructor(
         CalendarScreenState()
 
     init {
-
-        viewModelScopeEH.launch {
-            initialized.collect {
-                initialize()
-            }
-        }
-
-        Timber.d("init) called")
-        viewModelScopeEH.launch {
-            error.collect {
-                Timber.e("error: ${it.throwable?.message}\n${it.customError}\n${it.throwable?.cause}")
-            }
-        }
-
-        updateUserCrops()
-
-        updateHolidays()
-        updateAllSchedules()
+        initialize()
     }
 
     fun initialize() {
         updateUserCrops()
-
         updateHolidays()
         updateAllSchedules()
+        updateDiaries()
     }
 
     fun reinitialize() {
