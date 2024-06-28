@@ -47,7 +47,7 @@ internal fun WelcomeScreen(
             bCode = bCode,
             latitude = latitude,
             longitude = longitude,
-            crops = cropsList
+            crops = cropsList.filter { it != " " }
         )
     }
 
