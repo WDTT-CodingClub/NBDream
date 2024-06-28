@@ -45,11 +45,12 @@ import kr.co.main.calendar.CalendarDesignToken
 import kr.co.main.calendar.common.AddScreenCenterTopAppBar
 import kr.co.main.calendar.common.CalendarCategoryIndicator
 import kr.co.main.calendar.common.CalendarContainerTextField
+import kr.co.main.calendar.common.CalendarDatePicker
 import kr.co.main.calendar.common.TEXT_FIELD_LIMIT_MULTI
 import kr.co.main.calendar.common.TEXT_FIELD_LIMIT_SINGLE
-import kr.co.main.calendar.common.CalendarDatePicker
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.ScheduleModelType
+import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.DropDown
 import kr.co.ui.theme.Paddings
@@ -82,8 +83,11 @@ private fun AddScheduleScreen(
 ) {
     Timber.d("state: $state")
 
-    val enableAction by remember {
-        derivedStateOf { state.title.isNotEmpty() }
+//    val enableAction by remember {
+//        derivedStateOf { state.title.isNotEmpty() }
+//    }
+    val enableAction by remember(state.title) {
+        mutableStateOf(state.title.isNotEmpty())
     }
 
     Scaffold(
@@ -154,6 +158,9 @@ private fun ScheduleCategoryPicker(
     onTypeSelect: (ScheduleModelType) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Timber.d("ScheduleDatePicker) calendarCrop: $calendarCrop, selectedType: $selectedType")
+
+    val context = LocalContext.current
     val density = LocalDensity.current
     var dropDownWidth by remember { mutableStateOf(0.dp) }
     var expandDropDown by remember { mutableStateOf(false) }
@@ -170,29 +177,51 @@ private fun ScheduleCategoryPicker(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS.dp))
                 .background(MaterialTheme.colors.gray9)
-                .apply {
-                    if (calendarCrop != null) clickable { expandDropDown = true }
+                .clickable {
+                    if (calendarCrop != null) {
+                        expandDropDown = true
+                    } else {
+                        Toast
+                            .makeText(
+                                context,
+                                context.getString(R.string.feature_main_calendar_add_schedule_type_picker_toast),
+                                Toast.LENGTH_LONG
+                            )
+                            .show()
+                    }
                 }
                 .onGloballyPositioned {
                     dropDownWidth = with(density) { it.size.width.toDp() }
                 }
         ) {
-            ScheduleCategoryPickerItem(
-                modifier = Modifier
-                    .padding(Paddings.xlarge)
-                    .align(Alignment.CenterStart),
-                scheduleType = selectedType
-            )
-            Icon(
-                modifier = Modifier
-                    .padding(end = Paddings.xlarge)
-                    .align(Alignment.CenterEnd),
-                imageVector = DreamIcon.DropDown,
-                contentDescription = "",
-            )
+            Row(
+                modifier = modifier.padding(Paddings.xlarge),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CalendarCategoryIndicator(
+                    modifier = Modifier.padding(end = Paddings.medium),
+                    categoryColor = selectedType.color
+                )
+                Text(
+                    text = stringResource(id = selectedType.nameId),
+                    style = MaterialTheme.typo.body1,
+                    color = MaterialTheme.colors.gray1
+                )
+            }
+            if (calendarCrop != null) {
+                Icon(
+                    modifier = Modifier
+                        .padding(end = Paddings.xlarge)
+                        .align(Alignment.CenterEnd),
+                    imageVector = DreamIcon.DropDown,
+                    contentDescription = "",
+                )
+            }
         }
         DropdownMenu(
-            modifier = Modifier.width(dropDownWidth),
+            modifier = Modifier
+                .width(dropDownWidth)
+                .background(Color.White),
             expanded = expandDropDown,
             onDismissRequest = {
                 expandDropDown = false
@@ -202,15 +231,25 @@ private fun ScheduleCategoryPicker(
                 modifier = modifier
             ) {
                 ScheduleCategoryPickerItem(
-                    modifier = Modifier.padding(end = Paddings.xlarge),
+                    modifier = Modifier.fillMaxWidth(),
                     scheduleType = ScheduleModelType.All,
-                    onTypeSelect = onTypeSelect
+                    onTypeSelect = {
+                        onTypeSelect(it)
+                        expandDropDown = false
+                        // onDismissRequest()
+                    }
                 )
-                ScheduleCategoryPickerItem(
-                    modifier = Modifier.padding(end = Paddings.xlarge),
-                    scheduleType = ScheduleModelType.Crop(calendarCrop!!),
-                    onTypeSelect = onTypeSelect
-                )
+                if (calendarCrop != null) {
+                    ScheduleCategoryPickerItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        scheduleType = ScheduleModelType.Crop(calendarCrop),
+                        onTypeSelect = {
+                            onTypeSelect(it)
+                            expandDropDown = false
+                            // onDismissRequest()
+                        }
+                    )
+                }
             }
         }
     }
@@ -220,13 +259,14 @@ private fun ScheduleCategoryPicker(
 private fun ScheduleCategoryPickerItem(
     scheduleType: ScheduleModelType,
     modifier: Modifier = Modifier,
-    onTypeSelect: ((ScheduleModelType) -> Unit)? = null
+    onTypeSelect: ((ScheduleModelType) -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
-            .apply {
-                onTypeSelect?.let { clickable { it(scheduleType) } }
-            },
+            .noRippleClickable {
+                onTypeSelect?.invoke(scheduleType)
+            }
+            .padding(Paddings.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
         CalendarCategoryIndicator(

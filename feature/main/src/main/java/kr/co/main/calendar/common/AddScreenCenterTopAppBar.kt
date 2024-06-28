@@ -67,7 +67,10 @@ internal fun AddScreenCenterTopAppBar(
                     TopAppBarActionText(
                         actionTitleId = R.string.feature_main_calendar_top_app_bar_post,
                         actionHintId = actionHintId,
-                        onClick = onPostClick,
+                        onClick = {
+                            onPostClick()
+                            popBackStack()
+                        },
                         enableAction = enableAction
                     )
                 }
@@ -89,11 +92,17 @@ internal fun AddScreenCenterTopAppBar(
                         ) {
                             CardDropDownMenuItem(
                                 menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_edit,
-                                onClick = onEditClick
+                                onClick = {
+                                    onEditClick()
+                                    popBackStack()
+                                }
                             )
                             CardDropDownMenuItem(
                                 menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_delete,
-                                onClick = onDeleteClick // TODO 삭제 다이얼로그 표시 후 일정 삭제
+                                onClick = {
+                                    onDeleteClick() // TODO 삭제 다이얼로그 표시 후 일정 삭제
+                                    popBackStack()
+                                }
                             )
                         }
                     }

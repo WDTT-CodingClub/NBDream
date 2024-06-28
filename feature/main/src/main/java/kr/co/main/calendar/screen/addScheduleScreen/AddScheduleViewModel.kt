@@ -73,12 +73,14 @@ internal class AddScheduleViewModel @Inject constructor(
                 }
                 Timber.d("init) calendarCrop: ${currentState.calendarCrop?.type}")
             }
+
             get<Int>(CalendarNavGraph.ARG_SCREEN_MODE_ID)?.let { screenModeId ->
                 updateState {
                     copy(screenMode = ScreenModeType.ofValue(screenModeId))
                 }
                 Timber.d("init) screenMode: ${currentState.screenMode}")
             } ?: throw IllegalArgumentException("screen mode id is null")
+
             get<String>(CalendarNavGraph.ARG_SCHEDULE_ID)?.toLongOrNull()?.let { scheduleId ->
                 updateState {
                     copy(scheduleId = scheduleId)
@@ -98,7 +100,7 @@ internal class AddScheduleViewModel @Inject constructor(
                         }
                     }
                 }
-            }
+            } ?: Timber.d("init) scheduleId: null")
         }
     }
 
@@ -155,6 +157,7 @@ internal class AddScheduleViewModel @Inject constructor(
     }
 
     override fun onTitleInput(title: String) {
+        Timber.d("onTitleInput) title: $title")
         updateState { copy(title = title) }
     }
 
