@@ -19,16 +19,9 @@ internal class WelcomeViewModel @Inject constructor(
     saveStateHandle: SavedStateHandle,
     private val registerInfoUseCase: RegisterInfoUseCase,
     private val saveUserLocalUseCase: SaveUserLocalUseCase,
-    ) : BaseViewModel<WelcomeViewModel.State>(saveStateHandle) {
-    private val _complete: MutableSharedFlow<Unit> = MutableSharedFlow()
-    val complete = _complete.asSharedFlow()
-    fun onClickNext() = loadingScope {
-        saveUserLocalUseCase.invoke()
-    }
+) : BaseViewModel<WelcomeViewModel.State>(saveStateHandle) {
 
     fun onClickConfirm() = loadingScope {
-        val currentState = state.value
-        Timber.d("onClick 안 profileImageUrl: ${currentState.profileImageUrl} bjdCode: ${currentState.bCode} address: ${currentState.address} latitude: ${currentState.latitude} longitude: ${currentState.longitude} crops: ${currentState.crops}")
         UserEntity(
             address = currentState.address,
             bjdCode = currentState.bCode,
@@ -39,11 +32,10 @@ internal class WelcomeViewModel @Inject constructor(
             registerInfoUseCase(this)
         }
     }.invokeOnCompletion {
-        if (it == null) {
-            viewModelScope.launch {
-                _complete.emit(Unit)
+        if (it == null)
+            viewModelScopeEH.launch {
+                saveUserLocalUseCase()
             }
-        }
     }
 
     fun setAddressInfo(
@@ -51,7 +43,7 @@ internal class WelcomeViewModel @Inject constructor(
         bCode: String,
         latitude: Float,
         longitude: Float,
-        crops: List<String>
+        crops: List<String>,
     ) = updateState {
         copy(
             address = fullRoadAddress,
@@ -63,7 +55,6 @@ internal class WelcomeViewModel @Inject constructor(
     }
 
     data class State(
-        val profileImageUrl: String? = null,
         val address: String? = null,
         val bCode: String? = null,
         val latitude: Double? = null,

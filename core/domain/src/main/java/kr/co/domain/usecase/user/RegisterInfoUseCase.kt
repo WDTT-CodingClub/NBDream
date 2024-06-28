@@ -1,6 +1,7 @@
 package kr.co.domain.usecase.user
 
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kr.co.domain.entity.UserEntity
 import kr.co.domain.repository.UserRepository
 import kr.co.domain.usecase.SuspendUseCase
@@ -14,20 +15,16 @@ class RegisterInfoUseCase @Inject constructor(
     override suspend fun build(params: UserEntity?) {
         checkNotNull(params)
 
-        userRepository.fetchLocal().first().let {
-            it.copy(
-                address = params.address ?: it.address,
-                bjdCode = params.bjdCode ?: it.bjdCode,
-                longitude = params.longitude ?: it.longitude,
-                latitude = params.latitude ?: it.latitude,
-                crops = params.crops ?: it.crops
-            )
-        }.also { user ->
-            runCatching {
-                userRepository.update(user)
-            }.onSuccess {
-                userRepository.save(user)
-            }
+        UserEntity(
+            name = params.name,
+            profileImage = params.profileImage,
+            address = params.address,
+            bjdCode = params.bjdCode,
+            longitude = params.longitude,
+            latitude = params.latitude,
+            crops = params.crops
+        ).also { user ->
+            userRepository.update(user)
         }
     }
 }

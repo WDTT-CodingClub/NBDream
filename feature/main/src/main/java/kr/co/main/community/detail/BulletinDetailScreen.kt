@@ -1,7 +1,9 @@
 package kr.co.main.community.detail
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,16 +14,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,25 +39,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.common.util.format
 import kr.co.domain.entity.CommentEntity
 import kr.co.main.R
+import kr.co.main.accountbook.main.CircleProgress
+import kr.co.main.community.CommunityDialogSimpleTitle
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
@@ -63,29 +73,36 @@ import timber.log.Timber
 
 @Composable
 internal fun BulletinDetailRoute(
+    navigateToUpdate: (Long) -> Unit,
     popBackStack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BulletinDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     BulletinDetailScreen(
         modifier = modifier,
         state = state,
         event = viewModel as BulletinDetailEvent,
         popBackStack = popBackStack,
+        navigateToUpdate = navigateToUpdate,
+        isLoading = isLoading
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
     state: BulletinDetailViewModel.State = BulletinDetailViewModel.State(),
     event: BulletinDetailEvent = BulletinDetailEvent.dummy,
     popBackStack: () -> Unit = {},
+    navigateToUpdate: (Long) -> Unit,
+    isLoading: Boolean
 ) {
     Scaffold(
         modifier = modifier,
+        containerColor = Color.White,
         topBar = {
             DreamCenterTopAppBar(
                 title = state.currentCategory.koreanName,
@@ -150,7 +167,7 @@ internal fun BulletinDetailScreen(
                                 .width(54.dp)
                                 .height(54.dp)
                                 .clip(CircleShape),
-                            placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+                            error = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
@@ -161,7 +178,7 @@ internal fun BulletinDetailScreen(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                state.currentDetailBulletin.createdTime.toString(),
+                                state.currentDetailBulletin.createdTime,
                                 color = MaterialTheme.colors.gray5,
                                 style = MaterialTheme.typo.body2,
                             )
@@ -170,8 +187,10 @@ internal fun BulletinDetailScreen(
                         IconButton(onClick = {
                             event.showBottomSheet(
                                 listOf(
-                                    TextAndOnClick("신고하기") { event.setIsShowFailedDialog(true) },
-                                    TextAndOnClick("수정하기") { event.setIsShowFailedDialog(true) },
+                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
+                                    TextAndOnClick("수정하기") {
+                                        navigateToUpdate(state.currentDetailBulletinId)
+                                    },
                                     TextAndOnClick("삭제하기") { event.setIsShowDeleteCheckDialog(true) },
                                 ),
                             )
@@ -198,22 +217,7 @@ internal fun BulletinDetailScreen(
                 }
                 item { Spacer(modifier = Modifier.height(12.dp)) }
                 item {
-                    val pagerState = rememberPagerState(pageCount = {
-                        state.currentDetailBulletin.imageUrls.size
-                    })
-                    // TODO: 페이저 화살표 표시. 끝단에서는 해당 방향 화살표 숨기기.
-                    // TODO: 인디케이터...는 나중에...
-                    HorizontalPager(state = pagerState) { page ->
-                        // TODO: 사진 사이즈 설정해야 할까?
-                        AsyncImage(
-                            model = state.currentDetailBulletin.imageUrls[page],
-                            contentDescription = "사진 $page",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(max = 500.dp),
-                            placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.place_holder_1),
-                        )
-                    }
+                    ImageViewPager(state, event)
                 }
                 item { Spacer(modifier = Modifier.height(40.dp)) }
                 item {
@@ -269,37 +273,11 @@ internal fun BulletinDetailScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-
-            // 댓글 작성란
-            // TODO: ui
-            Row(
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .imePadding(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                AsyncImage(
-                    model = null,
-                    contentDescription = "본인 프로필 사진",
-                    modifier = modifier
-                        .width(40.dp)
-                        .height(40.dp)
-                        .clip(CircleShape),
-                    placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
-                )
-                TextField(
-                    value = state.commentWritingInput,
-                    onValueChange = event::onCommentWritingInput,
-                    modifier = Modifier.weight(1f),
-                )
-                IconButton(onClick = event::onPostCommentClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Send,
-                        contentDescription = "보내기 아이콘",
-                        modifier = Modifier.size(32.dp),
-                    )
-                }
+            if (isLoading) {
+                CircleProgress()
             }
+
+            BottomCommentWritingBar(state, event)
         }
 
         if (state.isShowBulletinMoreBottomSheet) {
@@ -322,9 +300,16 @@ internal fun BulletinDetailScreen(
         }
 
         if (state.isShowFailedDialog) {
-            DialogSimpleText(
+            CommunityDialogSimpleTitle(
                 onDismissRequest = { event.setIsShowFailedDialog(false) },
                 text = "처리하지 못했습니다.",
+            )
+        }
+
+        if (state.isShowSimpleDialog) {
+            CommunityDialogSimpleTitle(
+                onDismissRequest = { event.setIsShowSimpleDialog(false) },
+                text = state.simpleDialogText,
             )
         }
 
@@ -337,6 +322,93 @@ internal fun BulletinDetailScreen(
             )
         }
 
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ImageViewPager(
+    state: BulletinDetailViewModel.State,
+    event: BulletinDetailEvent,
+//    modifier: Modifier = Modifier,
+) {
+    val pagerState = rememberPagerState(pageCount = {
+        state.currentDetailBulletin.imageUrls.size
+    })
+    Box {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 500.dp),
+            verticalAlignment = Alignment.Top,
+        ) { page ->
+            AsyncImage(
+                model = state.currentDetailBulletin.imageUrls[page],
+                contentDescription = "사진 $page",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(MaterialTheme.shapes.medium),
+//                placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.place_holder_1),  // 테스트용
+//            error = painterResource(id = kr.co.nbdream.core.ui.R.drawable.place_holder_1),  // 왜 로딩이 되기 전에 먼저 뜨는지 모르겠다...
+            )
+        }
+        Row(
+            Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                //val color = if (pagerState.currentPage == iteration) Color.White else Color(0x52FFFFFF)  // 잘 안보이는데?
+                val color =
+                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                Box(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(8.dp)
+                )
+            }
+        }
+        if (pagerState.currentPage != 0) {
+            PagerArrowBox(
+                false,
+                modifier = Modifier.align(Alignment.CenterStart),
+            )
+        }
+        if (pagerState.currentPage < pagerState.pageCount - 1) {
+            PagerArrowBox(
+                true,
+                modifier = Modifier.align(Alignment.CenterEnd),
+            )
+        }
+    }
+}
+
+@Composable
+private fun PagerArrowBox(
+    isRight: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val icon =
+        if (isRight) Icons.AutoMirrored.Rounded.KeyboardArrowRight else Icons.AutoMirrored.Rounded.KeyboardArrowLeft
+    Box(
+        modifier = modifier
+            .size(32.dp)
+            .background(Color(0x22000000)),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = "뷰페이저 화살표 아이콘",
+            modifier = Modifier
+                .size(32.dp)
+                .align(Alignment.Center),
+            tint = Color.White,
+        )
     }
 }
 
@@ -355,7 +427,7 @@ private fun CommentItem(
                 .width(40.dp)
                 .height(40.dp)
                 .clip(CircleShape),
-            placeholder = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+            error = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column {
@@ -400,34 +472,59 @@ private fun CommentItem(
 }
 
 @Composable
-fun DialogSimpleText(
-    onDismissRequest: () -> Unit,
-    text: String,
+private fun BottomCommentWritingBar(
+    state: BulletinDetailViewModel.State,
+    event: BulletinDetailEvent,
     modifier: Modifier = Modifier,
-    fontSize: Int = 18,
-    textAlign: TextAlign = TextAlign.Center,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        confirmButton = {},
-        text = {
-            Text(
-                text = text,
-                modifier = modifier.fillMaxWidth(),
-                fontSize = fontSize.sp,
-                textAlign = textAlign,
+    val keyboardController = LocalSoftwareKeyboardController.current
+    BasicTextField(
+        modifier = modifier
+            .background(Color.Transparent)
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .imePadding()
+            .padding(bottom = 12.dp)
+            .background(
+                color = MaterialTheme.colors.gray9,
+                shape = CircleShape,
             )
-        },
-    )
-}
-
-@Preview
-@Composable
-fun DialogPreview(modifier: Modifier = Modifier) {
-    DialogSimpleText(
-        onDismissRequest = {},
-        text = "처리하지 못했습니다.",
-    )
+            .padding(
+                horizontal = 20.dp,
+                vertical = 4.dp
+            ),
+        value = state.commentWritingInput,
+        onValueChange = event::onCommentWritingInput,
+        textStyle = MaterialTheme.typo.body1.copy(color = MaterialTheme.colors.gray1),
+        singleLine = true,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = {
+            event.onPostCommentClick()
+            keyboardController?.hide()
+        }),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+        ) {
+            Box(
+                modifier = Modifier.weight(1f),
+            ) {
+                it()
+            }
+            TextButton(onClick = {
+                event.onPostCommentClick()
+                keyboardController?.hide()
+            }) {
+                Text(
+                    "보내기",
+                    color = MaterialTheme.colors.gray5,
+                    style = MaterialTheme.typo.button,
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -483,6 +580,8 @@ private fun BulletinDetailScreenPreview() {
     NBDreamTheme {
         BulletinDetailScreen(
             popBackStack = {},
+            navigateToUpdate = {},
+            isLoading = false
         )
     }
 }

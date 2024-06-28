@@ -9,15 +9,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kr.co.main.calendar.CalendarDesignToken
 import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.colors
+
+internal const val TEXT_FIELD_LIMIT_SINGLE = 40
+internal const val TEXT_FIELD_LIMIT_MULTI = 3000
 
 @Composable
 internal fun CalendarUnderLineTextField(
@@ -43,7 +48,7 @@ internal fun CalendarUnderLineTextField(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(modifier = Modifier){
+            Box(modifier = Modifier) {
                 if (value.isEmpty()) placeHolder()
                 innerTextField()
             }
@@ -75,10 +80,10 @@ internal fun CalendarContainerTextField(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(kr.co.main.calendar.CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp))
-                .background(Color.LightGray),
+                .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS.dp))
+                .background(MaterialTheme.colors.gray9),
         ) {
-            Box(modifier = Modifier.padding(Paddings.medium)) {
+            Box(modifier = Modifier.padding(Paddings.xlarge)) {
                 if (value.isEmpty()) placeHolder()
                 innerTextField()
             }

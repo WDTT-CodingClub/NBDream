@@ -128,7 +128,7 @@ private fun DiaryBody(
     Column(modifier = modifier) {
         Text(
             text = stringResource(
-                id = R.string.feature_main_calendar_diary_overview,
+                id = R.string.feature_main_calendar_diary_work_laborer_hour_area,
                 workLaborer, workHours, workArea
             ),
             style = MaterialTheme.typo.body2,

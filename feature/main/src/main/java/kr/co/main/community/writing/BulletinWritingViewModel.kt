@@ -5,12 +5,13 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.type.CropType
 import kr.co.domain.repository.CommunityRepository
 import kr.co.domain.repository.ServerImageRepository
-import kr.co.main.community.SharingData
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
@@ -23,10 +24,37 @@ internal class BulletinWritingViewModel @Inject constructor(
     private val serverImageRepository: ServerImageRepository,
     private val communityRepository: CommunityRepository,
 ) : BaseViewModel<BulletinWritingViewModel.State>(savedStateHandle) {
-
+    private val id: Long? = savedStateHandle.get<String>("id")?.toLongOrNull()
+    private val _complete: MutableSharedFlow<Boolean> = MutableSharedFlow()
+    val complete = _complete.asSharedFlow()
     override fun createInitialState(savedState: Parcelable?) = State()
 
+    private val savedStateHandleCrop =
+        savedStateHandle.get<String>("crop").also { Timber.d("savedStateHandleCrop: $it") }
+            ?.toIntOrNull()
+            ?.let { if (it in CropType.entries.indices) CropType.entries[it] else null }
+            ?: CropType.PEPPER
+    private val savedStateHandleCategory =
+        savedStateHandle.get<String>("category").also { Timber.d("savedStateHandleCategory: $it") }
+            ?.toIntOrNull()
+            ?.let { if (it in BulletinEntity.BulletinCategory.entries.indices) BulletinEntity.BulletinCategory.entries[it] else null }
+            ?: BulletinEntity.BulletinCategory.Free
+
+    init {
+        id?.let {
+            fetchBulletin(it)
+        } ?: run {
+            updateState {
+                copy(
+                    currentBoard = savedStateHandleCrop,
+                    currentCategory = savedStateHandleCategory,
+                )
+            }
+        }
+    }
+
     data class State(
+        val id: Long? = null,
         val writingImages: List<WritingSelectedImageModel> = emptyList(),
         val bulletinWritingInput: String = "",
         val currentBoard: CropType = CropType.PEPPER,
@@ -34,17 +62,8 @@ internal class BulletinWritingViewModel @Inject constructor(
         val isShowWaitingDialog: Boolean = false,
     ) : BaseViewModel.State
 
-    private fun setCurrentBoard(crop: CropType) {
-        updateState { copy(currentBoard = crop) }
-    }
-
     private fun setCurrentCategory(category: BulletinEntity.BulletinCategory) {
         updateState { copy(currentCategory = category) }
-    }
-
-    fun setSharingData(sharingData: SharingData) {
-        setCurrentBoard(sharingData.getCurrentBoard())
-        setCurrentCategory(sharingData.getCurrentCategory())
     }
 
     fun setIsShowWaitingDialog(boolean: Boolean) {
@@ -114,7 +133,7 @@ internal class BulletinWritingViewModel @Inject constructor(
         updateState { copy(writingImages = writingImages - model) }
     }
 
-    fun onFinishWritingClick(popBackStack: () -> Unit) {
+    private fun onFinishWritingClick(popBackStack: () -> Unit) {
         Timber.d("onFinishWritingClick 시작")
         viewModelScope.launch {
             try {
@@ -132,6 +151,45 @@ internal class BulletinWritingViewModel @Inject constructor(
             }
         }
         Timber.d("onFinishWritingClick 끝")
+    }
+
+
+    private fun fetchBulletin(id: Long) = loadingScope {
+        val entity = communityRepository.getBulletinDetail(id)
+        val writingImagesList = entity?.imageUrls?.map { url ->
+            WritingSelectedImageModel(uri = Uri.parse(url), url = url)
+        }
+        updateState {
+            copy(
+                id = id,
+                bulletinWritingInput = entity?.content ?: "",
+                writingImages = writingImagesList ?: emptyList(),
+                currentBoard = entity?.crop?.type ?: CropType.PEPPER,
+                currentCategory = entity?.bulletinCategory ?: BulletinEntity.BulletinCategory.Free,
+            )
+        }
+    }
+
+    private fun updateBulletin() = loadingScope {
+        id?.let { id ->
+            communityRepository.putBulletin(
+                id = id,
+                content = currentState.bulletinWritingInput,
+                crop = currentState.currentBoard,
+                bulletinCategory = currentState.currentCategory,
+                imageUrls = currentState.writingImages.map { it.url.toString() },
+            )
+        }
+    }.invokeOnCompletion {
+        viewModelScopeEH.launch {
+            _complete.emit(it == null)
+        }
+    }
+
+    fun onPerformBulletin(popBackStack: () -> Unit) = id?.let {
+        updateBulletin()
+    } ?: run {
+        onFinishWritingClick(popBackStack)
     }
 
 }

@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -182,7 +183,6 @@ private fun CommunityCard(
                 .padding(
                     top = 32.dp,
                 ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             listOf(
                 "저장한 글 보러가기",
@@ -191,12 +191,13 @@ private fun CommunityCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .noRippleClickable {
+                        .clickable {
                             when (index) {
                                 0 -> navigateToBookmark()
                                 1 -> navigateToWrite()
                             }
-                        },
+                        }
+                        .padding(vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
@@ -252,8 +253,9 @@ private fun BulletinCard(
 
             Icon(
                 modifier = Modifier
-                    .size(24.dp)
-                    .noRippleClickable(onClick = showCropModal),
+                    .clip(CircleShape)
+                    .clickable(onClick = showCropModal)
+                    .size(24.dp),
                 imageVector = Icons.Filled.Add,
                 contentDescription = "add crop button",
                 tint = MaterialTheme.colors.primary

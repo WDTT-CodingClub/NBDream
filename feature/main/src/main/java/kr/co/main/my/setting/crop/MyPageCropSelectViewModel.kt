@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kr.co.domain.entity.UserEntity
 import kr.co.domain.usecase.user.FetchUserUseCase
-import kr.co.domain.usecase.user.RegisterUserUseCase
+import kr.co.domain.usecase.user.UpdateUserUseCase
 import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
@@ -16,7 +16,7 @@ import javax.inject.Inject
 internal class MyPageCropSelectViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchUserUseCase: FetchUserUseCase,
-    private val registerUserUseCase: RegisterUserUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
 ): BaseViewModel<MyPageCropSelectViewModel.State>(savedStateHandle) {
 
     private val _showMyPage = MutableSharedFlow<Unit>()
@@ -33,10 +33,9 @@ internal class MyPageCropSelectViewModel @Inject constructor(
     fun onConfirmClick() {
         viewModelScopeEH.launch {
             UserEntity(
-                name = currentState.name,
                 crops = currentState.crops
             ).apply {
-                registerUserUseCase(this)
+                updateUserUseCase(this)
             }
         }.invokeOnCompletion {
             if (it == null)
@@ -57,7 +56,6 @@ internal class MyPageCropSelectViewModel @Inject constructor(
     }
 
     data class State(
-        val name: String = "",
         val crops: List<String> = emptyList()
     ): BaseViewModel.State
 

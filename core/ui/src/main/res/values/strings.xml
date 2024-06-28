@@ -1,9 +1,10 @@
 <resources>
-    <!--    앱 전체 - 드롭다운 메뉴    -->
+    <string name="core_ui_text_field_limit_single_toast">40자 이상 입력할 수 없습니다.</string>
+    <string name="core_ui_text_field_limit_multi_toast">3000자 이상 입력할 수 없습니다.</string>
+
     <string name="core_ui_dropdown_menu_edit">수정하기</string>
     <string name="core_ui_dropdown_menu_delete">삭제하기</string>
 
-    <!--    앱 전체 - 작물 이름    -->
     <string name="core_ui_dream_crop_name_pepper">고추</string>
     <string name="core_ui_dream_crop_name_rice">벼</string>
     <string name="core_ui_dream_crop_name_potato">감자</string>

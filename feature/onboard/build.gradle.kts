@@ -17,4 +17,5 @@ android {
 
 dependencies {
     api(libs.kakao.maps)
+    implementation (libs.accompanist.navigation.animation)
 }

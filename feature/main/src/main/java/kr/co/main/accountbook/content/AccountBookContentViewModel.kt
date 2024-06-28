@@ -20,24 +20,26 @@ internal class AccountBookContentViewModel @Inject constructor(
     private val id: Long = checkNotNull(savedStateHandle.get<String>("id")?.toLong())
     private val _complete: MutableSharedFlow<Unit> = MutableSharedFlow()
     val complete = _complete.asSharedFlow()
+    private val _isDeleteLoading: MutableSharedFlow<Boolean> = MutableSharedFlow()
+    val isDeleteLoading = _isDeleteLoading.asSharedFlow()
 
     init {
         fetchAccountBookById(id)
-        Timber.d("contentviewmodel = $id")
     }
 
-    fun deleteAccountBookById() =
+    fun deleteAccountBookById() {
         loadingScope {
+            _isDeleteLoading.emit(true)
             repository.deleteAccountBook(id)
-        }.invokeOnCompletion {
-            if (it == null) {
-                viewModelScopeEH.launch {
+        }.invokeOnCompletion { throwable ->
+            viewModelScopeEH.launch {
+                if (throwable == null) {
                     _complete.emit(Unit)
                 }
-            } else {
-                // TODO 삭제 실패
+                _isDeleteLoading.emit(false)
             }
         }
+    }
 
     private fun fetchAccountBookById(id: Long) =
         loadingScope {

@@ -97,7 +97,9 @@ internal fun InputAddressScreen(
     Scaffold(
         containerColor = MaterialTheme.colors.white,
         topBar = {
-            DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title),
+            DreamCenterTopAppBar(
+                title = stringResource(id = R.string.feature_onboard_my_farm_title),
+                colorBackground = true,
                 navigationIcon = {
                     IconButton(
                         onClick = popBackStack
