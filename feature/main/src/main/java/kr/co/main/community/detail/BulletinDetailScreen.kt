@@ -187,7 +187,7 @@ internal fun BulletinDetailScreen(
                         IconButton(onClick = {
                             event.showBottomSheet(
                                 listOf(
-                                    TextAndOnClick("신고하기") { event.setIsShowFailedDialog(true) },
+                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
                                     TextAndOnClick("수정하기") {
                                         navigateToUpdate(state.currentDetailBulletinId)
                                     },
