@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -40,6 +41,9 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
     val event: SearchDiaryScreenEvent = this@SearchDiaryScreenViewModel
 
     private val _searchEvent = MutableSharedFlow<Unit>()
+
+    private val _showToast = MutableSharedFlow<String>()
+    val showToast = _showToast.asSharedFlow()
 
     data class SearchDiaryScreenState(
         val calendarCrop: CropModel? = null,
@@ -105,11 +109,23 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
     }
 
     override fun onStartDateInput(startDate: LocalDate) {
-        updateState { copy(startDate = startDate) }
+        if (startDate >= currentState.endDate) {
+            viewModelScopeEH.launch {
+                _showToast.emit("시작일은 종료일보다 작아야 합니다.")
+            }
+        } else {
+            updateState { copy(startDate = startDate) }
+        }
     }
 
     override fun onEndDateInput(endDate: LocalDate) {
-        updateState { copy(endDate = endDate) }
+        if (endDate <= currentState.startDate) {
+            viewModelScopeEH.launch {
+                _showToast.emit("종료일은 시작일보다 커야 합니다.")
+            }
+        } else {
+            updateState { copy(endDate = endDate) }
+        }
     }
 
     override fun onSortChange(sortType: CalendarSortType) = updateState {

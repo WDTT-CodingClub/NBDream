@@ -26,8 +26,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.collectLatest
 import kr.co.common.util.format
 import kr.co.main.R
 import kr.co.main.accountbook.model.CustomDatePickerDialog
@@ -67,6 +70,7 @@ import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import kr.co.ui.widget.DreamSnackBarHost
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -79,7 +83,19 @@ internal fun SearchDiaryRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val (isDatePickerVisible, setDatePickerVisible) = remember { mutableStateOf<Boolean?>(null) }
+    val (isDatePickerVisible, setDatePickerVisible) = remember {
+        mutableStateOf<Boolean?>(null)
+    }
+
+    val snackBarState = remember {
+        SnackbarHostState()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.showToast.collectLatest { message ->
+            snackBarState.showSnackbar(message)
+        }
+    }
 
     SearchDiaryScreen(
         state = state,
@@ -109,6 +125,7 @@ internal fun SearchDiaryRoute(
 @Composable
 private fun SearchDiaryScreen(
     state: SearchDiaryScreenViewModel.SearchDiaryScreenState = SearchDiaryScreenViewModel.SearchDiaryScreenState(),
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onQueryChange: (String) -> Unit = {},
     onSortChange: (CalendarSortType) -> Unit = {},
     onSearchClick: () -> Unit = {},
@@ -118,6 +135,9 @@ private fun SearchDiaryScreen(
 ) {
     Scaffold(
         containerColor = MaterialTheme.colors.white,
+        snackbarHost = {
+            DreamSnackBarHost(snackBarHostState)
+        },
         topBar = {
             DreamCenterTopAppBar(
                 title = "영농일지 검색",
