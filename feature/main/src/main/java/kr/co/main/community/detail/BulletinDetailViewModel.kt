@@ -123,9 +123,6 @@ internal class BulletinDetailViewModel @Inject constructor(
     override fun setIsShowDialog(boolean: Boolean) =
         updateState { copy(isShowDialog = boolean) }
 
-    override fun onCommentWritingInput(input: String) =
-        updateState { copy(commentWritingInput = input) }
-
     private fun setCurrentDetailBulletinId(id: Long) =
         updateState { copy(currentDetailBulletinId = id) }
 
@@ -133,6 +130,10 @@ internal class BulletinDetailViewModel @Inject constructor(
         updateState { copy(currentDetailBulletin = entity) }
 
     //---
+
+    override fun onCommentWritingInput(input: String) {
+        if (input.length <= 255) updateState { copy(commentWritingInput = input) }
+    }
 
     override fun showReportBottomSheet() {
         updateState {
