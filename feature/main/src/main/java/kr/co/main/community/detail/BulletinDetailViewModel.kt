@@ -38,10 +38,9 @@ internal interface BulletinDetailEvent {
     // DreamDialog
     fun dismissDialog()
     fun showDialog(
-        header: String,
+        header: String? = null,
         description: String,
         onConfirm: () -> Unit,
-        onDismiss: () -> Unit,
     )
 
     companion object {
@@ -55,10 +54,9 @@ internal interface BulletinDetailEvent {
             override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {}
             override fun deleteComment(id: Long) {}
             override fun showDialog(
-                header: String,
+                header: String?,
                 description: String,
                 onConfirm: () -> Unit,
-                onDismiss: () -> Unit,
             ) {
             }
 
@@ -98,10 +96,9 @@ internal class BulletinDetailViewModel @Inject constructor(
 
         // dream dialog
         val isShowDialog: Boolean = false,
-        val dialogHeader: String = "dialogHeader",
+        val dialogHeader: String? = "dialogHeader",
         val dialogDescription: String = "dialogDescription",
         val dialogOnConfirm: () -> Unit = {},
-        val dialogOnDismiss: () -> Unit = {},
 
         // simple dialog
         val isShowSimpleDialog: Boolean = false,
@@ -149,7 +146,6 @@ internal class BulletinDetailViewModel @Inject constructor(
                             header = "",
                             description = "\"$it\"으로 신고하시겠습니까?",
                             onConfirm = { showSimpleDialog("신고되었습니다") },
-                            onDismiss = ::dismissDialog,
                         )
                     }
                 },
@@ -167,18 +163,16 @@ internal class BulletinDetailViewModel @Inject constructor(
     }
 
     override fun showDialog(
-        header: String,
+        header: String?,
         description: String,
         onConfirm: () -> Unit,
-        onDismiss: () -> Unit,
     ) {
         updateState {
             copy(
+                isShowDialog = true,
                 dialogHeader = header,
                 dialogDescription = description,
                 dialogOnConfirm = onConfirm,
-                dialogOnDismiss = onDismiss,
-                isShowDialog = true,
             )
         }
     }
@@ -270,8 +264,7 @@ internal class BulletinDetailViewModel @Inject constructor(
 
     override fun bookmarkBulletin() {
         loadingScope {
-            val changedBookmark =
-                communityRepository.bookmarkBulletin(state.value.currentDetailBulletinId)
+            communityRepository.bookmarkBulletin(state.value.currentDetailBulletinId)
 
             // 귀찮다 그냥 로드하자
             loadBulletin(state.value.currentDetailBulletinId)

@@ -203,7 +203,6 @@ internal fun BulletinDetailScreen(
                                                     event::showFailedDialog,
                                                 )
                                             },
-                                            onDismiss = event::dismissDialog,
                                         )
                                     },
                                 ) else listOf(
@@ -275,7 +274,6 @@ internal fun BulletinDetailScreen(
                                             header = "정말 삭제하시겠습니까?",
                                             description = "",
                                             onConfirm = { event.deleteComment(it.commentId) },
-                                            onDismiss = event::dismissDialog,
                                         )
                                     },
                                 ) else listOf(
@@ -316,7 +314,7 @@ internal fun BulletinDetailScreen(
                 header = state.dialogHeader,
                 description = state.dialogDescription,
                 onConfirm = state.dialogOnConfirm,
-                onDismissRequest = state.dialogOnDismiss,
+                onDismissRequest = event::dismissDialog,
             )
         }
 
