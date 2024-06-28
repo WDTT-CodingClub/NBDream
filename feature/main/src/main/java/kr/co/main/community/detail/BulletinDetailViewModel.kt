@@ -204,6 +204,7 @@ internal class BulletinDetailViewModel @Inject constructor(
                 commentDetail = state.value.commentWritingInput,
             )
             Timber.d("onPostCommentClick 코루틴) postedCommentId: $postedCommentId")
+            updateState { copy(commentWritingInput = "") }
 
             // 댓글 달면 글 다시 조회해서 댓글까지 갱신하도록.
             loadBulletin(state.value.currentDetailBulletinId)
