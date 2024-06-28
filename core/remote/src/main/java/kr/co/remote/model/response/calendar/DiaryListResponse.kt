@@ -12,7 +12,7 @@ internal data class DiaryListResponse(
     data class DiaryResponse(
         val id: Int,
         val date: String,
-        val holidayList: List<HolidayListResponse>,
+        val holidayList: List<HolidayResponse>,
         val weatherForecast: String,
         val workLaborer: Int,
         val workHours: Int,

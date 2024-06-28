@@ -8,7 +8,7 @@ import kr.co.data.model.data.calendar.HolidayData
 import kr.co.data.source.remote.HolidayRemoteDataSource
 import kr.co.remote.mapper.calendar.HolidayRemoteMapper
 import kr.co.remote.model.Dto
-import kr.co.remote.model.response.calendar.HolidayListResponse
+import kr.co.remote.model.response.calendar.HolidayResponse
 import javax.inject.Inject
 
 internal class HolidayRemoteDataSourceImpl @Inject constructor(
@@ -19,7 +19,7 @@ internal class HolidayRemoteDataSourceImpl @Inject constructor(
             parameter("solYear", year)
             parameter("solMonth", month)
         }
-            .body<Dto<List<HolidayListResponse.HolidayResponse>>>()
+            .body<Dto<List<HolidayResponse>>>()
             .data.map {
                 HolidayRemoteMapper.convert(it)
             }
