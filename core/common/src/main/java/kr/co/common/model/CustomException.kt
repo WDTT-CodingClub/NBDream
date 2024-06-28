@@ -5,7 +5,7 @@ import java.io.IOException
 class CustomException(
     message: String? = null,
     val customError: CustomErrorType? = null,
-    cause: Throwable? = null
+    val throwable: Throwable? = null
 ) : IOException(message)
 
 enum class CustomErrorType(val errorCode: Int) {

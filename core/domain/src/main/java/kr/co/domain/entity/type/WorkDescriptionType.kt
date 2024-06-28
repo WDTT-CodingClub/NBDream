@@ -48,7 +48,7 @@ enum class WorkDescriptionType(val koreanName: String) {
             PACK.koreanName -> PACK
             SHIP.koreanName -> SHIP
             ETC.koreanName -> ETC
-            else -> throw IllegalArgumentException("Unknown work type")
+            else -> throw IllegalArgumentException("WorkDescriptionType) Unknown work type")
         }
     }
 }

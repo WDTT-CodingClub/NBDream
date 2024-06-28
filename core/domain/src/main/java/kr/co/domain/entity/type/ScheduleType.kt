@@ -8,7 +8,7 @@ sealed class ScheduleType(val koreanName: String) {
         fun ofValue(koreanName: String) = when (koreanName) {
             All.koreanName -> All
             in CropType.entries.map { it.koreanName } -> Crop(CropType.ofValue(koreanName))
-            else -> throw IllegalArgumentException("Unknown schedule category")
+            else -> throw IllegalArgumentException("Schedule Type) Unknown schedule category")
         }
     }
 }
