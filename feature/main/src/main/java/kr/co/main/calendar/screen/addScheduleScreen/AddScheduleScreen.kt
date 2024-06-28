@@ -181,7 +181,7 @@ private fun DeleteScheduleDialog(
             header = stringResource(id = R.string.feature_main_calendar_add_schedule_delete_dialog_title),
             description = stringResource(id = R.string.feature_main_calendar_add_schedule_delete_dialog_description),
             onConfirm = onConfirm,
-            onDismiss = onDismiss
+            onDismissRequest = onDismiss
         )
     }
 }

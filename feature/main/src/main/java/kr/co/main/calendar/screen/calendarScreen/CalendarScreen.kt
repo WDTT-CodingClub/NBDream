@@ -372,7 +372,7 @@ private fun NavToMyPageDialog(
             header = stringResource(id = R.string.feature_main_calendar_nav_to_my_page_dialog_title),
             description = stringResource(id = R.string.feature_main_calendar_nav_to_my_page_dialog_description),
             onConfirm = onConfirm,
-            onDismiss = onDismiss
+            onDismissRequest = onDismiss
         )
     }
 }

@@ -34,8 +34,8 @@ fun DreamDialog(
     confirmText: String = stringResource(id = R.string.core_ui_dialog_confirm),
     dismissText: String = stringResource(id = R.string.core_ui_dialog_dismiss),
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    onDismissRequest: () -> Unit = onDismiss,
+    onDismiss: () -> Unit = {},
+    onDismissRequest: () -> Unit,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Column(
@@ -83,9 +83,11 @@ fun DreamDialog(
                 DiaButton(
                     modifier = Modifier.weight(1f),
                     text = dismissText,
-                    onClick = onDismiss
+                    onClick = {
+                        onDismissRequest()
+                        onDismiss()
+                    }
                 )
-
 
                 DiaButton(
                     modifier = Modifier.weight(1f),
@@ -127,8 +129,8 @@ private fun Preview() {
         DreamDialog(
             header = "로그아웃 하시겠어요?",
             description = "언제든지 다시 로그인 하실 수 있어요.",
-            onConfirm = { },
-            onDismiss = { }
+            onConfirm = {},
+            onDismissRequest = {}
         )
     }
 }
