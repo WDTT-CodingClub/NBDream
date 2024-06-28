@@ -127,8 +127,8 @@ private fun Preview() {
         DreamDialog(
             header = "로그아웃 하시겠어요?",
             description = "언제든지 다시 로그인 하실 수 있어요.",
-            onConfirm = { /*TODO*/ },
-            onDismiss = { /*TODO*/ }
+            onConfirm = { },
+            onDismiss = { }
         )
     }
 }
