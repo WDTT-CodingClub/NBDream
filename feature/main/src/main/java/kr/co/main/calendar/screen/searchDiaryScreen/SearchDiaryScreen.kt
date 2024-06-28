@@ -268,11 +268,11 @@ private fun RowScope.DateTab(
     Row(
         modifier = Modifier
             .weight(1f)
-            .clickable(onClick = onDateClick)
             .background(
                 color = MaterialTheme.colors.gray10,
                 shape = RoundedCornerShape(8.dp)
             )
+            .clickable(onClick = onDateClick)
             .padding(
                 vertical = 11.dp,
                 horizontal = 16.dp

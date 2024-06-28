@@ -18,6 +18,7 @@ import kr.co.remote.model.Dto
 import kr.co.remote.model.request.calendar.PostDiaryRequest
 import kr.co.remote.model.request.calendar.UpdateDiaryRequest
 import kr.co.remote.model.response.calendar.DiaryListResponse
+import java.time.LocalDate
 import javax.inject.Inject
 
 internal class DiaryRemoteDataSourceImpl @Inject constructor(
@@ -28,7 +29,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         year: String,
         month: String
     ): Flow<List<DiaryData>> =
-        client.get(GET_DIARY_LIST) {
+        client.get(DIARY_URL) {
             parameter("crop", crop)
             parameter("year", year)
             parameter("month", month)
@@ -40,7 +41,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
             .let { flowOf(it) }
 
     override suspend fun fetchDetail(id: Int): DiaryData =
-        client.get("$GET_DIARY_DETAIL/$id")
+        client.get("$DIARY_URL/$id")
             .body<Dto<DiaryListResponse.DiaryResponse>>()
             .data.let { DiaryRemoteMapper.convert(it) }
 
@@ -50,7 +51,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         startDate: String,
         endDate: String
     ): Flow<List<DiaryData>> =
-        client.get(SEARCH_DIARY_LIST)
+        client.get(DIARY_SEARCH_URL)
         {
             parameter("crop", crop)
             parameter("query", query)
@@ -65,16 +66,17 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun create(
         crop:String,
-        date: String,
+        date: LocalDate,
         holidayList: List<HolidayData>,
         weatherForecast: String,
+        imageUrls: List<String>,
         workLaborer: Int,
         workHours: Int,
         workArea: Int,
         workDescriptions: List<DiaryData.WorkDescriptionData>,
         memo: String
     ) {
-        client.post(POST_DIARY) {
+        client.post(DIARY_URL) {
             setBody(
                 PostDiaryRequest(
                     crop = crop,
@@ -88,6 +90,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
                         )
                     },
                     weatherForecast = weatherForecast,
+                    imageUrls = imageUrls,
                     workLaborer = workLaborer,
                     workHours = workHours,
                     workArea = workArea,
@@ -115,7 +118,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         workDescriptions: List<DiaryData.WorkDescriptionData>,
         memo: String
     ) {
-        client.put("$PUT_DIARY/$id") {
+        client.put("$DIARY_URL/$id") {
             setBody(
                 UpdateDiaryRequest(
                     id = id,
@@ -146,15 +149,11 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun delete(id: Int) {
-        client.delete("$DELETE_DIARY/$id")
+        client.delete("$DIARY_URL/$id")
     }
 
-    companion object {
-        private const val GET_DIARY_LIST = "api/calendar/diary"
-        private const val SEARCH_DIARY_LIST = "api/calendar/diary/search"
-        private const val GET_DIARY_DETAIL = "api/calendar/diary/detail"
-        private const val POST_DIARY = "api/calendar/diary/register"
-        private const val PUT_DIARY = "api/calendar/diary/update"
-        private const val DELETE_DIARY = "api/calendar/diary/delete"
+    private companion object {
+        const val DIARY_URL = "api/calendar/diary"
+        const val DIARY_SEARCH_URL = "api/calendar/diary/search"
     }
 }
