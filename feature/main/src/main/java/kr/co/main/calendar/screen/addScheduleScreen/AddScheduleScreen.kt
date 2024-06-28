@@ -24,7 +24,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,9 +82,6 @@ private fun AddScheduleScreen(
 ) {
     Timber.d("state: $state")
 
-//    val enableAction by remember {
-//        derivedStateOf { state.title.isNotEmpty() }
-//    }
     val enableAction by remember(state.title) {
         mutableStateOf(state.title.isNotEmpty())
     }

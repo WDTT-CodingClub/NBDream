@@ -5,7 +5,9 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +36,7 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import timber.log.Timber
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 @Composable
@@ -47,6 +50,7 @@ internal fun ScheduleTab(
     holidays: List<HolidayModel>,
     allSchedules: List<ScheduleModel>,
     cropSchedules: List<ScheduleModel>,
+    onEditClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -55,7 +59,7 @@ internal fun ScheduleTab(
     ) {
         Column(
             modifier = Modifier
-            .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState())
         ) {
             if (calendarCrop == null) {
                 FarmWorkCropEmptyCard(
@@ -83,9 +87,12 @@ internal fun ScheduleTab(
 
             ScheduleCard(
                 modifier = Modifier.padding(Paddings.large),
+                date = selectedDate,
                 schedules =
                 allSchedules.filter { selectedDate in (it.startDate..it.endDate) } +
-                        cropSchedules.filter { selectedDate in (it.startDate..it.endDate) }
+                        cropSchedules.filter { selectedDate in (it.startDate..it.endDate) },
+                holidays = holidays.filter { selectedDate == it.date },
+                onEditClick = onEditClick
             )
         }
     }
@@ -94,7 +101,7 @@ internal fun ScheduleTab(
 @Composable
 private fun FarmWorkCropEmptyCard(
     modifier: Modifier = Modifier
-){
+) {
     // TODO 클릭 시 온보딩 작물 선택 화면으로 이동
     Card(
         modifier = modifier,
@@ -229,7 +236,10 @@ private fun CategoryIndicatorListItem(
 
 @Composable
 private fun ScheduleCard(
+    date: LocalDate,
     schedules: List<ScheduleModel>,
+    holidays: List<HolidayModel>,
+    onEditClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -238,9 +248,57 @@ private fun ScheduleCard(
             containerColor = Color.White
         )
     ) {
-        Row {
-            for (schedule in schedules) {
-                ScheduleContent(schedule = schedule)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Paddings.xlarge)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Paddings.medium)
+            ) {
+                Text(
+                    text = "${date.dayOfMonth}월 ${date.dayOfMonth}일 ${
+                        when (date.dayOfWeek) { //TODO DayOfWeek 확장 함수로 빼기 & string resource 사용
+                            DayOfWeek.SUNDAY -> "일"
+                            DayOfWeek.MONDAY -> "월"
+                            DayOfWeek.TUESDAY -> "화"
+                            DayOfWeek.WEDNESDAY -> "수"
+                            DayOfWeek.THURSDAY -> "목"
+                            DayOfWeek.FRIDAY -> "금"
+                            DayOfWeek.SATURDAY -> "토"
+                        }
+                    }",
+                    style = MaterialTheme.typo.h4
+                )
+                if (date == LocalDate.now()) {
+                    Text(
+                        text = "오늘",
+                        style = MaterialTheme.typo.body1,
+                        color = MaterialTheme.colors.primary
+                    )
+                }
+                for (holiday in holidays) {
+                    holidays.sortedBy { it.type.priority }.forEach {
+                        Text(
+                            text = it.name,
+                            style = MaterialTheme.typo.body1,
+                            color =
+                            if (it.isHoliday) MaterialTheme.colors.red1
+                            else MaterialTheme.colors.text2
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
+            Column{
+                for (schedule in schedules) {
+                    ScheduleContent(
+                        modifier = Modifier.padding(Paddings.large),
+                        onEditClick = { onEditClick(schedule.id) },
+                        schedule = schedule
+                    )
+                }
             }
         }
     }

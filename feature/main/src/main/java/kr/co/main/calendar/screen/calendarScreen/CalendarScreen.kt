@@ -170,6 +170,13 @@ private fun CalendarScreen(
                                 holidays = state.holidays,
                                 allSchedules = state.allSchedules,
                                 cropSchedules = state.cropSchedules,
+                                onEditClick = { scheduleId ->
+                                    navToAddSchedule(
+                                        state.crop?.type?.nameId,
+                                        ScreenModeType.EDIT_MODE.id,
+                                        scheduleId
+                                    )
+                                }
                             )
 
                         CalendarTabType.DIARY.pagerIndex ->
