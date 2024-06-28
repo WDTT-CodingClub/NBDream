@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import kr.co.main.R
 import kr.co.main.calendar.CalendarDesignToken
@@ -58,6 +59,7 @@ import kr.co.main.model.calendar.type.CalendarTabType
 import kr.co.main.model.calendar.type.CropModelColorType
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.ScreenModeType
+import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.icon.dreamicon.Search
@@ -71,6 +73,7 @@ import timber.log.Timber
 
 @Composable
 internal fun CalendarRoute(
+    navController: NavController,
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
@@ -78,6 +81,19 @@ internal fun CalendarRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     Timber.d("state: $state")
+
+    val reinitialize =
+        navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(CalendarNavGraph.ARG_REINITIALIZE)
+
+    LaunchedEffect(reinitialize) {
+        Timber.d("reinitialize: $reinitialize")
+        if (reinitialize == true) viewModel.reinitialize()
+
+        navController.currentBackStackEntry?.savedStateHandle?.set(
+            CalendarNavGraph.ARG_REINITIALIZE,
+            false
+        )
+    }
 
     CalendarScreen(
         modifier = Modifier.fillMaxSize(),

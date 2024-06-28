@@ -61,6 +61,7 @@ import java.time.LocalDate
 @Composable
 internal fun AddScheduleRoute(
     popBackStack: () -> Unit,
+    navigateToCalendar: () -> Unit,
     viewModel: AddScheduleViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -69,7 +70,8 @@ internal fun AddScheduleRoute(
         modifier = Modifier.fillMaxSize(),
         state = state,
         event = viewModel.event,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        navigateToCalendar = navigateToCalendar
     )
 }
 
@@ -78,6 +80,7 @@ private fun AddScheduleScreen(
     state: AddScheduleViewModel.AddScheduleScreenState,
     event: AddScheduleScreenEvent,
     popBackStack: () -> Unit,
+    navigateToCalendar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Timber.d("state: $state")
@@ -98,9 +101,18 @@ private fun AddScheduleScreen(
                 actionHintId = R.string.feature_main_calendar_add_schedule_input_hint_title,
                 enableAction = enableAction,
                 popBackStack = popBackStack,
-                onPostClick = event::onPostClick,
-                onEditClick = event::onEditClick,
-                onDeleteClick = event::onDeleteClick
+                onPostClick = {
+                    event.onPostClick()
+                    navigateToCalendar()
+                },
+                onEditClick = {
+                    event.onEditClick()
+                    navigateToCalendar()
+                },
+                onDeleteClick = {
+                    event.onDeleteClick()
+                    navigateToCalendar()
+                }
             )
         }
     ) { innerPadding ->

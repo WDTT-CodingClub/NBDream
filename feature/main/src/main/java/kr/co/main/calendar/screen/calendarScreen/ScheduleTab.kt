@@ -294,7 +294,7 @@ private fun ScheduleCard(
             Column{
                 for (schedule in schedules) {
                     ScheduleContent(
-                        modifier = Modifier.padding(Paddings.large),
+                        modifier = Modifier.padding(Paddings.medium),
                         onEditClick = { onEditClick(schedule.id) },
                         schedule = schedule
                     )

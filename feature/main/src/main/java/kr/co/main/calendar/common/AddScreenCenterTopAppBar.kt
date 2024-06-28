@@ -41,8 +41,6 @@ internal fun AddScreenCenterTopAppBar(
     modifier: Modifier = Modifier,
     enableAction: Boolean = true
 ) {
-    Timber.d("")
-
     DreamCenterTopAppBar(
         modifier = modifier,
         title = stringResource(
@@ -67,10 +65,7 @@ internal fun AddScreenCenterTopAppBar(
                     TopAppBarActionText(
                         actionTitleId = R.string.feature_main_calendar_top_app_bar_post,
                         actionHintId = actionHintId,
-                        onClick = {
-                            onPostClick()
-                            popBackStack()
-                        },
+                        onClick = onPostClick,
                         enableAction = enableAction
                     )
                 }
@@ -82,7 +77,7 @@ internal fun AddScreenCenterTopAppBar(
                         TopAppBarActionText(
                             actionTitleId = R.string.feature_main_calendar_top_app_bar_edit,
                             actionHintId = actionHintId,
-                            onClick = {expandDropDown = true},
+                            onClick = { expandDropDown = true },
                             enableAction = enableAction
                         )
 
@@ -92,17 +87,11 @@ internal fun AddScreenCenterTopAppBar(
                         ) {
                             CardDropDownMenuItem(
                                 menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_edit,
-                                onClick = {
-                                    onEditClick()
-                                    popBackStack()
-                                }
+                                onClick = onEditClick
                             )
                             CardDropDownMenuItem(
                                 menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_delete,
-                                onClick = {
-                                    onDeleteClick() // TODO 삭제 다이얼로그 표시 후 일정 삭제
-                                    popBackStack()
-                                }
+                                onClick = onDeleteClick // TODO 삭제 다이얼로그 표시 후 일정 삭제
                             )
                         }
                     }

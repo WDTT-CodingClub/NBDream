@@ -59,8 +59,7 @@ internal fun ScheduleContent(
                 .scale(0.8f)
                 .clickable{
                     onEditClick()
-                }
-                .padding(Paddings.medium),
+                },
             imageVector = DreamIcon.Edit,
             tint = MaterialTheme.colors.gray5,
             contentDescription = ""

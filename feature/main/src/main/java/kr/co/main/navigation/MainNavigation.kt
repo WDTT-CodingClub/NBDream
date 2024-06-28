@@ -106,6 +106,7 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.CALENDAR.route
                 ) {
                     CalendarRoute(
+                        navController = navController,
                         navToAddSchedule = { cropNameId, screenModeId, scheduleId ->
                             navController.navigate(
                                 CalendarNavGraph.AddScheduleRoute.buildRoute(
@@ -204,7 +205,14 @@ fun NavGraphBuilder.mainNavGraph(
         arguments = CalendarNavGraph.AddScheduleRoute.arguments
     ) {
         AddScheduleRoute(
-            popBackStack = navController::popBackStack
+            popBackStack = navController::popBackStack,
+            navigateToCalendar = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    CalendarNavGraph.ARG_REINITIALIZE,
+                    true
+                )
+                navController.popBackStack()
+            }
         )
     }
     composable(
@@ -268,7 +276,10 @@ fun NavGraphBuilder.mainNavGraph(
         AccountBookContentRoute(
             popBackStack = {
                 if (isUpdate) {
-                    navController.previousBackStackEntry?.savedStateHandle?.set("reinitialize", true)
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "reinitialize",
+                        true
+                    )
                 }
                 navController.popBackStack()
 
@@ -332,7 +343,7 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         BulletinWritingRoute(
             popBackStack = navController::popBackStack,
-            navigationToDetail = {id ->
+            navigationToDetail = { id ->
                 navController.popBackStack()
                 navController.navigate(
                     "${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$id"

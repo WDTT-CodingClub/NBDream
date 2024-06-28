@@ -78,6 +78,13 @@ internal class CalendarScreenViewModel @Inject constructor(
         updateAllSchedules()
     }
 
+    fun reinitialize() {
+        Timber.d("reinitialize) called")
+        updateAllSchedules()
+        updateCropSchedules()
+        updateDiaries()
+    }
+
     override fun onYearSelect(year: Int) {
         Timber.d("onYearSelect) year: $year")
         updateYear(year)
