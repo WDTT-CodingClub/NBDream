@@ -77,7 +77,8 @@ internal fun BulletinWritingRoute(
         viewModel.complete.collect { complete ->
             if (complete) {
                 state.id?.let { id -> navigationToDetail(id) } ?: run {
-                    navigationToCommunity() }
+                    navigationToCommunity()
+                }
             }
         }
     }
@@ -203,11 +204,7 @@ internal fun BulletinWritingScreen(
                 ) {
                     TextField(
                         value = state.bulletinWritingInput,
-                        onValueChange = {
-                            if (it.length <= 3000) {
-                                onBulletinWritingInputChanged(it)
-                            }
-                        },
+                        onValueChange = onBulletinWritingInputChanged,
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = Color.Transparent,
                             focusedContainerColor = Color.Transparent,

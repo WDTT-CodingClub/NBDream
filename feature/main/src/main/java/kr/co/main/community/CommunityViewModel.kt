@@ -61,8 +61,6 @@ internal class CommunityViewModel @Inject constructor(
     override fun setIsShowBottomSheet(boolean: Boolean) =
         updateState { copy(isShowBottomSheet = boolean) }
 
-    override fun onSearchInputChanged(input: String) = updateState { copy(searchInput = input) }
-
     override fun setBulletinEntities(entities: List<BulletinEntity>) =
         updateState { copy(bulletinEntities = entities) }
 
@@ -76,6 +74,11 @@ internal class CommunityViewModel @Inject constructor(
     }
 
     //---
+
+    override fun onSearchInputChanged(input: String) {
+        if (input.length <= 255 && '\n' !in input)
+            updateState { copy(searchInput = input) }
+    }
 
     override fun onSearchRun() {
         Timber.d("onSearchRun 시작, searchInput: ${state.value.searchInput}")

@@ -259,9 +259,7 @@ internal fun BulletinDetailScreen(
                         isAuthor = state.currentDetailBulletin.authorId == it.memberId,
                         onMoreVertClick = {
                             event.showBottomSheet(
-                                // TODO: 댓글 본인인지 확인해서 표시
-                                listOf(
-                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
+                                if (it.isAuthor) listOf(
                                     TextAndOnClick("삭제하기") {
                                         event.showDialog(
                                             header = "정말 삭제하시겠습니까?",
@@ -270,6 +268,8 @@ internal fun BulletinDetailScreen(
                                             onDismiss = { event.setIsShowDialog(false) },
                                         )
                                     },
+                                ) else listOf(
+                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
                                 )
                             )
                         },
@@ -519,13 +519,17 @@ private fun BottomCommentWritingBar(
             ) {
                 it()
             }
-            TextButton(onClick = {
-                event.onPostCommentClick()
-                keyboardController?.hide()
-            }) {
+            TextButton(
+                onClick = {
+                    event.onPostCommentClick()
+                    keyboardController?.hide()
+                },
+                enabled = state.commentWritingInput.isNotBlank(),
+            ) {
                 Text(
                     "보내기",
-                    color = MaterialTheme.colors.gray5,
+                    color = if (state.commentWritingInput.isNotBlank()) MaterialTheme.colors.gray5
+                    else MaterialTheme.colors.gray7,
                     style = MaterialTheme.typo.button,
                 )
             }

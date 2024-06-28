@@ -11,6 +11,7 @@ data class CommentResData(
     val nickname: String? = null,
     val profileImageUrl: String? = null,
     val content: String? = null,
+    val isAuthor: Boolean? = null,
     val createdTime: LocalDateTime,
     val lastModifiedTime: String? = null,
 )
@@ -23,6 +24,7 @@ internal fun CommentResData.convertToEntity(): CommentEntity? {
         this.nickname == null ||
         this.profileImageUrl == null ||
         this.content == null ||
+        this.isAuthor == null ||
         this.lastModifiedTime == null ||
         this.bulletinId == null ||
         this.bulletinAuthorName == null
@@ -35,6 +37,7 @@ internal fun CommentResData.convertToEntity(): CommentEntity? {
         nickname = this.nickname,
         profileImageUrl = this.profileImageUrl,
         content = this.content,
+        isAuthor = this.isAuthor,
         createdTime = this.createdTime,
         lastModifiedTime = this.lastModifiedTime,
     )
