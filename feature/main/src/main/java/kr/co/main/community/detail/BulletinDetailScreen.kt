@@ -193,16 +193,13 @@ internal fun BulletinDetailScreen(
                         Spacer(modifier = Modifier.weight(1f))
                         IconButton(onClick = {
                             event.showBottomSheet(
-                                listOf(
-                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
-                                    TextAndOnClick("수정하기") {
-                                        navigateToUpdate(state.currentDetailBulletinId)
-                                    },
+                                if (state.currentDetailBulletin.author) listOf(
+                                    TextAndOnClick("수정하기") { navigateToUpdate(state.currentDetailBulletinId) },
                                     TextAndOnClick("삭제하기") { event.setIsShowDeleteCheckDialog(true) },
-                                ),
+                                ) else listOf(
+                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
+                                )
                             )
-
-                            event.setIsShowBulletinMoreBottomSheet(true)
                         }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
@@ -262,7 +259,9 @@ internal fun BulletinDetailScreen(
                         isAuthor = state.currentDetailBulletin.authorId == it.memberId,
                         onMoreVertClick = {
                             event.showBottomSheet(
+                                // TODO: 댓글 본인인지 확인해서 표시
                                 listOf(
+                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
                                     TextAndOnClick("삭제하기") {
                                         event.showDialog(
                                             header = "정말 삭제하시겠습니까?",
