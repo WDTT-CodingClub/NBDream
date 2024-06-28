@@ -151,6 +151,8 @@ private fun ScheduleCalendarCard(
     cropSchedules: List<ScheduleModel>,
     modifier: Modifier = Modifier
 ) {
+    Timber.d("ScheduleCalendarCard) year: $calendarYear, month: $calendarMonth, selectedDate: $selectedDate")
+
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(

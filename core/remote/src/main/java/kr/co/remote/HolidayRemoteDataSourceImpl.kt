@@ -19,8 +19,8 @@ internal class HolidayRemoteDataSourceImpl @Inject constructor(
             parameter("solYear", year)
             parameter("solMonth", month)
         }
-            .body<Dto<HolidayListResponse>>()
-            .data.holidayList.map {
+            .body<Dto<List<HolidayListResponse.HolidayResponse>>>()
+            .data.map {
                 HolidayRemoteMapper.convert(it)
             }
 
