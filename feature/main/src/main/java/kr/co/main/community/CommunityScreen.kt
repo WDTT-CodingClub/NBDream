@@ -99,29 +99,29 @@ internal fun CommunityScreen(
                     title = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clickable {
+                                    event.showBottomSheet(
+                                        CropType.entries.map {
+                                            TextAndOnClick(
+                                                text = it.koreanName,
+                                                onClick = { event.onSelectBoard(it) }
+                                            )
+                                        }
+                                    )
+                                }
                         ) {
                             Text(
                                 text = "${state.currentBoard.koreanName} 게시판",
                                 style = MaterialTheme.typo.h2
                             )
-                            IconButton(onClick = {
-                                event.showBottomSheet(
-                                    CropType.entries.map {
-                                        TextAndOnClick(
-                                            text = it.koreanName,
-                                            onClick = { event.onSelectBoard(it) }
-                                        )
-                                    }
-                                )
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = "게시판 선택 ArrowDropDown",
-                                    modifier = Modifier
-                                        .width(32.dp)
-                                        .height(32.dp),
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = "게시판 선택 ArrowDropDown",
+                                modifier = Modifier
+                                    .width(32.dp)
+                                    .height(32.dp),
+                            )
                         }
                     },
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -137,8 +137,16 @@ internal fun CommunityScreen(
                             }),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "게시판 탑바 Add 아이콘")
-                        Text("글 쓰기")
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "게시판 탑바 Add 아이콘",
+                            tint = MaterialTheme.colors.primary
+                        )
+                        Text(
+                            text = "글 쓰기",
+                            color = MaterialTheme.colors.primary,
+                            style = MaterialTheme.typo.h4
+                        )
                     }
                 }
                 CommunityCategoryTabLayout(
@@ -170,7 +178,7 @@ internal fun CommunityScreen(
                             vertical = 8.dp
                         )
                         .semantics {
-                            contentDescription = "영농일지 검색"
+                            contentDescription = "게시판 검색"
                         },
                     value = state.searchInput,
                     onValueChange = {
@@ -189,11 +197,6 @@ internal fun CommunityScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End,
                     ) {
-                        Box(
-                            modifier = Modifier.weight(1f),
-                        ) {
-                            it()
-                        }
                         Icon(
                             modifier = Modifier
                                 .size(24.dp)
@@ -202,6 +205,11 @@ internal fun CommunityScreen(
                             contentDescription = null,
                             tint = MaterialTheme.colors.gray6,
                         )
+                        Box(
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            it()
+                        }
                     }
                 }
             }

@@ -32,7 +32,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,10 +52,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
 import kr.co.main.R
+import kr.co.main.accountbook.model.EntryType
 import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
@@ -62,11 +66,21 @@ import java.io.File
 @Composable
 internal fun BulletinWritingRoute(
     popBackStack: () -> Unit,
+    navigationToDetail: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BulletinWritingViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.complete.collect { complete ->
+            if (complete) {
+                state.id?.let { id -> navigationToDetail(id) } ?: run { popBackStack }
+            }
+        }
+    }
+
     BulletinWritingScreen(
         modifier = modifier,
         state = state,
@@ -75,7 +89,7 @@ internal fun BulletinWritingRoute(
         onAddImagesClick = viewModel::onAddImagesClick,
         onBulletinWritingInputChanged = viewModel::onBulletinWritingInputChanged,
         onRemoveImageClick = viewModel::onRemoveImageClick,
-        onFinishWritingClick = viewModel::onFinishWritingClick,
+        onFinishWritingClick = viewModel::onPerformBulletin,
         setIsShowWaitingDialog = viewModel::setIsShowWaitingDialog,
         onCategoryClick = viewModel::onCategoryClick,
     )
@@ -117,12 +131,14 @@ internal fun BulletinWritingScreen(
                         Text(
                             text = "등록",
                             style = MaterialTheme.typo.body2,
-                            color = MaterialTheme.colors.gray3
+                            color = MaterialTheme.colors.gray1
                         )
                     }
                 },
+                colorBackground = true
             )
         },
+        contentColor = MaterialTheme.colors.white
     ) { paddingValues ->
 
         val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
@@ -133,7 +149,8 @@ internal fun BulletinWritingScreen(
         )
 
         LazyColumn(
-            modifier = Modifier.scaffoldBackground(paddingValues),
+            modifier = Modifier
+                .scaffoldBackground(paddingValues),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
 //            item {
@@ -169,30 +186,66 @@ internal fun BulletinWritingScreen(
                         CategoryButton(
                             onClick = { onCategoryClick(category) },
                             text = category.koreanName,
-                            isSelected = state.currentCategory == category,
+                            isSelected = state.currentCategory == category
                         )
                     }
                 }
             }
             item {
-                TextField(
-                    value = state.bulletinWritingInput,
-                    onValueChange = {
-                        if (it.length <= 3000) {
-                            onBulletinWritingInputChanged(it)
-                        }
-                    },
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp),
-                    placeholder = { Text("'${state.currentBoard.koreanName}'에 대해 이야기해보세요!") },
+                        .background(
+                            color = MaterialTheme.colors.gray9,
+                            shape = Shapes.medium
+                        )
+                ) {
+                    TextField(
+                        value = state.bulletinWritingInput,
+                        onValueChange = {
+                            if (it.length <= 3000) {
+                                onBulletinWritingInputChanged(it)
+                            }
+                        },
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            cursorColor = Color.Transparent
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp),
+                        placeholder = {
+                            Text(
+                                text = "'${state.currentBoard.koreanName}'에 대해 이야기해보세요!",
+                                color = MaterialTheme.colors.gray4,
+                                style = MaterialTheme.typo.body1
+                            )
+                        },
+                    )
+                }
+            }
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "${state.bulletinWritingInput.length}/3000",
+                        style = MaterialTheme.typo.label,
+                        color = MaterialTheme.colors.gray4,
+                        modifier = Modifier.align(Alignment.CenterEnd)
+                    )
+                }
+
+            }
+            item {
+                Text(
+                    text = "사진",
+                    style = MaterialTheme.typo.h4
                 )
-            }
-            item {
-                Text("${state.bulletinWritingInput.length}/3000")
-            }
-            item {
-                Text("사진")
             }
             item {
                 LazyRow(
@@ -204,7 +257,7 @@ internal fun BulletinWritingScreen(
                             modifier = Modifier
                                 .size(120.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color.LightGray)
+                                .background(MaterialTheme.colors.gray9)
                                 .clickable {
                                     multiplePhotoPickerLauncher.launch(
                                         PickVisualMediaRequest(
@@ -218,8 +271,14 @@ internal fun BulletinWritingScreen(
                                 Icon(
                                     painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.outline_photo_camera_24),
                                     contentDescription = "카메라 아이콘",
+                                    tint = MaterialTheme.colors.gray5
                                 )
-                                Text("사진 추가")
+                                Text(
+                                    text = "사진 추가",
+                                    color = MaterialTheme.colors.gray5,
+                                    style = MaterialTheme.typo.button,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
                             }
                         }
                     }
@@ -228,26 +287,29 @@ internal fun BulletinWritingScreen(
                             modifier = Modifier
                                 .size(120.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color.LightGray),
+                                .background(MaterialTheme.colors.gray9),
                             contentAlignment = Alignment.Center,
                         ) {
                             AsyncImage(
                                 model = it.uri,
                                 contentDescription = "image",
                                 contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(120.dp)
                             )
                             IconButton(
                                 onClick = { onRemoveImageClick(it) },
-                                modifier = Modifier.align(Alignment.TopEnd),
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .align(Alignment.TopEnd),
                                 colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = Color(
-                                        0x99999999
-                                    )
+                                    containerColor = MaterialTheme.colors.gray1
                                 ),
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Clear,
-                                    contentDescription = "이미지 삭제 아이콘",
+                                    contentDescription = "삭제 아이콘",
+                                    tint = MaterialTheme.colors.white,
                                 )
                             }
                         }
@@ -255,15 +317,6 @@ internal fun BulletinWritingScreen(
                 }
             }
         }
-
-        if (state.isShowWaitingDialog) AlertDialogExample(
-            onDismissRequest = { setIsShowWaitingDialog(false) },
-            onConfirmation = {},
-            dialogTitle = "title",
-            dialogText = "text",
-            icon = null,
-        )
-
     }
 }
 
@@ -277,7 +330,7 @@ private fun CategoryButton(
     TextButton(
         onClick = onClick,
         modifier = modifier,
-        shape = RoundedCornerShape(40),
+        shape = Shapes.medium,
         colors = if (isSelected) ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colors.gray4,
         ) else ButtonDefaults.textButtonColors(
@@ -288,6 +341,7 @@ private fun CategoryButton(
             text = text,
             modifier = Modifier.padding(horizontal = 8.dp),
             color = if (isSelected) MaterialTheme.colors.white else MaterialTheme.colors.gray4,
+            style = MaterialTheme.typo.body1
         )
     }
 }

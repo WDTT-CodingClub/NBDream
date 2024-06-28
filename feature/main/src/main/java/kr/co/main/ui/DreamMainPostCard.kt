@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -67,7 +70,9 @@ internal fun DreamMainPostCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                modifier = Modifier.size(54.dp),
+                modifier = Modifier
+                    .size(54.dp)
+                    .clip(shape = CircleShape),
                 model = bulletin.profileImageUrl,
                 contentDescription = "작성자 프로필 이미지",
                 contentScale = ContentScale.Crop,
@@ -154,7 +159,9 @@ private fun CommentRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         AsyncImage(
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier
+                .size(40.dp)
+                .clip(shape = CircleShape),
             model = comment.profileImageUrl,
             contentDescription = "${comment.nickname}의 프로필 이미지"
         )
@@ -189,9 +196,11 @@ private fun ImageGrid(imageUrls: List<String>) {
                 contentDescription = "게시글 이미지",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(294 / 218f)
+                    .aspectRatio(294 / 218f),
+                contentScale = ContentScale.Crop
             )
         }
+
         2 -> {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -203,11 +212,13 @@ private fun ImageGrid(imageUrls: List<String>) {
                         contentDescription = "게시글 이미지",
                         modifier = Modifier
                             .weight(1f)
-                            .aspectRatio(147 / 218f)
+                            .aspectRatio(147 / 218f),
+                        contentScale = ContentScale.Crop
                     )
                 }
             }
         }
+
         3 -> {
             Row(
                 modifier = Modifier
@@ -219,7 +230,8 @@ private fun ImageGrid(imageUrls: List<String>) {
                     model = imageUrls[0],
                     contentDescription = "게시글 이미지",
                     modifier = Modifier
-                        .fillMaxWidth(189 / 294f)
+                        .fillMaxWidth(189 / 294f),
+                    contentScale = ContentScale.Crop
                 )
 
                 Column(
@@ -234,12 +246,14 @@ private fun ImageGrid(imageUrls: List<String>) {
                             contentDescription = "게시글 이미지",
                             modifier = Modifier
                                 .weight(1f)
-                                .aspectRatio(1f)
+                                .aspectRatio(1f),
+                            contentScale = ContentScale.Crop
                         )
                     }
                 }
             }
         }
+
         else -> {
             Row(
                 modifier = Modifier
@@ -251,7 +265,8 @@ private fun ImageGrid(imageUrls: List<String>) {
                     model = imageUrls[0],
                     contentDescription = "게시글 이미지",
                     modifier = Modifier
-                        .fillMaxWidth(189 / 294f)
+                        .fillMaxWidth(189 / 294f),
+                    contentScale = ContentScale.Crop
                 )
 
                 Column(
@@ -265,7 +280,8 @@ private fun ImageGrid(imageUrls: List<String>) {
                         contentDescription = "게시글 이미지",
                         modifier = Modifier
                             .weight(1f)
-                            .aspectRatio(97 / 105f)
+                            .aspectRatio(97 / 105f),
+                        contentScale = ContentScale.Crop
                     )
                     Box(
                         modifier = Modifier
@@ -275,7 +291,8 @@ private fun ImageGrid(imageUrls: List<String>) {
                         AsyncImage(
                             model = imageUrls[2],
                             contentDescription = "게시글 이미지",
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
                         )
                         Box(
                             modifier = Modifier
