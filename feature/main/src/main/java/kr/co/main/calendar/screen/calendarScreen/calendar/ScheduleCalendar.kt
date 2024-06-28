@@ -100,7 +100,7 @@ private fun rememberScheduleCalendarStateHolder(
     holidays: List<HolidayModel> = emptyList(),
     allSchedules: List<ScheduleModel> = emptyList(),
     cropSchedules: List<ScheduleModel> = emptyList(),
-) = remember {
+) = remember(year, month, selectedDate, onDateSelect, holidays, allSchedules, cropSchedules) {
     ScheduleCalendarStateHolder(
         year, month, selectedDate, onDateSelect,
         holidays, allSchedules, cropSchedules
@@ -194,7 +194,9 @@ private fun ScheduleCalendarDateRow(
                     ),
                 date = date,
                 isSelected = (date == selectedDate),
-                isHoliday = holidays.any { it.date == date } or (date.dayOfWeek == DayOfWeek.SUNDAY),
+                isHoliday = holidays.any {
+                    it.date == date && it.isHoliday
+                } or (date.dayOfWeek == DayOfWeek.SUNDAY),
             )
         }
     }
