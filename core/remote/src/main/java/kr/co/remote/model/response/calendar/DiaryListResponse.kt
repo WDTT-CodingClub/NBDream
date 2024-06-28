@@ -1,16 +1,18 @@
 package kr.co.remote.model.response.calendar
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class DiaryListResponse(
+    @SerialName("response")
     val diaryList: List<DiaryResponse>
 ) {
     @Serializable
     data class DiaryResponse(
         val id: Int,
         val date: String,
-        val holidayList: List<HolidayListResponse>,
+        val holidayList: List<HolidayResponse>,
         val weatherForecast: String,
         val workLaborer: Int,
         val workHours: Int,

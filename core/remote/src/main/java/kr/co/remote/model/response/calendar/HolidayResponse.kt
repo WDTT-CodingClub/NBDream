@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class HolidayListResponse(
+internal data class HolidayResponse(
         @SerialName("localDate")
         val date: String,
         @SerialName("dateName")

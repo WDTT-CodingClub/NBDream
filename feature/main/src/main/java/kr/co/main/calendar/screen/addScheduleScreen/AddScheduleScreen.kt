@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -22,7 +24,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,11 +44,12 @@ import kr.co.main.calendar.CalendarDesignToken
 import kr.co.main.calendar.common.AddScreenCenterTopAppBar
 import kr.co.main.calendar.common.CalendarCategoryIndicator
 import kr.co.main.calendar.common.CalendarContainerTextField
+import kr.co.main.calendar.common.CalendarDatePicker
 import kr.co.main.calendar.common.TEXT_FIELD_LIMIT_MULTI
 import kr.co.main.calendar.common.TEXT_FIELD_LIMIT_SINGLE
-import kr.co.main.calendar.common.CalendarDatePicker
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.ScheduleModelType
+import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.DropDown
 import kr.co.ui.theme.Paddings
@@ -59,6 +61,7 @@ import java.time.LocalDate
 @Composable
 internal fun AddScheduleRoute(
     popBackStack: () -> Unit,
+    navigateToCalendar: () -> Unit,
     viewModel: AddScheduleViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -67,7 +70,8 @@ internal fun AddScheduleRoute(
         modifier = Modifier.fillMaxSize(),
         state = state,
         event = viewModel.event,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        navigateToCalendar = navigateToCalendar
     )
 }
 
@@ -76,6 +80,7 @@ private fun AddScheduleScreen(
     state: AddScheduleViewModel.AddScheduleScreenState,
     event: AddScheduleScreenEvent,
     popBackStack: () -> Unit,
+    navigateToCalendar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Timber.d("state: $state")
@@ -96,14 +101,26 @@ private fun AddScheduleScreen(
                 actionHintId = R.string.feature_main_calendar_add_schedule_input_hint_title,
                 enableAction = enableAction,
                 popBackStack = popBackStack,
-                onPostClick = event::onPostClick,
-                onEditClick = event::onEditClick,
-                onDeleteClick = event::onDeleteClick
+                onPostClick = {
+                    event.onPostClick()
+                    navigateToCalendar()
+                },
+                onEditClick = {
+                    event.onEditClick()
+                    navigateToCalendar()
+                },
+                onDeleteClick = {
+                    event.onDeleteClick()
+                    navigateToCalendar()
+                }
             )
         }
     ) { innerPadding ->
         Surface(
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
+                .navigationBarsPadding()
+                .imePadding()
         ) {
             Column(
                 modifier = Modifier
@@ -149,6 +166,9 @@ private fun ScheduleCategoryPicker(
     onTypeSelect: (ScheduleModelType) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Timber.d("ScheduleDatePicker) calendarCrop: $calendarCrop, selectedType: $selectedType")
+
+    val context = LocalContext.current
     val density = LocalDensity.current
     var dropDownWidth by remember { mutableStateOf(0.dp) }
     var expandDropDown by remember { mutableStateOf(false) }
@@ -165,29 +185,51 @@ private fun ScheduleCategoryPicker(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS.dp))
                 .background(MaterialTheme.colors.gray9)
-                .apply {
-                    if (calendarCrop != null) clickable { expandDropDown = true }
+                .clickable {
+                    if (calendarCrop != null) {
+                        expandDropDown = true
+                    } else {
+                        Toast
+                            .makeText(
+                                context,
+                                context.getString(R.string.feature_main_calendar_add_schedule_type_picker_toast),
+                                Toast.LENGTH_LONG
+                            )
+                            .show()
+                    }
                 }
                 .onGloballyPositioned {
                     dropDownWidth = with(density) { it.size.width.toDp() }
                 }
         ) {
-            ScheduleCategoryPickerItem(
-                modifier = Modifier
-                    .padding(Paddings.xlarge)
-                    .align(Alignment.CenterStart),
-                scheduleType = selectedType
-            )
-            Icon(
-                modifier = Modifier
-                    .padding(end = Paddings.xlarge)
-                    .align(Alignment.CenterEnd),
-                imageVector = DreamIcon.DropDown,
-                contentDescription = "",
-            )
+            Row(
+                modifier = modifier.padding(Paddings.xlarge),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CalendarCategoryIndicator(
+                    modifier = Modifier.padding(end = Paddings.medium),
+                    categoryColor = selectedType.color
+                )
+                Text(
+                    text = stringResource(id = selectedType.nameId),
+                    style = MaterialTheme.typo.body1,
+                    color = MaterialTheme.colors.gray1
+                )
+            }
+            if (calendarCrop != null) {
+                Icon(
+                    modifier = Modifier
+                        .padding(end = Paddings.xlarge)
+                        .align(Alignment.CenterEnd),
+                    imageVector = DreamIcon.DropDown,
+                    contentDescription = "",
+                )
+            }
         }
         DropdownMenu(
-            modifier = Modifier.width(dropDownWidth),
+            modifier = Modifier
+                .width(dropDownWidth)
+                .background(Color.White),
             expanded = expandDropDown,
             onDismissRequest = {
                 expandDropDown = false
@@ -197,15 +239,25 @@ private fun ScheduleCategoryPicker(
                 modifier = modifier
             ) {
                 ScheduleCategoryPickerItem(
-                    modifier = Modifier.padding(end = Paddings.xlarge),
+                    modifier = Modifier.fillMaxWidth(),
                     scheduleType = ScheduleModelType.All,
-                    onTypeSelect = onTypeSelect
+                    onTypeSelect = {
+                        onTypeSelect(it)
+                        expandDropDown = false
+                        // onDismissRequest()
+                    }
                 )
-                ScheduleCategoryPickerItem(
-                    modifier = Modifier.padding(end = Paddings.xlarge),
-                    scheduleType = ScheduleModelType.Crop(calendarCrop!!),
-                    onTypeSelect = onTypeSelect
-                )
+                if (calendarCrop != null) {
+                    ScheduleCategoryPickerItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        scheduleType = ScheduleModelType.Crop(calendarCrop),
+                        onTypeSelect = {
+                            onTypeSelect(it)
+                            expandDropDown = false
+                            // onDismissRequest()
+                        }
+                    )
+                }
             }
         }
     }
@@ -215,13 +267,14 @@ private fun ScheduleCategoryPicker(
 private fun ScheduleCategoryPickerItem(
     scheduleType: ScheduleModelType,
     modifier: Modifier = Modifier,
-    onTypeSelect: ((ScheduleModelType) -> Unit)? = null
+    onTypeSelect: ((ScheduleModelType) -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
-            .apply {
-                onTypeSelect?.let { clickable { it(scheduleType) } }
-            },
+            .noRippleClickable {
+                onTypeSelect?.invoke(scheduleType)
+            }
+            .padding(Paddings.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
         CalendarCategoryIndicator(
