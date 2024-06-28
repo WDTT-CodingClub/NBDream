@@ -203,7 +203,7 @@ internal fun BulletinDetailScreen(
                                                     event::showFailedDialog,
                                                 )
                                             },
-                                            onDismiss = { event.setIsShowDialog(false) },
+                                            onDismiss = event::dismissDialog,
                                         )
                                     },
                                 ) else listOf(
@@ -275,7 +275,7 @@ internal fun BulletinDetailScreen(
                                             header = "정말 삭제하시겠습니까?",
                                             description = "",
                                             onConfirm = { event.deleteComment(it.commentId) },
-                                            onDismiss = { event.setIsShowDialog(false) },
+                                            onDismiss = event::dismissDialog,
                                         )
                                     },
                                 ) else listOf(
@@ -299,14 +299,14 @@ internal fun BulletinDetailScreen(
 
         if (state.isShowDreamBottomSheetWithTextButtons) {
             DreamBottomSheetWithTextButtons(
-                onDismissRequest = { event.setIsShowDreamBottomSheetWithTextButtons(false) },
+                onDismissRequest = event::dismissBottomSheet,
                 textAndOnClicks = state.bottomSheetItems,
             )
         }
 
         if (state.isShowSimpleDialog) {
             CommunityDialogSimpleTitle(
-                onDismissRequest = { event.setIsShowSimpleDialog(false) },
+                onDismissRequest = event::dismissSimpleDialog,
                 text = state.simpleDialogText,
             )
         }
