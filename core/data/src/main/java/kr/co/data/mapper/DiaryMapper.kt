@@ -14,7 +14,7 @@ internal object DiaryMapper
         with(param) {
             DiaryEntity(
                 id = id,
-                date = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd")),
+                date = LocalDate.parse(date),
                 holidays = holidayList.map { HolidayMapper.toRight(it) },
                 weatherInfo = weatherForecast,
                 workLaborer = workLaborer,
