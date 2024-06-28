@@ -35,8 +35,8 @@ internal class DiaryRepositoryImpl @Inject constructor(
         remote.searchList(
             crop = crop,
             query = query,
-            startDate = startDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")),
-            endDate = endDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+            startDate = startDate.toString(),
+            endDate = endDate.toString()
         ).transform {
             emit(
                 it.map { diaryData -> DiaryMapper.convert(diaryData) }
