@@ -70,14 +70,16 @@ internal class CalendarScreenViewModel @Inject constructor(
         CalendarScreenState()
 
     init {
-        initialize()
-    }
+        Timber.d("init) called")
+        viewModelScopeEH.launch {
+            error.collect {
+                Timber.e("error: ${it.throwable?.message}\n${it.customError}\n${it.throwable?.cause}")
+            }
+        }
 
-    fun initialize() {
         updateUserCrops()
         updateHolidays()
         updateAllSchedules()
-        updateDiaries()
     }
 
     fun reinitialize() {

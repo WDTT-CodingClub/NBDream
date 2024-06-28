@@ -243,6 +243,8 @@ private fun ScheduleItemScope.ScheduleCalendarScheduleRow(
     cropSchedules: List<ScheduleModel>,
     modifier: Modifier = Modifier
 ) {
+    Timber.d("ScheduleCalendarScheduleRow) weekDateRange: $weekDateRange\nall schedules: $allSchedules\ncrop schedules: $cropSchedules")
+
     val density = LocalDensity.current
 
     val content: @Composable () -> Unit = {
@@ -304,6 +306,7 @@ private fun ScheduleItemScope.ScheduleCalendarScheduleItem(
     weekEndDate: LocalDate,
     modifier: Modifier = Modifier
 ) {
+    Timber.d("ScheduleCalendarScheduleItem) schedule: $schedule")
     Box(
         modifier = modifier
             .height(CalendarDesignToken.CALENDAR_ITEM_SIZE.dp)
@@ -316,7 +319,14 @@ private fun ScheduleItemScope.ScheduleCalendarScheduleItem(
             .apply {
                 if (schedule.startDate == schedule.endDate) aspectRatio(1f)
             }
-            .background(color = Color(schedule.type.color).copy(alpha = 0.25f))
+            .background(
+                color = Color(schedule.type.color)
+                    .copy(
+                        alpha =
+                        if (schedule.type == ScheduleModelType.All) 0.2f
+                        else 0.1f
+                    )
+            )
     )
 }
 

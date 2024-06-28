@@ -38,7 +38,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -92,10 +91,6 @@ internal fun AddDiaryRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val (isDatePickerVisible, setDatePickerVisible) = remember {
-        mutableStateOf(false)
-    }
-
     LaunchedEffect(Unit) {
         viewModel.showPreviousScreen.collect {
             navigateToPrevious()
@@ -106,19 +101,8 @@ internal fun AddDiaryRoute(
         modifier = Modifier.fillMaxSize(),
         state = state,
         event = viewModel.event,
-        popBackStack = popBackStack,
-        onDateInput = { setDatePickerVisible(true) }
+        popBackStack = popBackStack
     )
-
-    if (isDatePickerVisible) {
-        CustomDatePickerDialog(
-            date = state.date,
-            onClickCancel = { setDatePickerVisible(false) }
-        ) { selected ->
-            viewModel.event.onDateSelect(DateFormatter.fromPattern(selected, "yyyy.MM.dd"))
-            setDatePickerVisible(false)
-        }
-    }
 }
 
 @Composable
@@ -126,8 +110,7 @@ private fun AddDiaryScreen(
     state: AddDiaryViewModel.AddDiaryScreenState,
     event: AddDiaryScreenEvent,
     popBackStack: () -> Unit,
-    modifier: Modifier = Modifier,
-    onDateInput: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     Timber.d("state: $state")
 
@@ -165,7 +148,7 @@ private fun AddDiaryScreen(
                 DiaryDatePicker(
                     modifier = Modifier.fillMaxWidth(),
                     date = state.date,
-                    onDateSelect = onDateInput
+                    onDateSelect = event::onDateSelect
                 )
                 GuidText(text = state.dateGuid)
                 Spacer(modifier = Modifier.height(Paddings.extra))
@@ -216,7 +199,7 @@ private fun AddDiaryScreen(
 @Composable
 private fun DiaryDatePicker(
     date: LocalDate,
-    onDateSelect: () -> Unit,
+    onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -229,7 +212,8 @@ private fun DiaryDatePicker(
         CalendarDatePicker(
             modifier = Modifier.fillMaxWidth(),
             date = date,
-            onDateInput = onDateSelect
+            onDateSelect = onDateSelect,
+            maxDate = LocalDate.now()
         )
     }
 }

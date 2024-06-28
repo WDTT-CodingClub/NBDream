@@ -49,7 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -478,7 +477,7 @@ private fun CalendarCropPicker(
     Column(modifier = modifier) {
         CalendarCropPickerButton(
             modifier = Modifier
-                .width(kr.co.main.calendar.CalendarDesignToken.CALENDAR_CROP_PICKER_WIDTH.dp)
+                .width(CalendarDesignToken.CALENDAR_CROP_PICKER_WIDTH.dp)
                 .clickable {
                     showCropPickerDropDown = true
                 },
@@ -487,7 +486,7 @@ private fun CalendarCropPicker(
         CalendarCropPickerDropDown(
             modifier = Modifier
                 .background(Color.White)
-                .width(kr.co.main.calendar.CalendarDesignToken.CALENDAR_CROP_PICKER_WIDTH.dp),
+                .width(CalendarDesignToken.CALENDAR_CROP_PICKER_WIDTH.dp),
             expanded = showCropPickerDropDown,
             onDismissRequest = { showCropPickerDropDown = false },
             userCrops = userCrops,
@@ -507,7 +506,7 @@ private fun CalendarCropPickerButton(
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colors.text2,
-                shape = RoundedCornerShape(kr.co.main.calendar.CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp)
+                shape = RoundedCornerShape(CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp)
             )
     ) {
         Text(
