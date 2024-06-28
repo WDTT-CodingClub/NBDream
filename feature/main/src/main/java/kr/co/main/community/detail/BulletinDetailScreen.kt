@@ -519,13 +519,17 @@ private fun BottomCommentWritingBar(
             ) {
                 it()
             }
-            TextButton(onClick = {
-                event.onPostCommentClick()
-                keyboardController?.hide()
-            }) {
+            TextButton(
+                onClick = {
+                    event.onPostCommentClick()
+                    keyboardController?.hide()
+                },
+                enabled = state.commentWritingInput.isNotBlank(),
+            ) {
                 Text(
                     "보내기",
-                    color = MaterialTheme.colors.gray5,
+                    color = if (state.commentWritingInput.isNotBlank()) MaterialTheme.colors.gray5
+                    else MaterialTheme.colors.gray7,
                     style = MaterialTheme.typo.button,
                 )
             }
