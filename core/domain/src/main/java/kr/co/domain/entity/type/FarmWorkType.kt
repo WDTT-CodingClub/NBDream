@@ -10,7 +10,7 @@ enum class FarmWorkType(val koreanName: String) {
             GROWTH.koreanName -> GROWTH
             PEST.koreanName -> PEST
             CLIMATE.koreanName -> CLIMATE
-            else -> throw IllegalArgumentException("Unknown category")
+            else -> throw IllegalArgumentException("FarmWorkType) Unknown category")
         }
     }
 }

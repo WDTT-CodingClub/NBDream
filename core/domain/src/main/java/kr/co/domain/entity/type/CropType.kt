@@ -26,7 +26,7 @@ enum class CropType(
             LETTUCE.koreanName -> LETTUCE
             NAPPA_CABBAGE.koreanName -> NAPPA_CABBAGE
             TOMATO.koreanName -> TOMATO
-            else -> throw IllegalArgumentException("Unknown koreanName")
+            else -> throw IllegalArgumentException("CropType) Unknown koreanName")
         }
     }
 }

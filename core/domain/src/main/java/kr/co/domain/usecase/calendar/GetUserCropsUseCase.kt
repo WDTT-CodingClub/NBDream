@@ -1,7 +1,6 @@
 package kr.co.domain.usecase.calendar
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 import kr.co.domain.entity.CropEntity
 import kr.co.domain.entity.type.CropType
@@ -16,8 +15,10 @@ class GetUserCropsUseCase @Inject constructor(
     private val repository: UserRepository
 ) : FlowUseCase<Unit, List<CropEntity>>() {
 
-    override fun build(params: Unit?): Flow<List<CropEntity>> {
-        return repository.fetchLocal().transform { userEntity ->
+    override fun build(params: Unit?): Flow<List<CropEntity>> =
+        repository.fetchLocal()
+            .transform { userEntity ->
+            Timber.d("fetchLocal) user entity crop: ${userEntity.crops}")
             emit(
                 userEntity.crops?.map { crop ->
                     CropEntity(CropType.ofValue(crop))
@@ -25,4 +26,3 @@ class GetUserCropsUseCase @Inject constructor(
             )
         }
     }
-}
