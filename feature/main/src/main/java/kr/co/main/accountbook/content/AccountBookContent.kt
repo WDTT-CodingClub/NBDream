@@ -155,7 +155,8 @@ internal fun AccountBookContentScreen(
                                 }
                             )
                         }
-                    }
+                    },
+                    colorBackground = true
                 )
             }
 
