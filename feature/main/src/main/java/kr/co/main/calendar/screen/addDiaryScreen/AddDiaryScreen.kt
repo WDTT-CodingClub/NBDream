@@ -37,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,7 +56,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kr.co.common.util.DateFormatter
 import kr.co.main.R
+import kr.co.main.accountbook.model.CustomDatePickerDialog
 import kr.co.main.calendar.CalendarDesignToken
 import kr.co.main.calendar.common.AddScreenCenterTopAppBar
 import kr.co.main.calendar.common.CalendarContainerTextField
@@ -78,22 +81,44 @@ private const val ADD_WORK_DESCRIPTION_BUTTON_WIDTH = 80
 
 private data class DiaryWorkInputData(
     val description: String = "",
-    val workType: WorkDescriptionModelType? = null
+    val workType: WorkDescriptionModelType? = null,
 )
 
 @Composable
 internal fun AddDiaryRoute(
-    popBackStack: () -> Unit,
-    viewModel: AddDiaryViewModel = hiltViewModel()
+    viewModel: AddDiaryViewModel = hiltViewModel(),
+    popBackStack: () -> Unit = {},
+    navigateToPrevious: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val (isDatePickerVisible, setDatePickerVisible) = remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.showPreviousScreen.collect {
+            navigateToPrevious()
+        }
+    }
 
     AddDiaryScreen(
         modifier = Modifier.fillMaxSize(),
         state = state,
         event = viewModel.event,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        onDateInput = { setDatePickerVisible(true) }
     )
+
+    if (isDatePickerVisible) {
+        CustomDatePickerDialog(
+            date = state.date,
+            onClickCancel = { setDatePickerVisible(false) }
+        ) { selected ->
+            viewModel.event.onDateSelect(DateFormatter.fromPattern(selected, "yyyy.MM.dd"))
+            setDatePickerVisible(false)
+        }
+    }
 }
 
 @Composable
@@ -101,7 +126,8 @@ private fun AddDiaryScreen(
     state: AddDiaryViewModel.AddDiaryScreenState,
     event: AddDiaryScreenEvent,
     popBackStack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDateInput: () -> Unit = {},
 ) {
     Timber.d("state: $state")
 
@@ -110,9 +136,7 @@ private fun AddDiaryScreen(
         onResult = event::onAddImage
     )
 
-    val enableAction by remember{
-        derivedStateOf { state.memo.isNotEmpty() }
-    }
+    val enableAction = true
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -141,8 +165,9 @@ private fun AddDiaryScreen(
                 DiaryDatePicker(
                     modifier = Modifier.fillMaxWidth(),
                     date = state.date,
-                    onDateSelect = event::onDateSelect
+                    onDateSelect = onDateInput
                 )
+                GuidText(text = state.dateGuid)
                 Spacer(modifier = Modifier.height(Paddings.extra))
                 DiaryImagePicker(
                     modifier = Modifier.fillMaxWidth(),
@@ -156,6 +181,7 @@ private fun AddDiaryScreen(
                     memo = state.memo,
                     onMemoInput = event::onMemoInput
                 )
+                GuidText(text = state.memoGuid)
                 Spacer(modifier = Modifier.height(Paddings.extra))
                 DiaryWorkInput(
                     modifier = Modifier.fillMaxWidth(),
@@ -190,8 +216,8 @@ private fun AddDiaryScreen(
 @Composable
 private fun DiaryDatePicker(
     date: LocalDate,
-    onDateSelect: (LocalDate) -> Unit,
-    modifier: Modifier = Modifier
+    onDateSelect: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -213,7 +239,7 @@ private fun DiaryImagePicker(
     multiplePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
     images: List<String>,
     onDeleteImage: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -237,7 +263,7 @@ private fun DiaryImagePicker(
 private fun DiaryMemoInput(
     memo: String,
     onMemoInput: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
 
@@ -281,7 +307,7 @@ internal fun DiaryWorkInput(
     workDescriptions: List<DiaryModel.WorkDescriptionModel>,
     onAddWorkDescription: (DiaryModel.WorkDescriptionModel) -> Unit,
     onDeleteDescription: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         WorkDescriptionInput(
@@ -300,7 +326,7 @@ internal fun DiaryWorkInput(
 @Composable
 private fun WorkDescriptionInput(
     onAddWorkDescription: (DiaryModel.WorkDescriptionModel) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     var inputData by remember { mutableStateOf(DiaryWorkInputData()) }
@@ -362,7 +388,7 @@ private fun WorkDescriptionInput(
 private fun WorkTypePicker(
     workType: WorkDescriptionModelType?,
     onWorkTypeSelect: (WorkDescriptionModelType) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
     var workTypePickerButtonWidth by remember { mutableStateOf(0.dp) }
@@ -391,7 +417,7 @@ private fun WorkTypePicker(
 private fun WorkTypePickerButton(
     workType: WorkDescriptionModelType?,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
@@ -433,7 +459,7 @@ private fun WorkTypePickerDropDown(
     workType: WorkDescriptionModelType?,
     onWorkTypeSelect: (WorkDescriptionModelType) -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     DropdownMenu(
         modifier = modifier
@@ -462,7 +488,7 @@ private fun WorkTypeSpinnerDropDownItem(
     isSelected: Boolean,
     workType: WorkDescriptionModelType,
     onClick: (WorkDescriptionModelType) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     DropdownMenuItem(
         modifier = modifier
@@ -486,7 +512,7 @@ private fun WorkTypeSpinnerDropDownItem(
 private fun DescriptionTextField(
     description: String,
     onDescriptionInput: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     CalendarContainerTextField(
         modifier = modifier,
@@ -505,7 +531,7 @@ private fun DescriptionTextField(
 @Composable
 private fun AddWorkDescriptionButton(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Button(
         modifier = modifier
@@ -529,7 +555,7 @@ private fun AddWorkDescriptionButton(
 private fun WorkDescriptionList(
     workDescriptions: List<DiaryModel.WorkDescriptionModel>,
     onDeleteDescription: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
@@ -548,7 +574,7 @@ private fun WorkDescriptionList(
 private fun WorkDescriptionItem(
     workDescription: DiaryModel.WorkDescriptionModel,
     onDeleteDescription: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -590,7 +616,7 @@ private fun WorkDescriptionItem(
 private fun DiaryWorkLaborerInput(
     workLaborer: Int,
     onWorkLaborerInput: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -611,7 +637,7 @@ private fun DiaryWorkLaborerInput(
 private fun DiaryWorkHourInput(
     workHour: Int,
     onWorkHourInput: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -632,7 +658,7 @@ private fun DiaryWorkHourInput(
 private fun DiaryWorkAreaInput(
     workArea: Int,
     onWorkAreaInput: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -654,7 +680,7 @@ private fun DiaryInputWithDigit(
     @StringRes digitId: Int,
     value: Int,
     onValueInput: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     BasicTextField(
         modifier = modifier,
@@ -688,5 +714,19 @@ private fun DiaryInputWithDigit(
                 color = MaterialTheme.colors.gray4
             )
         }
+    }
+}
+
+@Composable
+private fun GuidText(
+    text: String?,
+) {
+    text?.let {
+        Text(
+            modifier = Modifier.padding(top = 2.dp),
+            text = it,
+            style = MaterialTheme.typo.body2,
+            color = MaterialTheme.colors.error
+        )
     }
 }

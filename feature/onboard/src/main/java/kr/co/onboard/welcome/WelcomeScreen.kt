@@ -47,7 +47,7 @@ internal fun WelcomeScreen(
             bCode = bCode,
             latitude = latitude,
             longitude = longitude,
-            crops = cropsList
+            crops = cropsList.filter { it != " " }
         )
     }
 
@@ -99,7 +99,7 @@ fun WelcomeText(
     modifier: Modifier
 ) {
     Text(
-        text = "반갑습니다\n말하는 감자님!",
+        text = "반갑습니다!",
         style = MaterialTheme.typo.displaySB,
         modifier = modifier.padding(start = 48.dp, top = 80.dp)
     )

@@ -4,7 +4,9 @@ import android.net.Uri
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kr.co.common.util.FileUtil
 import kr.co.domain.usecase.calendar.CreateDiaryUseCase
@@ -14,6 +16,7 @@ import kr.co.domain.usecase.calendar.GetHolidaysUseCase
 import kr.co.domain.usecase.calendar.UpdateDiaryUseCase
 import kr.co.domain.usecase.image.DeleteImageUseCase
 import kr.co.domain.usecase.image.UploadImageUseCase
+import kr.co.domain.usecase.weather.GetDayWeatherForecastUseCase
 import kr.co.main.mapper.calendar.HolidayModelMapper
 import kr.co.main.mapper.calendar.WorkDescriptionModelMapper
 import kr.co.main.model.calendar.CropModel
@@ -55,7 +58,8 @@ internal class AddDiaryViewModel @Inject constructor(
 
     private val uploadImage: UploadImageUseCase,
     private val deleteImage: DeleteImageUseCase,
-    private val getHolidays: GetHolidaysUseCase
+    private val getHolidays: GetHolidaysUseCase,
+
 ) : BaseViewModel<AddDiaryViewModel.AddDiaryScreenState>(savedStateHandle), AddDiaryScreenEvent {
 
     val event: AddDiaryScreenEvent = this@AddDiaryViewModel
@@ -63,6 +67,8 @@ internal class AddDiaryViewModel @Inject constructor(
     private val _diaryId = MutableStateFlow<Int?>(null)
     private val _date = MutableStateFlow<LocalDate>(LocalDate.now())
     private val _memo = MutableStateFlow("")
+    private val _showPreviousScreen = MutableSharedFlow<Unit>()
+    val showPreviousScreen = _showPreviousScreen.asSharedFlow()
 
     data class AddDiaryScreenState(
         val screenMode: ScreenModeType = ScreenModeType.POST_MODE,
@@ -71,9 +77,17 @@ internal class AddDiaryViewModel @Inject constructor(
         val enableAction: Boolean = false,
 
         val diaryId: Int? = null,
+
         val date: LocalDate = LocalDate.now(),
+        val isDateValid: Boolean = true,
+        val dateGuid: String? = null,
+
         val images: List<String> = emptyList(),
+
         val memo: String = "",
+        val isMemoValid: Boolean = true,
+        val memoGuid: String? = null,
+
         val workDescriptions: List<DiaryModel.WorkDescriptionModel> = emptyList(),
         val workLaborer: Int = 0,
         val workHour: Int = 0,
@@ -82,10 +96,8 @@ internal class AddDiaryViewModel @Inject constructor(
         val weatherInfo: String = "", //TODO 일일 날씨 정보 조회
         val holidays: List<HolidayModel> = emptyList()
     ) : State {
-        override fun toParcelable(): Parcelable? {
-            // TODO("serialize")
-            return null
-        }
+        val isFieldValid: Boolean
+            get() = isMemoValid && isDateValid
     }
 
     override fun createInitialState(savedState: Parcelable?): AddDiaryScreenState =
@@ -164,31 +176,62 @@ internal class AddDiaryViewModel @Inject constructor(
         }
     }
 
+    private fun checkedValid() = updateState {
+        val isMemoValid = currentState.memo.isNotEmpty()
+        val isDateValid = currentState.date <= LocalDate.now()
+
+        copy(
+            isDateValid = isDateValid,
+            dateGuid = if (isDateValid) {
+                null
+            } else {
+                "날짜를 확인해 주세요"
+            },
+
+
+            isMemoValid = isMemoValid,
+            memoGuid = if (isMemoValid) {
+                null
+            } else {
+                "메모를 입력해 주세요"
+            }
+        )
+    }
+
     override fun onPostClick() {
-        if (!currentState.enableAction) return
 
         if(currentState.screenMode != ScreenModeType.POST_MODE)
             throw IllegalStateException ("screen mode is not post mode")
         checkNotNull(currentState.calendarCrop)
 
-        viewModelScopeEH.launch {
-            createDiary(
-                CreateDiaryUseCase.Params(
-                    crop = currentState.calendarCrop!!.type.name,
-                    date = currentState.date,
-                    memo = currentState.memo,
-                    workDescriptions = currentState.workDescriptions.map {
-                        WorkDescriptionModelMapper.toLeft(it)
-                    },
-                    workLaborer = currentState.workLaborer,
-                    workHours = currentState.workHour,
-                    workArea = currentState.workArea,
-                    weatherForecast = currentState.weatherInfo,
-                    holidayList = currentState.holidays.map {
-                        HolidayModelMapper.toLeft(it)
-                    }
+        checkedValid()
+
+        if (currentState.isFieldValid) {
+            viewModelScopeEH.launch {
+                createDiary(
+                    CreateDiaryUseCase.Params(
+                        crop = currentState.calendarCrop!!.type.name,
+                        date = currentState.date,
+                        memo = currentState.memo,
+                        workDescriptions = currentState.workDescriptions.map {
+                            WorkDescriptionModelMapper.toLeft(it)
+                        },
+                        imageUrls = currentState.images,
+                        workLaborer = currentState.workLaborer,
+                        workHours = currentState.workHour,
+                        workArea = currentState.workArea,
+                        weatherForecast = "",
+                        holidayList = currentState.holidays.map {
+                            HolidayModelMapper.toLeft(it)
+                        }
+                    )
                 )
-            )
+            }.invokeOnCompletion {
+                if (it == null)
+                    viewModelScopeEH.launch {
+                        _showPreviousScreen.emit(Unit)
+                    }
+            }
         }
     }
 
@@ -219,6 +262,11 @@ internal class AddDiaryViewModel @Inject constructor(
                     }
                 )
             )
+        }.invokeOnCompletion {
+            if (it == null)
+                viewModelScopeEH.launch {
+                    _showPreviousScreen.emit(Unit)
+                }
         }
     }
 

@@ -347,7 +347,7 @@ private fun ScheduleDatePicker(
         CalendarDatePicker(
             modifier = Modifier.fillMaxWidth(),
             date = startDate,
-            onDateInput = onStartDateSelect
+            onDateInput = { onStartDateSelect }
         )
         Spacer(modifier = Modifier.height(Paddings.extra))
         Text(
@@ -360,7 +360,7 @@ private fun ScheduleDatePicker(
         CalendarDatePicker(
             modifier = Modifier.fillMaxWidth(),
             date = endDate,
-            onDateInput = onEndDateSelect
+            onDateInput = { onEndDateSelect }
         )
     }
 }

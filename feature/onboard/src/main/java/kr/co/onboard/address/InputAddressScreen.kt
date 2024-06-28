@@ -97,7 +97,9 @@ internal fun InputAddressScreen(
     Scaffold(
         containerColor = MaterialTheme.colors.white,
         topBar = {
-            DreamCenterTopAppBar(title = stringResource(id = R.string.feature_onboard_my_farm_title),
+            DreamCenterTopAppBar(
+                title = stringResource(id = R.string.feature_onboard_my_farm_title),
+                colorBackground = true,
                 navigationIcon = {
                     IconButton(
                         onClick = popBackStack
@@ -113,15 +115,26 @@ internal fun InputAddressScreen(
         }) { scaffoldPadding ->
         Column(
             modifier = Modifier
-                .scaffoldBackground(scaffoldPadding)
+                .scaffoldBackground(
+                    scaffoldPadding = scaffoldPadding,
+                    padding = PaddingValues(0.dp)
+                )
         ) {
-            DynamicStepProgressBars(
-                modifier, colors = listOf(MaterialTheme.colors.green4, MaterialTheme.colors.gray9)
-            )
+            Box(
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp)
+            ){
+                DynamicStepProgressBars(
+                    modifier = modifier,
+                    colors = listOf(MaterialTheme.colors.green4, MaterialTheme.colors.gray9)
+                )
+            }
 
             Spacer(modifier = Modifier.height(52.dp))
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 DescriptionText(stringResource(id = R.string.feature_onboard_my_farm_address_description))
@@ -132,13 +145,19 @@ internal fun InputAddressScreen(
                     .weight(1f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Address(
-                    modifier,
-                    fullRoadAddr = state.fullRoadAddress,
-                    onFullRoadAddrChange = {},
-                    onSearchClick = {
-                        setLocationSearchVisible(true)
-                    })
+                Box(
+                    modifier.padding(start = 16.dp, end = 16.dp),
+                ){
+                    Address(
+                        modifier = modifier,
+                        fullRoadAddr = state.fullRoadAddress,
+                        onFullRoadAddrChange = {},
+                        onSearchClick = {
+                            setLocationSearchVisible(true)
+                        })
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 KakaoMapScreen(
                     modifier = modifier,
@@ -149,6 +168,7 @@ internal fun InputAddressScreen(
                 Spacer(modifier = modifier.weight(0.3f))
 
                 NextButton(
+                    modifier = modifier.padding(start = 16.dp, end = 16.dp),
                     skipId = R.string.feature_onboard_my_farm_skip_input,
                     nextId = R.string.feature_onboard_my_farm_next,
                     onNextClick = {
@@ -344,7 +364,6 @@ fun KakaoMapScreen(
 
     //화면에 지도 표시
     if (isSdkInitialized) { //SDK 초기화 확인
-        Spacer(modifier = Modifier.height(52.dp))
         AndroidView(
             modifier = modifier
                 .fillMaxWidth()
