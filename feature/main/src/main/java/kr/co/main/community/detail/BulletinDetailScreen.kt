@@ -31,7 +31,6 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -195,7 +193,19 @@ internal fun BulletinDetailScreen(
                             event.showBottomSheet(
                                 if (state.currentDetailBulletin.author) listOf(
                                     TextAndOnClick("수정하기") { navigateToUpdate(state.currentDetailBulletinId) },
-                                    TextAndOnClick("삭제하기") { event.setIsShowDeleteCheckDialog(true) },
+                                    TextAndOnClick("삭제하기") {
+                                        event.showDialog(
+                                            header = "정말 삭제하시겠습니까?",
+                                            description = "",
+                                            onConfirm = {
+                                                event.deleteBulletin(
+                                                    popBackStack,
+                                                    event::showFailedDialog,
+                                                )
+                                            },
+                                            onDismiss = { event.setIsShowDialog(false) },
+                                        )
+                                    },
                                 ) else listOf(
                                     TextAndOnClick("신고하기") { event.showReportBottomSheet() },
                                 )
@@ -286,29 +296,11 @@ internal fun BulletinDetailScreen(
             BottomCommentWritingBar(state, event)
         }
 
+
         if (state.isShowDreamBottomSheetWithTextButtons) {
             DreamBottomSheetWithTextButtons(
                 onDismissRequest = { event.setIsShowDreamBottomSheetWithTextButtons(false) },
                 textAndOnClicks = state.bottomSheetItems,
-            )
-        }
-
-        if (state.isShowDeleteCheckDialog) {
-            DialogYesOrNo(
-                onDismissRequest = { event.setIsShowDeleteCheckDialog(false) },
-                onConfirmation = {
-                    event.deleteBulletin(
-                        popBackStack,
-                    ) { event.setIsShowFailedDialog(true) }
-                },
-                dialogTitle = "정말 삭제하시겠습니까?",
-            )
-        }
-
-        if (state.isShowFailedDialog) {
-            CommunityDialogSimpleTitle(
-                onDismissRequest = { event.setIsShowFailedDialog(false) },
-                text = "처리하지 못했습니다.",
             )
         }
 
@@ -552,35 +544,6 @@ fun NoBulletinScreen(
         )
         Text("id: $id")
     }
-}
-
-@Composable
-fun DialogYesOrNo(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String? = null,
-    icon: ImageVector? = null,
-) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        confirmButton = {
-            TextButton(onClick = {
-                onDismissRequest()
-                onConfirmation()
-            }) {
-                Text("확인")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text("취소")
-            }
-        },
-        icon = { icon?.let { Icon(it, contentDescription = "DialogYesOrNo Icon") } },
-        title = { Text(dialogTitle) },
-        text = { dialogText?.let { Text(it) } },
-    )
 }
 
 

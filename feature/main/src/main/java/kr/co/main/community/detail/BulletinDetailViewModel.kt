@@ -13,8 +13,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 internal interface BulletinDetailEvent {
-    fun setIsShowDeleteCheckDialog(boolean: Boolean)
-    fun setIsShowFailedDialog(boolean: Boolean)
     fun setIsShowDialog(boolean: Boolean)
     fun onCommentWritingInput(input: String)
     fun onPostCommentClick()
@@ -34,6 +32,7 @@ internal interface BulletinDetailEvent {
 
     fun bookmarkBulletin()
     fun showReportBottomSheet()
+    fun showFailedDialog()
 
     // DreamBottomSheetWithTextButtons
     fun setIsShowDreamBottomSheetWithTextButtons(boolean: Boolean)
@@ -46,8 +45,6 @@ internal interface BulletinDetailEvent {
     companion object {
         val empty = object : BulletinDetailEvent {
             override fun setIsShowDreamBottomSheetWithTextButtons(boolean: Boolean) {}
-            override fun setIsShowDeleteCheckDialog(boolean: Boolean) {}
-            override fun setIsShowFailedDialog(boolean: Boolean) {}
             override fun setIsShowDialog(boolean: Boolean) {}
             override fun onCommentWritingInput(input: String) {}
             override fun onPostCommentClick() {}
@@ -67,6 +64,7 @@ internal interface BulletinDetailEvent {
             override fun setIsShowSimpleDialog(boolean: Boolean) {}
             override fun showSimpleDialog(text: String) {}
             override fun showReportBottomSheet() {}
+            override fun showFailedDialog() {}
 
         }
     }
@@ -114,14 +112,7 @@ internal class BulletinDetailViewModel @Inject constructor(
     override fun setIsShowDreamBottomSheetWithTextButtons(boolean: Boolean) =
         updateState { copy(isShowDreamBottomSheetWithTextButtons = boolean) }
 
-    override fun setIsShowDeleteCheckDialog(boolean: Boolean) =
-        updateState { copy(isShowDeleteCheckDialog = boolean) }
-
-    override fun setIsShowFailedDialog(boolean: Boolean) =
-        updateState { copy(isShowFailedDialog = boolean) }
-
-    override fun setIsShowDialog(boolean: Boolean) =
-        updateState { copy(isShowDialog = boolean) }
+    override fun setIsShowDialog(boolean: Boolean) = updateState { copy(isShowDialog = boolean) }
 
     private fun setCurrentDetailBulletinId(id: Long) =
         updateState { copy(currentDetailBulletinId = id) }
@@ -133,6 +124,10 @@ internal class BulletinDetailViewModel @Inject constructor(
 
     override fun onCommentWritingInput(input: String) {
         if (input.length <= 255) updateState { copy(commentWritingInput = input) }
+    }
+
+    override fun showFailedDialog() {
+        showSimpleDialog("처리하지 못했습니다.")
     }
 
     override fun showReportBottomSheet() {
@@ -148,9 +143,7 @@ internal class BulletinDetailViewModel @Inject constructor(
                     "낚시/놀람/도배",
                     "상업적 광고 및 판매"
                 ).map {
-                    TextAndOnClick(
-                        it,
-                    ) {
+                    TextAndOnClick(it) {
                         showDialog(
                             header = "",
                             description = "\"$it\"으로 신고하시겠습니까?",
