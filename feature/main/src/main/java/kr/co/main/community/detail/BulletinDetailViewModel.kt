@@ -13,7 +13,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 internal interface BulletinDetailEvent {
-    fun setIsShowBulletinMoreBottomSheet(boolean: Boolean)
     fun setIsShowDeleteCheckDialog(boolean: Boolean)
     fun setIsShowFailedDialog(boolean: Boolean)
     fun setIsShowDialog(boolean: Boolean)
@@ -25,7 +24,6 @@ internal interface BulletinDetailEvent {
         onFail: () -> Unit,
     )
 
-    fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>)
     fun deleteComment(id: Long)
     fun showDialog(
         header: String,
@@ -37,13 +35,17 @@ internal interface BulletinDetailEvent {
     fun bookmarkBulletin()
     fun showReportBottomSheet()
 
+    // DreamBottomSheetWithTextButtons
+    fun setIsShowDreamBottomSheetWithTextButtons(boolean: Boolean)
+    fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>)
+
     // simple dialog
     fun setIsShowSimpleDialog(boolean: Boolean)
     fun showSimpleDialog(text: String)
 
     companion object {
         val empty = object : BulletinDetailEvent {
-            override fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) {}
+            override fun setIsShowDreamBottomSheetWithTextButtons(boolean: Boolean) {}
             override fun setIsShowDeleteCheckDialog(boolean: Boolean) {}
             override fun setIsShowFailedDialog(boolean: Boolean) {}
             override fun setIsShowDialog(boolean: Boolean) {}
@@ -91,7 +93,7 @@ internal class BulletinDetailViewModel @Inject constructor(
         val isInitialLoadingFinished: Boolean = false,
 
         // bottom sheet
-        val isShowBulletinMoreBottomSheet: Boolean = false,
+        val isShowDreamBottomSheetWithTextButtons: Boolean = false,
         val bottomSheetItems: List<TextAndOnClick> = emptyList(),
 
         // dream dialog
@@ -109,8 +111,8 @@ internal class BulletinDetailViewModel @Inject constructor(
     override fun setIsShowSimpleDialog(boolean: Boolean) =
         updateState { copy(isShowSimpleDialog = boolean) }
 
-    override fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) =
-        updateState { copy(isShowBulletinMoreBottomSheet = boolean) }
+    override fun setIsShowDreamBottomSheetWithTextButtons(boolean: Boolean) =
+        updateState { copy(isShowDreamBottomSheetWithTextButtons = boolean) }
 
     override fun setIsShowDeleteCheckDialog(boolean: Boolean) =
         updateState { copy(isShowDeleteCheckDialog = boolean) }
@@ -135,7 +137,7 @@ internal class BulletinDetailViewModel @Inject constructor(
     override fun showReportBottomSheet() {
         updateState {
             copy(
-                isShowBulletinMoreBottomSheet = true,
+                isShowDreamBottomSheetWithTextButtons = true,
                 bottomSheetItems = listOf(
                     "유출/사칭/사기",
                     "욕설/비하",
@@ -189,7 +191,7 @@ internal class BulletinDetailViewModel @Inject constructor(
     override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {
         updateState {
             copy(
-                isShowBulletinMoreBottomSheet = true,
+                isShowDreamBottomSheetWithTextButtons = true,
                 bottomSheetItems = bottomSheetItems,
             )
         }

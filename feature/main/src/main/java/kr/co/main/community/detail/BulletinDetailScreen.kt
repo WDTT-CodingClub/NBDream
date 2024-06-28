@@ -286,9 +286,9 @@ internal fun BulletinDetailScreen(
             BottomCommentWritingBar(state, event)
         }
 
-        if (state.isShowBulletinMoreBottomSheet) {
+        if (state.isShowDreamBottomSheetWithTextButtons) {
             DreamBottomSheetWithTextButtons(
-                onDismissRequest = { event.setIsShowBulletinMoreBottomSheet(false) },
+                onDismissRequest = { event.setIsShowDreamBottomSheetWithTextButtons(false) },
                 textAndOnClicks = state.bottomSheetItems,
             )
         }
