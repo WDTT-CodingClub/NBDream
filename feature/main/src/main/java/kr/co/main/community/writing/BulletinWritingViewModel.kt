@@ -133,24 +133,19 @@ internal class BulletinWritingViewModel @Inject constructor(
         updateState { copy(writingImages = writingImages - model) }
     }
 
-    private fun onFinishWritingClick(popBackStack: () -> Unit) {
-        Timber.d("onFinishWritingClick 시작")
-        viewModelScope.launch {
-            try {
-                val uploadedBulletinId = communityRepository.postBulletin(
-                    content = state.value.bulletinWritingInput,
-                    crop = state.value.currentBoard,
-                    bulletinCategory = state.value.currentCategory,
-                    imageUrls = state.value.writingImages.map { it.url.toString() },
-//                    imageUrls = emptyList(),  // temp
-                )
-                Timber.d("onFinishWritingClick 코루틴 끝, id: $uploadedBulletinId")
-                popBackStack()
-            } catch (e: Throwable) {
-                Timber.e(e, "onFinishWritingClick 코루틴 에러")
+    private fun onFinishWritingClick() {
+        loadingScope {
+            communityRepository.postBulletin(
+                content = state.value.bulletinWritingInput,
+                crop = state.value.currentBoard,
+                bulletinCategory = state.value.currentCategory,
+                imageUrls = state.value.writingImages.map { it.url.toString() },
+            )
+        }.invokeOnCompletion {
+            viewModelScopeEH.launch {
+                _complete.emit(it == null)
             }
         }
-        Timber.d("onFinishWritingClick 끝")
     }
 
 
@@ -186,10 +181,10 @@ internal class BulletinWritingViewModel @Inject constructor(
         }
     }
 
-    fun onPerformBulletin(popBackStack: () -> Unit) = id?.let {
+    fun onPerformBulletin() = id?.let {
         updateBulletin()
     } ?: run {
-        onFinishWritingClick(popBackStack)
+        onFinishWritingClick()
     }
 
 }

@@ -157,6 +157,10 @@ internal class CommunityViewModel @Inject constructor(
     }
 
     init {
+        getBulletins()
+    }
+
+    fun getBulletins() {
         loadingScope {
             val bulletins = communityRepository.getBulletins(
                 keyword = null,
@@ -165,8 +169,6 @@ internal class CommunityViewModel @Inject constructor(
                 lastBulletinId = null,
             )
             setBulletinEntities(bulletins)
-            Timber.d("init 코루틴 성공, $bulletins")
         }
     }
-
 }
