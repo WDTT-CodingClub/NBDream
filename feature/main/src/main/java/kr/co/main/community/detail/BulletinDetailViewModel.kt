@@ -88,6 +88,7 @@ internal class BulletinDetailViewModel @Inject constructor(
         val currentCategory: BulletinEntity.BulletinCategory = BulletinEntity.BulletinCategory.Free,
         val isShowDeleteCheckDialog: Boolean = false,
         val isShowFailedDialog: Boolean = false,
+        val isInitialLoadingFinished: Boolean = false,
 
         // bottom sheet
         val isShowBulletinMoreBottomSheet: Boolean = false,
@@ -224,16 +225,31 @@ internal class BulletinDetailViewModel @Inject constructor(
             try {
                 val entity = communityRepository.getBulletinDetail(id)
                 if (entity == null) {
-                    updateState { copy(isLoadDetailSuccessful = false) }
+                    updateState {
+                        copy(
+                            isLoadDetailSuccessful = false,
+                            isInitialLoadingFinished = true,
+                        )
+                    }
                     Timber.d("loadBulletin 코루틴 실패, id: $id")
                 } else {
-                    updateState { copy(isLoadDetailSuccessful = true) }
+                    updateState {
+                        copy(
+                            isLoadDetailSuccessful = true,
+                            isInitialLoadingFinished = true,
+                        )
+                    }
                     setCurrentDetailBulletin(entity)
                     Timber.d("loadBulletin 코루틴 성공, id: $id")
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "loadBulletin 코루틴 에러, id: $id")
-                updateState { copy(isLoadDetailSuccessful = false) }
+                updateState {
+                    copy(
+                        isLoadDetailSuccessful = false,
+                        isInitialLoadingFinished = true,
+                    )
+                }
             }
             Timber.d("loadBulletin 코루틴 끝, id: $id")
         }

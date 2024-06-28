@@ -37,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -131,6 +132,11 @@ internal fun BulletinDetailScreen(
             )
         },
     ) { paddingValues ->
+
+        if (!state.isInitialLoadingFinished) {
+            Surface(Modifier.fillMaxSize()) {}
+            return@Scaffold
+        }
 
 //    Timber.d("currentDetailBulletinId: ${state.currentDetailBulletinId}")
         Timber.d("isLoadDetailSuccessful: ${state.isLoadDetailSuccessful}")
