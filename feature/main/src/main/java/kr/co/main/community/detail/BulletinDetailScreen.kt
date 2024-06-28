@@ -316,7 +316,7 @@ internal fun BulletinDetailScreen(
                 header = state.dialogHeader,
                 description = state.dialogDescription,
                 onConfirm = state.dialogOnConfirm,
-                onDismiss = state.dialogOnDismiss,
+                onDismissRequest = state.dialogOnDismiss,
             )
         }
 
