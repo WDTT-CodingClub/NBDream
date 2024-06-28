@@ -2,6 +2,7 @@ package kr.co.ui.widget
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.colors
 
 data class TextAndOnClick(
     val text: String,
@@ -50,7 +52,8 @@ fun DreamBottomSheetWithTextButtons(
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(text)
+                Text(text = text,
+                    color = MaterialTheme.colors.gray1)
             }
         }
     }

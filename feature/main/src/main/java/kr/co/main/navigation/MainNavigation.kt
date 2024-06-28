@@ -33,7 +33,6 @@ import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
 import kr.co.main.notification.NotificationRoute
-import timber.log.Timber
 
 
 const val MAIN_ROUTE = "mainRoute"
@@ -51,6 +50,7 @@ internal data object AccountBookRoute {
 internal data object CommunityRoute {
     const val WRITING_ROUTE = "community_writing_route"
     const val BULLETIN_DETAIL_ROUTE = "community_bulletin_detail_route"
+    const val BULLETIN_UPDATE_ROUTE = "community_bulletin_update_route"
 }
 
 internal data object MyPageRoute {
@@ -264,7 +264,6 @@ fun NavGraphBuilder.mainNavGraph(
         val id = idString?.toLongOrNull()
         val isUpdateString = backStackEntry.arguments?.getString("isUpdate")
         val isUpdate = isUpdateString?.toBoolean() ?: false
-        Timber.d("isUpdate=$isUpdate")
 
         AccountBookContentRoute(
             popBackStack = {
@@ -305,6 +304,7 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         BulletinWritingRoute(
             popBackStack = navController::popBackStack,
+            navigationToDetail = {}
         )
     }
 
@@ -319,6 +319,29 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         BulletinDetailRoute(
             popBackStack = navController::popBackStack,
+            navigateToUpdate = {
+                navController.navigate(
+                    "${CommunityRoute.BULLETIN_UPDATE_ROUTE}/$it"
+                )
+            }
+        )
+    }
+
+    composable(
+        route = "${CommunityRoute.BULLETIN_UPDATE_ROUTE}/{id}",
+    ) {
+        BulletinWritingRoute(
+            popBackStack = navController::popBackStack,
+            navigationToDetail = {id ->
+                navController.popBackStack()
+                navController.navigate(
+                    "${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$id"
+                ) {
+                    popUpTo("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$id") {
+                        inclusive = true
+                    }
+                }
+            }
         )
     }
 
