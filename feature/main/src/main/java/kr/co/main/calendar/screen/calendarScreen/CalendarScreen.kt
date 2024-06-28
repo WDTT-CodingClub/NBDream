@@ -67,6 +67,7 @@ import kr.co.ui.icon.dreamicon.Spinner
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import kr.co.ui.widget.DreamDialog
 import kr.co.ui.widget.DreamTopAppBar
 import timber.log.Timber
 
@@ -74,6 +75,7 @@ import timber.log.Timber
 @Composable
 internal fun CalendarRoute(
     navController: NavController,
+    navToMyPage: () -> Unit,
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
@@ -97,6 +99,7 @@ internal fun CalendarRoute(
 
     CalendarScreen(
         modifier = Modifier.fillMaxSize(),
+        navToMyPage = navToMyPage,
         navToAddSchedule = navToAddSchedule,
         navToAddDiary = navToAddDiary,
         navToSearchDiary = navToSearchDiary,
@@ -108,6 +111,7 @@ internal fun CalendarRoute(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CalendarScreen(
+    navToMyPage: () -> Unit,
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
@@ -117,7 +121,8 @@ private fun CalendarScreen(
 ) {
     Timber.d("state: $state")
 
-    // TODO 일정/영농일지 추가 후 화면 새로고침
+    var showNavToMyPageDialog by remember { mutableStateOf(false) }
+
     val pagerState = rememberPagerState {
         CalendarTabType.entries.size
     }
@@ -138,11 +143,15 @@ private fun CalendarScreen(
                     )
                 },
                 navToAddDiary = {
-                    navToAddDiary(
-                        state.crop?.type?.nameId,
-                        ScreenModeType.POST_MODE.id,
-                        null
-                    )
+                    if (state.crop == null) {
+                        showNavToMyPageDialog = true
+                    } else {
+                        navToAddDiary(
+                            state.crop.type.nameId,
+                            ScreenModeType.POST_MODE.id,
+                            null
+                        )
+                    }
                 },
                 navToSearchDiary = {
                     navToSearchDiary(
@@ -155,6 +164,17 @@ private fun CalendarScreen(
         Surface(
             modifier = Modifier.padding(innerPadding)
         ) {
+            NavToMyPageDialog(
+                showDialog = showNavToMyPageDialog,
+                onConfirm = {
+                    showNavToMyPageDialog = false
+                    navToMyPage()
+                },
+                onDismiss = {
+                    showNavToMyPageDialog = false
+                }
+            )
+
             Column {
                 CalendarInfoPicker(
                     modifier = Modifier
@@ -337,6 +357,23 @@ private fun CalendarScreenTopAppBarActions(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun NavToMyPageDialog(
+    showDialog: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if(showDialog) {
+        DreamDialog(
+            header = stringResource(id = R.string.feature_main_calendar_nav_to_my_page_dialog_title),
+            description = stringResource(id = R.string.feature_main_calendar_nav_to_my_page_dialog_description),
+            onConfirm = onConfirm,
+            onDismissRequest = onDismiss
+        )
     }
 }
 

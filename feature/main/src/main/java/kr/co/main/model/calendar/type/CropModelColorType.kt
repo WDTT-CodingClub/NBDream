@@ -3,14 +3,14 @@ package kr.co.main.model.calendar.type
 import android.graphics.Color
 
 internal enum class CropModelColorType(val color: Int) {
-    PEPPER(Color.parseColor("#FF0000")),
-    RICE(Color.parseColor("#FF0000")),
-    POTATO(Color.parseColor("#C49C6B")),
-    SWEET_POTATO(Color.parseColor("#FF0000")),
-    APPLE(Color.parseColor("#FF0000")),
-    STRAWBERRY(Color.parseColor("#FF0000")),
-    GARLIC(Color.parseColor("#FF0000")),
-    LETTUCE(Color.parseColor("#FF0000")),
-    NAPPA_CABBAGE(Color.parseColor("#FF0000")),
-    TOMATO(Color.parseColor("#FF0000"))
+    PEPPER(Color.parseColor("#D96C61")),
+    RICE(Color.parseColor("#EAC46A")),
+    POTATO(Color.parseColor("#CDB792")),
+    SWEET_POTATO(Color.parseColor("#8F6E9E")),
+    APPLE(Color.parseColor("#E77165")),
+    STRAWBERRY(Color.parseColor("#E77165")),
+    GARLIC(Color.parseColor("#EEE1C8")),
+    LETTUCE(Color.parseColor("#94B65A")),
+    NAPPA_CABBAGE(Color.parseColor("#94B65A")),
+    TOMATO(Color.parseColor("#E77165"))
 }

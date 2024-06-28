@@ -95,7 +95,7 @@ internal fun MyPageSettingDeleteAccountRoute(
                 viewModel.onDeleteClick()
                 setIsDialogVisible(false)
             },
-            onDismiss = { setIsDialogVisible(false) }
+            onDismissRequest = { setIsDialogVisible(false) }
         )
 }
 

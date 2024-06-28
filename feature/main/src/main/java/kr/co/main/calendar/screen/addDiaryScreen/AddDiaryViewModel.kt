@@ -58,7 +58,8 @@ internal class AddDiaryViewModel @Inject constructor(
     private val deleteImage: DeleteImageUseCase,
     private val getHolidays: GetHolidaysUseCase,
 
-) : BaseViewModel<AddDiaryViewModel.AddDiaryScreenState>(savedStateHandle), AddDiaryScreenEvent {
+    ) : BaseViewModel<AddDiaryViewModel.AddDiaryScreenState>(savedStateHandle),
+    AddDiaryScreenEvent {
 
     val event: AddDiaryScreenEvent = this@AddDiaryViewModel
 
@@ -198,8 +199,8 @@ internal class AddDiaryViewModel @Inject constructor(
 
     override fun onPostClick() {
 
-        if(currentState.screenMode != ScreenModeType.POST_MODE)
-            throw IllegalStateException ("screen mode is not post mode")
+        if (currentState.screenMode != ScreenModeType.POST_MODE)
+            throw IllegalStateException("screen mode is not post mode")
         checkNotNull(currentState.calendarCrop)
 
         checkedValid()
@@ -236,8 +237,8 @@ internal class AddDiaryViewModel @Inject constructor(
     override fun onEditClick() {
         if (!currentState.enableAction) return
 
-        if(currentState.screenMode != ScreenModeType.EDIT_MODE)
-            throw IllegalStateException ("screen mode is not edit mode")
+        if (currentState.screenMode != ScreenModeType.EDIT_MODE)
+            throw IllegalStateException("screen mode is not edit mode")
         checkNotNull(currentState.calendarCrop)
         checkNotNull(currentState.diaryId)
 
@@ -271,8 +272,8 @@ internal class AddDiaryViewModel @Inject constructor(
     override fun onDeleteClick() {
         if (!currentState.enableAction) return
 
-        if(currentState.screenMode != ScreenModeType.EDIT_MODE)
-            throw IllegalStateException ("screen mode is not edit mode")
+        if (currentState.screenMode != ScreenModeType.EDIT_MODE)
+            throw IllegalStateException("screen mode is not edit mode")
         checkNotNull(currentState.diaryId)
 
         viewModelScopeEH.launch {
