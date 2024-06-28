@@ -87,7 +87,7 @@ internal fun CalendarRoute(
 
     LaunchedEffect(reinitialize) {
         Timber.d("reinitialize: $reinitialize")
-        if (reinitialize == true) viewModel.reinitialize()
+        if (reinitialize == true) viewModel.initialize()
 
         navController.currentBackStackEntry?.savedStateHandle?.set(
             CalendarNavGraph.ARG_REINITIALIZE,

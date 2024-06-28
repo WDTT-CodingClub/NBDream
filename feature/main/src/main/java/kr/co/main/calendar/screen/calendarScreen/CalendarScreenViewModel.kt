@@ -71,14 +71,13 @@ internal class CalendarScreenViewModel @Inject constructor(
         CalendarScreenState()
 
     init {
-
+        Timber.d("init) called")
         viewModelScopeEH.launch {
             initialized.collect {
                 initialize()
             }
         }
 
-        Timber.d("init) called")
         viewModelScopeEH.launch {
             error.collect {
                 Timber.e("error: ${it.throwable?.message}\n${it.customError}\n${it.throwable?.cause}")
@@ -86,20 +85,11 @@ internal class CalendarScreenViewModel @Inject constructor(
         }
 
         updateUserCrops()
-
         updateHolidays()
         updateAllSchedules()
     }
 
     fun initialize() {
-        updateUserCrops()
-
-        updateHolidays()
-        updateAllSchedules()
-    }
-
-    fun reinitialize() {
-        Timber.d("reinitialize) called")
         updateAllSchedules()
         updateCropSchedules()
         updateDiaries()

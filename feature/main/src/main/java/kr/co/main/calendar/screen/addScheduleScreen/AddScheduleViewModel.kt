@@ -162,10 +162,17 @@ internal class AddScheduleViewModel @Inject constructor(
     }
 
     override fun onStartDateSelect(startDate: LocalDate) {
-        updateState { copy(startDate = startDate) }
+        Timber.d("onStartDateSelect) startDate: $startDate")
+        updateState {
+            copy(
+                startDate = startDate,
+                endDate = startDate
+            )
+        }
     }
 
     override fun onEndDateSelect(endDate: LocalDate) {
+        Timber.d("onEndDateSelect) endDate: $endDate")
         updateState { copy(endDate = endDate) }
     }
 

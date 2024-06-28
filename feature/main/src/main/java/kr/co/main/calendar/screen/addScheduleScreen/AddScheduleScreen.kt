@@ -337,6 +337,8 @@ private fun ScheduleDatePicker(
     onEndDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Timber.d("ScheduleDatePicker) startDate: $startDate, endDate: $endDate")
+
     Column(modifier = modifier) {
         Text(
             text = stringResource(id = R.string.feature_main_calendar_add_schedule_header_start_date),
@@ -347,7 +349,7 @@ private fun ScheduleDatePicker(
         CalendarDatePicker(
             modifier = Modifier.fillMaxWidth(),
             date = startDate,
-            onDateInput = { onStartDateSelect }
+            onDateSelect = onStartDateSelect,
         )
         Spacer(modifier = Modifier.height(Paddings.extra))
         Text(
@@ -360,7 +362,8 @@ private fun ScheduleDatePicker(
         CalendarDatePicker(
             modifier = Modifier.fillMaxWidth(),
             date = endDate,
-            onDateInput = { onEndDateSelect }
+            onDateSelect = onEndDateSelect,
+            minDate = startDate
         )
     }
 }
