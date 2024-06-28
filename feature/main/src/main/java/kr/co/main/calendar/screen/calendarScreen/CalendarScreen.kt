@@ -63,6 +63,7 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamTopAppBar
+import timber.log.Timber
 
 
 @Composable
@@ -73,6 +74,7 @@ internal fun CalendarRoute(
     viewModel: CalendarScreenViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    Timber.d("state: $state")
 
     CalendarScreen(
         modifier = Modifier.fillMaxSize(),
@@ -94,8 +96,9 @@ private fun CalendarScreen(
     event: CalendarScreenEvent,
     modifier: Modifier = Modifier,
 ) {
-    // TODO 일정/영농일지 추가 후 화면 새로고침
+    Timber.d("state: $state")
 
+    // TODO 일정/영농일지 추가 후 화면 새로고침
     val pagerState = rememberPagerState {
         CalendarTabType.entries.size
     }

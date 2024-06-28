@@ -17,7 +17,7 @@ enum class HolidayType(
             ANNIVERSARY.typeString -> ANNIVERSARY
             SOLAR_TERM.typeString -> SOLAR_TERM
             ETC.typeString -> ETC
-            else -> throw IllegalArgumentException("Unknown holiday type")
+            else -> throw IllegalArgumentException("Holiday Type) Unknown holiday type")
         }
     }
 }

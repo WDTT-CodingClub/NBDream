@@ -87,7 +87,7 @@ private fun rememberDiaryCalendarStateHolder(
     onDateSelect: (LocalDate) -> Unit,
     holidays: List<HolidayModel> = emptyList(),
     diaries: List<DiaryModel> = emptyList()
-) = remember {
+) = remember(cropColor, year, month, selectedDate, onDateSelect, holidays, diaries) {
     DiaryCalendarStateHolder(
         cropColor, year, month, selectedDate, onDateSelect, holidays, diaries
     )

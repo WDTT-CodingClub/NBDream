@@ -42,7 +42,7 @@ object FileUtil : BaseUtil() {
                 }
             }
         } catch (e: IOException) {
-            throw CustomException(cause = e)
+            throw CustomException(throwable = e)
         }
     }
 

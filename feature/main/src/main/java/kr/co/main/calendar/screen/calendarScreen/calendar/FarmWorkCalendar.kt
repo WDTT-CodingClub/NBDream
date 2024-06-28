@@ -110,7 +110,7 @@ internal fun FarmWorkCalendar(
 private fun rememberFarmWorkCalendarStateHolder(
     calendarMonth: Int,
     farmWorks: List<FarmWorkModel>,
-) = remember {
+) = remember(calendarMonth, farmWorks) {
     Timber.d("rememberFarmWorkCalendarStateHolder) farmworks: ${farmWorks.map { it.farmWork }}")
     FarmWorkCalendarStateHolder(
         calendarMonth = calendarMonth,

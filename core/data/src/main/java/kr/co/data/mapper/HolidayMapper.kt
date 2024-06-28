@@ -16,7 +16,7 @@ internal object HolidayMapper :
                 isHoliday = when (isHoliday) {
                     "Y" -> true
                     "N" -> false
-                    else -> throw IllegalArgumentException("Unknown isHoliday")
+                    else -> throw IllegalArgumentException("HolidayMapper) Unknown isHoliday")
                 },
                 type = HolidayType.ofValue(type),
                 name = name,

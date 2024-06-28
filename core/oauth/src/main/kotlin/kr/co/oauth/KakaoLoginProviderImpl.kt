@@ -48,7 +48,7 @@ internal class KakaoLoginProviderImpl @Inject constructor(
             client.loginWithKakaoTalk(context) { token, error ->
                 error?.let {
                     if (it.message == USER_CANCELLED) return@loginWithKakaoTalk
-                    continuation.resumeWithException(CustomException(cause = it))
+                    continuation.resumeWithException(CustomException(throwable = it))
                     return@loginWithKakaoTalk
                 }
                 continuation.resumeWith(Result.success(token ?: return@loginWithKakaoTalk))
@@ -60,7 +60,7 @@ internal class KakaoLoginProviderImpl @Inject constructor(
             client.loginWithKakaoAccount(context) { token, error ->
                 error?.let {
                     if (it.message == USER_CANCELLED) return@loginWithKakaoAccount
-                    continuation.resumeWithException(CustomException(cause = it))
+                    continuation.resumeWithException(CustomException(throwable = it))
                     return@loginWithKakaoAccount
                 }
                 continuation.resumeWith(
@@ -74,7 +74,7 @@ internal class KakaoLoginProviderImpl @Inject constructor(
         suspendCancellableCoroutine { continuation ->
             client.me { _, error ->
                 error?.let {
-                    continuation.resumeWithException(CustomException(cause = it))
+                    continuation.resumeWithException(CustomException(throwable = it))
                 }
                 continuation.resumeWith(
                     Result.success(
