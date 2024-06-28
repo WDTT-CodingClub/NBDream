@@ -15,6 +15,7 @@ internal data class CommentResDto(
     val nickname: String? = null,
     val profileImageUrl: String? = null,
     val content: String? = null,
+    val isAuthor: Boolean? = null,
     @Serializable(with = LocalDateTimeSerializer::class)
     val createdDate: LocalDateTime,
     // TODO: 나중에 rename
@@ -31,6 +32,7 @@ internal fun CommentResDto.convertToData() = CommentResData(
     nickname = nickname,
     profileImageUrl = profileImageUrl,
     content = content,
+    isAuthor = isAuthor,
     createdTime = createdDate,
     lastModifiedTime = lastModifiedTime,
 )
