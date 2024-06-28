@@ -1,14 +1,22 @@
 package kr.co.main.calendar.screen.calendarScreen
 
 import android.os.Parcelable
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kr.co.domain.usecase.calendar.GetDiariesUseCase
 import kr.co.domain.usecase.calendar.GetFarmWorksUseCase
 import kr.co.domain.usecase.calendar.GetHolidaysUseCase
 import kr.co.domain.usecase.calendar.GetSchedulesUseCase
 import kr.co.domain.usecase.calendar.GetUserCropsUseCase
+import kr.co.domain.usecase.user.FetchUserUseCase
 import kr.co.main.mapper.calendar.CropModelMapper
 import kr.co.main.mapper.calendar.CropModelTypeMapper
 import kr.co.main.mapper.calendar.DiaryModelMapper
@@ -39,11 +47,12 @@ internal interface CalendarScreenEvent {
 @HiltViewModel
 internal class CalendarScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val fetchUserUseCase: FetchUserUseCase,
     private val getUserCrops: GetUserCropsUseCase,
     private val getFarmWorks: GetFarmWorksUseCase,
     private val getHolidays: GetHolidaysUseCase,
     private val getSchedules: GetSchedulesUseCase,
-    private val getDiaries: GetDiariesUseCase
+    private val getDiaries: GetDiariesUseCase,
 ) : BaseViewModel<CalendarScreenViewModel.CalendarScreenState>(savedStateHandle),
     CalendarScreenEvent {
     val event: CalendarScreenEvent = this@CalendarScreenViewModel
@@ -60,12 +69,8 @@ internal class CalendarScreenViewModel @Inject constructor(
         val holidays: List<HolidayModel> = emptyList(),
         val allSchedules: List<ScheduleModel> = emptyList(),
         val cropSchedules: List<ScheduleModel> = emptyList(),
-        val diaries: List<DiaryModel> = emptyList()
+        val diaries: List<DiaryModel> = emptyList(),
     ) : State {
-        override fun toParcelable(): Parcelable? {
-            // TODO("serialize")
-            return null
-        }
     }
 
     override fun createInitialState(savedState: Parcelable?): CalendarScreenState =
@@ -75,10 +80,43 @@ internal class CalendarScreenViewModel @Inject constructor(
         } ?: CalendarScreenState()
 
     init {
-        Timber.d("init) called")
-        viewModelScopeEH.launch { updateUserCrops() }
         viewModelScopeEH.launch { updateHolidays() }
         viewModelScopeEH.launch { updateAllSchedules() }
+        viewModelScopeEH.launch { updateUserCrops() }
+
+        viewModelScopeEH.launch {
+            state.select(CalendarScreenState::crop).filterNotNull()
+                .combine(state.select(CalendarScreenState::month)) { crop, month ->
+                    GetFarmWorksUseCase.Params(
+                        crop = crop.type.let(CropModelTypeMapper::toLeft),
+                        month = month
+                    )
+                }.collectLatest { params ->
+                    runCatching {
+                        getFarmWorks(params)
+                    }.onSuccess {
+                        updateState {
+                            copy(farmWorks = it.map(FarmWorkModelMapper::convert))
+                        }
+                    }.onFailure {
+                        updateState {
+                            copy(farmWorks = emptyList())
+                        }
+                    }
+                }
+        }
+
+        viewModelScopeEH.launch {
+            error.collect {
+                Timber.e("${it.throwable?.message}\n${it.customError}\n${it.throwable?.cause}")
+            }
+        }
+
+        viewModelScopeEH.launch {
+            state.collectLatest {
+                Timber.i("state : $it")
+            }
+        }
     }
 
     override fun onYearSelect(year: Int) {
@@ -86,14 +124,12 @@ internal class CalendarScreenViewModel @Inject constructor(
         viewModelScopeEH.launch { updateYear(year) }
     }
 
-    override fun onMonthSelect(month: Int) {
-        Timber.d("onMonthSelect) month: $month")
-        viewModelScopeEH.launch { updateMonth(month) }
+    override fun onMonthSelect(month: Int) = updateState {
+        copy(month = month)
     }
 
-    override fun onCropSelect(crop: CropModel) {
-        Timber.d("onCropSelect) crop: ${crop.type.name}")
-        viewModelScopeEH.launch { updateCrop(crop) }
+    override fun onCropSelect(crop: CropModel) = updateState {
+        copy(crop = crop)
     }
 
     override fun onDateSelect(date: LocalDate) {
@@ -103,79 +139,62 @@ internal class CalendarScreenViewModel @Inject constructor(
     }
 
     private suspend fun updateUserCrops() {
-        Timber.d("updateUserCrops) called")
-//        viewModelScopeEH.launch {
-//            getUserCrops().collect { userCrops ->
-//                userCrops.map { CropModelMapper.toRight(it) }.let {
-//                    updateState {
-//                        copy(userCrops = it)
-//                    }
-//                }
-//            }
-//        }.join()
-//        updateCrop(currentState.userCrops.firstOrNull())
-
-        val tmpUserCrops = listOf(
-            CropModel.create(CropModelType.SWEET_POTATO),
-            CropModel.create(CropModelType.POTATO),
-            CropModel.create(CropModelType.GARLIC),
-            CropModel.create(CropModelType.APPLE),
-            CropModel.create(CropModelType.PEPPER)
-        )
-        updateState { copy(userCrops = tmpUserCrops) }
-        updateCrop(tmpUserCrops.firstOrNull())
+        getUserCrops.invoke()
+            .collectLatest { userCrops ->
+                userCrops.map { CropModelMapper.toRight(it) }.let {
+                    updateState {
+                        copy(
+                            crop = it.first(),
+                            userCrops = it
+                        )
+                    }
+                }
+            }
     }
 
-    private suspend fun updateCrop(newCrop: CropModel?) {
+    private suspend fun updateCrop(newCrop: CropModel) {
         Timber.d("updateCrop) newCrop: $newCrop")
         if (currentState.crop == newCrop) return
         Timber.d("updateCrop) currentState.crop: ${currentState.crop}")
 
-        viewModelScopeEH.launch {
-            updateState { copy(crop = newCrop) }
-        }.join()
-        updateFarmWorks()
-        updateCropSchedules()
-        updateDiaries()
+
+        updateState { copy(crop = newCrop) }
+
+//        updateFarmWorks()
+//        updateCropSchedules()
+//        updateDiaries()
     }
 
     private suspend fun updateYear(newYear: Int) {
         Timber.d("updateYear) newYear: $newYear")
         if (currentState.year == newYear) return
 
-        viewModelScopeEH.launch {
-            updateState { copy(year = newYear) }
-        }.join()
-        updateHolidays()
-        updateAllSchedules()
-        updateCropSchedules()
-        updateDiaries()
+        updateState { copy(year = newYear) }
+
+//        updateHolidays()
+//        updateAllSchedules()
+//        updateCropSchedules()
+//        updateDiaries()
     }
 
     private suspend fun updateMonth(newMonth: Int) {
         Timber.d("updateMonth) newMonth: $newMonth")
         if (currentState.month == newMonth) return
 
-        viewModelScopeEH.launch {
-            updateState { copy(month = newMonth) }
-        }.join()
-        updateFarmWorks()
-        updateHolidays()
-        updateAllSchedules()
-        updateCropSchedules()
-        updateDiaries()
+        updateState { copy(month = newMonth) }
+
+//        updateFarmWorks()
+//        updateHolidays()
+//        updateAllSchedules()
+//        updateCropSchedules()
+//        updateDiaries()
     }
 
     private suspend fun updateFarmWorks() {
         Timber.d("updateFarmWorks) called, crop: ${currentState.crop?.type?.name}")
-        if (currentState.crop == null) {
-            updateState { copy(farmWorks = emptyList()) }
-            return
-        }
-
         getFarmWorks(
             GetFarmWorksUseCase.Params(
-                crop = CropModelTypeMapper.toLeft(currentState.crop!!.type),
+                crop = currentState.crop?.type?.let { CropModelTypeMapper.toLeft(it) },
                 month = currentState.month
             )
         ).let { farmWorks ->

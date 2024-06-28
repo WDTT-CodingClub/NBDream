@@ -65,7 +65,7 @@ private val yellow1 = Color(0xFFFEC600)
 val kakaoYellow = Color(0xFFFEE500)
 val naverGreen = Color(0xFF03C75A)
 
-val background = Color(0xFFF5F5F5)
+val background = Color(0xFFF5F5F5)//f6f6f3
 
 val graph1 = Color(0xFFF4EEDB)
 val graph2 = Color(0xFF9B99C9)

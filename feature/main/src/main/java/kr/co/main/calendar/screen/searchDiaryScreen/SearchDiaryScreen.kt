@@ -1,6 +1,7 @@
 package kr.co.main.calendar.screen.searchDiaryScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
@@ -26,6 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +41,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,9 +51,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import dreamicon.Calendar
 import kr.co.common.util.format
 import kr.co.main.R
+import kr.co.main.accountbook.model.CustomDatePickerDialog
+import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.type.CalendarSortType
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.ext.scaffoldBackground
@@ -72,12 +79,31 @@ internal fun SearchDiaryRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val (isDatePickerVisible, setDatePickerVisible) = remember { mutableStateOf<Boolean?>(null) }
+
     SearchDiaryScreen(
         state = state,
         onQueryChange = viewModel.event::onQueryInput,
         onSortChange = viewModel.event::onSortChange,
+        onSearchClick = viewModel.event::onSearchClick,
+        onStartDateClick = { setDatePickerVisible(true) },
+        onEndDateClick = { setDatePickerVisible(false) },
         popBackStack = popBackStack
     )
+
+    isDatePickerVisible?.let { isStartDate ->
+        CustomDatePickerDialog(
+            date = if (isStartDate) state.startDate else state.endDate,
+            onClickCancel = { setDatePickerVisible(null) }
+        ) { selected ->
+            if (isStartDate) {
+                viewModel.event.onStartDateInput(LocalDate.parse(selected))
+            } else {
+                viewModel.event.onEndDateInput(LocalDate.parse(selected))
+            }
+            setDatePickerVisible(null)
+        }
+    }
 }
 
 @Composable
@@ -85,6 +111,9 @@ private fun SearchDiaryScreen(
     state: SearchDiaryScreenViewModel.SearchDiaryScreenState = SearchDiaryScreenViewModel.SearchDiaryScreenState(),
     onQueryChange: (String) -> Unit = {},
     onSortChange: (CalendarSortType) -> Unit = {},
+    onSearchClick: () -> Unit = {},
+    onStartDateClick: () -> Unit = {},
+    onEndDateClick: () -> Unit = {},
     popBackStack: () -> Unit = {},
 ) {
     Scaffold(
@@ -132,7 +161,13 @@ private fun SearchDiaryScreen(
                     value = state.query,
                     onValueChange = onQueryChange,
                     textStyle = MaterialTheme.typo.body1.copy(color = MaterialTheme.colors.gray1),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = { onSearchClick() }
+                    )
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -173,13 +208,20 @@ private fun SearchDiaryScreen(
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        DateTab(state.startDate.format("yyyy.MM.dd"))
-                        DateTab(state.endDate.format("yyyy.MM.dd"))
+                        DateTab(
+                            state.startDate,
+                            onDateClick = onStartDateClick
+                        )
+
+                        DateTab(
+                            state.endDate,
+                            onDateClick = onEndDateClick
+                        )
                     }
                 }
             }
 
-            itemsIndexed(List(3) { 1 }) { index, item ->
+            itemsIndexed(state.diaries) { index, diary ->
                 if (index == 0) TextSort(
                     selected = state.sortType,
                     onSortChange = onSortChange
@@ -187,7 +229,10 @@ private fun SearchDiaryScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                ScheduleCard()
+                ScheduleCard(
+                    isToday = diary.date == LocalDate.now(),
+                    diary = diary
+                )
             }
         }
     }
@@ -195,11 +240,13 @@ private fun SearchDiaryScreen(
 
 @Composable
 private fun RowScope.DateTab(
-    date: String,
+    date: LocalDate,
+    onDateClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier
             .weight(1f)
+            .clickable(onClick = onDateClick)
             .background(
                 color = MaterialTheme.colors.gray10,
                 shape = RoundedCornerShape(8.dp)
@@ -216,7 +263,7 @@ private fun RowScope.DateTab(
     ) {
         Text(
             modifier = Modifier.clearAndSetSemantics { },
-            text = date,
+            text = date.format("yyyy.MM.dd"),
             style = MaterialTheme.typo.body1,
             color = MaterialTheme.colors.gray1,
             maxLines = 1,
@@ -260,6 +307,7 @@ private fun TextSort(
 @Composable
 private fun ScheduleCard(
     isToday: Boolean = false,
+    diary: DiaryModel,
 ) {
     Column(
         modifier = Modifier
@@ -294,7 +342,7 @@ private fun ScheduleCard(
                         )
                     ) {
                         append(
-                            LocalDate.now().format("MM월dd일 ")
+                            diary.date.format("MM월dd일 ")
                                     + LocalDate.now().dayOfWeek.getDisplayName(
                                 TextStyle.SHORT,
                                 Locale.KOREAN
@@ -308,7 +356,7 @@ private fun ScheduleCard(
                     ) {
                         if (!isToday) append("  오늘")
                     }
-                    append("  " + "소만")
+                    append("  " + diary.holidays)
                 },
                 style = MaterialTheme.typo.body1.copy(
                     color = MaterialTheme.colors.black.copy(0.4f)
@@ -316,7 +364,7 @@ private fun ScheduleCard(
             )
 
             Text(
-                text = "22/18 0mm 맑음",
+                text = diary.weatherInfo,
                 fontFamily = MaterialTheme.typo.body1.fontFamily,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
@@ -328,14 +376,19 @@ private fun ScheduleCard(
 
         Text(
             modifier = Modifier.padding(top = 3.dp),
-            text = "5명 ㅣ 4시간 ㅣ 40평",
+            text = "${diary.workLaborer}명 ㅣ ${diary.workHours}시간 ㅣ ${diary.workArea}평",
             style = MaterialTheme.typo.body2,
             color = MaterialTheme.colors.gray5
             )
 
         Spacer(modifier = Modifier.height(18.dp))
 
-        DiaryContents()
+        diary.workDescriptions.forEach {
+            DiaryContent(
+                modifier = Modifier.padding(vertical = 2.dp),
+                description = it
+            )
+        }
 
         Spacer(modifier = Modifier.height(15.dp))
 
@@ -343,7 +396,7 @@ private fun ScheduleCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(7.dp)
         ) {
-            List(2) {
+            diary.images.forEach {
                 AsyncImage(
                     modifier = Modifier
                         .weight(1f)
@@ -357,7 +410,7 @@ private fun ScheduleCard(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "오늘은 어제보다 작업 인원이 많아서 작업이 일찍 끝났다.",
+            text = diary.memo,
             style = MaterialTheme.typo.body1,
             color = MaterialTheme.colors.gray1
         )
@@ -365,11 +418,12 @@ private fun ScheduleCard(
 }
 
 @Composable
-private fun DiaryContents(
-
+private fun DiaryContent(
+    modifier: Modifier = Modifier,
+    description: DiaryModel.WorkDescriptionModel
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -379,12 +433,12 @@ private fun DiaryContents(
             tint = Color.Unspecified
         )
         Text(
-            text = "감자 물 관리 작업",
+            text = description.description,
             style = MaterialTheme.typo.body1,
             color = MaterialTheme.colors.gray1
         )
         Text(
-            text = "물 관리",
+            text = stringResource(description.type.id),
             style = MaterialTheme.typo.body1,
             color = MaterialTheme.colors.gray5
         )

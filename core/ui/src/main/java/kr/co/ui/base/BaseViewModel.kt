@@ -27,7 +27,7 @@ abstract class BaseViewModel<STATE : BaseViewModel.State>(
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         val error =
             if (throwable is CustomException) throwable
-            else CustomException(cause = throwable, customError = CustomErrorType.UNKNOWN)
+            else CustomException(throwable = throwable, customError = CustomErrorType.UNKNOWN)
 
         onError(error)
         setLoading(false)

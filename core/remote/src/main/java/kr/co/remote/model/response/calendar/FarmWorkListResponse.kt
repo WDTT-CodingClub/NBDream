@@ -11,14 +11,14 @@ internal data class FarmWorkListResponse(
 ){
     @Serializable
     data class FarmWorkResponse(
-        val id: Int,
-        val startMonth: Int,
+        val id: Long,
         val startEra: String,
+        val startMonth: Int,
         val endMonth: Int,
         val endEra: String,
         val farmWorkCategory:String,
         val farmWork: String,
-        val videoUrl:String
+        val videoUrl:String?
     )
 }
 
