@@ -149,7 +149,7 @@ private fun DiaryCalendarRow(
                 cropColor = cropColor,
                 date = date,
                 isSelected = (date == selectedDate),
-                isHoliday = holidays.any { it.date == date } or (date.dayOfWeek == DayOfWeek.SUNDAY),
+                isHoliday = holidays.any { it.date == date && it.isHoliday } or (date.dayOfWeek == DayOfWeek.SUNDAY),
                 diary = diaries.firstOrNull { it.date == date }
             )
         }

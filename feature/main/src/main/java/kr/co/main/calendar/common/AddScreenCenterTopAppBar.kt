@@ -26,6 +26,7 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import timber.log.Timber
 
 @Composable
 internal fun AddScreenCenterTopAppBar(
@@ -40,8 +41,6 @@ internal fun AddScreenCenterTopAppBar(
     modifier: Modifier = Modifier,
     enableAction: Boolean = true
 ) {
-    val context = LocalContext.current
-
     DreamCenterTopAppBar(
         modifier = modifier,
         title = stringResource(
@@ -78,7 +77,7 @@ internal fun AddScreenCenterTopAppBar(
                         TopAppBarActionText(
                             actionTitleId = R.string.feature_main_calendar_top_app_bar_edit,
                             actionHintId = actionHintId,
-                            onClick = {expandDropDown = true},
+                            onClick = { expandDropDown = true },
                             enableAction = enableAction
                         )
 

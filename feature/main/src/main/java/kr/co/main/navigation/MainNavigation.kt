@@ -32,6 +32,8 @@ import kr.co.main.my.setting.delete.MyPageSettingDeleteAccountRoute
 import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
+import kr.co.main.navigation.AccountBookRoute.ACCOUNT_KEY
+import kr.co.main.navigation.BulletinRoute.BULLETIN_KEY
 import kr.co.main.notification.NotificationRoute
 
 
@@ -42,15 +44,17 @@ internal const val CHAT_ROUTE = "chatRoute"
 internal const val NOTIFICATION_ROUTE = "notificationRoute"
 
 internal data object AccountBookRoute {
-    internal const val ACCOUNT_BOOK_CREATE_ROUTE = "accountBookCreateRoute"
-    internal const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
-    internal const val ACCOUNT_BOOK_UPDATE_ROUTE = "accountBookUpdateRoute"
+    const val ACCOUNT_BOOK_CREATE_ROUTE = "accountBookCreateRoute"
+    const val ACCOUNT_BOOK_CONTENT_ROUTE = "accountBookContentRoute"
+    const val ACCOUNT_BOOK_UPDATE_ROUTE = "accountBookUpdateRoute"
+    const val ACCOUNT_KEY = "accountRefresh"
 }
 
-internal data object CommunityRoute {
+internal data object BulletinRoute {
     const val WRITING_ROUTE = "community_writing_route"
     const val BULLETIN_DETAIL_ROUTE = "community_bulletin_detail_route"
     const val BULLETIN_UPDATE_ROUTE = "community_bulletin_update_route"
+    const val BULLETIN_KEY = "communityRefresh"
 }
 
 internal data object MyPageRoute {
@@ -106,6 +110,7 @@ fun NavGraphBuilder.mainNavGraph(
                     route = MainBottomRoute.CALENDAR.route
                 ) {
                     CalendarRoute(
+                        navController = navController,
                         navToAddSchedule = { cropNameId, screenModeId, scheduleId ->
                             navController.navigate(
                                 CalendarNavGraph.AddScheduleRoute.buildRoute(
@@ -149,12 +154,13 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     CommunityRoute(
                         navigateToWriting = { crop, category ->
-                            navController.navigate("${CommunityRoute.WRITING_ROUTE}?crop=${crop.ordinal}&category=${category.ordinal}")
+                            navController.navigate("${BulletinRoute.WRITING_ROUTE}?crop=${crop.ordinal}&category=${category.ordinal}")
                         },
                         navigateToNotification = {},
                         navigateToBulletinDetail = { id ->
-                            navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$id")
+                            navController.navigate("${BulletinRoute.BULLETIN_DETAIL_ROUTE}/$id")
                         },
+                        navController = navController
                     )
                 }
 
@@ -204,7 +210,14 @@ fun NavGraphBuilder.mainNavGraph(
         arguments = CalendarNavGraph.AddScheduleRoute.arguments
     ) {
         AddScheduleRoute(
-            popBackStack = navController::popBackStack
+            popBackStack = navController::popBackStack,
+            navigateToCalendar = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    CalendarNavGraph.ARG_REINITIALIZE,
+                    true
+                )
+                navController.popBackStack()
+            }
         )
     }
     composable(
@@ -234,7 +247,7 @@ fun NavGraphBuilder.mainNavGraph(
         AccountBookCreateRoute(
             popBackStack = navController::popBackStack,
             navigationToAccountBook = {
-                navController.previousBackStackEntry?.savedStateHandle?.set("reinitialize", true)
+                navController.previousBackStackEntry?.savedStateHandle?.set(ACCOUNT_KEY, true)
                 navController.popBackStack()
             },
             navigationToContent = {}
@@ -272,7 +285,14 @@ fun NavGraphBuilder.mainNavGraph(
         AccountBookContentRoute(
             popBackStack = {
                 if (isUpdate) {
-                    navController.previousBackStackEntry?.savedStateHandle?.set("reinitialize", true)
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "reinitialize",
+                        true
+                    )
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        ACCOUNT_KEY,
+                        true
+                    )
                 }
                 navController.popBackStack()
 
@@ -284,7 +304,7 @@ fun NavGraphBuilder.mainNavGraph(
             },
             navigationTopAccountBook = {
                 navController.previousBackStackEntry?.savedStateHandle?.set(
-                    "reinitialize",
+                    ACCOUNT_KEY,
                     true
                 )
                 navController.popBackStack()
@@ -294,7 +314,7 @@ fun NavGraphBuilder.mainNavGraph(
 
 
     composable(
-        route = "${CommunityRoute.WRITING_ROUTE}?crop={crop}&category={category}",
+        route = "${BulletinRoute.WRITING_ROUTE}?crop={crop}&category={category}",
         arguments = listOf(
             navArgument("crop") {
                 type = NavType.StringType
@@ -308,12 +328,16 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         BulletinWritingRoute(
             popBackStack = navController::popBackStack,
-            navigationToDetail = {}
+            navigationToDetail = {},
+            navigationToCommunity = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(BULLETIN_KEY, true)
+                navController.popBackStack()
+            }
         )
     }
 
     composable(
-        route = "${CommunityRoute.BULLETIN_DETAIL_ROUTE}/{id}",
+        route = "${BulletinRoute.BULLETIN_DETAIL_ROUTE}/{id}",
         arguments = listOf(
             navArgument("id") {
                 type = NavType.LongType
@@ -325,27 +349,28 @@ fun NavGraphBuilder.mainNavGraph(
             popBackStack = navController::popBackStack,
             navigateToUpdate = {
                 navController.navigate(
-                    "${CommunityRoute.BULLETIN_UPDATE_ROUTE}/$it"
+                    "${BulletinRoute.BULLETIN_UPDATE_ROUTE}/$it"
                 )
             }
         )
     }
 
     composable(
-        route = "${CommunityRoute.BULLETIN_UPDATE_ROUTE}/{id}",
+        route = "${BulletinRoute.BULLETIN_UPDATE_ROUTE}/{id}",
     ) {
         BulletinWritingRoute(
             popBackStack = navController::popBackStack,
-            navigationToDetail = {id ->
+            navigationToDetail = { id ->
                 navController.popBackStack()
                 navController.navigate(
-                    "${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$id"
+                    "${BulletinRoute.BULLETIN_DETAIL_ROUTE}/$id"
                 ) {
-                    popUpTo("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$id") {
+                    popUpTo("${BulletinRoute.BULLETIN_DETAIL_ROUTE}/$id") {
                         inclusive = true
                     }
                 }
-            }
+            },
+            navigationToCommunity = {}
         )
     }
 
@@ -416,7 +441,7 @@ fun NavGraphBuilder.mainNavGraph(
         MyPageBookmarkRoute(
             popBackStack = navController::popBackStack,
             navigateToBulletinDetail = {
-                navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$it")
+                navController.navigate("${BulletinRoute.BULLETIN_DETAIL_ROUTE}/$it")
             }
         )
     }
@@ -427,7 +452,7 @@ fun NavGraphBuilder.mainNavGraph(
         MyPageWriteRoute(
             popBackStack = navController::popBackStack,
             navigateToBulletinDetail = {
-                navController.navigate("${CommunityRoute.BULLETIN_DETAIL_ROUTE}/$it")
+                navController.navigate("${BulletinRoute.BULLETIN_DETAIL_ROUTE}/$it")
             }
         )
     }

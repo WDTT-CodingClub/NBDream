@@ -18,7 +18,8 @@ internal data class DiaryListResponse(
         val date: String,
 
         @SerialName("holidayResponses")
-        val holidayList: List<HolidayListResponse>,
+        val holidayList: List<HolidayResponse>,
+
         val weatherForecast: String,
 
         @SerialName("workingPeopleNumber")
