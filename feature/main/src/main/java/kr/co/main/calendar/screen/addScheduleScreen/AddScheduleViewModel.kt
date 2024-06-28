@@ -109,18 +109,18 @@ internal class AddScheduleViewModel @Inject constructor(
             throw IllegalStateException("screen mode is not post mode")
 
         viewModelScopeEH.launch {
-            viewModelScopeEH.launch {
-                createSchedule(
-                    CreateScheduleUseCase.Params(
-                        category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType),
-                        title = currentState.title,
-                        startDate = currentState.startDate.toString(),
-                        endDate = currentState.endDate.toString(),
-                        memo = currentState.memo
-                    )
+            Timber.d("onPostClick) start date: ${currentState.startDate}, end date: ${currentState.endDate}")
+            createSchedule(
+                CreateScheduleUseCase.Params(
+                    category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType),
+                    title = currentState.title,
+                    startDate = currentState.startDate.toString(),
+                    endDate = currentState.endDate.toString(),
+                    memo = currentState.memo
                 )
-            }
+            )
         }
+
     }
 
     override fun onEditClick() {
@@ -129,6 +129,7 @@ internal class AddScheduleViewModel @Inject constructor(
         checkNotNull(currentState.scheduleId)
 
         viewModelScopeEH.launch {
+            Timber.d("onEditClick) start date: ${currentState.startDate}, end date: ${currentState.endDate}")
             updateSchedule(
                 UpdateScheduleUseCase.Params(
                     id = currentState.scheduleId!!,

@@ -8,6 +8,6 @@ internal data class ScheduleModel(
     val type: ScheduleModelType,
     val title: String,
     val startDate: LocalDate,
-    val endDate: LocalDate = startDate,
+    val endDate: LocalDate,
     val memo: String = ""
 )

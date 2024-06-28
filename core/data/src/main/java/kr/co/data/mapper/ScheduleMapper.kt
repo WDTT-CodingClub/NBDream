@@ -16,7 +16,7 @@ internal object ScheduleMapper
                 type = ScheduleType.ofValue(category),
                 title = title,
                 startDate = LocalDate.parse(startDate),
-                endDate = LocalDate.parse(startDate),
+                endDate = LocalDate.parse(endDate),
                 memo = memo
             )
         }
