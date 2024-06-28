@@ -58,8 +58,8 @@ import coil.compose.AsyncImage
 import kr.co.common.util.format
 import kr.co.domain.entity.CommentEntity
 import kr.co.main.R
-import kr.co.main.community.CommunityDialogSimpleTitle
 import kr.co.main.accountbook.main.CircleProgress
+import kr.co.main.community.CommunityDialogSimpleTitle
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
