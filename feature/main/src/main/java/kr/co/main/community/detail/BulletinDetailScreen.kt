@@ -207,7 +207,7 @@ internal fun BulletinDetailScreen(
                                         )
                                     },
                                 ) else listOf(
-                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
+                                    TextAndOnClick("신고하기", event::showReportBottomSheet),
                                 )
                             )
                         }) {
@@ -279,7 +279,7 @@ internal fun BulletinDetailScreen(
                                         )
                                     },
                                 ) else listOf(
-                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
+                                    TextAndOnClick("신고하기", event::showReportBottomSheet),
                                 )
                             )
                         },
@@ -357,7 +357,7 @@ private fun ImageViewPager(
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             repeat(pagerState.pageCount) { iteration ->
                 //val color = if (pagerState.currentPage == iteration) Color.White else Color(0x52FFFFFF)  // 잘 안보이는데?
@@ -487,10 +487,7 @@ private fun BottomCommentWritingBar(
                 color = MaterialTheme.colors.gray9,
                 shape = CircleShape,
             )
-            .padding(
-                horizontal = 20.dp,
-                vertical = 4.dp
-            ),
+            .padding(horizontal = 20.dp, vertical = 4.dp),
         value = state.commentWritingInput,
         onValueChange = event::onCommentWritingInput,
         textStyle = MaterialTheme.typo.body1.copy(color = MaterialTheme.colors.gray1),
