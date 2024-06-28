@@ -74,12 +74,16 @@ internal fun CommunityRoute(
     navController: NavController,
 ) {
     val reinitialize =
-        navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(BulletinRoute.BULLETIN_KEY) ?: false
+        navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(BulletinRoute.BULLETIN_KEY)
+            ?: false
     LaunchedEffect(reinitialize) {
         if (reinitialize) {
             viewModel.getBulletins()
         }
-        navController.currentBackStackEntry?.savedStateHandle?.set(BulletinRoute.BULLETIN_KEY, false)
+        navController.currentBackStackEntry?.savedStateHandle?.set(
+            BulletinRoute.BULLETIN_KEY,
+            false
+        )
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -193,9 +197,7 @@ internal fun CommunityScreen(
                             contentDescription = "게시판 검색"
                         },
                     value = state.searchInput,
-                    onValueChange = {
-                        if ("\n" !in it) event.onSearchInputChanged(it)
-                    },
+                    onValueChange = event::onSearchInputChanged,
                     textStyle = MaterialTheme.typo.body1.copy(color = MaterialTheme.colors.gray1),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
