@@ -54,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.collectLatest
+import kr.co.common.util.DateFormatter
 import kr.co.common.util.format
 import kr.co.main.R
 import kr.co.main.accountbook.model.CustomDatePickerDialog
@@ -113,9 +114,9 @@ internal fun SearchDiaryRoute(
             onClickCancel = { setDatePickerVisible(null) }
         ) { selected ->
             if (isStartDate) {
-                viewModel.event.onStartDateInput(LocalDate.parse(selected))
+                viewModel.event.onStartDateInput(DateFormatter.fromPattern(selected,pattern ="yyyy.MM.dd"))
             } else {
-                viewModel.event.onEndDateInput(LocalDate.parse(selected))
+                viewModel.event.onEndDateInput(DateFormatter.fromPattern(selected,pattern ="yyyy.MM.dd"))
             }
             setDatePickerVisible(null)
         }
