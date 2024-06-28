@@ -11,6 +11,8 @@ internal object CalendarDesignToken {
     const val DIARY_IMAGE_SIZE = 80
 
     // calendar screen
+    const val YEAR_MONTH_PICKER_DROP_DOWN_HEIGHT = 300
+    const val YEAR_MONTH_PICKER_DROP_DOWN_ITEM_HEIGHT = 20
     const val CALENDAR_CROP_PICKER_WIDTH = 100
 
     // calendars
