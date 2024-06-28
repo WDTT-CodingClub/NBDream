@@ -188,7 +188,8 @@ internal fun AccountBookCreateScreen(
                                 color = MaterialTheme.colors.black
                             )
                         }
-                    }
+                    },
+                    colorBackground = true
                 )
             }
             item {

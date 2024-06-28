@@ -21,7 +21,6 @@ import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.FarmWorkModel
 import kr.co.main.model.calendar.HolidayModel
 import kr.co.main.model.calendar.ScheduleModel
-import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
@@ -32,7 +31,6 @@ internal interface CalendarScreenEvent {
     fun onYearSelect(year: Int)
     fun onMonthSelect(month: Int)
     fun onCropSelect(crop: CropModel)
-
     fun onDateSelect(date: LocalDate)
 }
 
@@ -61,39 +59,38 @@ internal class CalendarScreenViewModel @Inject constructor(
         val allSchedules: List<ScheduleModel> = emptyList(),
         val cropSchedules: List<ScheduleModel> = emptyList(),
         val diaries: List<DiaryModel> = emptyList()
-    ) : State {
-        override fun toParcelable(): Parcelable? {
-            // TODO("serialize")
-            return null
-        }
-    }
+    ) : State
 
     override fun createInitialState(savedState: Parcelable?): CalendarScreenState =
-        savedState?.let {
-            // TODO("deserialize")
-            CalendarScreenState()
-        } ?: CalendarScreenState()
+        CalendarScreenState()
 
     init {
         Timber.d("init) called")
-        viewModelScopeEH.launch { updateUserCrops() }
-        viewModelScopeEH.launch { updateHolidays() }
-        viewModelScopeEH.launch { updateAllSchedules() }
+        viewModelScopeEH.launch {
+            error.collect {
+                Timber.e("error: ${it.throwable?.message}\n${it.customError}\n${it.throwable?.cause}")
+            }
+        }
+
+        updateUserCrops()
+
+        updateHolidays()
+        updateAllSchedules()
     }
 
     override fun onYearSelect(year: Int) {
         Timber.d("onYearSelect) year: $year")
-        viewModelScopeEH.launch { updateYear(year) }
+        updateYear(year)
     }
 
     override fun onMonthSelect(month: Int) {
         Timber.d("onMonthSelect) month: $month")
-        viewModelScopeEH.launch { updateMonth(month) }
+        updateMonth(month)
     }
 
     override fun onCropSelect(crop: CropModel) {
-        Timber.d("onCropSelect) crop: ${crop.type.name}")
-        viewModelScopeEH.launch { updateCrop(crop) }
+        Timber.d("onCropSelect) crop: $crop")
+        updateCrop(crop)
     }
 
     override fun onDateSelect(date: LocalDate) {
@@ -102,155 +99,155 @@ internal class CalendarScreenViewModel @Inject constructor(
         Timber.d("onDateSelect) updated date: ${currentState.selectedDate}")
     }
 
-    private suspend fun updateUserCrops() {
+    private fun updateUserCrops() {
         Timber.d("updateUserCrops) called")
-//        viewModelScopeEH.launch {
-//            getUserCrops().collect { userCrops ->
-//                userCrops.map { CropModelMapper.toRight(it) }.let {
-//                    updateState {
-//                        copy(userCrops = it)
-//                    }
-//                }
-//            }
-//        }.join()
-//        updateCrop(currentState.userCrops.firstOrNull())
-
-        val tmpUserCrops = listOf(
-            CropModel.create(CropModelType.SWEET_POTATO),
-            CropModel.create(CropModelType.POTATO),
-            CropModel.create(CropModelType.GARLIC),
-            CropModel.create(CropModelType.APPLE),
-            CropModel.create(CropModelType.PEPPER)
-        )
-        updateState { copy(userCrops = tmpUserCrops) }
-        updateCrop(tmpUserCrops.firstOrNull())
+        viewModelScopeEH.launch {
+            getUserCrops().collect { userCrops ->
+                Timber.d("getUserCrops) userCrops: $userCrops")
+                userCrops.map { CropModelMapper.toRight(it) }.let {
+                    updateState {
+                        copy(userCrops = it)
+                    }
+                    updateCrop(currentState.userCrops.firstOrNull())
+                }
+            }
+        }
     }
 
-    private suspend fun updateCrop(newCrop: CropModel?) {
-        Timber.d("updateCrop) newCrop: $newCrop")
+    private fun updateCrop(newCrop: CropModel?) {
+        Timber.d("updateCrop) new crop: $newCrop")
         if (currentState.crop == newCrop) return
-        Timber.d("updateCrop) currentState.crop: ${currentState.crop}")
 
-        viewModelScopeEH.launch {
-            updateState { copy(crop = newCrop) }
-        }.join()
+        updateState { copy(crop = newCrop) }
         updateFarmWorks()
         updateCropSchedules()
         updateDiaries()
     }
 
-    private suspend fun updateYear(newYear: Int) {
+    private fun updateYear(newYear: Int) {
         Timber.d("updateYear) newYear: $newYear")
         if (currentState.year == newYear) return
 
-        viewModelScopeEH.launch {
-            updateState { copy(year = newYear) }
-        }.join()
+        updateState { copy(year = newYear) }
         updateHolidays()
         updateAllSchedules()
         updateCropSchedules()
         updateDiaries()
     }
 
-    private suspend fun updateMonth(newMonth: Int) {
+    private fun updateMonth(newMonth: Int) {
         Timber.d("updateMonth) newMonth: $newMonth")
         if (currentState.month == newMonth) return
 
-        viewModelScopeEH.launch {
-            updateState { copy(month = newMonth) }
-        }.join()
+        updateState { copy(month = newMonth) }
+
         updateFarmWorks()
         updateHolidays()
+
         updateAllSchedules()
         updateCropSchedules()
         updateDiaries()
     }
 
-    private suspend fun updateFarmWorks() {
-        Timber.d("updateFarmWorks) called, crop: ${currentState.crop?.type?.name}")
+    private fun updateFarmWorks() {
+        Timber.d("updateFarmWorks) crop: ${currentState.crop}")
         if (currentState.crop == null) {
             updateState { copy(farmWorks = emptyList()) }
             return
         }
 
-        getFarmWorks(
-            GetFarmWorksUseCase.Params(
-                crop = CropModelTypeMapper.toLeft(currentState.crop!!.type),
-                month = currentState.month
-            )
-        ).let { farmWorks ->
-            Timber.d("farmWorks: ${farmWorks.map { it.farmWork }}")
-            updateState { copy(farmWorks = farmWorks.map { FarmWorkModelMapper.convert(it) }) }
+        viewModelScopeEH.launch {
+            getFarmWorks(
+                GetFarmWorksUseCase.Params(
+                    crop = CropModelTypeMapper.toLeft(currentState.crop!!.type),
+                    month = currentState.month
+                )
+            ).let { farmWorks ->
+                Timber.d("getFarmworks) farmWorks: ${farmWorks.map { it.farmWork }}")
+                updateState { copy(farmWorks = farmWorks.map { FarmWorkModelMapper.convert(it) }) }
+            }
         }
     }
 
-    private suspend fun updateHolidays() {
+    private fun updateHolidays() {
         Timber.d("updateHolidays) called")
-        getHolidays(
-            GetHolidaysUseCase.Params(
-                year = currentState.year,
-                month = currentState.month
-            )
-        ).let { holidays ->
-            updateState {
-                copy(holidays = holidays.map { HolidayModelMapper.toRight(it) })
+        viewModelScopeEH.launch {
+            getHolidays(
+                GetHolidaysUseCase.Params(
+                    year = currentState.year,
+                    month = currentState.month
+                )
+            ).let { holidays ->
+                Timber.d("getHolidays) holidays: ${holidays.map { it.name }}")
+                updateState {
+                    copy(holidays = holidays.map { HolidayModelMapper.toRight(it) })
+                }
             }
         }
     }
 
-    private suspend fun updateAllSchedules() {
+    private fun updateAllSchedules() {
         Timber.d("updateAllSchedules) called")
-        getSchedules(
-            GetSchedulesUseCase.Params.Monthly(
-                category = ScheduleModelTypeMapper.toLeft(ScheduleModelType.All),
-                year = currentState.year,
-                month = currentState.month
-            )
-        ).collect { allSchedules ->
-            updateState {
-                copy(allSchedules = allSchedules.map { ScheduleModelMapper.toRight(it) })
+        viewModelScopeEH.launch {
+            getSchedules(
+                GetSchedulesUseCase.Params.Monthly(
+                    category = ScheduleModelTypeMapper.toLeft(ScheduleModelType.All),
+                    year = currentState.year,
+                    month = currentState.month
+                )
+            ).collect { allSchedules ->
+                Timber.d("getSchedules) allSchedules: ${allSchedules.map { it.title }}")
+                updateState {
+                    copy(allSchedules = allSchedules.map { ScheduleModelMapper.toRight(it) })
+                }
             }
         }
     }
 
-    private suspend fun updateCropSchedules() {
+    private fun updateCropSchedules() {
         Timber.d("updateCropSchedules) called")
         if (currentState.crop == null) {
             updateState { copy(cropSchedules = emptyList()) }
             return
         }
 
-        getSchedules(
-            GetSchedulesUseCase.Params.Monthly(
-                category = ScheduleModelTypeMapper.toLeft(
-                    ScheduleModelType.Crop(currentState.crop!!)
-                ),
-                year = currentState.year,
-                month = currentState.month
-            )
-        ).collect { cropSchedules ->
-            updateState {
-                copy(cropSchedules = cropSchedules.map { ScheduleModelMapper.toRight(it) })
+        viewModelScopeEH.launch {
+            getSchedules(
+                GetSchedulesUseCase.Params.Monthly(
+                    category = ScheduleModelTypeMapper.toLeft(
+                        ScheduleModelType.Crop(currentState.crop!!)
+                    ),
+                    year = currentState.year,
+                    month = currentState.month
+                )
+            ).collect { cropSchedules ->
+                Timber.d("getSchedules) cropSchedules: ${cropSchedules.map { it.title }}")
+                updateState {
+                    copy(cropSchedules = cropSchedules.map { ScheduleModelMapper.toRight(it) })
+                }
             }
         }
     }
 
-    private suspend fun updateDiaries() {
+    private fun updateDiaries() {
         Timber.d("updateDiaries) called")
         if (currentState.crop == null) {
             updateState { copy(diaries = emptyList()) }
             return
         }
 
-        getDiaries(
-            GetDiariesUseCase.Params(
-                crop = CropModelMapper.toLeft(currentState.crop!!),
-                year = currentState.year,
-                month = currentState.month
-            )
-        ).collect { diaries ->
-            updateState {
-                copy(diaries = diaries.map { DiaryModelMapper.toRight(it) })
+        viewModelScopeEH.launch {
+            getDiaries(
+                GetDiariesUseCase.Params(
+                    crop = CropModelMapper.toLeft(currentState.crop!!),
+                    year = currentState.year,
+                    month = currentState.month
+                )
+            ).collect { diaries ->
+                Timber.d("getDiaries) diaries: ${diaries.map { it.date }}")
+                updateState {
+                    copy(diaries = diaries.map { DiaryModelMapper.toRight(it) })
+                }
             }
         }
     }

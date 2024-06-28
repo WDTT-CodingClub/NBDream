@@ -2,7 +2,7 @@ package kr.co.domain.entity.type
 
 enum class FarmWorkType(val koreanName: String) {
     GROWTH("생육과정(주요농작업)"),
-    PEST("병해충방제"),
+    PEST("병충해 방제"),
     CLIMATE("기상재해 및 예상되는 문제점");
 
     companion object {
@@ -10,7 +10,7 @@ enum class FarmWorkType(val koreanName: String) {
             GROWTH.koreanName -> GROWTH
             PEST.koreanName -> PEST
             CLIMATE.koreanName -> CLIMATE
-            else -> throw IllegalArgumentException("Unknown category")
+            else -> throw IllegalArgumentException("FarmWorkType) Unknown category")
         }
     }
 }

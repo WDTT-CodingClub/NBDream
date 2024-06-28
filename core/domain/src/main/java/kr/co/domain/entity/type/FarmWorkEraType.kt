@@ -13,7 +13,7 @@ enum class FarmWorkEraType(
             EARLY.koreanName -> EARLY
             MID.koreanName -> MID
             LATE.koreanName -> LATE
-            else -> throw IllegalArgumentException("Unknown era")
+            else -> throw IllegalArgumentException("FarmWorkEraType) Unknown era")
         }
     }
 }

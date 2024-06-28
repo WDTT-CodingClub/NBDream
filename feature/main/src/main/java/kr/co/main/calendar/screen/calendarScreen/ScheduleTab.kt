@@ -33,6 +33,7 @@ import kr.co.main.model.calendar.ScheduleModel
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import timber.log.Timber
 import java.time.LocalDate
 
 @Composable
@@ -119,6 +120,8 @@ private fun FarmWorkCalendarCard(
     farmWorks: List<FarmWorkModel>,
     modifier: Modifier = Modifier
 ) {
+    Timber.d("FarmWorkCalendarCard) farmWorks: $farmWorks")
+
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
