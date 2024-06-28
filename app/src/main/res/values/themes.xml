@@ -4,7 +4,9 @@
     <style name="NightAdjusted.Theme.NBDream" parent="Theme.AppCompat.DayNight.NoActionBar" />
 
     <!-- Define the final theme to be used in the application -->
-    <style name="Theme.NBDream" parent="NightAdjusted.Theme.NBDream"/>
+    <style name="Theme.NBDream" parent="NightAdjusted.Theme.NBDream">
+        <item name="android:windowBackground">@color/white</item>
+    </style>
 
     <!-- Define the splash screen theme with night mode adjustments -->
     <style name="NightAdjusted.Theme.NBDream.Splash" parent="Theme.NBDream">

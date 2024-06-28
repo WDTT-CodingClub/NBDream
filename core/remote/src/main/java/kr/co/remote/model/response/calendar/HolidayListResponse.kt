@@ -5,16 +5,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class HolidayListResponse(
-    val holidayList: List<HolidayResponse>
-){
-    @Serializable
-    data class HolidayResponse(
         @SerialName("localDate")
         val date: String,
         @SerialName("dateName")
-        val name:String,
+        val name: String,
         @SerialName("dateKind")
-        val type:String,
-        val isHoliday: String
-    )
-}
+        val type: String,
+        val isHoliday: String,
+)

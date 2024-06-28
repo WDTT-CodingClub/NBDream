@@ -37,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -56,6 +57,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.common.util.format
+import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.CommentEntity
 import kr.co.main.R
 import kr.co.main.accountbook.main.CircleProgress
@@ -95,10 +97,10 @@ internal fun BulletinDetailRoute(
 internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
     state: BulletinDetailViewModel.State = BulletinDetailViewModel.State(),
-    event: BulletinDetailEvent = BulletinDetailEvent.dummy,
+    event: BulletinDetailEvent = BulletinDetailEvent.empty,
     popBackStack: () -> Unit = {},
-    navigateToUpdate: (Long) -> Unit,
-    isLoading: Boolean
+    navigateToUpdate: (Long) -> Unit = {},
+    isLoading: Boolean = false,
 ) {
     Scaffold(
         modifier = modifier,
@@ -130,6 +132,11 @@ internal fun BulletinDetailScreen(
             )
         },
     ) { paddingValues ->
+
+        if (!state.isInitialLoadingFinished) {
+            Surface(Modifier.fillMaxSize()) {}
+            return@Scaffold
+        }
 
 //    Timber.d("currentDetailBulletinId: ${state.currentDetailBulletinId}")
         Timber.d("isLoadDetailSuccessful: ${state.isLoadDetailSuccessful}")
@@ -186,16 +193,13 @@ internal fun BulletinDetailScreen(
                         Spacer(modifier = Modifier.weight(1f))
                         IconButton(onClick = {
                             event.showBottomSheet(
-                                listOf(
-                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
-                                    TextAndOnClick("수정하기") {
-                                        navigateToUpdate(state.currentDetailBulletinId)
-                                    },
+                                if (state.currentDetailBulletin.author) listOf(
+                                    TextAndOnClick("수정하기") { navigateToUpdate(state.currentDetailBulletinId) },
                                     TextAndOnClick("삭제하기") { event.setIsShowDeleteCheckDialog(true) },
-                                ),
+                                ) else listOf(
+                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
+                                )
                             )
-
-                            event.setIsShowBulletinMoreBottomSheet(true)
                         }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
@@ -255,7 +259,9 @@ internal fun BulletinDetailScreen(
                         isAuthor = state.currentDetailBulletin.authorId == it.memberId,
                         onMoreVertClick = {
                             event.showBottomSheet(
+                                // TODO: 댓글 본인인지 확인해서 표시
                                 listOf(
+                                    TextAndOnClick("신고하기") { event.showReportBottomSheet() },
                                     TextAndOnClick("삭제하기") {
                                         event.showDialog(
                                             header = "정말 삭제하시겠습니까?",
@@ -280,9 +286,9 @@ internal fun BulletinDetailScreen(
             BottomCommentWritingBar(state, event)
         }
 
-        if (state.isShowBulletinMoreBottomSheet) {
+        if (state.isShowDreamBottomSheetWithTextButtons) {
             DreamBottomSheetWithTextButtons(
-                onDismissRequest = { event.setIsShowBulletinMoreBottomSheet(false) },
+                onDismissRequest = { event.setIsShowDreamBottomSheetWithTextButtons(false) },
                 textAndOnClicks = state.bottomSheetItems,
             )
         }
@@ -579,9 +585,7 @@ fun DialogYesOrNo(
 private fun BulletinDetailScreenPreview() {
     NBDreamTheme {
         BulletinDetailScreen(
-            popBackStack = {},
-            navigateToUpdate = {},
-            isLoading = false
+            state = BulletinDetailViewModel.State(currentDetailBulletin = BulletinEntity.dummy(3)),
         )
     }
 }

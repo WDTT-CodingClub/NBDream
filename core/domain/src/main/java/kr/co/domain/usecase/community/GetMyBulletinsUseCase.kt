@@ -9,9 +9,9 @@ import javax.inject.Singleton
 @Singleton
 class GetMyBulletinsUseCase @Inject constructor(
     private val communityRepository: CommunityRepository
-) : SuspendUseCase<Unit, List<BulletinEntity>>(){
-    override suspend fun build(params: Unit?): List<BulletinEntity> {
+) : SuspendUseCase<Long, List<BulletinEntity>>(){
+    override suspend fun build(params: Long?): List<BulletinEntity> {
 
-        return communityRepository.getMyBulletins()
+        return communityRepository.getMyBulletins(params)
     }
 }

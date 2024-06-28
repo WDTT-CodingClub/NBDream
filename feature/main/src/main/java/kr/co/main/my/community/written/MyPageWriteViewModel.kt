@@ -40,6 +40,7 @@ internal class MyPageWriteViewModel @Inject constructor(
     data class State(
         val bulletins : List<Bulletin> = emptyList(),
         val comments : List<Comment> = emptyList(),
+        val isLastPage : Boolean = false
     ) : BaseViewModel.State {
         data class Bulletin(
             val id: Long,

@@ -47,7 +47,7 @@ import kr.co.ui.theme.typo
 @Composable
 internal fun DreamMainPostCard(
     modifier: Modifier = Modifier,
-    bulletin: BulletinEntity = BulletinEntity.dummy(4),
+    bulletin: BulletinEntity = BulletinEntity.empty(),
     onPostClick: (Long) -> Unit = {},
     onBookMarkClick: (Long) -> Unit = {}
 ) {
@@ -317,6 +317,6 @@ private fun ImageGrid(imageUrls: List<String>) {
 @Composable
 private fun Preview() {
     NBDreamTheme {
-        DreamMainPostCard()
+        DreamMainPostCard(bulletin = BulletinEntity.dummy(4))
     }
 }

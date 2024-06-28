@@ -3,7 +3,9 @@ package kr.co.main.calendar.screen.searchDiaryScreen
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -27,6 +29,7 @@ internal interface SearchDiaryScreenEvent {
     fun onStartDateInput(startDate: LocalDate)
     fun onEndDateInput(endDate: LocalDate)
     fun onSortChange(sortType: CalendarSortType)
+    fun onSearchClick()
 }
 
 @HiltViewModel
@@ -37,9 +40,10 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
     SearchDiaryScreenEvent {
     val event: SearchDiaryScreenEvent = this@SearchDiaryScreenViewModel
 
-    private val _query = MutableStateFlow("")
-    private val _startDate = MutableStateFlow(LocalDate.now())
-    private val _endDate = MutableStateFlow(LocalDate.now())
+    private val _searchEvent = MutableSharedFlow<Unit>()
+
+    private val _showToast = MutableSharedFlow<String>()
+    val showToast = _showToast.asSharedFlow()
 
     data class SearchDiaryScreenState(
         val calendarCrop: CropModel? = null,
@@ -68,39 +72,33 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
             }
         }
 
-        with(state) {
-            select(SearchDiaryScreenState::query)
-                .bindState(_query)
-            select(SearchDiaryScreenState::startDate)
-                .bindState(_startDate)
-            select(SearchDiaryScreenState::endDate)
-                .bindState(_endDate)
-        }
-
         viewModelScopeEH.launch {
             combine(
-                _query,
-                _startDate,
-                _endDate
+                _searchEvent,
+                state.select(SearchDiaryScreenState::startDate),
+                state.select(SearchDiaryScreenState::endDate)
             ) {
-                    query,
-                    startDate,
-                    endDate,
+                Unit,
+                startDate,
+                endDate,
                 ->
-                Timber.d("$query, $startDate, $endDate")
-                Triple(query, startDate, endDate)
+                Triple(currentState.query, startDate, endDate)
             }.collect { diaries ->
-                currentState.calendarCrop?.let { crop ->
-                    SearchDiariesUseCase.Params(
-                        crop = crop.type.name,
-                        query = diaries.first,
-                        startDate = diaries.second,
-                        endDate = diaries.third
-                    ).run {
-                        searchDiaries(this)
+                runCatching {
+                    currentState.calendarCrop?.let { crop ->
+                        SearchDiariesUseCase.Params(
+                            crop = crop.type.name,
+                            query = diaries.first,
+                            startDate = diaries.second,
+                            endDate = diaries.third
+                        ).run {
+                            searchDiaries(this)
+                        }
+                    }?.collect { diaries ->
+                        updateState { copy(diaries = diaries.map(DiaryModelMapper::toRight)) }
                     }
-                }?.collect { diaries ->
-                    updateState { copy(diaries = diaries.map(DiaryModelMapper::toRight)) }
+                }.onFailure {
+                    updateState { copy(diaries = emptyList()) }
                 }
             }
         }
@@ -111,14 +109,32 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
     }
 
     override fun onStartDateInput(startDate: LocalDate) {
-        updateState { copy(startDate = startDate) }
+        if (startDate > currentState.endDate) {
+            viewModelScopeEH.launch {
+                _showToast.emit("시작일은 종료일보다 작아야 합니다.")
+            }
+        } else {
+            updateState { copy(startDate = startDate) }
+        }
     }
 
     override fun onEndDateInput(endDate: LocalDate) {
-        updateState { copy(endDate = endDate) }
+        if (endDate < currentState.startDate) {
+            viewModelScopeEH.launch {
+                _showToast.emit("종료일은 시작일보다 커야 합니다.")
+            }
+        } else {
+            updateState { copy(endDate = endDate) }
+        }
     }
 
     override fun onSortChange(sortType: CalendarSortType) = updateState {
         copy(sortType = sortType)
+    }
+
+    override fun onSearchClick() {
+        viewModelScopeEH.launch {
+            _searchEvent.emit(Unit)
+        }
     }
 }
