@@ -365,6 +365,7 @@ private fun ScheduleDatePicker(
             onDateSelect = onEndDateSelect,
             minDate = startDate
         )
+        Spacer(modifier = Modifier.height(Paddings.large))
     }
 }
 
