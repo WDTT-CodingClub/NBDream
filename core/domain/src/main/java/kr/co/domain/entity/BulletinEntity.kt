@@ -18,6 +18,22 @@ data class BulletinEntity(
     val bookmarked: Boolean,
 ) {
     companion object {
+        fun empty() = BulletinEntity(
+            authorId = 0L,
+            bulletinId = 0L,
+            nickname = "",
+            profileImageUrl = "",
+            content = "",
+            crop = CropEntity(CropType.PEPPER),
+            imageUrls = emptyList(),
+            bulletinCategory = BulletinCategory.Free,
+            createdTime = "",
+            comments = emptyList(),
+            bookmarkedCount = 0,
+            author = false,
+            bookmarked = false,
+        )
+
         fun dummy(idx: Int = 0) = BulletinEntity(
             authorId = 22222220 + (idx).toLong(),
             bulletinId = 33333330 + (idx).toLong(),

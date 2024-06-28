@@ -56,6 +56,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.common.util.format
+import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.CommentEntity
 import kr.co.main.R
 import kr.co.main.accountbook.main.CircleProgress
@@ -95,10 +96,10 @@ internal fun BulletinDetailRoute(
 internal fun BulletinDetailScreen(
     modifier: Modifier = Modifier,
     state: BulletinDetailViewModel.State = BulletinDetailViewModel.State(),
-    event: BulletinDetailEvent = BulletinDetailEvent.dummy,
+    event: BulletinDetailEvent = BulletinDetailEvent.empty,
     popBackStack: () -> Unit = {},
-    navigateToUpdate: (Long) -> Unit,
-    isLoading: Boolean
+    navigateToUpdate: (Long) -> Unit = {},
+    isLoading: Boolean = false,
 ) {
     Scaffold(
         modifier = modifier,
@@ -579,9 +580,7 @@ fun DialogYesOrNo(
 private fun BulletinDetailScreenPreview() {
     NBDreamTheme {
         BulletinDetailScreen(
-            popBackStack = {},
-            navigateToUpdate = {},
-            isLoading = false
+            state = BulletinDetailViewModel.State(currentDetailBulletin = BulletinEntity.dummy(3)),
         )
     }
 }

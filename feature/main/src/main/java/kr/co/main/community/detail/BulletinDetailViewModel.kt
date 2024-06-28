@@ -42,7 +42,7 @@ internal interface BulletinDetailEvent {
     fun showSimpleDialog(text: String)
 
     companion object {
-        val dummy = object : BulletinDetailEvent {
+        val empty = object : BulletinDetailEvent {
             override fun setIsShowBulletinMoreBottomSheet(boolean: Boolean) {}
             override fun setIsShowDeleteCheckDialog(boolean: Boolean) {}
             override fun setIsShowFailedDialog(boolean: Boolean) {}
@@ -84,7 +84,7 @@ internal class BulletinDetailViewModel @Inject constructor(
         val currentDetailBulletinId: Long = 0L,
         // TODO: 테스트용으로  true. false로 바꿔야댐.
         val isLoadDetailSuccessful: Boolean = true,
-        val currentDetailBulletin: BulletinEntity = BulletinEntity.dummy(),
+        val currentDetailBulletin: BulletinEntity = BulletinEntity.empty(),
         val currentCategory: BulletinEntity.BulletinCategory = BulletinEntity.BulletinCategory.Free,
         val isShowDeleteCheckDialog: Boolean = false,
         val isShowFailedDialog: Boolean = false,
