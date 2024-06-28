@@ -197,12 +197,7 @@ internal fun BulletinDetailScreen(
                                         event.showDialog(
                                             header = "정말 삭제하시겠습니까?",
                                             description = "",
-                                            onConfirm = {
-                                                event.deleteBulletin(
-                                                    popBackStack,
-                                                    event::showFailedDialog,
-                                                )
-                                            },
+                                            onConfirm = { event.deleteBulletin(popBackStack) },
                                         )
                                     },
                                 ) else listOf(

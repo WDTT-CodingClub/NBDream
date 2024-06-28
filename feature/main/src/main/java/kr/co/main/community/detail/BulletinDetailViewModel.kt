@@ -16,10 +16,7 @@ internal interface BulletinDetailEvent {
     fun onCommentWritingInput(input: String)
     fun onPostCommentClick()
     fun loadBulletin(id: Long)
-    fun deleteBulletin(
-        popBackStack: () -> Unit,
-        onFail: () -> Unit,
-    )
+    fun deleteBulletin(popBackStack: () -> Unit)
 
     fun deleteComment(id: Long)
 
@@ -50,7 +47,7 @@ internal interface BulletinDetailEvent {
             override fun onCommentWritingInput(input: String) {}
             override fun onPostCommentClick() {}
             override fun loadBulletin(id: Long) {}
-            override fun deleteBulletin(popBackStack: () -> Unit, onFail: () -> Unit) {}
+            override fun deleteBulletin(popBackStack: () -> Unit) {}
             override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {}
             override fun deleteComment(id: Long) {}
             override fun showDialog(
@@ -247,18 +244,11 @@ internal class BulletinDetailViewModel @Inject constructor(
         }
     }
 
-    override fun deleteBulletin(
-        popBackStack: () -> Unit,
-        onFail: () -> Unit,
-    ) {
+    override fun deleteBulletin(popBackStack: () -> Unit) {
         loadingScope {
             val isSuccessful =
                 communityRepository.deleteBulletin(state.value.currentDetailBulletinId)
-            if (!isSuccessful) {
-                onFail()
-            } else {
-                popBackStack()
-            }
+            if (!isSuccessful) showFailedDialog() else popBackStack()
         }
     }
 
