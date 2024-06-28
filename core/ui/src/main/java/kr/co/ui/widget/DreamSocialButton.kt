@@ -52,15 +52,15 @@ fun DreamSocialButton(
                 onClick = onClick
             )
         }
-        2 -> {
-            LoginButton(
-                image = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_google_login),
-                text = if (isLogin) "구글 로그인" else "구글 계정 인증",
-                backgroundColor = Color.White,
-                textColor = Color.Black,
-                onClick = onClick
-            )
-        }
+//        2 -> {
+//            LoginButton(
+//                image = painterResource(id = kr.co.nbdream.core.ui.R.drawable.img_google_login),
+//                text = if (isLogin) "구글 로그인" else "구글 계정 인증",
+//                backgroundColor = Color.White,
+//                textColor = Color.Black,
+//                onClick = onClick
+//            )
+//        }
     }
 }
 
