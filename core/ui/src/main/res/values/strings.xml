@@ -2,6 +2,9 @@
     <string name="core_ui_text_field_limit_single_toast">40자 이상 입력할 수 없습니다.</string>
     <string name="core_ui_text_field_limit_multi_toast">3000자 이상 입력할 수 없습니다.</string>
 
+    <string name="core_ui_dialog_confirm">확인</string>
+    <string name="core_ui_dialog_dismiss">취소</string>
+
     <string name="core_ui_dropdown_menu_edit">수정하기</string>
     <string name="core_ui_dropdown_menu_delete">삭제하기</string>
 

@@ -35,6 +35,7 @@ import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
 import kr.co.main.navigation.AccountBookRoute.ACCOUNT_KEY
 import kr.co.main.navigation.BulletinRoute.BULLETIN_KEY
 import kr.co.main.notification.NotificationRoute
+import timber.log.Timber
 
 
 const val MAIN_ROUTE = "mainRoute"
@@ -111,6 +112,16 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     CalendarRoute(
                         navController = navController,
+                        navToMyPage = {
+                            Timber.d("navToMyPage) called")
+                            MainNav.controller.navigate(MainBottomRoute.MY_PAGE.route){
+                                popUpTo(MainNav.controller.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
                         navToAddSchedule = { cropNameId, screenModeId, scheduleId ->
                             navController.navigate(
                                 CalendarNavGraph.AddScheduleRoute.buildRoute(

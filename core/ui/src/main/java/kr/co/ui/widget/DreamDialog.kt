@@ -6,28 +6,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import kr.co.nbdream.core.ui.R
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -36,8 +31,8 @@ import kr.co.ui.theme.typo
 fun DreamDialog(
     header: String? = null,
     description: String,
-    confirmText: String = "확인",
-    dismissText: String = "취소",
+    confirmText: String = stringResource(id = R.string.core_ui_dialog_confirm),
+    dismissText: String = stringResource(id = R.string.core_ui_dialog_dismiss),
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     onDismissRequest: () -> Unit = onDismiss,
@@ -67,7 +62,7 @@ fun DreamDialog(
                         letterSpacing = (-0.01).sp
                     ),
                     textAlign = TextAlign.Center,
-                    color = Color(0xFF0A84FF)
+                    color = MaterialTheme.colors.primary
                 )
             } ?: Spacer(modifier = Modifier.height(20.dp))
             Text(

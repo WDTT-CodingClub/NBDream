@@ -26,6 +26,9 @@
     <string name="feature_main_calendar_top_app_bar_post">등록</string>
     <string name="feature_main_calendar_top_app_bar_edit">편집</string>
 
+    <string name="feature_main_calendar_nav_to_my_page_dialog_title">재배 작물 추가하기</string>
+    <string name="feature_main_calendar_nav_to_my_page_dialog_description">재배 작물을 추가해야 영농 일지를 작성할 수 있어요.\n지금 바로 마이페이지로 이동하시겠습니까?</string>
+
 <!--    add diary screen-->
     <string name="feature_main_calendar_add_diary_header_date">일자</string>
     <string name="feature_main_calendar_add_diary_header_image">사진</string>
