@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -234,7 +235,11 @@ private fun MyPageSettingDeleteAccountScreen(
                             style = MaterialTheme.typo.body1,
                             color = MaterialTheme.colors.gray5
                         )
-                    }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colors.gray2,
+                        cursorColor = MaterialTheme.colors.gray2
+                    )
                 )
                 Text(
                     modifier = Modifier

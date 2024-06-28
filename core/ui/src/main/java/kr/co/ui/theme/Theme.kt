@@ -18,7 +18,7 @@ fun NBDreamTheme(
     content: @Composable () -> Unit,
 ) {
     val colors = if (darkTheme) {
-        colorSet.darkColors
+        colorSet.lightColors
     } else {
         colorSet.lightColors
     }

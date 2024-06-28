@@ -281,8 +281,10 @@ private fun MyPageProfileEditScreen(
                         unfocusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = MaterialTheme.colors.gray6,
                         errorContainerColor = Color.Transparent,
-                        errorIndicatorColor = MaterialTheme.colors.error
+                        errorIndicatorColor = MaterialTheme.colors.error,
+                        cursorColor = MaterialTheme.colors.primary
                     ),
+                    maxLines = 1,
                 )
 
             }
