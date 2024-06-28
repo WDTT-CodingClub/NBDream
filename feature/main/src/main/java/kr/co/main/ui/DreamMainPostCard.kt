@@ -140,10 +140,8 @@ internal fun DreamMainPostCard(
             color = MaterialTheme.colors.gray5
         )
 
-        bulletin.comments.firstOrNull()?.let {
-            CommentRow(
-                it
-            )
+        bulletin.comments.lastOrNull()?.let {
+            CommentRow(it)
         }
     }
 }
