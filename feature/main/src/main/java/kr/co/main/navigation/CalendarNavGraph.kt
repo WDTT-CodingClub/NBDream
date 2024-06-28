@@ -96,5 +96,7 @@ internal sealed class CalendarNavGraph {
         const val ARG_SCREEN_MODE_ID = "screen_mode_id"
         const val ARG_SCHEDULE_ID = "schedule_id"
         const val ARG_DIARY_ID = "diary_id"
+
+        const val ARG_REINITIALIZE = "reinitialize"
     }
 }

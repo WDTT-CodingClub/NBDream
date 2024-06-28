@@ -52,7 +52,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
 import kr.co.main.R
-import kr.co.main.accountbook.model.EntryType
 import kr.co.main.community.temp.UriUtil
 import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.ext.scaffoldBackground
@@ -67,6 +66,7 @@ import java.io.File
 internal fun BulletinWritingRoute(
     popBackStack: () -> Unit,
     navigationToDetail: (Long) -> Unit,
+    navigationToCommunity: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BulletinWritingViewModel = hiltViewModel(),
 ) {
@@ -76,7 +76,8 @@ internal fun BulletinWritingRoute(
     LaunchedEffect(Unit) {
         viewModel.complete.collect { complete ->
             if (complete) {
-                state.id?.let { id -> navigationToDetail(id) } ?: run { popBackStack }
+                state.id?.let { id -> navigationToDetail(id) } ?: run {
+                    navigationToCommunity() }
             }
         }
     }
@@ -104,7 +105,7 @@ internal fun BulletinWritingScreen(
     onAddImagesClick: (uris: List<Uri>, (Uri) -> File) -> Unit = { _, _ -> },
     onBulletinWritingInputChanged: (input: String) -> Unit = {},
     onRemoveImageClick: (model: WritingSelectedImageModel) -> Unit = {},
-    onFinishWritingClick: (() -> Unit) -> Unit = {},
+    onFinishWritingClick: () -> Unit = {},
     setIsShowWaitingDialog: (Boolean) -> Unit = {},
     onCategoryClick: (BulletinEntity.BulletinCategory) -> Unit = {},
 ) {
@@ -126,7 +127,7 @@ internal fun BulletinWritingScreen(
                 actions = {
                     TextButton(onClick = {
                         setIsShowWaitingDialog(true)
-                        onFinishWritingClick(popBackStack)
+                        onFinishWritingClick()
                     }) {
                         Text(
                             text = "등록",

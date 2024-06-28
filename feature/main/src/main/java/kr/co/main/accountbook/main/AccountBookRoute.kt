@@ -45,6 +45,7 @@ import kr.co.main.accountbook.model.MAX_CATEGORY_COUNT
 import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getColorList
 import kr.co.main.accountbook.model.getDisplay
+import kr.co.main.navigation.AccountBookRoute.ACCOUNT_KEY
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Arrowright
 import kr.co.ui.icon.dreamicon.DatePicker
@@ -68,7 +69,7 @@ internal fun AccountBookRoute(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     val reinitialize =
-        navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("reinitialize") ?: false
+        navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(ACCOUNT_KEY) ?: false
 
     LaunchedEffect(reinitialize) {
         if (reinitialize) {
@@ -78,7 +79,7 @@ internal fun AccountBookRoute(
                 transactionType = null
             )
         }
-        navController.currentBackStackEntry?.savedStateHandle?.set("reinitialize", false)
+        navController.currentBackStackEntry?.savedStateHandle?.set(ACCOUNT_KEY, false)
     }
 
     AccountBookScreen(

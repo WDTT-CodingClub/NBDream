@@ -17,6 +17,6 @@ class GetHolidaysUseCase @Inject constructor(
 
     override suspend fun build(params: Params?): List<HolidayEntity> {
         checkNotNull(params)
-        return repository.getHolidays(params.year, params.month)
+        return repository.getHolidays(params.year, params.month).distinct()
     }
 }
