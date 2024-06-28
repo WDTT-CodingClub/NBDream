@@ -13,16 +13,17 @@ class GetFarmWorksUseCase @Inject constructor(
     private val repository: FarmWorkRepository
 ) : SuspendUseCase<GetFarmWorksUseCase.Params, List<FarmWorkEntity>>() {
     data class Params(
-        val crop: CropType,
+        val crop: CropType?,
         val month: Int
     )
 
     override suspend fun build(params: Params?): List<FarmWorkEntity> {
         Timber.d("build) params: ${params}")
         checkNotNull(params)
+        checkNotNull(params.crop)
 
-        val result = repository.getFarmWorks(params.crop.koreanName, params.month)
-        Timber.d("build) farmworks: ${result.map{it.farmWork}}")
-        return result
+        return repository.getFarmWorks(params.crop.koreanName, params.month).apply {
+            Timber.d("build) farmworks: ${map{it.farmWork}}")
+        }
     }
 }

@@ -13,3 +13,8 @@ fun LocalDate.format(pattern: String): String {
     val formatter = DateTimeFormatter.ofPattern(pattern)
     return format(formatter)
 }
+
+object DateFormatter {
+    fun fromPattern(text: String, pattern: String): LocalDate =
+        LocalDate.parse(text, DateTimeFormatter.ofPattern(pattern))
+}

@@ -32,7 +32,7 @@ internal class HomeViewModel @Inject constructor(
 
     init {
         viewModelScopeEH.launch {
-            fetchUserUseCase.invoke().collect() {
+            fetchUserUseCase.invoke().collect {
                 updateState {
                     copy(address = it.address)
                 }
