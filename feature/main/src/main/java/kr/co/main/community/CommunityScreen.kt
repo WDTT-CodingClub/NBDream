@@ -227,7 +227,18 @@ internal fun CommunityScreen(
             }
             if (state.bulletinEntities.isEmpty()) {
                 item {
-                    Text("게시물이 없습니다.")
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "게시물이 없습니다.",
+                            style = MaterialTheme.typo.body2,
+                            color = MaterialTheme.colors.gray4,
+                        )
+                    }
                 }
             }
             items(
