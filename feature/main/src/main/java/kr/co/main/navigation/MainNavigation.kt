@@ -237,10 +237,13 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         AddDiaryRoute(
             popBackStack = navController::popBackStack,
-            navigateToPrevious = {
-                navController.previousBackStackEntry?.savedStateHandle?.set("init", true)
+            navToCalendar = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    CalendarNavGraph.ARG_REINITIALIZE,
+                    true
+                )
                 navController.popBackStack()
-            },
+            }
         )
     }
     composable(
@@ -248,7 +251,7 @@ fun NavGraphBuilder.mainNavGraph(
         arguments = CalendarNavGraph.SearchDiaryRoute.arguments
     ) {
         SearchDiaryRoute(
-            popBackStack = navController::popBackStack
+            popBackStack = navController::popBackStack,
         )
     }
 

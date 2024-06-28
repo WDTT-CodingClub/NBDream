@@ -57,9 +57,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kr.co.common.util.DateFormatter
 import kr.co.main.R
-import kr.co.main.accountbook.model.CustomDatePickerDialog
 import kr.co.main.calendar.CalendarDesignToken
 import kr.co.main.calendar.common.AddScreenCenterTopAppBar
 import kr.co.main.calendar.common.CalendarContainerTextField
@@ -89,13 +87,13 @@ private data class DiaryWorkInputData(
 internal fun AddDiaryRoute(
     viewModel: AddDiaryViewModel = hiltViewModel(),
     popBackStack: () -> Unit = {},
-    navigateToPrevious: () -> Unit = {},
+    navToCalendar: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.showPreviousScreen.collect {
-            navigateToPrevious()
+            navToCalendar()
         }
     }
 
@@ -103,7 +101,8 @@ internal fun AddDiaryRoute(
         modifier = Modifier.fillMaxSize(),
         state = state,
         event = viewModel.event,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        navToCalendar = navToCalendar
     )
 }
 
@@ -112,6 +111,7 @@ private fun AddDiaryScreen(
     state: AddDiaryViewModel.AddDiaryScreenState,
     event: AddDiaryScreenEvent,
     popBackStack: () -> Unit,
+    navToCalendar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Timber.d("state: $state")
@@ -124,7 +124,8 @@ private fun AddDiaryScreen(
     val enableAction = true
 
     Scaffold(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
             .navigationBarsPadding()
             .imePadding(),
         containerColor = Color.White,
@@ -137,9 +138,18 @@ private fun AddDiaryScreen(
                 actionHintId = R.string.feature_main_calendar_add_diary_input_hint_memo,
                 enableAction = enableAction,
                 popBackStack = popBackStack,
-                onPostClick = event::onPostClick,
-                onEditClick = event::onEditClick,
-                onDeleteClick = event::onDeleteClick
+                onPostClick = {
+                    event.onPostClick()
+                    navToCalendar()
+                },
+                onEditClick = {
+                    event.onEditClick()
+                    navToCalendar()
+                },
+                onDeleteClick = {
+                    event.onDeleteClick()
+                    navToCalendar()
+                }
             )
         }
     ) { innerPadding ->
