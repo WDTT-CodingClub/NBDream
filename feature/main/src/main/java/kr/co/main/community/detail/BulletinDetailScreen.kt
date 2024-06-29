@@ -45,6 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,6 +63,8 @@ import kr.co.main.R
 import kr.co.main.accountbook.main.CircleProgress
 import kr.co.main.community.CommunityDialogSimpleTitle
 import kr.co.ui.ext.scaffoldBackground
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Tobot
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -168,11 +172,11 @@ internal fun BulletinDetailScreen(
                         AsyncImage(
                             model = state.currentDetailBulletin.profileImageUrl,
                             contentDescription = "글쓴이 프로필 사진",
-                            modifier = modifier
-                                .width(54.dp)
-                                .height(54.dp)
+                            modifier = Modifier
+                                .size(54.dp)
                                 .clip(CircleShape),
-                            error = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+                            contentScale = ContentScale.Crop,
+                            error = rememberVectorPainter(image = DreamIcon.Tobot),
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
