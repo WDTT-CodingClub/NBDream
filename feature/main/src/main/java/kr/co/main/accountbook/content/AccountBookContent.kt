@@ -2,6 +2,7 @@ package kr.co.main.accountbook.content
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.main.accountbook.main.CircleProgress
 import kr.co.main.accountbook.model.AccountBookDialog
+import kr.co.main.accountbook.model.contentDateFormat
 import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.main.accountbook.model.getTransactionType
@@ -50,10 +52,6 @@ import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.LoadingShimmerEffect
-import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 
 @Composable
@@ -78,7 +76,10 @@ internal fun AccountBookContentRoute(
         isDeleteLoading = isDeleteLoading,
         navigationToUpdate = navigationToUpdate,
         popBackStack = popBackStack,
-        onRemoveItem = viewModel::deleteAccountBookById
+        onRemoveItem = viewModel::deleteAccountBookById,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = Paddings.large),
     )
 }
 
@@ -89,7 +90,8 @@ internal fun AccountBookContentScreen(
     isDeleteLoading: Boolean,
     navigationToUpdate: (Long?) -> Unit,
     popBackStack: () -> Unit,
-    onRemoveItem: () -> Unit = {}
+    onRemoveItem: () -> Unit = {},
+    modifier: Modifier
 ) {
     var showDropDownMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -97,223 +99,191 @@ internal fun AccountBookContentScreen(
     Surface(
         color = MaterialTheme.colors.white
     ) {
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            item {
-                DreamCenterTopAppBar(
-                    title = "장부 상세",
-                    navigationIcon = {
-                        IconButton(onClick = popBackStack) {
-                            Icon(
-                                imageVector = DreamIcon.Arrowleft,
-                                contentDescription = null,
-                                tint = Color.Black
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { showDropDownMenu = true }) {
-                            Icon(
-                                imageVector = Icons.Filled.MoreVert,
-                                contentDescription = "설정",
-                                tint = Color.Black
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = showDropDownMenu,
-                            onDismissRequest = { showDropDownMenu = false },
-                            modifier = Modifier.background(MaterialTheme.colors.white)
-                        ) {
-                            DropdownMenuItem(
-                                text = {
-                                    Row {
-                                        Text("수정하기")
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                    }
-                                },
-                                onClick = {
-                                    navigationToUpdate(state.id)
-                                    showDropDownMenu = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Row {
-                                        Text("삭제하기")
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                    }
-                                },
-                                onClick = {
-                                    showDeleteDialog = true
-                                    showDropDownMenu = false
-                                }
-                            )
-                        }
-                    },
-                    colorBackground = true
-                )
-            }
-
-            if (isLoading && isDeleteLoading.not()) {
-                items(5) {
-                    Column(
-                        modifier = Modifier.padding(
-                            start = Paddings.xlarge,
-                            end = Paddings.xlarge,
-                            top = Paddings.extra
+            DreamCenterTopAppBar(
+                title = "장부 상세",
+                navigationIcon = {
+                    IconButton(onClick = popBackStack) {
+                        Icon(
+                            imageVector = DreamIcon.Arrowleft,
+                            contentDescription = null,
+                            tint = Color.Black
                         )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { showDropDownMenu = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = "설정",
+                            tint = Color.Black
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showDropDownMenu,
+                        onDismissRequest = { showDropDownMenu = false },
+                        modifier = Modifier.background(MaterialTheme.colors.white)
                     ) {
-                        LoadingShimmerEffect {
-                            ShimmerGridItem(brush = it)
+                        DropdownMenuItem(
+                            text = {
+                                Row {
+                                    Text("수정하기")
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                }
+                            },
+                            onClick = {
+                                navigationToUpdate(state.id)
+                                showDropDownMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Row {
+                                    Text("삭제하기")
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                }
+                            },
+                            onClick = {
+                                showDeleteDialog = true
+                                showDropDownMenu = false
+                            }
+                        )
+                    }
+                },
+                colorBackground = true
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .padding(Paddings.xlarge),
+                verticalArrangement = Arrangement.spacedBy(Paddings.extra)
+            ) {
+                if (isLoading && isDeleteLoading.not()) {
+                    items(5) {
+                        Column {
+                            LoadingShimmerEffect {
+                                ShimmerGridItem(brush = it)
+                            }
                         }
                     }
-                }
-            } else {
-                item {
-                    Column(
-                        modifier = Modifier.padding(
-                            start = Paddings.xlarge,
-                            end = Paddings.xlarge,
-                            top = Paddings.extra
-                        )
-                    ) {
-                        Text(
-                            text = state.transactionType.getTransactionType(),
-                            style = MaterialTheme.typo.h4,
-                            color = MaterialTheme.colors.gray1
-                        )
-                        Spacer(modifier = Modifier.height(Paddings.large))
+                } else {
+                    item {
+                        Column {
+                            Text(
+                                text = state.transactionType.getTransactionType(),
+                                style = MaterialTheme.typo.h4,
+                                color = MaterialTheme.colors.gray1,
+                                modifier = Modifier
+                                    .padding(bottom = Paddings.large)
+                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "${formatNumber(state.amount)}원",
+                                    style = MaterialTheme.typo.h2,
+                                    color = MaterialTheme.colors.gray1
+                                )
+                            }
+                        }
+                    }
+
+                    item {
                         Row(
+                            modifier = modifier,
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = "${formatNumber(state.amount)}원",
-                                style = MaterialTheme.typo.h2,
-                                color = MaterialTheme.colors.gray1
+                                text = "카테고리",
+                                style = MaterialTheme.typo.h4,
+                                modifier = Modifier
+                                    .padding(end = Paddings.xxlarge)
                             )
-                        }
-
-                    }
-                }
-
-                item {
-                    Row(
-                        modifier = Modifier
-                            .padding(
-                                start = Paddings.xlarge,
-                                end = Paddings.xlarge,
-                                top = Paddings.extra
-                            )
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "카테고리",
-                            style = MaterialTheme.typo.h4
-                        )
-                        Spacer(modifier = Modifier.width(Paddings.xxlarge))
-                        Box(
-                            modifier = Modifier
-                                .height(32.dp)
-                                .border(
-                                    1.dp,
-                                    MaterialTheme.colors.gray7,
-                                    shape = Shapes.medium
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = state.category.getDisplay(),
-                                style = MaterialTheme.typo.body1,
-                                color = MaterialTheme.colors.gray2,
-                                modifier = Modifier.padding(horizontal = Paddings.large)
-                            )
-                        }
-                    }
-                }
-
-                item {
-                    Row(
-                        modifier = Modifier
-                            .padding(
-                                start = Paddings.xlarge,
-                                end = Paddings.xlarge,
-                                top = Paddings.extra
-                            )
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "내역",
-                            style = MaterialTheme.typo.h4
-                        )
-                        Spacer(modifier = Modifier.width(Paddings.xxlarge))
-                        Text(
-                            text = state.title ?: "",
-                            style = MaterialTheme.typo.body1,
-                            color = MaterialTheme.colors.gray2
-                        )
-                    }
-                }
-
-                item {
-                    Row(
-                        modifier = Modifier
-                            .padding(
-                                start = Paddings.xlarge,
-                                end = Paddings.xlarge,
-                                top = Paddings.extra
-                            )
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "날짜",
-                            style = MaterialTheme.typo.h4
-                        )
-                        Spacer(modifier = Modifier.width(Paddings.xxlarge))
-                        Text(
-                            text = state.registerDateTime?.let { formatDate(it) } ?: "",
-                            style = MaterialTheme.typo.body1,
-                            color = MaterialTheme.colors.gray2
-                        )
-                    }
-                }
-
-                item {
-                    Column(
-                        modifier = Modifier.padding(
-                            start = Paddings.xlarge,
-                            end = Paddings.xlarge,
-                            top = Paddings.extra
-                        )
-                    ) {
-                        Text(
-                            text = "사진",
-                            style = MaterialTheme.typo.h4
-                        )
-                        Spacer(modifier = Modifier.height(Paddings.large))
-                        state.imageUrls.forEachIndexed { index, value ->
-                            Timber.d("imageUrls: ${state.imageUrls}")
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = Paddings.medium)
-                                    .clip(Shapes.medium)
-                                    .background(Color.LightGray),
-                                contentAlignment = Alignment.Center,
+                                    .height(32.dp)
+                                    .border(
+                                        1.dp,
+                                        MaterialTheme.colors.gray7,
+                                        shape = Shapes.medium
+                                    ),
+                                contentAlignment = Alignment.Center
                             ) {
-                                AsyncImage(
+                                Text(
+                                    text = state.category.getDisplay(),
+                                    style = MaterialTheme.typo.body1,
+                                    color = MaterialTheme.colors.gray2,
+                                    modifier = Modifier.padding(horizontal = Paddings.large)
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        Row(
+                            modifier = modifier,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = "내역",
+                                style = MaterialTheme.typo.h4,
+                            )
+                            Spacer(modifier = Modifier.width(20.dp))
+                            Text(
+                                text = state.title.takeIf { !it.isNullOrEmpty() }
+                                    ?: "입력된 내역이 없습니다.",
+                                style = MaterialTheme.typo.body1,
+                                color = if (state.title.isNullOrBlank()) MaterialTheme.colors.gray6 else MaterialTheme.colors.gray2
+                            )
+                        }
+                    }
+
+                    item {
+                        Row(
+                            modifier = modifier,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = "날짜",
+                                style = MaterialTheme.typo.h4,
+                            )
+                            Spacer(modifier = Modifier.width(20.dp))
+                            Text(
+                                text = state.registerDateTime?.contentDateFormat() ?: "",
+                                style = MaterialTheme.typo.body1,
+                                color = MaterialTheme.colors.gray2
+                            )
+                        }
+                    }
+
+                    item {
+                        Column {
+                            Text(
+                                text = "사진",
+                                style = MaterialTheme.typo.h4,
+                                modifier = Modifier
+                                    .padding(bottom = Paddings.large)
+                            )
+                            state.imageUrls.forEach {
+                                Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clip(Shapes.medium),
-                                    model = value,
-                                    contentDescription = "image",
-                                    contentScale = ContentScale.Crop,
-                                )
+                                        .clip(Shapes.medium)
+                                        .padding(vertical = Paddings.medium),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    AsyncImage(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(Shapes.medium),
+                                        model = it,
+                                        contentDescription = "image",
+                                        contentScale = ContentScale.Crop,
+                                    )
+                                }
                             }
                         }
                     }
@@ -336,21 +306,6 @@ internal fun AccountBookContentScreen(
         )
     }
 
-}
-
-internal fun formatDate(dateString: String): String {
-    return try {
-        val originalFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val targetFormat = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
-        val date: Date? = originalFormat.parse(dateString)
-        if (date != null) {
-            targetFormat.format(date)
-        } else {
-            ""
-        }
-    } catch (e: Exception) {
-        ""
-    }
 }
 
 @Composable
