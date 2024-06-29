@@ -137,7 +137,6 @@ internal fun BulletinDetailScreen(
             return@Scaffold
         }
 
-//    Timber.d("currentDetailBulletinId: ${state.currentDetailBulletinId}")
         Timber.d("isLoadDetailSuccessful: ${state.isLoadDetailSuccessful}")
         if (!state.isLoadDetailSuccessful) {
             NoBulletinScreen(
@@ -193,7 +192,7 @@ internal fun BulletinDetailScreen(
                         IconButton(onClick = {
                             event.showBottomSheet(
                                 if (state.currentDetailBulletin.author) listOf(
-                                    TextAndOnClick("수정하기") { navigateToUpdate(state.currentDetailBulletinId) },
+                                    TextAndOnClick("수정하기") { navigateToUpdate(state.currentDetailBulletin.bulletinId) },
                                     TextAndOnClick("삭제하기") {
                                         event.showDialog(
                                             header = "정말 삭제하시겠습니까?",

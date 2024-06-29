@@ -108,12 +108,6 @@ internal class BulletinDetailViewModel @Inject constructor(
 
     override fun dismissDialog() = updateState { copy(isShowDialog = false) }
 
-    private fun setCurrentDetailBulletinId(id: Long) =
-        updateState { copy(currentDetailBulletinId = id) }
-
-    private fun setCurrentDetailBulletin(entity: BulletinEntity) =
-        updateState { copy(currentDetailBulletin = entity) }
-
     //---
 
     override fun onCommentWritingInput(input: String) {
@@ -185,14 +179,14 @@ internal class BulletinDetailViewModel @Inject constructor(
     override fun onPostCommentClick() {
         loadingScope {
             val postedCommentId = communityRepository.postComment(
-                id = state.value.currentDetailBulletinId,
+                id = state.value.currentDetailBulletin.bulletinId,
                 commentDetail = state.value.commentWritingInput,
             )
             Timber.d("onPostCommentClick 코루틴) postedCommentId: $postedCommentId")
             updateState { copy(commentWritingInput = "") }
 
             // 댓글 달면 글 다시 조회해서 댓글까지 갱신하도록.
-            loadBulletin(state.value.currentDetailBulletinId)
+            loadBulletin(state.value.currentDetailBulletin.bulletinId)
         }
     }
 
@@ -202,13 +196,13 @@ internal class BulletinDetailViewModel @Inject constructor(
             Timber.d("deleteComment 코루틴) resultString: $resultString")
 
             // 글 다시 조회해서 댓글까지 갱신하도록.
-            loadBulletin(state.value.currentDetailBulletinId)
+            loadBulletin(state.value.currentDetailBulletin.bulletinId)
         }
     }
 
     override fun loadBulletin(id: Long) {
         viewModelScope.launch {
-            setCurrentDetailBulletinId(id)
+            updateState { copy(currentDetailBulletinId = id) }
             Timber.d("loadBulletin 코루틴 시작, id: $id")
             try {
                 val entity = communityRepository.getBulletinDetail(id)
@@ -225,9 +219,9 @@ internal class BulletinDetailViewModel @Inject constructor(
                         copy(
                             isLoadDetailSuccessful = true,
                             isInitialLoadingFinished = true,
+                            currentDetailBulletin = entity,
                         )
                     }
-                    setCurrentDetailBulletin(entity)
                     Timber.d("loadBulletin 코루틴 성공, id: $id")
                 }
             } catch (e: Throwable) {
@@ -246,17 +240,17 @@ internal class BulletinDetailViewModel @Inject constructor(
     override fun deleteBulletin(popBackStack: () -> Unit) {
         loadingScope {
             val isSuccessful =
-                communityRepository.deleteBulletin(state.value.currentDetailBulletinId)
+                communityRepository.deleteBulletin(state.value.currentDetailBulletin.bulletinId)
             if (!isSuccessful) showFailedDialog() else popBackStack()
         }
     }
 
     override fun bookmarkBulletin() {
         loadingScope {
-            communityRepository.bookmarkBulletin(state.value.currentDetailBulletinId)
+            communityRepository.bookmarkBulletin(state.value.currentDetailBulletin.bulletinId)
 
             // 귀찮다 그냥 로드하자
-            loadBulletin(state.value.currentDetailBulletinId)
+            loadBulletin(state.value.currentDetailBulletin.bulletinId)
         }
     }
 
