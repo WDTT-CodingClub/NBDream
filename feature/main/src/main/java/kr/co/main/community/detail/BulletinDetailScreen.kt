@@ -105,7 +105,8 @@ internal fun BulletinDetailScreen(
         containerColor = Color.White,
         topBar = {
             DreamCenterTopAppBar(
-                title = state.currentCategory.koreanName,
+                title = if (!state.isInitialLoadingFinished) ""
+                else state.currentDetailBulletin.bulletinCategory.koreanName,
                 navigationIcon = {
                     IconButton(onClick = popBackStack) {
                         Icon(
