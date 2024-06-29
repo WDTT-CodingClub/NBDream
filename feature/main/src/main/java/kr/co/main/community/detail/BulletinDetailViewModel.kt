@@ -246,11 +246,17 @@ internal class BulletinDetailViewModel @Inject constructor(
     }
 
     override fun bookmarkBulletin() {
-        loadingScope {
-            communityRepository.bookmarkBulletin(state.value.currentDetailBulletin.bulletinId)
-
-            // 귀찮다 그냥 로드하자
-            loadBulletin(state.value.currentDetailBulletin.bulletinId)
+        viewModelScopeEH.launch {
+            val newBookmark =
+                communityRepository.bookmarkBulletin(state.value.currentDetailBulletin.bulletinId)
+            updateState {
+                copy(
+                    currentDetailBulletin = currentDetailBulletin.copy(
+                        bookmarked = newBookmark,
+                        bookmarkedCount = currentDetailBulletin.bookmarkedCount + if (newBookmark) 1 else -1,
+                    )
+                )
+            }
         }
     }
 
