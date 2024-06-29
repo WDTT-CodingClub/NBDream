@@ -1,6 +1,7 @@
 package kr.co.main.community
 
 import android.os.Parcelable
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,10 +19,14 @@ internal interface CommunityScreenEvent {
     fun setBulletinEntities(entities: List<BulletinEntity>)
     fun bookmarkBulletin(id: Long)
     fun onCategoryClick(category: BulletinEntity.BulletinCategory)
-    fun setIsShowBottomSheet(boolean: Boolean)
+    fun dismissBottomSheet()
     fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>)
     fun onSelectBoard(crop: CropType)
     fun onSearchRun()
+
+    /** CommunityDialogSimpleTitle */
+    fun showSimpleDialog(text: String)
+    fun dismissSimpleDialog()
 
     companion object {
         val dummy = object : CommunityScreenEvent {
@@ -29,10 +34,12 @@ internal interface CommunityScreenEvent {
             override fun setBulletinEntities(entities: List<BulletinEntity>) {}
             override fun bookmarkBulletin(id: Long) {}
             override fun onCategoryClick(category: BulletinEntity.BulletinCategory) {}
-            override fun setIsShowBottomSheet(boolean: Boolean) {}
+            override fun dismissBottomSheet() {}
             override fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>) {}
             override fun onSelectBoard(crop: CropType) {}
             override fun onSearchRun() {}
+            override fun showSimpleDialog(text: String) {}
+            override fun dismissSimpleDialog() {}
 
         }
     }
@@ -56,10 +63,15 @@ internal class CommunityViewModel @Inject constructor(
         val isEnable: Boolean = true,
         val isShowBottomSheet: Boolean = false,
         val bottomSheetItems: List<TextAndOnClick> = emptyList(),
+        val lazyListState: LazyListState = LazyListState(),
+
+        // simple dialog
+        val isShowSimpleDialog: Boolean = false,
+        val simpleDialogText: String = "",
     ) : BaseViewModel.State
 
-    override fun setIsShowBottomSheet(boolean: Boolean) =
-        updateState { copy(isShowBottomSheet = boolean) }
+    override fun dismissBottomSheet() = updateState { copy(isShowBottomSheet = false) }
+    override fun dismissSimpleDialog() = updateState { copy(isShowSimpleDialog = false) }
 
     override fun setBulletinEntities(entities: List<BulletinEntity>) =
         updateState { copy(bulletinEntities = entities) }
@@ -75,49 +87,92 @@ internal class CommunityViewModel @Inject constructor(
 
     //---
 
+    private fun loadBulletins(
+        crop: CropType,
+        category: BulletinEntity.BulletinCategory,
+        keyword: String? = null,
+        lastBulletinId: Long? = null,
+        onErrorCallback: (() -> Unit)? = null,
+        callback: (() -> Unit)? = null,
+    ) {
+        viewModelScope.launch {
+            try {
+                Timber.d("loadBulletins 코루틴 시작, crop: $crop, category: $category, keyword: $keyword")
+                val bulletins = communityRepository.getBulletins(
+                    keyword = keyword,
+                    bulletinCategory = category,
+                    crop = crop,
+                    lastBulletinId = lastBulletinId,
+                )
+                Timber.d("loadBulletins 코루틴 성공, $bulletins")
+                updateState {
+                    copy(
+                        currentBoard = crop,
+                        currentCategory = category,
+                        searchInput = keyword ?: "",
+                        bulletinEntities = bulletins,
+                    )
+                }
+                state.value.lazyListState.scrollToItem(0)
+                callback?.invoke()
+            } catch (e: Throwable) {
+                Timber.e(e, "loadBulletins error")
+                showSimpleDialog("게시글을 불러오지 못했습니다")
+                onErrorCallback?.invoke()
+            }
+        }
+    }
+
+    private fun loadBulletinsWithDisable(
+        crop: CropType,
+        category: BulletinEntity.BulletinCategory,
+        keyword: String? = null,
+        lastBulletinId: Long? = null,
+        onErrorCallback: (() -> Unit)? = null,
+        callback: (() -> Unit)? = null,
+    ) {
+        updateState { copy(isEnable = false) }
+        loadBulletins(
+            crop = crop,
+            category = category,
+            keyword = keyword,
+            lastBulletinId = lastBulletinId,
+            onErrorCallback = {
+                updateState { copy(isEnable = true) }
+                onErrorCallback?.invoke()
+            },
+        ) {
+            updateState { copy(isEnable = true) }
+            callback?.invoke()
+        }
+    }
+
     override fun onSearchInputChanged(input: String) {
         if (input.length <= 255 && '\n' !in input)
             updateState { copy(searchInput = input) }
     }
 
     override fun onSearchRun() {
-        Timber.d("onSearchRun 시작, searchInput: ${state.value.searchInput}")
-        updateState { copy(isEnable = false) }
-        loadingScope {
-            val bulletins = communityRepository.getBulletins(
-                keyword = state.value.searchInput,
-                bulletinCategory = state.value.currentCategory,
-                crop = state.value.currentBoard,
-                lastBulletinId = null,
-            )
-            Timber.d("onSearchRun 코루틴 성공, $bulletins")
-            updateState {
-                copy(
-                    isEnable = true,
-                    bulletinEntities = bulletins,
-                )
-            }
-        }
+        loadBulletinsWithDisable(
+            crop = state.value.currentBoard,
+            category = state.value.currentCategory,
+            keyword = state.value.searchInput.let { it.ifBlank { null } },
+        )
     }
 
     override fun onSelectBoard(crop: CropType) {
-        updateState { copy(isEnable = false) }
-        loadingScope {
-            val bulletins = communityRepository.getBulletins(
-                keyword = null,
-                bulletinCategory = state.value.currentCategory,
-                crop = crop,
-                lastBulletinId = null,
+        loadBulletinsWithDisable(
+            crop = crop,
+            category = state.value.currentCategory,
+        )
+    }
+
+    override fun showSimpleDialog(text: String) {
+        updateState {
+            copy(
+                isShowSimpleDialog = true,
+                simpleDialogText = text,
             )
-            Timber.d("onSelectBoard 코루틴 성공, $bulletins")
-            updateState {
-                copy(
-                    isShowBottomSheet = false,
-                    isEnable = true,
-                    currentBoard = crop,
-                    bulletinEntities = bulletins,
-                )
-            }
         }
     }
 
@@ -131,32 +186,14 @@ internal class CommunityViewModel @Inject constructor(
     }
 
     override fun onCategoryClick(category: BulletinEntity.BulletinCategory) {
-        viewModelScope.launch {
-            try {
-                setCurrentCategory(category)
-                val bulletins = communityRepository.getBulletins(
-                    keyword = null,
-                    bulletinCategory = category,
-                    crop = state.value.currentBoard,
-                    lastBulletinId = null,
-                )
-                setBulletinEntities(bulletins)
-                Timber.d("onFreeCategoryClick 코루틴 성공, $bulletins")
-            } catch (e: Throwable) {
-                Timber.e(e, "onFreeCategoryClick 코루틴 에러")
-            }
-        }
+        loadBulletins(
+            crop = state.value.currentBoard,
+            category = category,
+        )
     }
 
     // TODO:
     override fun bookmarkBulletin(id: Long) {
-//        loadingScope {
-//            val changedBookmark =
-//                communityRepository.bookmarkBulletin(id)
-//
-////            // 그냥 로드하자
-////            loadBulletin(state.value.currentDetailBulletinId)
-//        }
     }
 
     init {

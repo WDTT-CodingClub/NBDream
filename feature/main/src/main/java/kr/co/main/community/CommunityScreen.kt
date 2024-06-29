@@ -177,6 +177,7 @@ internal fun CommunityScreen(
 
         LazyColumn(
             modifier = Modifier.scaffoldBackground(paddingValues),
+            state = state.lazyListState,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
 
@@ -259,8 +260,15 @@ internal fun CommunityScreen(
 
     if (state.isShowBottomSheet) {
         DreamBottomSheetWithTextButtons(
-            onDismissRequest = { event.setIsShowBottomSheet(false) },
+            onDismissRequest = event::dismissBottomSheet,
             textAndOnClicks = state.bottomSheetItems,
+        )
+    }
+
+    if (state.isShowSimpleDialog) {
+        CommunityDialogSimpleTitle(
+            onDismissRequest = event::dismissSimpleDialog,
+            text = state.simpleDialogText,
         )
     }
 
