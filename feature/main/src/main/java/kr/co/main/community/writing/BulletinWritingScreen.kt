@@ -48,7 +48,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
 import kr.co.main.R
-import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Shapes

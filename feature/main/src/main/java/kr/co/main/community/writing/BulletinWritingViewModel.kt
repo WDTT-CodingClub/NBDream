@@ -14,10 +14,14 @@ import kr.co.domain.entity.type.CropType
 import kr.co.domain.repository.CommunityRepository
 import kr.co.domain.repository.ServerImageRepository
 import kr.co.domain.usecase.image.UploadImageUseCase
-import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
 import javax.inject.Inject
+
+internal data class WritingSelectedImageModel(
+    val uri: Uri? = null,
+    val url: String? = null,
+)
 
 @HiltViewModel
 internal class BulletinWritingViewModel @Inject constructor(
