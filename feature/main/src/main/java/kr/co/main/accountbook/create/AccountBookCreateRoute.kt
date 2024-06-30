@@ -118,10 +118,7 @@ internal fun AccountBookCreateRoute(
         onUpdateTitle = { viewModel.updateTitle(it) },
         onRemoveImageUrl = { viewModel.deleteImage(it) },
         onUpdateRegisterDateTime = { viewModel.updateRegisterDateTime(it) },
-        onUpdateCategory = { viewModel.updateCategory(it) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = Paddings.large),
+        onUpdateCategory = { viewModel.updateCategory(it) }
     )
 
     if (showErrorDialog) {
@@ -149,8 +146,7 @@ internal fun AccountBookCreateScreen(
     onUpdateTitle: (String) -> Unit = {},
     onRemoveImageUrl: (String) -> Unit = {},
     onUpdateRegisterDateTime: (String) -> Unit = {},
-    onUpdateCategory: (AccountBookEntity.Category) -> Unit = {},
-    modifier: Modifier
+    onUpdateCategory: (AccountBookEntity.Category) -> Unit = {}
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -202,7 +198,7 @@ internal fun AccountBookCreateScreen(
             )
             LazyColumn(
                 modifier = Modifier
-                    .padding(horizontal = Paddings.xlarge, vertical = Paddings.xlarge)
+                    .padding(Paddings.xlarge)
                     .imePadding(),
                 verticalArrangement = Arrangement.spacedBy(Paddings.extra)
             ) {
@@ -340,7 +336,8 @@ internal fun AccountBookCreateScreen(
                                 .background(
                                     color = MaterialTheme.colors.gray9,
                                     shape = Shapes.medium
-                                ),
+                                )
+                                .align(Alignment.Bottom),
                             contentAlignment = Alignment.Center
                         ) {
                             Button(
@@ -378,8 +375,7 @@ internal fun AccountBookCreateScreen(
                         LazyRow(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(Paddings.large),
-                            horizontalArrangement = Arrangement.spacedBy(Paddings.large)
+                                .padding(start = Paddings.large),
                         ) {
                             items(state.imageUrls) { imageUrl ->
                                 Box(
@@ -419,7 +415,6 @@ internal fun AccountBookCreateScreen(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }
