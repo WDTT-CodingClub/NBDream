@@ -1,6 +1,8 @@
 package kr.co.ui.widget
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -12,6 +14,7 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 
@@ -52,10 +55,13 @@ fun DreamBottomSheetWithTextButtons(
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(text = text,
-                    color = MaterialTheme.colors.gray1)
+                Text(
+                    text = text,
+                    color = MaterialTheme.colors.gray1,
+                )
             }
         }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 
 }

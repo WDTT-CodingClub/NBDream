@@ -15,6 +15,19 @@ data class CommentEntity(
     val lastModifiedTime: String,
 ) {
     companion object {
+        fun empty() = CommentEntity(
+            memberId = 0,
+            commentId = 0,
+            nickname = "",
+            profileImageUrl = "",
+            content = "",
+            isAuthor = false,
+            lastModifiedTime = "",
+            createdTime = LocalDateTime.now(),
+            bulletinId = 0,
+            bulletinAuthorName = ""
+        )
+
         fun dummy(idx: Int = 0) = CommentEntity(
             memberId = 10L + idx,
             commentId = 10L + idx,
