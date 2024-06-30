@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,10 +21,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -47,7 +48,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import kr.co.common.util.FileUtil
 import kr.co.common.util.FileUtil.getFileFromUri
 import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
@@ -67,12 +70,10 @@ import kr.co.main.accountbook.model.EntryType
 import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay
 import kr.co.main.accountbook.model.parseLocalDate
-import kr.co.main.community.temp.UriUtil
 import kr.co.nbdream.core.ui.R
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Arrowleft
 import kr.co.ui.icon.dreamicon.DatePicker
-import kr.co.ui.icon.dreamicon.Delete
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.Shapes
@@ -160,6 +161,7 @@ internal fun AccountBookCreateScreen(
             }
         }
     )
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Surface(
         color = MaterialTheme.colors.white
@@ -167,6 +169,11 @@ internal fun AccountBookCreateScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        keyboardController?.hide()
+                    })
+                }
         ) {
             DreamCenterTopAppBar(
                 title = state.contentTitle,
@@ -238,7 +245,8 @@ internal fun AccountBookCreateScreen(
                                             style = MaterialTheme.typo.body1,
                                             color = MaterialTheme.colors.gray4
                                         )
-                                    }
+                                    },
+                                    keyboardController = keyboardController
                                 )
                             }
                             Spacer(modifier = Modifier.width(Paddings.xlarge))
@@ -304,7 +312,8 @@ internal fun AccountBookCreateScreen(
                                 value = state.title ?: "",
                                 onValueChange = { newValue -> onUpdateTitle(newValue) },
                                 placeholder = "입력하세요",
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                keyboardController = keyboardController
                             )
                         }
                     }
@@ -469,7 +478,8 @@ internal fun AccountBookCreateTextField(
     placeholder: String,
     modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    trailingIcon: @Composable (() -> Unit)? = null
+    trailingIcon: @Composable (() -> Unit)? = null,
+    keyboardController: SoftwareKeyboardController?
 ) {
     TextField(
         value = value,
@@ -492,7 +502,10 @@ internal fun AccountBookCreateTextField(
                 color = MaterialTheme.colors.gray4
             )
         },
-        trailingIcon = trailingIcon
+        trailingIcon = trailingIcon,
+        keyboardActions = KeyboardActions(
+            onDone = { keyboardController?.hide() }
+        )
     )
 }
 
