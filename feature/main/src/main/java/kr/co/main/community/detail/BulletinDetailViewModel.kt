@@ -13,9 +13,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 internal interface BulletinDetailEvent {
-    fun setIsShowDeleteCheckDialog(boolean: Boolean)
-    fun setIsShowFailedDialog(boolean: Boolean)
-    fun setIsShowDialog(boolean: Boolean)
     fun onCommentWritingInput(input: String)
     fun onPostCommentClick()
     fun loadBulletin(id: Long)
@@ -25,6 +22,21 @@ internal interface BulletinDetailEvent {
     )
 
     fun deleteComment(id: Long)
+
+    fun bookmarkBulletin()
+    fun showReportBottomSheet()
+    fun showFailedDialog()
+
+    /** DreamBottomSheetWithTextButtons */
+    fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>)
+    fun dismissBottomSheet()
+
+    /** CommunityDialogSimpleTitle */
+    fun showSimpleDialog(text: String)
+    fun dismissSimpleDialog()
+
+    // DreamDialog
+    fun dismissDialog()
     fun showDialog(
         header: String,
         description: String,
@@ -32,23 +44,10 @@ internal interface BulletinDetailEvent {
         onDismiss: () -> Unit,
     )
 
-    fun bookmarkBulletin()
-    fun showReportBottomSheet()
-
-    // DreamBottomSheetWithTextButtons
-    fun setIsShowDreamBottomSheetWithTextButtons(boolean: Boolean)
-    fun showBottomSheet(bottomSheetItems: List<TextAndOnClick>)
-
-    // simple dialog
-    fun setIsShowSimpleDialog(boolean: Boolean)
-    fun showSimpleDialog(text: String)
-
     companion object {
         val empty = object : BulletinDetailEvent {
-            override fun setIsShowDreamBottomSheetWithTextButtons(boolean: Boolean) {}
-            override fun setIsShowDeleteCheckDialog(boolean: Boolean) {}
-            override fun setIsShowFailedDialog(boolean: Boolean) {}
-            override fun setIsShowDialog(boolean: Boolean) {}
+            override fun dismissBottomSheet() {}
+            override fun dismissDialog() {}
             override fun onCommentWritingInput(input: String) {}
             override fun onPostCommentClick() {}
             override fun loadBulletin(id: Long) {}
@@ -64,9 +63,10 @@ internal interface BulletinDetailEvent {
             }
 
             override fun bookmarkBulletin() {}
-            override fun setIsShowSimpleDialog(boolean: Boolean) {}
+            override fun dismissSimpleDialog() {}
             override fun showSimpleDialog(text: String) {}
             override fun showReportBottomSheet() {}
+            override fun showFailedDialog() {}
 
         }
     }
@@ -108,23 +108,12 @@ internal class BulletinDetailViewModel @Inject constructor(
         val simpleDialogText: String = "",
     ) : BaseViewModel.State
 
-    override fun setIsShowSimpleDialog(boolean: Boolean) =
-        updateState { copy(isShowSimpleDialog = boolean) }
+    override fun dismissSimpleDialog() = updateState { copy(isShowSimpleDialog = false) }
 
-    override fun setIsShowDreamBottomSheetWithTextButtons(boolean: Boolean) =
-        updateState { copy(isShowDreamBottomSheetWithTextButtons = boolean) }
+    override fun dismissBottomSheet() =
+        updateState { copy(isShowDreamBottomSheetWithTextButtons = false) }
 
-    override fun setIsShowDeleteCheckDialog(boolean: Boolean) =
-        updateState { copy(isShowDeleteCheckDialog = boolean) }
-
-    override fun setIsShowFailedDialog(boolean: Boolean) =
-        updateState { copy(isShowFailedDialog = boolean) }
-
-    override fun setIsShowDialog(boolean: Boolean) =
-        updateState { copy(isShowDialog = boolean) }
-
-    override fun onCommentWritingInput(input: String) =
-        updateState { copy(commentWritingInput = input) }
+    override fun dismissDialog() = updateState { copy(isShowDialog = false) }
 
     private fun setCurrentDetailBulletinId(id: Long) =
         updateState { copy(currentDetailBulletinId = id) }
@@ -133,6 +122,14 @@ internal class BulletinDetailViewModel @Inject constructor(
         updateState { copy(currentDetailBulletin = entity) }
 
     //---
+
+    override fun onCommentWritingInput(input: String) {
+        if (input.length <= 255) updateState { copy(commentWritingInput = input) }
+    }
+
+    override fun showFailedDialog() {
+        showSimpleDialog("처리하지 못했습니다.")
+    }
 
     override fun showReportBottomSheet() {
         updateState {
@@ -147,14 +144,12 @@ internal class BulletinDetailViewModel @Inject constructor(
                     "낚시/놀람/도배",
                     "상업적 광고 및 판매"
                 ).map {
-                    TextAndOnClick(
-                        it,
-                    ) {
+                    TextAndOnClick(it) {
                         showDialog(
                             header = "",
                             description = "\"$it\"으로 신고하시겠습니까?",
                             onConfirm = { showSimpleDialog("신고되었습니다") },
-                            onDismiss = { setIsShowDialog(false) },
+                            onDismiss = ::dismissDialog,
                         )
                     }
                 },
@@ -204,6 +199,7 @@ internal class BulletinDetailViewModel @Inject constructor(
                 commentDetail = state.value.commentWritingInput,
             )
             Timber.d("onPostCommentClick 코루틴) postedCommentId: $postedCommentId")
+            updateState { copy(commentWritingInput = "") }
 
             // 댓글 달면 글 다시 조회해서 댓글까지 갱신하도록.
             loadBulletin(state.value.currentDetailBulletinId)

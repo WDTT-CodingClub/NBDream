@@ -109,7 +109,7 @@ internal class BulletinWritingViewModel @Inject constructor(
     }
 
     fun onBulletinWritingInputChanged(input: String) {
-        updateState { copy(bulletinWritingInput = input) }
+        if (input.length <= 3000) updateState { copy(bulletinWritingInput = input) }
     }
 
     fun onRemoveImageClick(model: WritingSelectedImageModel) {

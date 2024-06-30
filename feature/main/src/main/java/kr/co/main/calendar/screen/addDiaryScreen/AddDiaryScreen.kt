@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,7 +40,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,9 +57,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kr.co.common.util.DateFormatter
 import kr.co.main.R
-import kr.co.main.accountbook.model.CustomDatePickerDialog
 import kr.co.main.calendar.CalendarDesignToken
 import kr.co.main.calendar.common.AddScreenCenterTopAppBar
 import kr.co.main.calendar.common.CalendarContainerTextField
@@ -88,17 +87,13 @@ private data class DiaryWorkInputData(
 internal fun AddDiaryRoute(
     viewModel: AddDiaryViewModel = hiltViewModel(),
     popBackStack: () -> Unit = {},
-    navigateToPrevious: () -> Unit = {},
+    navToCalendar: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val (isDatePickerVisible, setDatePickerVisible) = remember {
-        mutableStateOf(false)
-    }
-
     LaunchedEffect(Unit) {
         viewModel.showPreviousScreen.collect {
-            navigateToPrevious()
+            navToCalendar()
         }
     }
 
@@ -107,18 +102,8 @@ internal fun AddDiaryRoute(
         state = state,
         event = viewModel.event,
         popBackStack = popBackStack,
-        onDateInput = { setDatePickerVisible(true) }
+        navToCalendar = navToCalendar
     )
-
-    if (isDatePickerVisible) {
-        CustomDatePickerDialog(
-            date = state.date,
-            onClickCancel = { setDatePickerVisible(false) }
-        ) { selected ->
-            viewModel.event.onDateSelect(DateFormatter.fromPattern(selected, "yyyy.MM.dd"))
-            setDatePickerVisible(false)
-        }
-    }
 }
 
 @Composable
@@ -126,8 +111,8 @@ private fun AddDiaryScreen(
     state: AddDiaryViewModel.AddDiaryScreenState,
     event: AddDiaryScreenEvent,
     popBackStack: () -> Unit,
-    modifier: Modifier = Modifier,
-    onDateInput: () -> Unit = {},
+    navToCalendar: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Timber.d("state: $state")
 
@@ -139,7 +124,10 @@ private fun AddDiaryScreen(
     val enableAction = true
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
+            .imePadding(),
         containerColor = Color.White,
         topBar = {
             AddScreenCenterTopAppBar(
@@ -150,9 +138,18 @@ private fun AddDiaryScreen(
                 actionHintId = R.string.feature_main_calendar_add_diary_input_hint_memo,
                 enableAction = enableAction,
                 popBackStack = popBackStack,
-                onPostClick = event::onPostClick,
-                onEditClick = event::onEditClick,
-                onDeleteClick = event::onDeleteClick
+                onPostClick = {
+                    event.onPostClick()
+                    navToCalendar()
+                },
+                onEditClick = {
+                    event.onEditClick()
+                    navToCalendar()
+                },
+                onDeleteClick = {
+                    event.onDeleteClick()
+                    navToCalendar()
+                }
             )
         }
     ) { innerPadding ->
@@ -165,7 +162,7 @@ private fun AddDiaryScreen(
                 DiaryDatePicker(
                     modifier = Modifier.fillMaxWidth(),
                     date = state.date,
-                    onDateSelect = onDateInput
+                    onDateSelect = event::onDateSelect
                 )
                 GuidText(text = state.dateGuid)
                 Spacer(modifier = Modifier.height(Paddings.extra))
@@ -216,7 +213,7 @@ private fun AddDiaryScreen(
 @Composable
 private fun DiaryDatePicker(
     date: LocalDate,
-    onDateSelect: () -> Unit,
+    onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -229,7 +226,8 @@ private fun DiaryDatePicker(
         CalendarDatePicker(
             modifier = Modifier.fillMaxWidth(),
             date = date,
-            onDateInput = onDateSelect
+            onDateSelect = onDateSelect,
+            maxDate = LocalDate.now()
         )
     }
 }

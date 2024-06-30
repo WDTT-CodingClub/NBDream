@@ -26,6 +26,9 @@
     <string name="feature_main_calendar_top_app_bar_post">등록</string>
     <string name="feature_main_calendar_top_app_bar_edit">편집</string>
 
+    <string name="feature_main_calendar_nav_to_my_page_dialog_title">마이 페이지로 이동하시겠어요?</string>
+    <string name="feature_main_calendar_nav_to_my_page_dialog_description">재배 작물을 추가해야 영농 일지를 작성할 수 있어요.</string>
+
 <!--    add diary screen-->
     <string name="feature_main_calendar_add_diary_header_date">일자</string>
     <string name="feature_main_calendar_add_diary_header_image">사진</string>
@@ -47,6 +50,7 @@
     <string name="feature_main_calendar_add_diary_input_hint_memo">일지를 입력해 주세요.</string>
     <string name="feature_main_calendar_add_diary_input_hint_work_description">작업 내용을 입력해 주세요.</string>
     <string name="feature_main_calendar_add_diary_input_hint_work_type">작업 분류를 선택해 주세요.</string>
+
 <!--    diary-->
     <string name="feature_main_calendar_diary_work_laborer_hour_area">%d명 \| %d시간 \| %d평</string>
 
@@ -62,4 +66,6 @@
     <string name="feature_main_calendar_add_schedule_input_hint_title">일정 제목을 입력해 주세요.</string>
     <string name="feature_main_calendar_add_schedule_input_hint_memo">메모를 입력해 주세요.</string>
 
+    <string name="feature_main_calendar_add_schedule_delete_dialog_title">일정을 삭제하겠어요?</string>
+    <string name="feature_main_calendar_add_schedule_delete_dialog_description">삭제한 일정은 복구할 수 없어요.</string>
 </resources>
