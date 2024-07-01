@@ -15,7 +15,7 @@ enum class WorkDescriptionType(val koreanName: String) {
     PEST_CONTROL("병충해 방제"),
     WEED("제초"),
     SOIL_COVER("비닐 및 흙 덮기"),
-    TRIMMING("적심적야"),
+    TRIMMING("적심적아"),
     WATER_MANAGE("물 관리"),
     HOUSE_MANAGE("하우스 설치 및 관리"),
     TEMP_MANAGE("온도 관리"),
