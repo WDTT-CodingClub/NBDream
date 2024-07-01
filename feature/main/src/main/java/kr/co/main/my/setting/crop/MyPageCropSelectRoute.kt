@@ -86,7 +86,7 @@ private fun MyPageCropSelectScreen(
         containerColor = MaterialTheme.colors.white,
         topBar = {
             DreamCenterTopAppBar(
-                title = "저장한 글 보기",
+                title = "재배 작물 선택하기",
                 colorBackground = true,
                 navigationIcon = {
                     IconButton(
