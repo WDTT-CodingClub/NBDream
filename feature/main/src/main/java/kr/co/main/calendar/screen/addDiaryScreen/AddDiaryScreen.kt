@@ -202,7 +202,7 @@ private fun AddDiaryScreen(
                 DiaryWorkAreaInput(
                     modifier = Modifier.fillMaxWidth(),
                     workArea = state.workArea,
-                    onWorkAreaInput = event::onWorkHourInput
+                    onWorkAreaInput = event::onWorkAreaInput
                 )
                 Spacer(modifier = Modifier.height(Paddings.extra))
             }
