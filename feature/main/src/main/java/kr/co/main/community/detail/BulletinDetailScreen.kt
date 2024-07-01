@@ -111,6 +111,7 @@ internal fun BulletinDetailScreen(
             DreamCenterTopAppBar(
                 title = if (!state.isInitialLoadingFinished) ""
                 else state.currentDetailBulletin.bulletinCategory.koreanName,
+                colorBackground = true,
                 navigationIcon = {
                     IconButton(onClick = popBackStack) {
                         Icon(
@@ -547,7 +548,11 @@ fun NoBulletinScreen(
 private fun BulletinDetailScreenPreview() {
     NBDreamTheme {
         BulletinDetailScreen(
-            state = BulletinDetailViewModel.State(currentDetailBulletin = BulletinEntity.dummy(3)),
+            state = BulletinDetailViewModel.State(
+                currentDetailBulletin = BulletinEntity.dummy(3),
+                isInitialLoadingFinished = true,
+//                isLoadDetailSuccessful = true,
+            ),
         )
     }
 }
