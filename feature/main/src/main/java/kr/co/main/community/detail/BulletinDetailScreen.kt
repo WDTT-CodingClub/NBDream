@@ -422,7 +422,8 @@ private fun CommentItem(
                 .width(40.dp)
                 .height(40.dp)
                 .clip(CircleShape),
-            error = painterResource(id = kr.co.nbdream.core.ui.R.drawable.ic_person_32),
+            error = rememberVectorPainter(image = DreamIcon.Tobot),
+            contentScale = ContentScale.Crop,
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column {
