@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.main.home.HomeViewModel.State.WeatherDetail
 import kr.co.main.home.HomeViewModel.State.WeatherSimple
@@ -73,6 +74,12 @@ internal fun HomeRoute(
     navigateToCalendar: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LifecycleResumeEffect(Unit) {
+        viewModel.refresh()
+
+        onPauseOrDispose {  }
+    }
 
     HomeScreen(
         state = state,

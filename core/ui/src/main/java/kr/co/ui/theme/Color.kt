@@ -88,8 +88,12 @@ sealed class ColorSet {
             material = lightColorScheme(
                 primary = primary,
                 onPrimary = white,
-                primaryContainer = secondary,
+                primaryContainer = background,
                 onPrimaryContainer = white,
+                outline = primary,
+                onSurface = text1,
+                surface = white,
+                onSurfaceVariant = text2,
             ),
             primary = primary,
             primary2 = primary2,

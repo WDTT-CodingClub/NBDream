@@ -55,8 +55,8 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         {
             parameter("crop", crop)
             parameter("query", query)
-            parameter("startDate", startDate)
-            parameter("endDate", endDate)
+            parameter("start_date", startDate)
+            parameter("end_date", endDate)
         }
             .body<Dto<DiaryListResponse>>()
             .data.diaryList.map {

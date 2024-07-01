@@ -39,8 +39,27 @@ internal class HomeViewModel @Inject constructor(
             }
         }
 
+        loadingScope {
+            GetSchedulesUseCase.Params.Weekly(
+                category = ScheduleType.All,
+                weekStartDate = LocalDate.now().toString()
+            ).apply {
+                getSchedulesUseCase(this).collectLatest {
+                    it.map(HomeScheduleUiMapper::convert).also {
+                        updateState {
+                            copy(schedules = it)
+                        }
+                    }
+                }
+            }
+        }
+
+        refresh()
+    }
+
+    fun refresh() {
         viewModelScopeEH.launch {
-            weatherUseCase.invoke().also {
+            weatherUseCase(currentState.address).also {
                 onTodayWeather(
                     State.WeatherDetail(
                         weather = it.weather,
@@ -63,21 +82,6 @@ internal class HomeViewModel @Inject constructor(
                         )
                     }
                 )
-            }
-        }
-
-        loadingScope {
-            GetSchedulesUseCase.Params.Weekly(
-                category = ScheduleType.All,
-                weekStartDate = LocalDate.now().toString()
-            ).apply {
-                getSchedulesUseCase(this).collectLatest {
-                    it.map(HomeScheduleUiMapper::convert).also {
-                        updateState {
-                            copy(schedules = it)
-                        }
-                    }
-                }
             }
         }
     }

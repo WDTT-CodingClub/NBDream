@@ -2,16 +2,24 @@ package kr.co.main.my.setting.delete
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -20,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +38,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kr.co.main.R
 import kr.co.main.model.my.MyPageDeleteReason
 import kr.co.ui.ext.IconDefaults
+import kr.co.ui.ext.conditional
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.ext.vectorColors
 import kr.co.ui.icon.DreamIcon
@@ -52,6 +64,7 @@ import kr.co.ui.widget.DreamButton
 import kr.co.ui.widget.DreamCenterTopAppBar
 import kr.co.ui.widget.DreamCheckIcon
 import kr.co.ui.widget.DreamDialog
+import timber.log.Timber
 
 @Composable
 internal fun MyPageSettingDeleteAccountRoute(
@@ -86,14 +99,17 @@ internal fun MyPageSettingDeleteAccountRoute(
         )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MyPageSettingDeleteAccountScreen(
     state: MyPageSettingDeleteAccountViewModel.State = MyPageSettingDeleteAccountViewModel.State(),
     setReason: (String) -> Unit = {},
     setSelected: (String?) -> Unit = {},
     popBackStack: () -> Unit = {},
-    onDeleteClick: () -> Unit = {}
+    onDeleteClick: () -> Unit = {},
 ) {
+    val isImeVisible = WindowInsets.isImeVisible
+
     Scaffold(
         containerColor = MaterialTheme.colors.white,
         topBar = {
@@ -124,101 +140,120 @@ private fun MyPageSettingDeleteAccountScreen(
                     contentColor = MaterialTheme.colors.gray10
                 )
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { scaffoldPadding ->
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .scaffoldBackground(
-                    scaffoldPadding = scaffoldPadding,
-                    padding = PaddingValues(24.dp)
-                )
-                .padding(top = 52.dp)
+                .fillMaxSize()
+                .consumeWindowInsets(scaffoldPadding)
+                .imePadding()
+                .systemBarsPadding(),
+            contentAlignment = Alignment.Center
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = "농부의 꿈을 정말 떠나시는 건가요?",
-                    style = MaterialTheme.typo.h2,
-                    color = MaterialTheme.colors.gray1
-                )
-
-                Text(
-                    text = "계정을 삭제하시려는 이유를 말씀해주시면 " +
-                            "\n서비스 개선에 중요자료로 활용하겠습니다.",
-                    style = MaterialTheme.typo.body1,
-                    color = MaterialTheme.colors.gray3
-                )
-            }
-
-            Spacer(modifier = Modifier.height(52.dp))
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                MyPageDeleteReason.entries.forEach { reason ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(CircleShape)
-                            .clickable { setSelected(reason.text) },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        DreamCheckIcon(
-                            modifier = Modifier.size(24.dp),
-                            state = state.reason == reason.text,
-                            leftIcon = DreamIcon.OutLineCircle,
-                            rightIcon = DreamIcon.CheckCircle,
-                            contentDescription = "check reason",
-                            onClick = { setSelected(reason.text) },
-                            colors = IconDefaults.vectorColors(
-                                default = MaterialTheme.colors.gray6,
-                            )
-                        )
-                        Text(
-                            text = reason.text,
-                            style = MaterialTheme.typo.body1,
-                            color = MaterialTheme.colors.gray1
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(60.dp))
-
-            OutlinedTextField(
-                modifier = Modifier
                     .fillMaxWidth()
-                    .sizeIn(minHeight = 144.dp),
-                value = state.otherReason ?: "",
-                onValueChange = {
-                    if (it.length <= 200) setReason(it)
-                },
-                placeholder = {
+                    .padding(horizontal = 24.dp)
+                    .conditional(!isImeVisible) {
+                        padding(top = 52.dp)
+                    }
+                    .conditional(isImeVisible) {
+                        padding(bottom = 52.dp)
+                    }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .conditional(isImeVisible) {
+                            height(0.dp)
+                        },
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     Text(
-                        text = "기타 이유를 적어주세요",
+                        text = "농부의 꿈을 정말 떠나시는 건가요?",
+                        style = MaterialTheme.typo.h2,
+                        color = MaterialTheme.colors.gray1
+                    )
+
+                    Text(
+                        text = "계정을 삭제하시려는 이유를 말씀해주시면 " +
+                                "\n서비스 개선에 중요자료로 활용하겠습니다.",
                         style = MaterialTheme.typo.body1,
-                        color = MaterialTheme.colors.gray5
+                        color = MaterialTheme.colors.gray3
                     )
                 }
-            )
-            Text(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .align(Alignment.End),
-                text = "${state.otherReason?.length}/200",
-                style = TextStyle(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    lineHeight = 16.sp,
-                    color = MaterialTheme.colors.gray5
+
+                Spacer(modifier = Modifier.height(52.dp))
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    MyPageDeleteReason.entries.forEach { reason ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(CircleShape)
+                                .clickable { setSelected(reason.text) },
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            DreamCheckIcon(
+                                modifier = Modifier.size(24.dp),
+                                state = state.reason == reason.text,
+                                leftIcon = DreamIcon.OutLineCircle,
+                                rightIcon = DreamIcon.CheckCircle,
+                                contentDescription = "check reason",
+                                onClick = { setSelected(reason.text) },
+                                colors = IconDefaults.vectorColors(
+                                    default = MaterialTheme.colors.gray6,
+                                )
+                            )
+                            Text(
+                                text = reason.text,
+                                style = MaterialTheme.typo.body1,
+                                color = MaterialTheme.colors.gray1
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(60.dp))
+
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .sizeIn(minHeight = 144.dp),
+                    value = state.otherReason ?: "",
+                    onValueChange = {
+                        if (it.length <= 200) setReason(it)
+                    },
+                    placeholder = {
+                        Text(
+                            text = "기타 이유를 적어주세요",
+                            style = MaterialTheme.typo.body1,
+                            color = MaterialTheme.colors.gray5
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colors.gray2,
+                        cursorColor = MaterialTheme.colors.gray2
+                    )
                 )
-            )
+                Text(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .align(Alignment.End),
+                    text = "${state.otherReason?.length ?: 0}/200",
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        lineHeight = 16.sp,
+                        color = MaterialTheme.colors.gray5
+                    )
+                )
+            }
         }
     }
 }
@@ -235,10 +270,10 @@ private fun Preview() {
     }
     NBDreamTheme {
         MyPageSettingDeleteAccountScreen(
-            popBackStack = {},
+            setReason = setReason,
             setSelected = setSelected,
-            setReason = setReason
+            popBackStack = {},
 
-        )
+            )
     }
 }

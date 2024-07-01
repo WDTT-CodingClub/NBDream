@@ -35,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -174,9 +175,10 @@ private fun SearchDiaryScreen(
                             shape = CircleShape
                         )
                         .padding(
-                            horizontal = 20.dp,
-                            vertical = 8.dp
+                            horizontal = 14.dp,
+                            vertical = 2.dp
                         )
+                        .padding(start = 6.dp)
                         .semantics {
                             contentDescription = "영농일지 검색"
                         },
@@ -203,6 +205,9 @@ private fun SearchDiaryScreen(
                         }
                         Icon(
                             modifier = Modifier
+                                .clip(CircleShape)
+                                .clickable(onClick = onSearchClick)
+                                .padding(6.dp)
                                 .size(24.dp)
                                 .clearAndSetSemantics { },
                             imageVector = DreamIcon.Search,
@@ -268,9 +273,9 @@ private fun RowScope.DateTab(
     Row(
         modifier = Modifier
             .weight(1f)
+            .clip(RoundedCornerShape(8.dp))
             .background(
                 color = MaterialTheme.colors.gray10,
-                shape = RoundedCornerShape(8.dp)
             )
             .clickable(onClick = onDateClick)
             .padding(
@@ -378,7 +383,7 @@ private fun ScheduleCard(
                     ) {
                         if (!isToday) append("  오늘")
                     }
-                    append("  " + diary.holidays)
+                    append("  " + (diary.holidays.firstOrNull()?.name?: ""))
                 },
                 style = MaterialTheme.typo.body1.copy(
                     color = MaterialTheme.colors.black.copy(0.4f)

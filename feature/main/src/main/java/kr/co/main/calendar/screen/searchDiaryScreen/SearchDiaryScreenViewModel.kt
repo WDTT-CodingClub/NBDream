@@ -4,13 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kr.co.domain.usecase.calendar.SearchDiariesUseCase
 import kr.co.main.mapper.calendar.DiaryModelMapper
@@ -20,7 +15,6 @@ import kr.co.main.model.calendar.type.CalendarSortType
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
-import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -87,7 +81,7 @@ internal class SearchDiaryScreenViewModel @Inject constructor(
                 runCatching {
                     currentState.calendarCrop?.let { crop ->
                         SearchDiariesUseCase.Params(
-                            crop = crop.type.name,
+                            crop = crop.type.name.lowercase(),
                             query = diaries.first,
                             startDate = diaries.second,
                             endDate = diaries.third
