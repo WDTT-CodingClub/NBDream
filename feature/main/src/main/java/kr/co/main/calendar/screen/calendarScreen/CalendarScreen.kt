@@ -224,6 +224,13 @@ private fun CalendarScreen(
                                 onDateSelect = event::onDateSelect,
                                 holidays = state.holidays,
                                 diaries = state.diaries,
+                                onEditClick = { diaryId ->
+                                    navToAddDiary(
+                                        state.crop?.type?.nameId,
+                                        ScreenModeType.EDIT_MODE.id,
+                                        diaryId
+                                    )
+                                }
                             )
                     }
                 }
@@ -367,7 +374,7 @@ private fun NavToMyPageDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if(showDialog) {
+    if (showDialog) {
         DreamDialog(
             header = stringResource(id = R.string.feature_main_calendar_nav_to_my_page_dialog_title),
             description = stringResource(id = R.string.feature_main_calendar_nav_to_my_page_dialog_description),

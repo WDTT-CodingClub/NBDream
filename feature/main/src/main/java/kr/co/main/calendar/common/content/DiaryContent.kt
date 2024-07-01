@@ -1,5 +1,6 @@
 package kr.co.main.calendar.common.content
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -32,6 +34,7 @@ import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.HolidayModel
 import kr.co.main.providers.calendar.FakeDiaryModelProvider
 import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.icon.dreamicon.GreenIcon
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Paddings
@@ -44,25 +47,36 @@ import java.util.Locale
 @Composable
 internal fun DiaryContent(
     diary: DiaryModel,
+    onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-    ) {
-        DiaryTitle(
-            registerDate = diary.date,
-            holidays = diary.holidays
-        )
-
-        Spacer(modifier = Modifier.height(3.dp))
-
-        DiaryBody(
-            modifier = Modifier.fillMaxWidth(),
-            workLaborer = diary.workLaborer,
-            workHours = diary.workHours,
-            workArea = diary.workArea,
-            workDescriptions = diary.workDescriptions
-        )
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.weight(1f)) {
+                DiaryTitle(
+                    registerDate = diary.date,
+                    holidays = diary.holidays
+                )
+                Spacer(modifier = Modifier.height(3.dp))
+                DiaryBody(
+                    modifier = Modifier.fillMaxWidth(),
+                    workLaborer = diary.workLaborer,
+                    workHours = diary.workHours,
+                    workArea = diary.workArea,
+                    workDescriptions = diary.workDescriptions
+                )
+            }
+            Icon(
+                modifier = Modifier
+                    .scale(0.8f)
+                    .clickable {
+                        onEditClick()
+                    },
+                imageVector = DreamIcon.Edit,
+                tint = MaterialTheme.colors.gray5,
+                contentDescription = ""
+            )
+        }
         DiaryImages(
             modifier = Modifier.padding(top = Paddings.medium),
             images = diary.images
@@ -223,6 +237,9 @@ private fun DiaryContentPreview(
     @PreviewParameter(FakeDiaryModelProvider::class) diary: DiaryModel,
 ) {
     NBDreamTheme {
-        DiaryContent(diary = diary)
+        DiaryContent(
+            diary = diary,
+            onEditClick = {}
+        )
     }
 }
