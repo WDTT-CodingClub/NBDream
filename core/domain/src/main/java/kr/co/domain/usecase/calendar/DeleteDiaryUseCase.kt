@@ -10,7 +10,7 @@ class DeleteDiaryUseCase @Inject constructor(
     private val repository: DiaryRepository
 ) : SuspendUseCase<DeleteDiaryUseCase.Params, Unit>(){
     data class Params(
-        val id:Int
+        val id:Long
     )
 
     override suspend fun build(params: Params?) {

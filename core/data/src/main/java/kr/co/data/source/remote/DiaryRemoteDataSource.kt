@@ -12,7 +12,7 @@ interface DiaryRemoteDataSource {
         month: String
     ): Flow<List<DiaryData>>
 
-    suspend fun fetchDetail(id: Int): DiaryData
+    suspend fun fetchDetail(id: Long): DiaryData
 
     suspend fun searchList(
         crop: String,
@@ -22,7 +22,7 @@ interface DiaryRemoteDataSource {
     ): Flow<List<DiaryData>>
 
     suspend fun update(
-        id: Int,
+        id: Long,
         crop: String,
         date: String,
         holidayList: List<HolidayData>,
@@ -31,10 +31,11 @@ interface DiaryRemoteDataSource {
         workHours: Int,
         workArea: Int,
         workDescriptions: List<DiaryData.WorkDescriptionData>,
+        imageUrls: List<String>,
         memo: String
     )
 
-    suspend fun delete(id: Int)
+    suspend fun delete(id: Long)
 
     suspend fun create(
         crop: String,

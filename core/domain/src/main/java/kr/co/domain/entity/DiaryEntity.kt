@@ -4,7 +4,7 @@ import kr.co.domain.entity.type.WorkDescriptionType
 import java.time.LocalDate
 
 data class DiaryEntity(
-    val id: Int,
+    val id: Long,
     val date: LocalDate,
     val holidays: List<HolidayEntity> = emptyList(),
     val weatherInfo: String,

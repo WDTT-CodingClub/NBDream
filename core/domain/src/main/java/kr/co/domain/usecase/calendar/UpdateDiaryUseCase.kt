@@ -13,7 +13,7 @@ class UpdateDiaryUseCase @Inject constructor(
     private val repository: DiaryRepository
 ): SuspendUseCase<UpdateDiaryUseCase.Params, Unit>() {
     data class Params(
-        val id:Int,
+        val id:Long,
         val crop:String,
         val date: LocalDate,
         val holidayList: List<HolidayEntity>,
@@ -22,6 +22,7 @@ class UpdateDiaryUseCase @Inject constructor(
         val workHours: Int,
         val workArea: Int,
         val workDescriptions: List<DiaryEntity.WorkDescriptionEntity>,
+        val imageUrls: List<String>,
         val memo: String
     )
 
@@ -37,6 +38,7 @@ class UpdateDiaryUseCase @Inject constructor(
             workHours = params.workHours,
             workArea = params.workArea,
             workDescriptions = params.workDescriptions,
+            imageUrls = params.imageUrls,
             memo = params.memo
         )
     }

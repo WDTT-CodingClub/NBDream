@@ -4,7 +4,7 @@ import kr.co.main.model.calendar.type.WorkDescriptionModelType
 import java.time.LocalDate
 
 internal data class DiaryModel(
-    val id: Int,
+    val id: Long,
     val date: LocalDate,
     val images: List<String> = emptyList(),
     val memo: String = "",
