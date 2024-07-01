@@ -13,7 +13,7 @@ class UpdateDiaryUseCase @Inject constructor(
     private val repository: DiaryRepository
 ): SuspendUseCase<UpdateDiaryUseCase.Params, Unit>() {
     data class Params(
-        val id:Int,
+        val id:Long,
         val crop:String,
         val date: LocalDate,
         val holidayList: List<HolidayEntity>,

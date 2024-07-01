@@ -63,7 +63,7 @@ internal class AddDiaryViewModel @Inject constructor(
 
     val event: AddDiaryScreenEvent = this@AddDiaryViewModel
 
-    private val _diaryId = MutableStateFlow<Int?>(null)
+    private val _diaryId = MutableStateFlow<Long?>(null)
     private val _date = MutableStateFlow<LocalDate>(LocalDate.now())
     private val _memo = MutableStateFlow("")
     private val _showPreviousScreen = MutableSharedFlow<Unit>()
@@ -75,7 +75,7 @@ internal class AddDiaryViewModel @Inject constructor(
 
         val enableAction: Boolean = false,
 
-        val diaryId: Int? = null,
+        val diaryId: Long? = null,
 
         val date: LocalDate = LocalDate.now(),
         val isDateValid: Boolean = true,
@@ -117,7 +117,7 @@ internal class AddDiaryViewModel @Inject constructor(
                     copy(screenMode = ScreenModeType.ofValue(screenModeId))
                 }
             }
-            get<String>(CalendarNavGraph.ARG_DIARY_ID)?.toIntOrNull()?.let { diaryId ->
+            get<String>(CalendarNavGraph.ARG_DIARY_ID)?.toLongOrNull()?.let { diaryId ->
                 updateState {
                     copy(diaryId = diaryId)
                 }

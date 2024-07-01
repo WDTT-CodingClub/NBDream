@@ -19,7 +19,7 @@ interface DiaryRepository {
         endDate: LocalDate
     ): Flow<List<DiaryEntity>>
 
-    suspend fun getDiaryDetail(id:Int): DiaryEntity
+    suspend fun getDiaryDetail(id:Long): DiaryEntity
 
     suspend fun createDiary(
         crop: String,
@@ -35,7 +35,7 @@ interface DiaryRepository {
     )
 
     suspend fun updateDiary(
-        id: Int,
+        id: Long,
         crop:String,
         date: LocalDate,
         holidayList: List<HolidayEntity>,
@@ -47,5 +47,5 @@ interface DiaryRepository {
         memo: String
     )
 
-    suspend fun deleteDiary(id: Int)
+    suspend fun deleteDiary(id: Long)
 }

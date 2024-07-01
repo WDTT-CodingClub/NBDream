@@ -43,7 +43,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
             )
         }
 
-    override suspend fun getDiaryDetail(id: Int): DiaryEntity =
+    override suspend fun getDiaryDetail(id: Long): DiaryEntity =
         remote.fetchDetail(id).let{
             DiaryMapper.convert(it)
         }
@@ -79,7 +79,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateDiary(
-        id: Int,
+        id: Long,
         crop:String,
         date: LocalDate,
         holidayList: List<HolidayEntity>,
@@ -108,7 +108,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun deleteDiary(id: Int) {
+    override suspend fun deleteDiary(id: Long) {
         remote.delete(id)
     }
 }
