@@ -26,6 +26,7 @@ import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.ScreenModeType
 import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
+import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -66,6 +67,7 @@ internal class AddDiaryViewModel @Inject constructor(
     private val _diaryId = MutableStateFlow<Long?>(null)
     private val _date = MutableStateFlow<LocalDate>(LocalDate.now())
     private val _memo = MutableStateFlow("")
+
     private val _showPreviousScreen = MutableSharedFlow<Unit>()
     val showPreviousScreen = _showPreviousScreen.asSharedFlow()
 
@@ -106,6 +108,12 @@ internal class AddDiaryViewModel @Inject constructor(
         } ?: AddDiaryScreenState()
 
     init {
+        viewModelScopeEH.launch {
+            error.collect {
+                Timber.e("error: ${it.throwable?.message}\n${it.customError}\n${it.throwable?.cause}")
+            }
+        }
+
         with(savedStateHandle) {
             get<String>(CalendarNavGraph.ARG_CROP_NAME_ID)?.toIntOrNull()?.let { cropNameId ->
                 updateState {
@@ -243,11 +251,14 @@ internal class AddDiaryViewModel @Inject constructor(
         checkNotNull(currentState.diaryId)
 
         viewModelScopeEH.launch {
+            Timber.d("onEditClick) workDescriptions: ${currentState.workDescriptions}")
+
             updateDiary(
                 UpdateDiaryUseCase.Params(
                     id = currentState.diaryId!!,
                     crop = currentState.calendarCrop!!.type.name,
                     date = currentState.date,
+                    imageUrls = currentState.images,
                     memo = currentState.memo,
                     workDescriptions = currentState.workDescriptions.map {
                         WorkDescriptionModelMapper.toLeft(it)

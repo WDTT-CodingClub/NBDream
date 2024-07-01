@@ -88,12 +88,13 @@ internal class DiaryRepositoryImpl @Inject constructor(
         workHours: Int,
         workArea: Int,
         workDescriptions: List<DiaryEntity.WorkDescriptionEntity>,
+        imageUrls: List<String>,
         memo: String
     ) {
         remote.update(
             id = id,
             crop = crop,
-            date = date.format(DateTimeFormatter.ofPattern("yyyyMMdd")),
+            date = date.toString(),
             holidayList = holidayList.map {
                 HolidayMapper.toLeft(it)
             },
@@ -104,6 +105,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
             workDescriptions = workDescriptions.map {
                 DiaryMapper.WorkDescriptionMapper.toLeft(it)
             },
+            imageUrls = imageUrls,
             memo = memo
         )
     }

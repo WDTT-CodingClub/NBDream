@@ -44,6 +44,7 @@ interface DiaryRepository {
         workHours: Int,
         workArea: Int,
         workDescriptions: List<DiaryEntity.WorkDescriptionEntity>,
+        imageUrls: List<String>,
         memo: String
     )
 

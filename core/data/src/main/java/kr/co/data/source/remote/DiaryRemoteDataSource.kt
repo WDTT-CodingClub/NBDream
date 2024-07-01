@@ -31,6 +31,7 @@ interface DiaryRemoteDataSource {
         workHours: Int,
         workArea: Int,
         workDescriptions: List<DiaryData.WorkDescriptionData>,
+        imageUrls: List<String>,
         memo: String
     )
 

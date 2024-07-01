@@ -116,12 +116,12 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         workHours: Int,
         workArea: Int,
         workDescriptions: List<DiaryData.WorkDescriptionData>,
+        imageUrls: List<String>,
         memo: String
     ) {
         client.put("$DIARY_URL/$id") {
             setBody(
                 UpdateDiaryRequest(
-                    id = id,
                     crop = crop,
                     date = date,
                     holidayList = holidayList.map {
@@ -142,6 +142,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
                             description = it.description
                         )
                     },
+                    imageUrls = imageUrls,
                     memo = memo
                 )
             )

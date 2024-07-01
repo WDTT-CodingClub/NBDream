@@ -19,6 +19,7 @@ internal object DiaryRemoteMapper
                 workDescriptions = workDescriptions.map {
                     WorkDescriptionRemoteMapper.convert(it)
                 },
+                images = images,
                 memo = memo
             )
         }

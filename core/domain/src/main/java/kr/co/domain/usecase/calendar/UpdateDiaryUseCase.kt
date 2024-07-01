@@ -22,6 +22,7 @@ class UpdateDiaryUseCase @Inject constructor(
         val workHours: Int,
         val workArea: Int,
         val workDescriptions: List<DiaryEntity.WorkDescriptionEntity>,
+        val imageUrls: List<String>,
         val memo: String
     )
 
@@ -37,6 +38,7 @@ class UpdateDiaryUseCase @Inject constructor(
             workHours = params.workHours,
             workArea = params.workArea,
             workDescriptions = params.workDescriptions,
+            imageUrls = params.imageUrls,
             memo = params.memo
         )
     }
