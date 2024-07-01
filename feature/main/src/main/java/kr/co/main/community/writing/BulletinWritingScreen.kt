@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -202,8 +204,8 @@ internal fun BulletinWritingScreen(
                             cursorColor = Color.Transparent
                         ),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp),
+                            .fillMaxSize()
+                            .heightIn(min = 300.dp),
                         placeholder = {
                             Text(
                                 text = "'${state.currentBoard.koreanName}'에 대해 이야기해보세요!",
@@ -302,6 +304,7 @@ internal fun BulletinWritingScreen(
                     }
                 }
             }
+            item {}
         }
     }
 }
