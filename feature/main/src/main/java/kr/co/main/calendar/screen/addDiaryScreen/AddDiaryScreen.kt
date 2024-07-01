@@ -337,6 +337,7 @@ private fun WorkDescriptionInput(
             style = MaterialTheme.typo.h4,
             color = MaterialTheme.colors.gray1
         )
+        Spacer(modifier = Modifier.height(Paddings.large))
         DescriptionTextField(
             description = inputData.description,
             onDescriptionInput = {
