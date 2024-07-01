@@ -82,7 +82,6 @@ internal fun AccountBookCategoryBottomSheet(
                 modifier = Modifier.padding(bottom = Paddings.large),
                 color = MaterialTheme.colors.gray1
             )
-            Spacer(modifier = Modifier.height(8.dp))
             if (categories != null) {
                 Text(
                     text = "전체",
@@ -92,10 +91,12 @@ internal fun AccountBookCategoryBottomSheet(
                             onSelectedListener(null)
                             dismissBottomSheet()
                         }
-                        .padding(vertical = Paddings.large),
+                        .padding(vertical = Paddings.xlarge),
                     textAlign = TextAlign.Start,
-                    color = MaterialTheme.colors.black
+                    color = MaterialTheme.colors.gray1
+
                 )
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.gray8)
             }
             items.forEach { category ->
                 Text(
@@ -106,12 +107,12 @@ internal fun AccountBookCategoryBottomSheet(
                             onSelectedListener(category)
                             dismissBottomSheet()
                         }
-                        .padding(vertical = Paddings.large),
+                        .padding(vertical = Paddings.xlarge),
                     textAlign = TextAlign.Start,
-                    color = MaterialTheme.colors.black
+                    color = MaterialTheme.colors.gray1,
                 )
+                HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colors.gray8)
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

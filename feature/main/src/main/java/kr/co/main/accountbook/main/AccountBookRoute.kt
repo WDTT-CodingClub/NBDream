@@ -7,10 +7,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -21,6 +21,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
@@ -51,6 +52,7 @@ import kr.co.ui.icon.dreamicon.Arrowright
 import kr.co.ui.icon.dreamicon.DatePicker
 import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.theme.Paddings
+import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamTopAppBar
@@ -94,7 +96,7 @@ internal fun AccountBookRoute(
         onUpdateSortOrder = { viewModel.updateSortOrder(it) },
         onUpdateTransactionType = { viewModel.updateTransactionType(it) },
         onUpdatePage = { viewModel.updatePage(it) },
-        onRefresh = viewModel::refreshItem
+        onRefresh = viewModel::refreshItem,
     )
 }
 
@@ -112,7 +114,7 @@ internal fun AccountBookScreen(
     onUpdateSortOrder: (AccountBookEntity.SortOrder) -> Unit = {},
     onUpdateTransactionType: (AccountBookEntity.TransactionType?) -> Unit = {},
     onUpdatePage: (Long) -> Unit = {},
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
 ) {
     val refreshState = rememberPullToRefreshState()
     if (refreshState.isRefreshing) {
@@ -120,184 +122,142 @@ internal fun AccountBookScreen(
         refreshState.endRefresh()
     }
 
-    Surface(
-        color = MaterialTheme.colors.gray9
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-        ) {
+    Scaffold(
+        containerColor = MaterialTheme.colors.gray9,
+        topBar = {
             DreamTopAppBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Paddings.xlarge),
                 title = "내 장부",
                 actions = {
                     IconButton(onClick = navigationToRegister) {
                         Icon(
                             imageVector = DreamIcon.Edit,
-                            contentDescription = "AccountBook Register"
+                            contentDescription = "AccountBook Create"
                         )
                     }
                 }
             )
-            Box(modifier = Modifier.nestedScroll(refreshState.nestedScrollConnection)) {
-                LazyColumn(
+        }
+    ) { innerPadding ->
+        Surface(
+            modifier = Modifier.padding(innerPadding),
+            color = MaterialTheme.colors.gray9
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .nestedScroll(refreshState.nestedScrollConnection)
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = Paddings.xlarge),
                 ) {
-                    item {
-                        CalendarSection(
-                            dateRangeOption = state.dateRangeOption,
-                            start = state.start,
-                            end = state.end,
-                            onDateRangeOptionSelected = {
-                                onUpdateDateRangeOption(it)
-                            },
-                            onDaysInRangeChange = { startDate, endDate ->
-                                onUpdateDateRange(startDate.toString(), endDate.toString())
+                    CalendarSection(
+                        dateRangeOption = state.dateRangeOption,
+                        start = state.start,
+                        end = state.end,
+                        onDateRangeOptionSelected = {
+                            onUpdateDateRangeOption(it)
+                        },
+                        onDaysInRangeChange = { startDate, endDate ->
+                            onUpdateDateRange(startDate.toString(), endDate.toString())
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(Paddings.extra))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = Color.White, shape = Shapes.medium)
+                            .padding(Paddings.extra)
+                    ) {
+                        val amountPercent =
+                            if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
+                                state.expensePercent else state.revenuePercent
+
+                        GraphSection(
+                            graphTransactionType = state.graphTransactionType,
+                            totalAmount = if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
+                                state.totalExpense else state.totalRevenue,
+                            totalCost = state.totalCost,
+                            percents = amountPercent?.map { it.percent },
+                            categories = amountPercent?.map { it.category.getDisplay() },
+                            onGraphTransactionTypeSelected = {
+                                onUpdateGraphTransactionType(it)
                             }
                         )
                     }
+                    Spacer(modifier = Modifier.height(Paddings.extra))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = Color.White, shape = Shapes.medium)
+                            .padding(Paddings.extra)
+                    ) {
+                        Column {
+                            CategorySelector(
+                                category = state.category,
+                                categories = state.categories,
+                                onCategoryChange = { onUpdateCategory(it) })
+                            FilterSelector(
+                                transactionType = state.transactionType,
+                                onTransactionChange = { onUpdateTransactionType(it) })
+                            SortOrderSelector(
+                                sortOrder = state.sort,
+                                onSortOrderChange = { onUpdateSortOrder(it) })
 
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = Color.White, shape = RoundedCornerShape(12.dp))
-                                .padding(Paddings.extra)
-                        ) {
-                            val amountPercent =
-                                if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
-                                    state.expensePercent else state.revenuePercent
-
-                            GraphSection(
-                                graphTransactionType = state.graphTransactionType,
-                                totalAmount = if (state.graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
-                                    state.totalExpense else state.totalRevenue,
-                                totalCost = state.totalCost,
-                                percents = amountPercent?.map { it.percent },
-                                categories = amountPercent?.map { it.category.getDisplay() },
-                                onGraphTransactionTypeSelected = {
-                                    onUpdateGraphTransactionType(it)
-                                }
-                            )
-                        }
-                    }
-
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    color = Color.White, shape = RoundedCornerShape(
-                                        topStart = 12.dp,
-                                        topEnd = 12.dp,
-                                        bottomStart = 0.dp,
-                                        bottomEnd = 0.dp
-                                    )
-                                )
-                                .padding(
-                                    start = Paddings.extra,
-                                    end = Paddings.extra,
-                                    top = Paddings.extra
-                                )
-                        ) {
-                            Column(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                SelectorSection(
-                                    transactionType = state.transactionType,
-                                    category = state.category,
-                                    categories = state.categories,
-                                    sortOrder = state.sort,
-                                    onCategoryChange = { onUpdateCategory(it) },
-                                    onSortOrderChange = { onUpdateSortOrder(it) },
-                                    onTransactionChange = { onUpdateTransactionType(it) }
-                                )
-                            }
-                        }
-                    }
-
-                    if (state.accountBooks.isEmpty()) {
-                        item {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        color = Color.White,
-                                        shape = RoundedCornerShape(
-                                            topStart = 0.dp,
-                                            topEnd = 0.dp,
-                                            bottomStart = 12.dp,
-                                            bottomEnd = 12.dp
-                                        )
-                                    )
-                                    .padding(Paddings.extra),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "장부를 작성해주세요!",
-                                    style = MaterialTheme.typo.body2,
-                                    color = MaterialTheme.colors.gray4,
+                            if (state.accountBooks.isEmpty()) {
+                                Row(
                                     modifier = Modifier
-                                        .clickable {
-                                            navigationToRegister()
-                                        }
-                                        .padding(
-                                            vertical = Paddings.xlarge,
-                                            horizontal = Paddings.medium
-                                        )
-                                )
-                                Icon(
-                                    imageVector = DreamIcon.Arrowright,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colors.gray5,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .align(Alignment.CenterVertically)
-                                )
-                            }
-                        }
-                    } else {
-                        itemsIndexed(
-                            state.accountBooks
-                        ) { index, data ->
-                            val lastIndex = state.accountBooks.lastIndex
-                            if (index == lastIndex && state.hasNext!!) {
-                                if (isLoading.not()) {
-                                    onUpdatePage(state.accountBooks[lastIndex].id)
-                                }
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        color = Color.White,
-                                        shape = RoundedCornerShape(
-                                            topStart = 0.dp,
-                                            topEnd = 0.dp,
-                                            bottomStart = if (index == lastIndex) 12.dp else 0.dp,
-                                            bottomEnd = if (index == lastIndex) 12.dp else 0.dp
-                                        )
-                                    )
-                            ) {
-                                AccountBookItem(
-                                    accountBook = data,
-                                    onItemClicked = { navigationToContent(data.id) }
-                                )
-
-                                if (isLoading && index == lastIndex) {
-                                    Box(
+                                        .fillMaxWidth()
+                                        .padding(Paddings.xlarge),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "장부를 작성해주세요!",
+                                        style = MaterialTheme.typo.body2,
+                                        color = MaterialTheme.colors.gray4,
                                         modifier = Modifier
-                                            .fillMaxSize()
-                                            .padding(Paddings.xlarge),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator(
-                                            color = MaterialTheme.colors.primary
-                                        )
+                                            .clickable {
+                                                navigationToRegister()
+                                            }
+                                    )
+                                    Icon(
+                                        imageVector = DreamIcon.Arrowright,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colors.gray5,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            } else {
+                                state.accountBooks.forEachIndexed { index, data ->
+                                    val lastIndex = state.accountBooks.lastIndex
+                                    if (index == lastIndex && state.hasNext!!) {
+                                        if (isLoading.not()) {
+                                            onUpdatePage(state.accountBooks[lastIndex].id)
+                                        }
+                                    }
+
+                                    AccountBookItem(
+                                        accountBook = data,
+                                        onItemClicked = { navigationToContent(data.id) }
+                                    )
+
+                                    if (isLoading && index == lastIndex) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(Paddings.xxlarge),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator(
+                                                color = MaterialTheme.colors.primary
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -305,15 +265,16 @@ internal fun AccountBookScreen(
                     }
                 }
                 PullToRefreshContainer(
-                    modifier = Modifier.align(Alignment.TopCenter),
                     state = refreshState,
                     containerColor = MaterialTheme.colors.gray9,
-                    contentColor = MaterialTheme.colors.primary
+                    contentColor = MaterialTheme.colors.primary,
+                    modifier = Modifier.align(Alignment.TopCenter)
                 )
             }
         }
     }
 }
+
 
 @Composable
 private fun CalendarSection(
@@ -376,13 +337,10 @@ private fun GraphSection(
 ) {
     val (showAll, setShowAll) = remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    Column {
         if (percents != null && categories != null && percents.size == categories.size) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 AccountBookOptionButton(
                     option = "지출",
@@ -519,8 +477,6 @@ private fun GraphSection(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(Paddings.xlarge))
-
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -529,7 +485,7 @@ private fun GraphSection(
                         modifier = Modifier
                             .background(
                                 color = MaterialTheme.colors.gray9,
-                                shape = RoundedCornerShape(8.dp)
+                                shape = Shapes.small
                             )
                             .padding(Paddings.xlarge),
                         horizontalAlignment = Alignment.End
@@ -538,8 +494,9 @@ private fun GraphSection(
                             text = "${formatNumber(totalAmount ?: 0L)}원",
                             style = MaterialTheme.typo.h3,
                             color = MaterialTheme.colors.gray1,
+                            modifier = Modifier
+                                .padding(bottom = Paddings.large)
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = "합계: ${formatNumber(totalCost ?: 0L)}원",
                             style = MaterialTheme.typo.h3,
@@ -547,11 +504,11 @@ private fun GraphSection(
                         )
                     }
                 }
+                Spacer(modifier = Modifier.height(Paddings.xlarge))
             }
         }
     }
 }
-
 
 @Composable
 private fun GraphCategoryItem(
@@ -686,7 +643,7 @@ fun AccountBookOptionButton(
             .height(height)
             .background(
                 color = if (isSelected) MaterialTheme.colors.gray4 else MaterialTheme.colors.gray9,
-                shape = RoundedCornerShape(12.dp)
+                shape = Shapes.medium
             )
             .clickable { onSelected(option) },
         contentAlignment = Alignment.Center
@@ -696,23 +653,6 @@ fun AccountBookOptionButton(
             color = if (isSelected) MaterialTheme.colors.white else MaterialTheme.colors.gray4,
             style = MaterialTheme.typo.h3
         )
-    }
-}
-
-@Composable
-private fun SelectorSection(
-    transactionType: AccountBookEntity.TransactionType?,
-    category: AccountBookEntity.Category?,
-    categories: List<AccountBookEntity.Category?>?,
-    sortOrder: AccountBookEntity.SortOrder,
-    onCategoryChange: (AccountBookEntity.Category?) -> Unit,
-    onSortOrderChange: (AccountBookEntity.SortOrder) -> Unit,
-    onTransactionChange: (AccountBookEntity.TransactionType?) -> Unit
-) {
-    Column {
-        CategorySelector(category, categories, onCategoryChange = onCategoryChange)
-        FilterSelector(transactionType, onTransactionChange)
-        SortOrderSelector(sortOrder, onSortOrderChange)
     }
 }
 
@@ -809,11 +749,7 @@ private fun AccountBookItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    vertical = Paddings.xlarge,
-                    horizontal = Paddings.extra
-                )
+                .padding(vertical = Paddings.xlarge)
                 .clickable {
                     onItemClicked(accountBook.id)
                 }
@@ -822,9 +758,10 @@ private fun AccountBookItem(
                 Text(
                     text = "${accountBook.month ?: 0}월 ${accountBook.day ?: 0}일",
                     style = MaterialTheme.typo.body2,
-                    color = MaterialTheme.colors.gray1
+                    color = MaterialTheme.colors.gray1,
+                    modifier = Modifier
+                        .padding(bottom = Paddings.medium)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = accountBook.dayName ?: "",
                     style = MaterialTheme.typo.body2,
@@ -836,9 +773,10 @@ private fun AccountBookItem(
                     Text(
                         text = accountBook.title,
                         style = MaterialTheme.typo.body1,
-                        color = MaterialTheme.colors.gray1
+                        color = MaterialTheme.colors.gray1,
+                        modifier = Modifier
+                            .padding(bottom = Paddings.medium)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
                 Text(
                     text = "${formatNumber(accountBook.amount ?: 0)}원",
@@ -853,7 +791,6 @@ private fun AccountBookItem(
                     color = MaterialTheme.colors.gray5,
                 )
             }
-
             Image(
                 painter = rememberAsyncImagePainter(accountBook.imageUrl?.first()),
                 contentDescription = null,
@@ -863,9 +800,6 @@ private fun AccountBookItem(
             )
         }
         HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Paddings.extra),
             thickness = 1.dp,
             color = MaterialTheme.colors.gray8
         )
