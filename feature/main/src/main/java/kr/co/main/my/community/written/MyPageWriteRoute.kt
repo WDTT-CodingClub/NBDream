@@ -341,7 +341,7 @@ private fun CommentCard(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = comment.authorName,
+            text = comment.authorName + "님 의 게시글",
             style = MaterialTheme.typo.body1,
             color = MaterialTheme.colors.gray1,
             overflow = TextOverflow.Ellipsis,

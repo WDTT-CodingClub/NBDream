@@ -1,5 +1,6 @@
 package kr.co.main.calendar.common.content
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,8 +17,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -33,41 +34,51 @@ import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.HolidayModel
 import kr.co.main.providers.calendar.FakeDiaryModelProvider
 import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Edit
 import kr.co.ui.icon.dreamicon.GreenIcon
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
-
-private const val HORIZONTAL_DIVIDER_HEIGHT = 0.5
 
 @Composable
 internal fun DiaryContent(
     diary: DiaryModel,
+    onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-    ) {
-        DiaryTitle(
-            registerDate = diary.date,
-            holidays = diary.holidays
-        )
-
-        Spacer(modifier = Modifier.height(3.dp))
-
-        DiaryBody(
-            modifier = Modifier.fillMaxWidth(),
-            workLaborer = diary.workLaborer,
-            workHours = diary.workHours,
-            workArea = diary.workArea,
-            workDescriptions = diary.workDescriptions
-        )
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.weight(1f)) {
+                DiaryTitle(
+                    registerDate = diary.date,
+                    holidays = diary.holidays
+                )
+                Spacer(modifier = Modifier.height(3.dp))
+                DiaryBody(
+                    modifier = Modifier.fillMaxWidth(),
+                    workLaborer = diary.workLaborer,
+                    workHours = diary.workHours,
+                    workArea = diary.workArea,
+                    workDescriptions = diary.workDescriptions
+                )
+            }
+            Icon(
+                modifier = Modifier
+                    .scale(0.8f)
+                    .clickable {
+                        onEditClick()
+                    },
+                imageVector = DreamIcon.Edit,
+                tint = MaterialTheme.colors.gray5,
+                contentDescription = ""
+            )
+        }
         DiaryImages(
+            modifier = Modifier.padding(top = Paddings.medium),
             images = diary.images
         )
         DiaryMemo(
@@ -97,18 +108,21 @@ private fun DiaryTitle(
                     )
                 ) {
                     append(
-                        registerDate.format("MM월dd일")
-                            + registerDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN)
+                        registerDate.format("MM월dd일 ")
+                                + registerDate.dayOfWeek.getDisplayName(
+                            TextStyle.SHORT,
+                            Locale.KOREAN
+                        )
                     )
                 }
                 withStyle(
                     style = SpanStyle(
                         color = Color(0xFF27A853)
-                )
+                    )
                 ) {
                     if (!isToday) append("  오늘")
                 }
-                append("  " + (holidays.firstOrNull()?.name?:""))
+                append("  " + (holidays.firstOrNull()?.name ?: ""))
             },
             style = MaterialTheme.typo.body1.copy(
                 color = MaterialTheme.colors.black.copy(0.4f)
@@ -178,30 +192,21 @@ private fun DiaryImages(
     images: List<String>,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        // TODO 이미지 크기 조정
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(Paddings.medium)
+    ) {
         for (imageUrl in images) {
-            DiaryImage(
+            AsyncImage(
                 modifier = Modifier
-                    .size(kr.co.main.calendar.CalendarDesignToken.DIARY_IMAGE_SIZE.dp)
-                    .clip(RoundedCornerShape(kr.co.main.calendar.CalendarDesignToken.ROUNDED_CORNER_RADIUS.dp)),
-                imageUrl = imageUrl
+                    .size(200.dp),
+                model = imageUrl,
+                contentDescription = "",
+                clipToBounds = true,
+                contentScale = ContentScale.Crop
             )
         }
     }
-}
-
-@Composable
-private fun DiaryImage(
-    imageUrl: String,
-    modifier: Modifier = Modifier,
-) {
-    AsyncImage(
-        modifier = modifier,
-        model = imageUrl,
-        contentDescription = "",
-        clipToBounds = true
-    )
 }
 
 @Composable
@@ -232,6 +237,9 @@ private fun DiaryContentPreview(
     @PreviewParameter(FakeDiaryModelProvider::class) diary: DiaryModel,
 ) {
     NBDreamTheme {
-        DiaryContent(diary = diary)
+        DiaryContent(
+            diary = diary,
+            onEditClick = {}
+        )
     }
 }

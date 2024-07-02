@@ -151,7 +151,7 @@ private fun MyPageScreen(
                     showCropModal = navigateToCropSelect,
                     onCropDeleteClick = onCropDeleteClick
                 )
-                
+
                 Spacer(modifier = Modifier.height(48.dp))
             }
         }
@@ -353,6 +353,7 @@ private fun CropRow(
                         }
                         .size(20.dp)
                         .noRippleClickable { isDropDownVisible = true },
+                    tint = MaterialTheme.colors.gray5,
                     imageVector = DreamIcon.Dots,
                     contentDescription = "작물 제거"
                 )

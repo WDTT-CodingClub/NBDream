@@ -8,21 +8,27 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kr.co.common.util.FileUtil
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.type.CropType
 import kr.co.domain.repository.CommunityRepository
 import kr.co.domain.repository.ServerImageRepository
-import kr.co.main.community.temp.WritingSelectedImageModel
+import kr.co.domain.usecase.image.UploadImageUseCase
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
-import java.io.File
 import javax.inject.Inject
+
+internal data class WritingSelectedImageModel(
+    val uri: Uri? = null,
+    val url: String? = null,
+)
 
 @HiltViewModel
 internal class BulletinWritingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val serverImageRepository: ServerImageRepository,
     private val communityRepository: CommunityRepository,
+    private val uploadImageUseCase: UploadImageUseCase,
 ) : BaseViewModel<BulletinWritingViewModel.State>(savedStateHandle) {
     private val id: Long? = savedStateHandle.get<String>("id")?.toLongOrNull()
     private val _complete: MutableSharedFlow<Boolean> = MutableSharedFlow()
@@ -74,16 +80,16 @@ internal class BulletinWritingViewModel @Inject constructor(
         setCurrentCategory(category)
     }
 
-    fun onAddImagesClick(uris: List<Uri>, uriToFile: (Uri) -> File) {
+    fun onAddImagesClick(uris: List<Uri>) {
         for (uri in uris) {
             val model = WritingSelectedImageModel(uri = uri)
             addWritingImage(model)
             viewModelScope.launch {
                 Timber.d("onAddImagesClick 코루틴 시작")
                 try {
-                    val serverImageEntity = uploadImage(uriToFile(uri))
-                    serverImageEntity?.let { replaceWritingImagesByUri(model.copy(url = it.url)) }
-                    Timber.d("onAddImagesClick 코루틴 끝, url: $serverImageEntity")
+                    val url = uploadImage(uri)
+                    replaceWritingImagesByUri(model.copy(url = url))
+                    Timber.d("onAddImagesClick 코루틴 끝, url: $url")
                 } catch (e: Throwable) {
                     Timber.e(e, "onAddImagesClick 코루틴 에러")
                 }
@@ -95,7 +101,16 @@ internal class BulletinWritingViewModel @Inject constructor(
         updateState { copy(writingImages = writingImages + model) }
     }
 
-    private suspend fun uploadImage(file: File) = serverImageRepository.upload("bulletin", file)
+    private suspend fun uploadImage(uri: Uri) = uploadImageUseCase(
+        UploadImageUseCase.Params(
+            domain = UploadImageUseCase.DOMAIN_BULLETIN,
+            file = FileUtil.getFileFromUri(uri)
+                ?: throw IllegalArgumentException("image file is null")
+        )
+    )
+
+//    private suspend fun uploadImage9(uri: Uri) =
+//        uploadImageUseCase(UploadImageUseCase.DOMAIN_BULLETIN, uri)
 
     private fun replaceWritingImagesByUri(model: WritingSelectedImageModel) {
         val idx = state.value.writingImages.indexOfFirst { it.uri == model.uri }
@@ -115,8 +130,8 @@ internal class BulletinWritingViewModel @Inject constructor(
     fun onRemoveImageClick(model: WritingSelectedImageModel) {
         viewModelScope.launch {
             try {
-                val boolean = serverImageRepository.delete(model.url.toString())
-                Timber.d("onRemoveImageClick 코루틴 끝, boolean: $boolean")
+                model.url?.let { serverImageRepository.delete(it) }
+                Timber.d("onRemoveImageClick 코루틴 끝")
             } catch (e: Throwable) {
                 Timber.e(e, "onRemoveImageClick 코루틴 에러")
             }

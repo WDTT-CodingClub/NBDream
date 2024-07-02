@@ -18,7 +18,9 @@ internal class MyPageBookmarkViewModel @Inject constructor(
     init {
         viewModelScopeEH.launch {
             getBookmarkUseCase().let {
-
+                updateState {
+                    copy(it)
+                }
             }
         }
     }

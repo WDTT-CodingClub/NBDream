@@ -1,6 +1,5 @@
 package kr.co.main.community.writing
 
-import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -11,8 +10,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,9 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,15 +50,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
 import kr.co.main.R
-import kr.co.main.community.temp.UriUtil
-import kr.co.main.community.temp.WritingSelectedImageModel
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
-import java.io.File
 
 @Composable
 internal fun BulletinWritingRoute(
@@ -70,7 +65,6 @@ internal fun BulletinWritingRoute(
     modifier: Modifier = Modifier,
     viewModel: BulletinWritingViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
@@ -86,7 +80,6 @@ internal fun BulletinWritingRoute(
     BulletinWritingScreen(
         modifier = modifier,
         state = state,
-        context = context,
         popBackStack = popBackStack,
         onAddImagesClick = viewModel::onAddImagesClick,
         onBulletinWritingInputChanged = viewModel::onBulletinWritingInputChanged,
@@ -101,9 +94,8 @@ internal fun BulletinWritingRoute(
 internal fun BulletinWritingScreen(
     modifier: Modifier = Modifier,
     state: BulletinWritingViewModel.State = BulletinWritingViewModel.State(),
-    context: Context = LocalContext.current,
     popBackStack: () -> Unit = {},
-    onAddImagesClick: (uris: List<Uri>, (Uri) -> File) -> Unit = { _, _ -> },
+    onAddImagesClick: (uris: List<Uri>) -> Unit = {},
     onBulletinWritingInputChanged: (input: String) -> Unit = {},
     onRemoveImageClick: (model: WritingSelectedImageModel) -> Unit = {},
     onFinishWritingClick: () -> Unit = {},
@@ -145,9 +137,7 @@ internal fun BulletinWritingScreen(
 
         val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
-            onResult = { uris ->
-                onAddImagesClick(uris) { UriUtil.toPngFile(context, it) }
-            },
+            onResult = onAddImagesClick,
         )
 
         LazyColumn(
@@ -214,8 +204,8 @@ internal fun BulletinWritingScreen(
                             cursorColor = Color.Transparent
                         ),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp),
+                            .fillMaxSize()
+                            .heightIn(min = 300.dp),
                         placeholder = {
                             Text(
                                 text = "'${state.currentBoard.koreanName}'에 대해 이야기해보세요!",
@@ -314,6 +304,7 @@ internal fun BulletinWritingScreen(
                     }
                 }
             }
+            item {}
         }
     }
 }
@@ -342,34 +333,6 @@ private fun CategoryButton(
             style = MaterialTheme.typo.body1
         )
     }
-}
-
-@Composable
-fun AlertDialogExample(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
-    icon: ImageVector?,
-) {
-    AlertDialog(onDismissRequest = onDismissRequest, confirmButton = { onConfirmation() })
-
-//    AlertDialog(
-//        icon = { Icon(icon, contentDescription = "Example Icon") },
-//        title = { Text(dialogTitle) },
-//        text = { Text(dialogText) },
-//        onDismissRequest = onDismissRequest,
-//        confirmButton = {
-//            TextButton(onClick = onConfirmation) {
-//                Text("Confirm")
-//            }
-//        },
-//        dismissButton = {
-//            TextButton(onClick = onDismissRequest) {
-//                Text("Dismiss")
-//            }
-//        },
-//    )
 }
 
 @Preview(heightDp = 1200)

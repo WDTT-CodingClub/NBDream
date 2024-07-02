@@ -1,7 +1,7 @@
 package kr.co.data.model.data.calendar
 
 data class DiaryData(
-    val id: Int,
+    val id: Long,
     val date: String,
     val holidayList: List<HolidayData> = emptyList(),
     val weatherForecast: String,

@@ -14,7 +14,7 @@ internal data class DiaryListResponse(
     data class DiaryResponse(
 
         @SerialName("farmingDiaryId")
-        val id: Int,
+        val id: Long,
         val date: String,
 
         @SerialName("holidayResponses")

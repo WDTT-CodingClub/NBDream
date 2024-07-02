@@ -40,7 +40,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
             }
             .let { flowOf(it) }
 
-    override suspend fun fetchDetail(id: Int): DiaryData =
+    override suspend fun fetchDetail(id: Long): DiaryData =
         client.get("$DIARY_URL/$id")
             .body<Dto<DiaryListResponse.DiaryResponse>>()
             .data.let { DiaryRemoteMapper.convert(it) }
@@ -55,8 +55,8 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         {
             parameter("crop", crop)
             parameter("query", query)
-            parameter("startDate", startDate)
-            parameter("endDate", endDate)
+            parameter("start_date", startDate)
+            parameter("end_date", endDate)
         }
             .body<Dto<DiaryListResponse>>()
             .data.diaryList.map {
@@ -107,7 +107,7 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun update(
-        id: Int,
+        id: Long,
         crop: String,
         date: String,
         holidayList: List<HolidayData>,
@@ -116,12 +116,12 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
         workHours: Int,
         workArea: Int,
         workDescriptions: List<DiaryData.WorkDescriptionData>,
+        imageUrls: List<String>,
         memo: String
     ) {
         client.put("$DIARY_URL/$id") {
             setBody(
                 UpdateDiaryRequest(
-                    id = id,
                     crop = crop,
                     date = date,
                     holidayList = holidayList.map {
@@ -142,13 +142,14 @@ internal class DiaryRemoteDataSourceImpl @Inject constructor(
                             description = it.description
                         )
                     },
+                    imageUrls = imageUrls,
                     memo = memo
                 )
             )
         }
     }
 
-    override suspend fun delete(id: Int) {
+    override suspend fun delete(id: Long) {
         client.delete("$DIARY_URL/$id")
     }
 

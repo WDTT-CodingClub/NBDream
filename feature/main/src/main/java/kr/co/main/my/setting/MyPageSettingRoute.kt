@@ -67,7 +67,7 @@ internal fun MyPageSettingRoute(
                 viewModel.onLogout()
                 setModalVisible(false)
             },
-            onDismiss = { setModalVisible(false) }
+            onDismissRequest = { setModalVisible(false) }
         )
     }
 }
