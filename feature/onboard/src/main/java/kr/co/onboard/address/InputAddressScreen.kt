@@ -168,7 +168,7 @@ internal fun InputAddressScreen(
                 Spacer(modifier = modifier.weight(0.3f))
 
                 NextButton(
-                    modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 56.dp),
+                    modifier = modifier.padding(start = 16.dp, end = 16.dp),
                     skipId = R.string.feature_onboard_my_farm_skip_input,
                     nextId = R.string.feature_onboard_my_farm_next,
                     onNextClick = {

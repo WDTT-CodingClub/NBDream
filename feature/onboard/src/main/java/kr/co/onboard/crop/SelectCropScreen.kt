@@ -197,7 +197,6 @@ internal fun SelectCropScreen(
                 Spacer(modifier = Modifier)
 
                 NextButton(
-                    modifier = Modifier.padding(bottom = 56.dp),
                     skipId = kr.co.onboard.R.string.feature_onboard_my_farm_skip_select,
                     nextId = kr.co.onboard.R.string.feature_onboard_my_farm_next,
                     onNextClick = {
