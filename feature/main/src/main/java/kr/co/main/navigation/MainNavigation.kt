@@ -33,7 +33,6 @@ import kr.co.main.my.setting.info.MyPageSettingAppInfoRoute
 import kr.co.main.my.setting.notification.MyPageSettingNotificationRoute
 import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
 import kr.co.main.navigation.AccountBookRoute.ACCOUNT_KEY
-import kr.co.main.navigation.BulletinRoute.BULLETIN_KEY
 import kr.co.main.notification.NotificationRoute
 import timber.log.Timber
 
@@ -52,9 +51,18 @@ internal data object AccountBookRoute {
 }
 
 internal data object BulletinRoute {
-    const val WRITING_ROUTE = "community_writing_route"
-    const val BULLETIN_DETAIL_ROUTE = "community_bulletin_detail_route"
-    const val BULLETIN_UPDATE_ROUTE = "community_bulletin_update_route"
+    private const val WRITING_ROUTE = "community_writing_route"
+    const val WRITING_ROUTE_RECEIVE = "$WRITING_ROUTE?crop={crop}&category={category}"
+    const val WRITING_ROUTE_SEND = "$WRITING_ROUTE?crop=%d&category=%d"
+
+    private const val BULLETIN_DETAIL_ROUTE = "community_bulletin_detail_route"
+    const val BULLETIN_DETAIL_ROUTE_RECEIVE = "$BULLETIN_DETAIL_ROUTE/{id}"
+    const val BULLETIN_DETAIL_ROUTE_SEND = "$BULLETIN_DETAIL_ROUTE/%d"
+
+    private const val BULLETIN_UPDATE_ROUTE = "community_bulletin_update_route"
+    const val BULLETIN_UPDATE_ROUTE_RECEIVE = "$BULLETIN_UPDATE_ROUTE/{id}"
+    const val BULLETIN_UPDATE_ROUTE_SEND = "$BULLETIN_UPDATE_ROUTE/%d"
+
     const val BULLETIN_KEY = "communityRefresh"
 }
 
@@ -114,7 +122,7 @@ fun NavGraphBuilder.mainNavGraph(
                         navController = navController,
                         navToMyPage = {
                             Timber.d("navToMyPage) called")
-                            MainNav.controller.navigate(MainBottomRoute.MY_PAGE.route){
+                            MainNav.controller.navigate(MainBottomRoute.MY_PAGE.route) {
                                 popUpTo(MainNav.controller.graph.findStartDestination().id) {
                                     saveState = true
                                 }
@@ -165,11 +173,16 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     CommunityRoute(
                         navigateToWriting = { crop, category ->
-                            navController.navigate("${BulletinRoute.WRITING_ROUTE}?crop=${crop.ordinal}&category=${category.ordinal}")
+                            navController.navigate(
+                                BulletinRoute.WRITING_ROUTE_SEND
+                                    .format(crop.ordinal, category.ordinal)
+                            )
                         },
                         navigateToNotification = {},
                         navigateToBulletinDetail = { id ->
-                            navController.navigate("${BulletinRoute.BULLETIN_DETAIL_ROUTE}/$id")
+                            navController.navigate(
+                                BulletinRoute.BULLETIN_DETAIL_ROUTE_SEND.format(id)
+                            )
                         },
                         navController = navController
                     )
@@ -328,7 +341,7 @@ fun NavGraphBuilder.mainNavGraph(
 
 
     composable(
-        route = "${BulletinRoute.WRITING_ROUTE}?crop={crop}&category={category}",
+        route = BulletinRoute.WRITING_ROUTE_RECEIVE,
         arguments = listOf(
             navArgument("crop") {
                 type = NavType.StringType
@@ -344,14 +357,15 @@ fun NavGraphBuilder.mainNavGraph(
             popBackStack = navController::popBackStack,
             navigationToDetail = {},
             navigationToCommunity = {
-                navController.previousBackStackEntry?.savedStateHandle?.set(BULLETIN_KEY, true)
+                navController.previousBackStackEntry?.savedStateHandle
+                    ?.set(BulletinRoute.BULLETIN_KEY, true)
                 navController.popBackStack()
             }
         )
     }
 
     composable(
-        route = "${BulletinRoute.BULLETIN_DETAIL_ROUTE}/{id}",
+        route = BulletinRoute.BULLETIN_DETAIL_ROUTE_RECEIVE,
         arguments = listOf(
             navArgument("id") {
                 type = NavType.LongType
@@ -362,24 +376,22 @@ fun NavGraphBuilder.mainNavGraph(
         BulletinDetailRoute(
             popBackStack = navController::popBackStack,
             navigateToUpdate = {
-                navController.navigate(
-                    "${BulletinRoute.BULLETIN_UPDATE_ROUTE}/$it"
-                )
+                navController.navigate(BulletinRoute.BULLETIN_UPDATE_ROUTE_SEND.format(it))
             }
         )
     }
 
     composable(
-        route = "${BulletinRoute.BULLETIN_UPDATE_ROUTE}/{id}",
+        route = BulletinRoute.BULLETIN_UPDATE_ROUTE_RECEIVE,
     ) {
         BulletinWritingRoute(
             popBackStack = navController::popBackStack,
             navigationToDetail = { id ->
                 navController.popBackStack()
                 navController.navigate(
-                    "${BulletinRoute.BULLETIN_DETAIL_ROUTE}/$id"
+                    BulletinRoute.BULLETIN_DETAIL_ROUTE_SEND.format(id)
                 ) {
-                    popUpTo("${BulletinRoute.BULLETIN_DETAIL_ROUTE}/$id") {
+                    popUpTo(BulletinRoute.BULLETIN_DETAIL_ROUTE_SEND.format(id)) {
                         inclusive = true
                     }
                 }
@@ -455,7 +467,7 @@ fun NavGraphBuilder.mainNavGraph(
         MyPageBookmarkRoute(
             popBackStack = navController::popBackStack,
             navigateToBulletinDetail = {
-                navController.navigate("${BulletinRoute.BULLETIN_DETAIL_ROUTE}/$it")
+                navController.navigate(BulletinRoute.BULLETIN_DETAIL_ROUTE_SEND.format(it))
             }
         )
     }
@@ -466,7 +478,7 @@ fun NavGraphBuilder.mainNavGraph(
         MyPageWriteRoute(
             popBackStack = navController::popBackStack,
             navigateToBulletinDetail = {
-                navController.navigate("${BulletinRoute.BULLETIN_DETAIL_ROUTE}/$it")
+                navController.navigate(BulletinRoute.BULLETIN_DETAIL_ROUTE_SEND.format(it))
             }
         )
     }

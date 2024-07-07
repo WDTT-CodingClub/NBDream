@@ -21,6 +21,7 @@ internal object DiaryMapper
                 workHours = workHours,
                 workArea = workArea,
                 workDescriptions = workDescriptions.map { WorkDescriptionMapper.toRight(it) },
+                images = images,
                 memo = memo
             )
         }

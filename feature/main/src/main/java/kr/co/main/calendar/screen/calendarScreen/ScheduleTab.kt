@@ -36,8 +36,9 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import timber.log.Timber
-import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 internal fun ScheduleTab(
@@ -258,17 +259,11 @@ private fun ScheduleCard(
                 horizontalArrangement = Arrangement.spacedBy(Paddings.medium)
             ) {
                 Text(
-                    text = "${date.dayOfMonth}월 ${date.dayOfMonth}일 ${
-                        when (date.dayOfWeek) { //TODO DayOfWeek 확장 함수로 빼기 & string resource 사용
-                            DayOfWeek.SUNDAY -> "일"
-                            DayOfWeek.MONDAY -> "월"
-                            DayOfWeek.TUESDAY -> "화"
-                            DayOfWeek.WEDNESDAY -> "수"
-                            DayOfWeek.THURSDAY -> "목"
-                            DayOfWeek.FRIDAY -> "금"
-                            DayOfWeek.SATURDAY -> "토"
-                        }
-                    }",
+                    text = "${date.monthValue}월 ${date.dayOfMonth}일 " +
+                            date.dayOfWeek.getDisplayName(
+                                TextStyle.SHORT,
+                                Locale.KOREAN
+                            ),
                     style = MaterialTheme.typo.h4
                 )
                 if (date == LocalDate.now()) {
@@ -291,7 +286,7 @@ private fun ScheduleCard(
                 }
             }
             Spacer(modifier = Modifier.height(Paddings.xlarge))
-            Column{
+            Column {
                 for (schedule in schedules) {
                     ScheduleContent(
                         modifier = Modifier.padding(Paddings.medium),

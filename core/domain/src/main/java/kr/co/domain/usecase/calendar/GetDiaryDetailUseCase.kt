@@ -11,7 +11,7 @@ class GetDiaryDetailUseCase @Inject constructor(
     private val repository: DiaryRepository
 ): SuspendUseCase<GetDiaryDetailUseCase.Params, DiaryEntity>() {
     data class Params(
-        val id:Int
+        val id:Long
     )
 
     override suspend fun build(params: Params?): DiaryEntity {

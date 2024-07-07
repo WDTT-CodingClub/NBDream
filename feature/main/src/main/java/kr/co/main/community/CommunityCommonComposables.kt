@@ -1,20 +1,24 @@
 package kr.co.main.community
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import kr.co.ui.theme.NBDreamTheme
+import kr.co.ui.theme.colors
+import kr.co.ui.theme.typo
 
 @Composable
 internal fun CommunityDisableScreen(
@@ -33,26 +37,42 @@ internal fun CommunityDialogSimpleTitle(
     modifier: Modifier = Modifier,
     textModifier: Modifier = Modifier
         .fillMaxWidth()
-        .padding(top = 8.dp),
-    fontSize: TextUnit = 18.sp,
+        .padding(32.dp),
+    style: TextStyle = MaterialTheme.typo.body1,
     textAlign: TextAlign = TextAlign.Center,
-    dismissButton: @Composable (() -> Unit)? = null,
-    confirmButton: @Composable () -> Unit = {},
 ) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        confirmButton = confirmButton,
-        modifier = modifier,
-        dismissButton = dismissButton,
-        title = {
+
+    Dialog(onDismissRequest = onDismissRequest) {
+        Column(
+            modifier = modifier
+                .background(
+                    color = MaterialTheme.colors.white,
+                )
+        ) {
             Text(
-                text = text,
                 modifier = textModifier,
-                fontSize = fontSize,
+                text = text,
+                style = style,
                 textAlign = textAlign,
             )
-        },
-    )
+        }
+    }
+
+//    AlertDialog(
+//        onDismissRequest = onDismissRequest,
+//        confirmButton = confirmButton,
+//        modifier = modifier,
+//        dismissButton = dismissButton,
+//        title = {
+//            Text(
+//                text = text,
+//                modifier = textModifier,
+//                fontSize = fontSize,
+//                textAlign = textAlign,
+//            )
+//        },
+//    )
+
 }
 
 @Preview
@@ -62,35 +82,3 @@ private fun CommunityDialogSimpleTitlePreview() {
         CommunityDialogSimpleTitle({}, "처리되었습니다.")
     }
 }
-
-//@Composable
-//internal fun CommunitySimpleLoadingDialog(
-//    onDismissRequest: () -> Unit = {},
-//    title: @Composable (() -> Unit)? = { Text("Loading...") },
-//) {
-//    AlertDialog(
-//        onDismissRequest = onDismissRequest,
-//        confirmButton = {},
-//        title = title,
-//    )
-//}
-//
-//@Composable
-//internal fun CommunitySimpleLoadingDialog(
-//    onDismissRequest: () -> Unit = {},
-//    title: String,
-//) {
-//    CommunitySimpleLoadingDialog(
-//        onDismissRequest = onDismissRequest,
-//        title = { Text(title) },
-//    )
-//}
-//
-//
-//@Preview
-//@Composable
-//private fun CommunitySimpleLoadingDialogPreview() {
-//    NBDreamTheme {
-//        CommunitySimpleLoadingDialog()
-//    }
-//}

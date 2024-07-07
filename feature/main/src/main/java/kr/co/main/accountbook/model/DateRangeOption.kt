@@ -1,8 +1,11 @@
 package kr.co.main.accountbook.model
 
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.YearMonth
+import java.util.Date
+import java.util.Locale
 
 internal enum class DateRangeOption(val label: String) {
     TODAY("당일"),
@@ -46,4 +49,19 @@ internal fun getEndOfMonth(): String {
     val endOfMonth = LocalDate.of(year, month, lastDay)
 
     return endOfMonth.toString()
+}
+
+internal fun String.contentDateFormat(): String {
+    return try {
+        val originalFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val targetFormat = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
+        val date: Date? = originalFormat.parse(this)
+        if (date != null) {
+            targetFormat.format(date)
+        } else {
+            ""
+        }
+    } catch (e: Exception) {
+        ""
+    }
 }

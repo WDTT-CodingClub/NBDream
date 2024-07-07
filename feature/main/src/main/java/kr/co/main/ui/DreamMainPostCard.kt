@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import kr.co.common.util.format
 import kr.co.core.ui.icon.buttericon.Bookmarkoff
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.CommentEntity
@@ -161,7 +159,9 @@ private fun CommentRow(
                 .size(40.dp)
                 .clip(shape = CircleShape),
             model = comment.profileImageUrl,
-            contentDescription = "${comment.nickname}의 프로필 이미지"
+            contentDescription = "${comment.nickname}의 프로필 이미지",
+            error = rememberVectorPainter(image = DreamIcon.Tobot),
+            contentScale = ContentScale.Crop,
         )
 
         Column(

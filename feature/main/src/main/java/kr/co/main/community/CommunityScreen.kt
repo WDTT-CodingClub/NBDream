@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -176,6 +177,7 @@ internal fun CommunityScreen(
 
         LazyColumn(
             modifier = Modifier.scaffoldBackground(paddingValues),
+            state = state.lazyListState,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
 
@@ -258,8 +260,15 @@ internal fun CommunityScreen(
 
     if (state.isShowBottomSheet) {
         DreamBottomSheetWithTextButtons(
-            onDismissRequest = { event.setIsShowBottomSheet(false) },
+            onDismissRequest = event::dismissBottomSheet,
             textAndOnClicks = state.bottomSheetItems,
+        )
+    }
+
+    if (state.isShowSimpleDialog) {
+        CommunityDialogSimpleTitle(
+            onDismissRequest = event::dismissSimpleDialog,
+            text = state.simpleDialogText,
         )
     }
 
@@ -285,7 +294,9 @@ private fun CommunityCategoryTabLayout(
                         .wrapContentSize()
                         .clickable {
                             onSelectTab(it)
-                        },
+                        }
+                        .widthIn(min = 88.dp)
+                        .padding(8.dp, 4.dp, 8.dp, 0.dp),
                     title = it.koreanName,
                     isSelected = (it == selectedTab)
                 )
@@ -294,11 +305,6 @@ private fun CommunityCategoryTabLayout(
         HorizontalDivider(
             color = MaterialTheme.colors.gray7,
         )
-//        Spacer(modifier = Modifier
-//            .fillMaxWidth()
-//            .height(8.dp)
-//            .background(Color.Black))
-//        Spacer(modifier = Modifier.fillMaxWidth().height(8.dp).background(MaterialTheme.colors.gray7))
     }
 }
 
