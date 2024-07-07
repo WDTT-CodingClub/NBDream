@@ -11,12 +11,21 @@ abstract class CachedSuspendUseCase<PARAMS, RESULT>(
 
     private val cache = LruCache<Any, RESULT>(cacheSize, cacheDuration)
     private val mutex = Mutex()
+    @Volatile
+    private var isExecuting = false
 
     override suspend fun invoke(params: PARAMS?): RESULT =
         mutex.withLock {
-            val key = params?.toString() ?: this::class
-            cache.getValidValue(key) ?: build(params).also {
-                cache.putValue(key, it)
+            if (isExecuting) throw IllegalStateException("Already executing")
+            isExecuting = true
+
+            try {
+                val key = params?.toString() ?: this::class
+                cache.getValidValue(key) ?: build(params).also {
+                    cache.putValue(key, it)
+                }
+            } finally {
+                isExecuting = false
             }
         }
 }
