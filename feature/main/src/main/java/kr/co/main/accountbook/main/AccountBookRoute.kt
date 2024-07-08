@@ -123,6 +123,7 @@ internal fun AccountBookScreen(
     }
 
     Scaffold(
+        modifier = Modifier.navigationBarsPadding(),
         containerColor = MaterialTheme.colors.gray9,
         topBar = {
             DreamTopAppBar(
@@ -263,6 +264,7 @@ internal fun AccountBookScreen(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(Paddings.extra))
                 }
                 PullToRefreshContainer(
                     state = refreshState,

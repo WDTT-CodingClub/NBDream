@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -164,7 +165,8 @@ internal fun AccountBookCreateScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Surface(
-        color = MaterialTheme.colors.white
+        color = MaterialTheme.colors.white,
+        modifier = Modifier.navigationBarsPadding()
     ) {
         Column(
             modifier = Modifier
@@ -425,6 +427,7 @@ internal fun AccountBookCreateScreen(
                         }
                     }
                 }
+                item {}
             }
         }
         if (isLoading) {
