@@ -1,7 +1,5 @@
 package kr.co.common
 
-import kr.co.common.CacheEntry
-
 class LruCache<KEY, VALUE>(
     private val maxSize: Int,
     private val expiryDuration: Long
