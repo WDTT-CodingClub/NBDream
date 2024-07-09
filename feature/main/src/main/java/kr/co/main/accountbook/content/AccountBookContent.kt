@@ -70,16 +70,14 @@ internal fun AccountBookContentRoute(
             navigationTopAccountBook()
         }
     }
+
     AccountBookContentScreen(
         state = state,
         isLoading = isLoading,
         isDeleteLoading = isDeleteLoading,
         navigationToUpdate = navigationToUpdate,
         popBackStack = popBackStack,
-        onRemoveItem = viewModel::deleteAccountBookById,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = Paddings.large),
+        onRemoveItem = viewModel::deleteAccountBookById
     )
 }
 
@@ -90,8 +88,7 @@ internal fun AccountBookContentScreen(
     isDeleteLoading: Boolean,
     navigationToUpdate: (Long?) -> Unit,
     popBackStack: () -> Unit,
-    onRemoveItem: () -> Unit = {},
-    modifier: Modifier
+    onRemoveItem: () -> Unit = {}
 ) {
     var showDropDownMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -129,10 +126,11 @@ internal fun AccountBookContentScreen(
                     ) {
                         DropdownMenuItem(
                             text = {
-                                Row {
-                                    Text("수정하기")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                }
+                                Text(
+                                    text = "수정하기",
+                                    style = MaterialTheme.typo.label,
+                                    color = MaterialTheme.colors.gray1
+                                )
                             },
                             onClick = {
                                 navigationToUpdate(state.id)
@@ -141,10 +139,11 @@ internal fun AccountBookContentScreen(
                         )
                         DropdownMenuItem(
                             text = {
-                                Row {
-                                    Text("삭제하기")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                }
+                                Text(
+                                    text = "삭제하기",
+                                    style = MaterialTheme.typo.label,
+                                    color = MaterialTheme.colors.gray1
+                                )
                             },
                             onClick = {
                                 showDeleteDialog = true
@@ -193,7 +192,10 @@ internal fun AccountBookContentScreen(
 
                     item {
                         Row(
-                            modifier = modifier,
+
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = Paddings.large),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
@@ -224,7 +226,9 @@ internal fun AccountBookContentScreen(
 
                     item {
                         Row(
-                            modifier = modifier,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = Paddings.large),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
@@ -243,7 +247,9 @@ internal fun AccountBookContentScreen(
 
                     item {
                         Row(
-                            modifier = modifier,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = Paddings.large),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(

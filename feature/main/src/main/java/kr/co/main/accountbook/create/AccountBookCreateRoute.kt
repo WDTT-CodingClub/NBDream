@@ -94,6 +94,16 @@ internal fun AccountBookCreateRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     var showErrorDialog by remember { mutableStateOf(false) }
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = { uriList ->
+            uriList.forEach { uri ->
+                getFileFromUri(uri)?.let { file ->
+                    viewModel.uploadImage(file)
+                }
+            }
+        }
+    )
 
     LaunchedEffect(Unit) {
         viewModel.complete.collect { complete ->
@@ -112,7 +122,6 @@ internal fun AccountBookCreateRoute(
         state = state,
         isLoading = isLoading,
         popBackStack = popBackStack,
-        onUploadImage = { viewModel.uploadImage(it) },
         onPerformAccountBook = viewModel::performAccountBook,
         onUpdateAmount = { viewModel.updateAmount(it) },
         onUpdateAmountText = { viewModel.updateAmountText(it) },
@@ -120,7 +129,14 @@ internal fun AccountBookCreateRoute(
         onUpdateTitle = { viewModel.updateTitle(it) },
         onRemoveImageUrl = { viewModel.deleteImage(it) },
         onUpdateRegisterDateTime = { viewModel.updateRegisterDateTime(it) },
-        onUpdateCategory = { viewModel.updateCategory(it) }
+        onUpdateCategory = { viewModel.updateCategory(it) },
+        onImageButtonClicked = {
+            imagePickerLauncher.launch(
+                PickVisualMediaRequest(
+                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                )
+            )
+        }
     )
 
     if (showErrorDialog) {
@@ -140,7 +156,6 @@ internal fun AccountBookCreateScreen(
     state: AccountBookCreateViewModel.State = AccountBookCreateViewModel.State(),
     isLoading: Boolean,
     popBackStack: () -> Unit,
-    onUploadImage: (File) -> Unit = {},
     onPerformAccountBook: () -> Unit = {},
     onUpdateAmount: (Long) -> Unit = {},
     onUpdateAmountText: (String) -> Unit = {},
@@ -148,20 +163,11 @@ internal fun AccountBookCreateScreen(
     onUpdateTitle: (String) -> Unit = {},
     onRemoveImageUrl: (String) -> Unit = {},
     onUpdateRegisterDateTime: (String) -> Unit = {},
-    onUpdateCategory: (AccountBookEntity.Category) -> Unit = {}
+    onUpdateCategory: (AccountBookEntity.Category) -> Unit = {},
+    onImageButtonClicked: () -> Unit
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(),
-        onResult = { uriList ->
-            uriList.forEach { uri ->
-                getFileFromUri(uri)?.let { file ->
-                    onUploadImage(file)
-                }
-            }
-        }
-    )
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Surface(
@@ -353,11 +359,7 @@ internal fun AccountBookCreateScreen(
                         ) {
                             Button(
                                 onClick = {
-                                    imagePickerLauncher.launch(
-                                        PickVisualMediaRequest(
-                                            ActivityResultContracts.PickVisualMedia.ImageOnly
-                                        )
-                                    )
+                                    onImageButtonClicked()
                                 },
                                 modifier = Modifier.fillMaxSize(),
                                 colors = ButtonDefaults.buttonColors(Color.Transparent),
