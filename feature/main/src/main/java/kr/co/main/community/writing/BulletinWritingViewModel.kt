@@ -32,6 +32,10 @@ internal interface BulletinWritingEvent {
     fun onPerformBulletin()
     fun setIsShowWaitingDialog(boolean: Boolean)
 
+    /** CommunityDialogSimpleTitle */
+    fun showSimpleDialog(text: String)
+    fun dismissSimpleDialog()
+
     companion object {
         val empty = object : BulletinWritingEvent {
             override fun onCategoryClick(category: BulletinEntity.BulletinCategory) {}
@@ -40,6 +44,8 @@ internal interface BulletinWritingEvent {
             override fun onRemoveImageClick(model: WritingSelectedImageModel) {}
             override fun onPerformBulletin() {}
             override fun setIsShowWaitingDialog(boolean: Boolean) {}
+            override fun showSimpleDialog(text: String) {}
+            override fun dismissSimpleDialog() {}
 
         }
     }
@@ -93,6 +99,10 @@ internal class BulletinWritingViewModel @Inject constructor(
         val currentCategory: BulletinEntity.BulletinCategory = BulletinEntity.BulletinCategory.Free,
         val isShowWaitingDialog: Boolean = false,
         val isFinishOk: Boolean = false,
+
+        // simple dialog
+        val isShowSimpleDialog: Boolean = false,
+        val simpleDialogText: String = "",
     ) : BaseViewModel.State
 
     private fun setCurrentCategory(category: BulletinEntity.BulletinCategory) {
@@ -105,11 +115,27 @@ internal class BulletinWritingViewModel @Inject constructor(
 
     //---
 
+    // simple dialog
+    override fun dismissSimpleDialog() = updateState { copy(isShowSimpleDialog = false) }
+    override fun showSimpleDialog(text: String) {
+        updateState {
+            copy(
+                isShowSimpleDialog = true,
+                simpleDialogText = text,
+            )
+        }
+    }
+
     override fun onCategoryClick(category: BulletinEntity.BulletinCategory) {
         setCurrentCategory(category)
     }
 
     override fun onAddImagesClick(uris: List<Uri>) {
+        val currentSize = state.value.writingImages.size
+        if (currentSize + uris.size > 10) {
+            showSimpleDialog("사진은 최대 10장까지 추가할 수 있습니다")
+            return
+        }
         for (uri in uris) {
             val model = WritingSelectedImageModel(uri = uri)
             addWritingImage(model)

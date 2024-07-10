@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,6 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
 import kr.co.main.R
+import kr.co.main.community.CommunityDialogSimpleTitle
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Shapes
@@ -253,6 +255,7 @@ internal fun BulletinWritingScreen(
                             contentAlignment = Alignment.Center,
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Spacer(modifier = Modifier.height(8.dp))
                                 Icon(
                                     painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.outline_photo_camera_24),
                                     contentDescription = "카메라 아이콘",
@@ -260,6 +263,12 @@ internal fun BulletinWritingScreen(
                                 )
                                 Text(
                                     text = "사진 추가",
+                                    color = MaterialTheme.colors.gray5,
+                                    style = MaterialTheme.typo.button,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                Text(
+                                    text = "${state.writingImages.size} / 10",
                                     color = MaterialTheme.colors.gray5,
                                     style = MaterialTheme.typo.button,
                                     modifier = Modifier.padding(top = 8.dp)
@@ -304,6 +313,14 @@ internal fun BulletinWritingScreen(
             item {}
         }
     }
+
+    if (state.isShowSimpleDialog) {
+        CommunityDialogSimpleTitle(
+            onDismissRequest = event::dismissSimpleDialog,
+            text = state.simpleDialogText,
+        )
+    }
+
 }
 
 @Composable
