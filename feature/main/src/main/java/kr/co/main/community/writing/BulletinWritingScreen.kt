@@ -1,6 +1,5 @@
 package kr.co.main.community.writing
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -82,13 +81,8 @@ internal fun BulletinWritingRoute(
     BulletinWritingScreen(
         modifier = modifier,
         state = state,
+        event = viewModel as BulletinWritingEvent,
         popBackStack = popBackStack,
-        onAddImagesClick = viewModel::onAddImagesClick,
-        onBulletinWritingInputChanged = viewModel::onBulletinWritingInputChanged,
-        onRemoveImageClick = viewModel::onRemoveImageClick,
-        onFinishWritingClick = viewModel::onPerformBulletin,
-        setIsShowWaitingDialog = viewModel::setIsShowWaitingDialog,
-        onCategoryClick = viewModel::onCategoryClick,
     )
 }
 
@@ -96,13 +90,8 @@ internal fun BulletinWritingRoute(
 internal fun BulletinWritingScreen(
     modifier: Modifier = Modifier,
     state: BulletinWritingViewModel.State = BulletinWritingViewModel.State(),
+    event: BulletinWritingEvent = BulletinWritingEvent.empty,
     popBackStack: () -> Unit = {},
-    onAddImagesClick: (uris: List<Uri>) -> Unit = {},
-    onBulletinWritingInputChanged: (input: String) -> Unit = {},
-    onRemoveImageClick: (model: WritingSelectedImageModel) -> Unit = {},
-    onFinishWritingClick: () -> Unit = {},
-    setIsShowWaitingDialog: (Boolean) -> Unit = {},
-    onCategoryClick: (BulletinEntity.BulletinCategory) -> Unit = {},
 ) {
 
     Scaffold(
@@ -122,14 +111,18 @@ internal fun BulletinWritingScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = {
-                        setIsShowWaitingDialog(true)
-                        onFinishWritingClick()
-                    }) {
+                    TextButton(
+                        onClick = {
+                            event.setIsShowWaitingDialog(true)
+                            event.onPerformBulletin()
+                        },
+                        enabled = state.isFinishOk,
+                    ) {
                         Text(
                             text = "등록",
                             style = MaterialTheme.typo.body2,
-                            color = MaterialTheme.colors.gray1
+                            color = if (state.isFinishOk) MaterialTheme.colors.gray1
+                            else MaterialTheme.colors.gray7,
                         )
                     }
                 },
@@ -141,7 +134,7 @@ internal fun BulletinWritingScreen(
 
         val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
-            onResult = onAddImagesClick,
+            onResult = event::onAddImagesClick,
         )
 
         LazyColumn(
@@ -180,7 +173,7 @@ internal fun BulletinWritingScreen(
                 ) {
                     for (category in BulletinEntity.BulletinCategory.entries) {
                         CategoryButton(
-                            onClick = { onCategoryClick(category) },
+                            onClick = { event.onCategoryClick(category) },
                             text = category.koreanName,
                             isSelected = state.currentCategory == category
                         )
@@ -198,7 +191,7 @@ internal fun BulletinWritingScreen(
                 ) {
                     TextField(
                         value = state.bulletinWritingInput,
-                        onValueChange = onBulletinWritingInputChanged,
+                        onValueChange = event::onBulletinWritingInputChanged,
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = Color.Transparent,
                             focusedContainerColor = Color.Transparent,
@@ -290,7 +283,7 @@ internal fun BulletinWritingScreen(
                                     .size(120.dp)
                             )
                             IconButton(
-                                onClick = { onRemoveImageClick(it) },
+                                onClick = { event.onRemoveImageClick(it) },
                                 modifier = Modifier
                                     .size(24.dp)
                                     .align(Alignment.TopEnd),
