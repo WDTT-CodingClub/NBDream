@@ -39,7 +39,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.main.accountbook.main.CircleProgress
-import kr.co.main.accountbook.model.AccountBookDialog
 import kr.co.main.accountbook.model.contentDateFormat
 import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay
@@ -51,6 +50,7 @@ import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import kr.co.ui.widget.DreamDialog
 import kr.co.ui.widget.LoadingShimmerEffect
 
 
@@ -302,13 +302,13 @@ internal fun AccountBookContentScreen(
     }
 
     if (showDeleteDialog) {
-        AccountBookDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = "삭제 확인",
-            message = "정말 삭제하시겠습니까?",
+        DreamDialog(
+            header = "삭제 확인",
+            description = "정말 삭제하시겠습니까?",
             onConfirm = {
                 onRemoveItem()
-            }
+            },
+            onDismissRequest = { showDeleteDialog = false }
         )
     }
 
