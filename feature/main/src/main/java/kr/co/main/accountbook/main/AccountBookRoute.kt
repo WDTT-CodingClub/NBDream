@@ -123,7 +123,7 @@ internal fun AccountBookScreen(
 
     Scaffold(
         modifier = Modifier.navigationBarsPadding(),
-        containerColor = MaterialTheme.colors.gray9,
+        containerColor = MaterialTheme.colors.background,
         topBar = {
             DreamTopAppBar(
                 modifier = Modifier
@@ -143,7 +143,7 @@ internal fun AccountBookScreen(
     ) { innerPadding ->
         Surface(
             modifier = Modifier.padding(innerPadding),
-            color = MaterialTheme.colors.gray9
+            color = MaterialTheme.colors.background
         ) {
             Box(
                 modifier = Modifier
