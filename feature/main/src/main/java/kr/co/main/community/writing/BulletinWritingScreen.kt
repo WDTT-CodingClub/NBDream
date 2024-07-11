@@ -1,6 +1,5 @@
 package kr.co.main.community.writing
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -52,6 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.domain.entity.BulletinEntity
 import kr.co.main.R
+import kr.co.main.community.CommunityDialogSimpleTitle
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.Shapes
@@ -82,13 +83,8 @@ internal fun BulletinWritingRoute(
     BulletinWritingScreen(
         modifier = modifier,
         state = state,
+        event = viewModel as BulletinWritingEvent,
         popBackStack = popBackStack,
-        onAddImagesClick = viewModel::onAddImagesClick,
-        onBulletinWritingInputChanged = viewModel::onBulletinWritingInputChanged,
-        onRemoveImageClick = viewModel::onRemoveImageClick,
-        onFinishWritingClick = viewModel::onPerformBulletin,
-        setIsShowWaitingDialog = viewModel::setIsShowWaitingDialog,
-        onCategoryClick = viewModel::onCategoryClick,
     )
 }
 
@@ -96,13 +92,8 @@ internal fun BulletinWritingRoute(
 internal fun BulletinWritingScreen(
     modifier: Modifier = Modifier,
     state: BulletinWritingViewModel.State = BulletinWritingViewModel.State(),
+    event: BulletinWritingEvent = BulletinWritingEvent.empty,
     popBackStack: () -> Unit = {},
-    onAddImagesClick: (uris: List<Uri>) -> Unit = {},
-    onBulletinWritingInputChanged: (input: String) -> Unit = {},
-    onRemoveImageClick: (model: WritingSelectedImageModel) -> Unit = {},
-    onFinishWritingClick: () -> Unit = {},
-    setIsShowWaitingDialog: (Boolean) -> Unit = {},
-    onCategoryClick: (BulletinEntity.BulletinCategory) -> Unit = {},
 ) {
 
     Scaffold(
@@ -122,14 +113,18 @@ internal fun BulletinWritingScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = {
-                        setIsShowWaitingDialog(true)
-                        onFinishWritingClick()
-                    }) {
+                    TextButton(
+                        onClick = {
+                            event.setIsShowWaitingDialog(true)
+                            event.onPerformBulletin()
+                        },
+                        enabled = state.isFinishOk,
+                    ) {
                         Text(
                             text = "등록",
                             style = MaterialTheme.typo.body2,
-                            color = MaterialTheme.colors.gray1
+                            color = if (state.isFinishOk) MaterialTheme.colors.gray1
+                            else MaterialTheme.colors.gray7,
                         )
                     }
                 },
@@ -141,7 +136,7 @@ internal fun BulletinWritingScreen(
 
         val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
-            onResult = onAddImagesClick,
+            onResult = event::onAddImagesClick,
         )
 
         LazyColumn(
@@ -180,7 +175,7 @@ internal fun BulletinWritingScreen(
                 ) {
                     for (category in BulletinEntity.BulletinCategory.entries) {
                         CategoryButton(
-                            onClick = { onCategoryClick(category) },
+                            onClick = { event.onCategoryClick(category) },
                             text = category.koreanName,
                             isSelected = state.currentCategory == category
                         )
@@ -198,7 +193,7 @@ internal fun BulletinWritingScreen(
                 ) {
                     TextField(
                         value = state.bulletinWritingInput,
-                        onValueChange = onBulletinWritingInputChanged,
+                        onValueChange = event::onBulletinWritingInputChanged,
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = Color.Transparent,
                             focusedContainerColor = Color.Transparent,
@@ -260,6 +255,7 @@ internal fun BulletinWritingScreen(
                             contentAlignment = Alignment.Center,
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Spacer(modifier = Modifier.height(8.dp))
                                 Icon(
                                     painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.outline_photo_camera_24),
                                     contentDescription = "카메라 아이콘",
@@ -267,6 +263,12 @@ internal fun BulletinWritingScreen(
                                 )
                                 Text(
                                     text = "사진 추가",
+                                    color = MaterialTheme.colors.gray5,
+                                    style = MaterialTheme.typo.button,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                Text(
+                                    text = "${state.writingImages.size} / 10",
                                     color = MaterialTheme.colors.gray5,
                                     style = MaterialTheme.typo.button,
                                     modifier = Modifier.padding(top = 8.dp)
@@ -290,7 +292,7 @@ internal fun BulletinWritingScreen(
                                     .size(120.dp)
                             )
                             IconButton(
-                                onClick = { onRemoveImageClick(it) },
+                                onClick = { event.onRemoveImageClick(it) },
                                 modifier = Modifier
                                     .size(24.dp)
                                     .align(Alignment.TopEnd),
@@ -311,6 +313,14 @@ internal fun BulletinWritingScreen(
             item {}
         }
     }
+
+    if (state.isShowSimpleDialog) {
+        CommunityDialogSimpleTitle(
+            onDismissRequest = event::dismissSimpleDialog,
+            text = state.simpleDialogText,
+        )
+    }
+
 }
 
 @Composable
