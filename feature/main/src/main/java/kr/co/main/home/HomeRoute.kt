@@ -99,7 +99,7 @@ private fun HomeScreen(
     navigateToCalendar: () -> Unit = {},
 ) {
     Surface(
-        color = MaterialTheme.colors.gray9,
+        color = MaterialTheme.colors.background,
     ) {
         LazyColumn(
             modifier = Modifier
