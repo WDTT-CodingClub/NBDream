@@ -69,7 +69,6 @@ internal fun AccountBookRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-
     val reinitialize =
         navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(ACCOUNT_KEY) ?: false
 

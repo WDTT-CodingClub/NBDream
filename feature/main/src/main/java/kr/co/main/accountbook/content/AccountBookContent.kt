@@ -64,6 +64,7 @@ internal fun AccountBookContentRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val isDeleteLoading by viewModel.isDeleteLoading.collectAsStateWithLifecycle(initialValue = false)
+    var isShowDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.complete.collect {
@@ -77,8 +78,22 @@ internal fun AccountBookContentRoute(
         isDeleteLoading = isDeleteLoading,
         navigationToUpdate = navigationToUpdate,
         popBackStack = popBackStack,
-        onRemoveItem = viewModel::deleteAccountBookById
+        isShowDeleteDialog = { isShowDeleteDialog = it }
+
     )
+
+    if (isShowDeleteDialog) {
+        DreamDialog(
+            header = "삭제 확인",
+            description = "정말 삭제하시겠습니까?",
+            onConfirm = viewModel::deleteAccountBookById,
+            onDismissRequest = { isShowDeleteDialog = false }
+        )
+    }
+
+    if (isDeleteLoading) {
+        CircleProgress()
+    }
 }
 
 @Composable
@@ -88,10 +103,9 @@ internal fun AccountBookContentScreen(
     isDeleteLoading: Boolean,
     navigationToUpdate: (Long?) -> Unit,
     popBackStack: () -> Unit,
-    onRemoveItem: () -> Unit = {}
+    isShowDeleteDialog: (Boolean) -> Unit
 ) {
     var showDropDownMenu by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Surface(
         color = MaterialTheme.colors.white
@@ -146,7 +160,7 @@ internal fun AccountBookContentScreen(
                                 )
                             },
                             onClick = {
-                                showDeleteDialog = true
+                                isShowDeleteDialog(true)
                                 showDropDownMenu = false
                             }
                         )
@@ -296,22 +310,7 @@ internal fun AccountBookContentScreen(
                 }
             }
         }
-        if (isDeleteLoading) {
-            CircleProgress()
-        }
     }
-
-    if (showDeleteDialog) {
-        DreamDialog(
-            header = "삭제 확인",
-            description = "정말 삭제하시겠습니까?",
-            onConfirm = {
-                onRemoveItem()
-            },
-            onDismissRequest = { showDeleteDialog = false }
-        )
-    }
-
 }
 
 @Composable
