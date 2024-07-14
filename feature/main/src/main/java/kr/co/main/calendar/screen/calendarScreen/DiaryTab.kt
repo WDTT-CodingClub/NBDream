@@ -42,7 +42,7 @@ internal fun DiaryTab(
 ) {
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colors.gray9
+        color = MaterialTheme.colors.background
     ) {
         Column(
             modifier = Modifier

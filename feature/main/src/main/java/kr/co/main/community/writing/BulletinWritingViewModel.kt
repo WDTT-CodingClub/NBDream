@@ -16,6 +16,7 @@ import kr.co.domain.repository.ServerImageRepository
 import kr.co.domain.usecase.image.UploadImageUseCase
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 internal data class WritingSelectedImageModel(
@@ -23,13 +24,40 @@ internal data class WritingSelectedImageModel(
     val url: String? = null,
 )
 
+internal interface BulletinWritingEvent {
+    fun onCategoryClick(category: BulletinEntity.BulletinCategory)
+    fun onAddImagesClick(uris: List<Uri>)
+    fun onBulletinWritingInputChanged(input: String)
+    fun onRemoveImageClick(model: WritingSelectedImageModel)
+    fun onPerformBulletin()
+    fun setIsShowWaitingDialog(boolean: Boolean)
+
+    /** CommunityDialogSimpleTitle */
+    fun showSimpleDialog(text: String)
+    fun dismissSimpleDialog()
+
+    companion object {
+        val empty = object : BulletinWritingEvent {
+            override fun onCategoryClick(category: BulletinEntity.BulletinCategory) {}
+            override fun onAddImagesClick(uris: List<Uri>) {}
+            override fun onBulletinWritingInputChanged(input: String) {}
+            override fun onRemoveImageClick(model: WritingSelectedImageModel) {}
+            override fun onPerformBulletin() {}
+            override fun setIsShowWaitingDialog(boolean: Boolean) {}
+            override fun showSimpleDialog(text: String) {}
+            override fun dismissSimpleDialog() {}
+
+        }
+    }
+}
+
 @HiltViewModel
 internal class BulletinWritingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val serverImageRepository: ServerImageRepository,
     private val communityRepository: CommunityRepository,
     private val uploadImageUseCase: UploadImageUseCase,
-) : BaseViewModel<BulletinWritingViewModel.State>(savedStateHandle) {
+) : BaseViewModel<BulletinWritingViewModel.State>(savedStateHandle), BulletinWritingEvent {
     private val id: Long? = savedStateHandle.get<String>("id")?.toLongOrNull()
     private val _complete: MutableSharedFlow<Boolean> = MutableSharedFlow()
     val complete = _complete.asSharedFlow()
@@ -59,6 +87,10 @@ internal class BulletinWritingViewModel @Inject constructor(
         }
     }
 
+    private var isInputNotBlank: Boolean = false
+    private var uploadWaitingCount = AtomicInteger()
+    private fun isFinishOkCheck() = isInputNotBlank && uploadWaitingCount.get() == 0
+
     data class State(
         val id: Long? = null,
         val writingImages: List<WritingSelectedImageModel> = emptyList(),
@@ -66,26 +98,51 @@ internal class BulletinWritingViewModel @Inject constructor(
         val currentBoard: CropType = CropType.PEPPER,
         val currentCategory: BulletinEntity.BulletinCategory = BulletinEntity.BulletinCategory.Free,
         val isShowWaitingDialog: Boolean = false,
+        val isFinishOk: Boolean = false,
+
+        // simple dialog
+        val isShowSimpleDialog: Boolean = false,
+        val simpleDialogText: String = "",
     ) : BaseViewModel.State
 
     private fun setCurrentCategory(category: BulletinEntity.BulletinCategory) {
         updateState { copy(currentCategory = category) }
     }
 
-    fun setIsShowWaitingDialog(boolean: Boolean) {
+    override fun setIsShowWaitingDialog(boolean: Boolean) {
         updateState { copy(isShowWaitingDialog = boolean) }
     }
 
-    fun onCategoryClick(category: BulletinEntity.BulletinCategory) {
+    //---
+
+    // simple dialog
+    override fun dismissSimpleDialog() = updateState { copy(isShowSimpleDialog = false) }
+    override fun showSimpleDialog(text: String) {
+        updateState {
+            copy(
+                isShowSimpleDialog = true,
+                simpleDialogText = text,
+            )
+        }
+    }
+
+    override fun onCategoryClick(category: BulletinEntity.BulletinCategory) {
         setCurrentCategory(category)
     }
 
-    fun onAddImagesClick(uris: List<Uri>) {
+    override fun onAddImagesClick(uris: List<Uri>) {
+        val currentSize = state.value.writingImages.size
+        if (currentSize + uris.size > 10) {
+            showSimpleDialog("사진은 최대 10장까지 추가할 수 있습니다")
+            return
+        }
         for (uri in uris) {
             val model = WritingSelectedImageModel(uri = uri)
             addWritingImage(model)
             viewModelScope.launch {
                 Timber.d("onAddImagesClick 코루틴 시작")
+                uploadWaitingCount.incrementAndGet()
+                updateState { copy(isFinishOk = false) }
                 try {
                     val url = uploadImage(uri)
                     replaceWritingImagesByUri(model.copy(url = url))
@@ -93,6 +150,8 @@ internal class BulletinWritingViewModel @Inject constructor(
                 } catch (e: Throwable) {
                     Timber.e(e, "onAddImagesClick 코루틴 에러")
                 }
+                uploadWaitingCount.decrementAndGet()
+                updateState { copy(isFinishOk = isFinishOkCheck()) }
             }
         }
     }
@@ -123,11 +182,19 @@ internal class BulletinWritingViewModel @Inject constructor(
         }
     }
 
-    fun onBulletinWritingInputChanged(input: String) {
-        if (input.length <= 3000) updateState { copy(bulletinWritingInput = input) }
+    override fun onBulletinWritingInputChanged(input: String) {
+        if (input.length <= 3000) {
+            isInputNotBlank = input.isNotBlank()
+            updateState {
+                copy(
+                    bulletinWritingInput = input,
+                    isFinishOk = isFinishOkCheck(),
+                )
+            }
+        }
     }
 
-    fun onRemoveImageClick(model: WritingSelectedImageModel) {
+    override fun onRemoveImageClick(model: WritingSelectedImageModel) {
         viewModelScope.launch {
             try {
                 model.url?.let { serverImageRepository.delete(it) }
@@ -196,10 +263,12 @@ internal class BulletinWritingViewModel @Inject constructor(
         }
     }
 
-    fun onPerformBulletin() = id?.let {
-        updateBulletin()
-    } ?: run {
-        onFinishWritingClick()
+    override fun onPerformBulletin() {
+        id?.let {
+            updateBulletin()
+        } ?: run {
+            onFinishWritingClick()
+        }
     }
 
 }

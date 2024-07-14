@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "kr.co.wdtt.nbdream"
-        versionCode = 3
+        versionCode = 6
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

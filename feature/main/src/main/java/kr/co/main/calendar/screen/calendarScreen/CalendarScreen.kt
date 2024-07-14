@@ -133,7 +133,7 @@ private fun CalendarScreen(
     }
     Scaffold(
         modifier = modifier,
-        containerColor = MaterialTheme.colors.gray9,
+        containerColor = MaterialTheme.colors.background,
         topBar = {
             CalendarScreenTopAppBar(
                 modifier = Modifier
@@ -214,7 +214,7 @@ private fun CalendarScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = Paddings.large)
-                        .background(MaterialTheme.colors.gray9),
+                        .background(MaterialTheme.colors.background),
                     userCrops = state.userCrops,
                     calendarYear = state.year,
                     calendarMonth = state.month,
@@ -225,7 +225,6 @@ private fun CalendarScreen(
                 )
 
                 HorizontalPager(
-                    modifier = Modifier.background(MaterialTheme.colors.gray9),
                     state = pagerState
                 ) {
                     when (pagerState.currentPage) {

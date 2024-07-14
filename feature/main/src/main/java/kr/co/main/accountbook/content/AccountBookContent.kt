@@ -39,7 +39,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kr.co.main.accountbook.main.CircleProgress
-import kr.co.main.accountbook.model.AccountBookDialog
 import kr.co.main.accountbook.model.contentDateFormat
 import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay
@@ -51,6 +50,7 @@ import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
+import kr.co.ui.widget.DreamDialog
 import kr.co.ui.widget.LoadingShimmerEffect
 
 
@@ -64,23 +64,36 @@ internal fun AccountBookContentRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val isDeleteLoading by viewModel.isDeleteLoading.collectAsStateWithLifecycle(initialValue = false)
+    var isShowDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.complete.collect {
             navigationTopAccountBook()
         }
     }
+
     AccountBookContentScreen(
         state = state,
         isLoading = isLoading,
         isDeleteLoading = isDeleteLoading,
         navigationToUpdate = navigationToUpdate,
         popBackStack = popBackStack,
-        onRemoveItem = viewModel::deleteAccountBookById,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = Paddings.large),
+        isShowDeleteDialog = { isShowDeleteDialog = it }
+
     )
+
+    if (isShowDeleteDialog) {
+        DreamDialog(
+            header = "삭제 확인",
+            description = "정말 삭제하시겠습니까?",
+            onConfirm = viewModel::deleteAccountBookById,
+            onDismissRequest = { isShowDeleteDialog = false }
+        )
+    }
+
+    if (isDeleteLoading) {
+        CircleProgress()
+    }
 }
 
 @Composable
@@ -90,11 +103,9 @@ internal fun AccountBookContentScreen(
     isDeleteLoading: Boolean,
     navigationToUpdate: (Long?) -> Unit,
     popBackStack: () -> Unit,
-    onRemoveItem: () -> Unit = {},
-    modifier: Modifier
+    isShowDeleteDialog: (Boolean) -> Unit
 ) {
     var showDropDownMenu by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Surface(
         color = MaterialTheme.colors.white
@@ -129,10 +140,11 @@ internal fun AccountBookContentScreen(
                     ) {
                         DropdownMenuItem(
                             text = {
-                                Row {
-                                    Text("수정하기")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                }
+                                Text(
+                                    text = "수정하기",
+                                    style = MaterialTheme.typo.label,
+                                    color = MaterialTheme.colors.gray1
+                                )
                             },
                             onClick = {
                                 navigationToUpdate(state.id)
@@ -141,13 +153,14 @@ internal fun AccountBookContentScreen(
                         )
                         DropdownMenuItem(
                             text = {
-                                Row {
-                                    Text("삭제하기")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                }
+                                Text(
+                                    text = "삭제하기",
+                                    style = MaterialTheme.typo.label,
+                                    color = MaterialTheme.colors.gray1
+                                )
                             },
                             onClick = {
-                                showDeleteDialog = true
+                                isShowDeleteDialog(true)
                                 showDropDownMenu = false
                             }
                         )
@@ -193,7 +206,10 @@ internal fun AccountBookContentScreen(
 
                     item {
                         Row(
-                            modifier = modifier,
+
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = Paddings.large),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
@@ -224,7 +240,9 @@ internal fun AccountBookContentScreen(
 
                     item {
                         Row(
-                            modifier = modifier,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = Paddings.large),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
@@ -243,7 +261,9 @@ internal fun AccountBookContentScreen(
 
                     item {
                         Row(
-                            modifier = modifier,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = Paddings.large),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
@@ -290,22 +310,7 @@ internal fun AccountBookContentScreen(
                 }
             }
         }
-        if (isDeleteLoading) {
-            CircleProgress()
-        }
     }
-
-    if (showDeleteDialog) {
-        AccountBookDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = "삭제 확인",
-            message = "정말 삭제하시겠습니까?",
-            onConfirm = {
-                onRemoveItem()
-            }
-        )
-    }
-
 }
 
 @Composable

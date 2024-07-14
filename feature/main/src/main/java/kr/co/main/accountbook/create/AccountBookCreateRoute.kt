@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -64,7 +65,6 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
 import kr.co.main.accountbook.main.AccountBookOptionButton
 import kr.co.main.accountbook.main.CircleProgress
-import kr.co.main.accountbook.model.AccountBookDialog
 import kr.co.main.accountbook.model.CustomDatePickerDialog
 import kr.co.main.accountbook.model.EntryType
 import kr.co.main.accountbook.model.formatNumber
@@ -80,7 +80,7 @@ import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
 import kr.co.ui.widget.DreamCenterTopAppBar
-import java.io.File
+import kr.co.ui.widget.DreamDialog
 
 
 @Composable
@@ -93,6 +93,16 @@ internal fun AccountBookCreateRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     var showErrorDialog by remember { mutableStateOf(false) }
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = { uriList ->
+            uriList.forEach { uri ->
+                getFileFromUri(uri)?.let { file ->
+                    viewModel.uploadImage(file)
+                }
+            }
+        }
+    )
 
     LaunchedEffect(Unit) {
         viewModel.complete.collect { complete ->
@@ -111,7 +121,6 @@ internal fun AccountBookCreateRoute(
         state = state,
         isLoading = isLoading,
         popBackStack = popBackStack,
-        onUploadImage = { viewModel.uploadImage(it) },
         onPerformAccountBook = viewModel::performAccountBook,
         onUpdateAmount = { viewModel.updateAmount(it) },
         onUpdateAmountText = { viewModel.updateAmountText(it) },
@@ -119,17 +128,22 @@ internal fun AccountBookCreateRoute(
         onUpdateTitle = { viewModel.updateTitle(it) },
         onRemoveImageUrl = { viewModel.deleteImage(it) },
         onUpdateRegisterDateTime = { viewModel.updateRegisterDateTime(it) },
-        onUpdateCategory = { viewModel.updateCategory(it) }
+        onUpdateCategory = { viewModel.updateCategory(it) },
+        onImageButtonClicked = {
+            imagePickerLauncher.launch(
+                PickVisualMediaRequest(
+                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                )
+            )
+        }
     )
 
     if (showErrorDialog) {
-        AccountBookDialog(
-            onDismissRequest = { showErrorDialog = false },
-            title = "작성 실패",
-            message = "오류가 발생하여 작성을 완료할 수 없습니다.",
-            onConfirm = {
-                showErrorDialog = false
-            }
+        DreamDialog(
+            header = "작성 실패",
+            description = "오류가 발생하여 작성을 완료할 수 없습니다.",
+            onConfirm = { showErrorDialog = false },
+            onDismissRequest = { showErrorDialog = false }
         )
     }
 }
@@ -139,7 +153,6 @@ internal fun AccountBookCreateScreen(
     state: AccountBookCreateViewModel.State = AccountBookCreateViewModel.State(),
     isLoading: Boolean,
     popBackStack: () -> Unit,
-    onUploadImage: (File) -> Unit = {},
     onPerformAccountBook: () -> Unit = {},
     onUpdateAmount: (Long) -> Unit = {},
     onUpdateAmountText: (String) -> Unit = {},
@@ -147,24 +160,16 @@ internal fun AccountBookCreateScreen(
     onUpdateTitle: (String) -> Unit = {},
     onRemoveImageUrl: (String) -> Unit = {},
     onUpdateRegisterDateTime: (String) -> Unit = {},
-    onUpdateCategory: (AccountBookEntity.Category) -> Unit = {}
+    onUpdateCategory: (AccountBookEntity.Category) -> Unit = {},
+    onImageButtonClicked: () -> Unit
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(),
-        onResult = { uriList ->
-            uriList.forEach { uri ->
-                getFileFromUri(uri)?.let { file ->
-                    onUploadImage(file)
-                }
-            }
-        }
-    )
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Surface(
-        color = MaterialTheme.colors.white
+        color = MaterialTheme.colors.white,
+        modifier = Modifier.navigationBarsPadding()
     ) {
         Column(
             modifier = Modifier
@@ -351,11 +356,7 @@ internal fun AccountBookCreateScreen(
                         ) {
                             Button(
                                 onClick = {
-                                    imagePickerLauncher.launch(
-                                        PickVisualMediaRequest(
-                                            ActivityResultContracts.PickVisualMedia.ImageOnly
-                                        )
-                                    )
+                                    onImageButtonClicked()
                                 },
                                 modifier = Modifier.fillMaxSize(),
                                 colors = ButtonDefaults.buttonColors(Color.Transparent),
@@ -425,6 +426,7 @@ internal fun AccountBookCreateScreen(
                         }
                     }
                 }
+                item {}
             }
         }
         if (isLoading) {

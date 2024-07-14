@@ -58,7 +58,7 @@ internal fun ScheduleTab(
 ) {
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colors.gray9
+        color = MaterialTheme.colors.background
     ) {
         Column(
             modifier = Modifier
