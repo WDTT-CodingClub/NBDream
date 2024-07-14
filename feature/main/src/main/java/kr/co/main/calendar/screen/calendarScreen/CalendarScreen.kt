@@ -11,17 +11,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -424,13 +421,13 @@ private fun CalendarYearMonthPicker(
     onSelectMonth: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expandDropDown by remember { mutableStateOf(false) }
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     Column {
         Row(
             modifier = modifier
                 .clickable {
-                    expandDropDown = true
+                    showBottomSheet = true
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -448,63 +445,16 @@ private fun CalendarYearMonthPicker(
                 contentDescription = ""
             )
         }
-        CalendarYearMonthPickerDropDown(
-            modifier = Modifier
-                .height(CalendarDesignToken.YEAR_MONTH_PICKER_DROP_DOWN_HEIGHT.dp),
-            expandDropDown = expandDropDown,
+    }
+
+    if (showBottomSheet) {
+        CalendarYearMonthBottomSheet(
             calendarYear = calendarYear,
             calendarMonth = calendarMonth,
             onYearSelect = onSelectYear,
             onMonthSelect = onSelectMonth,
-            onDismissDropDown = { expandDropDown = false },
+            onDismissRequest = { showBottomSheet = false }
         )
-    }
-}
-
-@Composable
-private fun CalendarYearMonthPickerDropDown(
-    expandDropDown: Boolean,
-    calendarYear: Int,
-    calendarMonth: Int,
-    onYearSelect: (Int) -> Unit,
-    onMonthSelect: (Int) -> Unit,
-    onDismissDropDown: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val scrollState = rememberScrollState(
-        initial = CalendarDesignToken.YEAR_MONTH_PICKER_DROP_DOWN_ITEM_HEIGHT * ((calendarYear - 2000) * 12)
-    )
-
-    DropdownMenu(
-        modifier = modifier,
-        expanded = expandDropDown,
-        onDismissRequest = onDismissDropDown,
-        scrollState = scrollState
-    ) {
-        for (year in 2000..2050) {
-            for (month in 1..12) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(CalendarDesignToken.YEAR_MONTH_PICKER_DROP_DOWN_ITEM_HEIGHT.dp),
-                            text = "${year}년 ${month}월",
-                            style = MaterialTheme.typo.body1,
-                            color =
-                            if (year == calendarYear && month == calendarMonth) MaterialTheme.colors.primary
-                            else MaterialTheme.colors.text2,
-                            textAlign = TextAlign.Center
-                        )
-                    },
-                    onClick = {
-                        onYearSelect(year)
-                        onMonthSelect(month)
-                        onDismissDropDown()
-                    }
-                )
-            }
-        }
     }
 }
 
