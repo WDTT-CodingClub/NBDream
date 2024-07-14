@@ -37,7 +37,6 @@ internal interface CalendarScreenEvent {
 
     fun onDeleteScheduleSelect(scheduleId: Long)
     fun onDeleteDiarySelect(diaryId: Long)
-
     fun onDeleteSchedule()
     fun onDeleteDiary()
 }
@@ -131,6 +130,7 @@ internal class CalendarScreenViewModel @Inject constructor(
         viewModelScopeEH.launch {
             deleteSchedule(DeleteScheduleUseCase.Params(currentState.deleteScheduleId!!))
         }
+        reinitialize()
     }
 
     override fun onDeleteDiary() {
@@ -138,6 +138,7 @@ internal class CalendarScreenViewModel @Inject constructor(
         viewModelScopeEH.launch {
             deleteDiary(DeleteDiaryUseCase.Params(currentState.deleteDiaryId!!))
         }
+        reinitialize()
     }
 
     private fun updateUserCrops() {
