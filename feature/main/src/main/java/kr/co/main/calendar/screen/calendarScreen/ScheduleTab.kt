@@ -53,6 +53,7 @@ internal fun ScheduleTab(
     cropSchedules: List<ScheduleModel>,
     onEditClick: (Long) -> Unit,
     onDeleteClick: (Long) -> Unit,
+    navToFarmWorkInfo: (String?, String?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -71,7 +72,8 @@ internal fun ScheduleTab(
                 FarmWorkCalendarCard(
                     modifier = Modifier.padding(Paddings.large),
                     calenderMonth = calendarMonth,
-                    farmWorks = farmWorks
+                    farmWorks = farmWorks,
+                    navToFarmWorkInfo = navToFarmWorkInfo
                 )
             }
 
@@ -128,6 +130,7 @@ private fun FarmWorkCropEmptyCard(
 private fun FarmWorkCalendarCard(
     calenderMonth: Int,
     farmWorks: List<FarmWorkModel>,
+    navToFarmWorkInfo: (String?, String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Timber.d("FarmWorkCalendarCard) farmWorks: $farmWorks")
@@ -143,7 +146,12 @@ private fun FarmWorkCalendarCard(
                 .fillMaxWidth()
                 .padding(Paddings.large),
             calendarMonth = calenderMonth,
-            farmWorks = farmWorks
+            farmWorks = farmWorks,
+            onFarmWorkClick = { farmWorkModel ->
+                with(farmWorkModel) {
+                    if (videoUrl?.isNotBlank() == true) navToFarmWorkInfo(farmWork, videoUrl)
+                }
+            }
         )
     }
 }

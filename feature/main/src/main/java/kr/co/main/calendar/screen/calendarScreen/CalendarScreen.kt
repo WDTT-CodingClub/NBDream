@@ -77,6 +77,7 @@ internal fun CalendarRoute(
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
+    navToFarmWorkInfo: (String?, String?) -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -101,6 +102,7 @@ internal fun CalendarRoute(
         navToAddSchedule = navToAddSchedule,
         navToAddDiary = navToAddDiary,
         navToSearchDiary = navToSearchDiary,
+        navToFarmWorkInfo = navToFarmWorkInfo,
         state = state,
         event = viewModel.event
     )
@@ -113,6 +115,7 @@ private fun CalendarScreen(
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
+    navToFarmWorkInfo: (String?, String?) -> Unit,
     state: CalendarScreenViewModel.CalendarScreenState,
     event: CalendarScreenEvent,
     modifier: Modifier = Modifier,
@@ -247,6 +250,11 @@ private fun CalendarScreen(
                                 onDeleteClick = { scheduleId ->
                                     event.onDeleteScheduleSelect(scheduleId)
                                     showDeleteScheduleDialog = true
+                                },
+                                navToFarmWorkInfo = { title, videoUrl ->
+                                    navToFarmWorkInfo(
+                                        title, videoUrl
+                                    )
                                 }
                             )
 

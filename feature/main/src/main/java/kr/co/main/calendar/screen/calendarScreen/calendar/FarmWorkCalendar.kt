@@ -1,6 +1,7 @@
 package kr.co.main.calendar.screen.calendarScreen.calendar
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -71,6 +72,7 @@ internal class FarmWorkCalendarStateHolder(
 internal fun FarmWorkCalendar(
     calendarMonth: Int,
     farmWorks: List<FarmWorkModel>,
+    onFarmWorkClick: (FarmWorkModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val stateHolder = rememberFarmWorkCalendarStateHolder(
@@ -78,7 +80,7 @@ internal fun FarmWorkCalendar(
         farmWorks = farmWorks
     )
 
-    if(farmWorks.isNotEmpty()) {
+    if (farmWorks.isNotEmpty()) {
         Column(
             modifier = modifier
         ) {
@@ -89,11 +91,11 @@ internal fun FarmWorkCalendar(
 
             FarmWorkCalendarContent(
                 farmWorkCategoryInfo = stateHolder.farmWorkCategoryInfo,
-                getFilteredFarmWorks = stateHolder::getFilteredFarmWorks
+                getFilteredFarmWorks = stateHolder::getFilteredFarmWorks,
+                onFarmWorkClick = onFarmWorkClick
             )
         }
-    }
-    else{
+    } else {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -141,6 +143,7 @@ private fun FarmWorkEraRow(
 private fun FarmWorkCalendarContent(
     farmWorkCategoryInfo: List<Pair<Int, FarmWorkType>>,
     getFilteredFarmWorks: (FarmWorkType) -> List<FarmWorkModel>,
+    onFarmWorkClick: (FarmWorkModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -155,7 +158,8 @@ private fun FarmWorkCalendarContent(
             )
             FarmWorkCalendarRow(
                 modifier = Modifier.fillMaxWidth(),
-                farmWorks = getFilteredFarmWorks(categoryInfo.second)
+                farmWorks = getFilteredFarmWorks(categoryInfo.second),
+                onFarmWorkClick = onFarmWorkClick
             )
         }
     }
@@ -164,13 +168,16 @@ private fun FarmWorkCalendarContent(
 @Composable
 private fun FarmWorkCalendarRow(
     farmWorks: List<FarmWorkModel>,
+    onFarmWorkClick: (FarmWorkModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val content: @Composable () -> Unit = {
         farmWorks.forEach {
             FarmWorkItem(
-                modifier = Modifier.padding(bottom = Paddings.xsmall),
-                farmWork = it
+                modifier = Modifier
+                    .padding(bottom = Paddings.xsmall)
+                    .clickable { onFarmWorkClick(it) },
+                farmWork = it,
             )
         }
     }
