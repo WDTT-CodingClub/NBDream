@@ -3,12 +3,9 @@ package kr.co.main.calendar.screen.calendarScreen
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kr.co.domain.usecase.calendar.DeleteDiaryUseCase
+import kr.co.domain.usecase.calendar.DeleteScheduleUseCase
 import kr.co.domain.usecase.calendar.GetDiariesUseCase
 import kr.co.domain.usecase.calendar.GetFarmWorksUseCase
 import kr.co.domain.usecase.calendar.GetHolidaysUseCase
@@ -37,6 +34,12 @@ internal interface CalendarScreenEvent {
     fun onMonthSelect(month: Int)
     fun onCropSelect(crop: CropModel)
     fun onDateSelect(date: LocalDate)
+
+    fun onDeleteScheduleSelect(scheduleId: Long)
+    fun onDeleteDiarySelect(diaryId: Long)
+
+    fun onDeleteSchedule()
+    fun onDeleteDiary()
 }
 
 @HiltViewModel
@@ -46,7 +49,9 @@ internal class CalendarScreenViewModel @Inject constructor(
     private val getFarmWorks: GetFarmWorksUseCase,
     private val getHolidays: GetHolidaysUseCase,
     private val getSchedules: GetSchedulesUseCase,
-    private val getDiaries: GetDiariesUseCase
+    private val getDiaries: GetDiariesUseCase,
+    private val deleteSchedule: DeleteScheduleUseCase,
+    private val deleteDiary: DeleteDiaryUseCase
 ) : BaseViewModel<CalendarScreenViewModel.CalendarScreenState>(savedStateHandle),
     CalendarScreenEvent {
     val event: CalendarScreenEvent = this@CalendarScreenViewModel
@@ -63,7 +68,10 @@ internal class CalendarScreenViewModel @Inject constructor(
         val holidays: List<HolidayModel> = emptyList(),
         val allSchedules: List<ScheduleModel> = emptyList(),
         val cropSchedules: List<ScheduleModel> = emptyList(),
-        val diaries: List<DiaryModel> = emptyList()
+        val diaries: List<DiaryModel> = emptyList(),
+
+        val deleteScheduleId: Long? = null,
+        val deleteDiaryId: Long? = null
     ) : State
 
     override fun createInitialState(savedState: Parcelable?): CalendarScreenState =
@@ -108,6 +116,28 @@ internal class CalendarScreenViewModel @Inject constructor(
         Timber.d("onDateSelect) date: $date")
         updateState { copy(selectedDate = date) }
         Timber.d("onDateSelect) updated date: ${currentState.selectedDate}")
+    }
+
+    override fun onDeleteScheduleSelect(scheduleId: Long) {
+        updateState { copy(deleteScheduleId = deleteScheduleId) }
+    }
+
+    override fun onDeleteDiarySelect(diaryId: Long) {
+        updateState { copy(deleteDiaryId = deleteDiaryId) }
+    }
+
+    override fun onDeleteSchedule() {
+        checkNotNull(currentState.deleteScheduleId)
+        viewModelScopeEH.launch {
+            deleteSchedule(DeleteScheduleUseCase.Params(currentState.deleteScheduleId!!))
+        }
+    }
+
+    override fun onDeleteDiary() {
+        checkNotNull(currentState.deleteDiaryId)
+        viewModelScopeEH.launch {
+            deleteDiary(DeleteDiaryUseCase.Params(currentState.deleteDiaryId!!))
+        }
     }
 
     private fun updateUserCrops() {

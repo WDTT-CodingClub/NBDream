@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kr.co.domain.usecase.calendar.CreateScheduleUseCase
-import kr.co.domain.usecase.calendar.DeleteScheduleUseCase
 import kr.co.domain.usecase.calendar.GetScheduleDetailUseCase
 import kr.co.domain.usecase.calendar.UpdateScheduleUseCase
 import kr.co.main.mapper.calendar.ScheduleModelTypeMapper
@@ -22,7 +21,6 @@ import javax.inject.Inject
 internal interface AddScheduleScreenEvent {
     fun onPostClick()
     fun onEditClick()
-    fun onDeleteClick()
 
     fun onTypeSelect(type: ScheduleModelType)
     fun onTitleInput(title: String)
@@ -36,8 +34,7 @@ internal class AddScheduleViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getSchedule: GetScheduleDetailUseCase,
     private val createSchedule: CreateScheduleUseCase,
-    private val updateSchedule: UpdateScheduleUseCase,
-    private val deleteSchedule: DeleteScheduleUseCase
+    private val updateSchedule: UpdateScheduleUseCase
 ) : BaseViewModel<AddScheduleViewModel.AddScheduleScreenState>(savedStateHandle),
     AddScheduleScreenEvent {
     val event: AddScheduleScreenEvent = this@AddScheduleViewModel
@@ -140,16 +137,6 @@ internal class AddScheduleViewModel @Inject constructor(
                     memo = currentState.memo
                 )
             )
-        }
-    }
-
-    override fun onDeleteClick() {
-        if (currentState.screenMode != ScreenModeType.EDIT_MODE)
-            throw IllegalStateException("screen mode is not edit mode")
-        checkNotNull(currentState.scheduleId)
-
-        viewModelScopeEH.launch {
-            deleteSchedule(DeleteScheduleUseCase.Params(currentState.scheduleId!!))
         }
     }
 

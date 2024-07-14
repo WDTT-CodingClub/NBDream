@@ -37,6 +37,7 @@ internal fun DiaryTab(
     holidays: List<HolidayModel>,
     diaries: List<DiaryModel>,
     onEditClick: (Long) -> Unit,
+    onDeleteClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -81,7 +82,8 @@ internal fun DiaryTab(
                     DiaryContent(
                         modifier = Modifier.padding(Paddings.xlarge),
                         diary = diary,
-                        onEditClick = {onEditClick(diary.id)}
+                        onEditClick = { onEditClick(diary.id) },
+                        onDeleteClick = { onDeleteClick(diary.id) }
                     )
                 }
             }

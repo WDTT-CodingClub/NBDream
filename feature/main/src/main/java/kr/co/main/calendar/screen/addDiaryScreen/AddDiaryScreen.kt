@@ -145,10 +145,6 @@ private fun AddDiaryScreen(
                 onEditClick = {
                     event.onEditClick()
                     navToCalendar()
-                },
-                onDeleteClick = {
-                    event.onDeleteClick()
-                    navToCalendar()
                 }
             )
         }

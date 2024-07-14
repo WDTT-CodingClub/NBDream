@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kr.co.common.util.FileUtil
 import kr.co.domain.usecase.calendar.CreateDiaryUseCase
-import kr.co.domain.usecase.calendar.DeleteDiaryUseCase
 import kr.co.domain.usecase.calendar.GetDiaryDetailUseCase
 import kr.co.domain.usecase.calendar.GetHolidaysUseCase
 import kr.co.domain.usecase.calendar.UpdateDiaryUseCase
@@ -33,7 +32,6 @@ import javax.inject.Inject
 internal interface AddDiaryScreenEvent {
     fun onPostClick()
     fun onEditClick()
-    fun onDeleteClick()
 
     fun onDateSelect(date: LocalDate)
     fun onAddImage(imageUris: List<Uri>)
@@ -53,7 +51,6 @@ internal class AddDiaryViewModel @Inject constructor(
     private val getDiary: GetDiaryDetailUseCase,
     private val createDiary: CreateDiaryUseCase,
     private val updateDiary: UpdateDiaryUseCase,
-    private val deleteDiary: DeleteDiaryUseCase,
 
     private val uploadImage: UploadImageUseCase,
     private val deleteImage: DeleteImageUseCase,
@@ -277,18 +274,6 @@ internal class AddDiaryViewModel @Inject constructor(
                 viewModelScopeEH.launch {
                     _showPreviousScreen.emit(Unit)
                 }
-        }
-    }
-
-    override fun onDeleteClick() {
-        if (!currentState.enableAction) return
-
-        if (currentState.screenMode != ScreenModeType.EDIT_MODE)
-            throw IllegalStateException("screen mode is not edit mode")
-        checkNotNull(currentState.diaryId)
-
-        viewModelScopeEH.launch {
-            deleteDiary(DeleteDiaryUseCase.Params(currentState.diaryId!!))
         }
     }
 

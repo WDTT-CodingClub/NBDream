@@ -52,6 +52,7 @@ internal fun ScheduleTab(
     allSchedules: List<ScheduleModel>,
     cropSchedules: List<ScheduleModel>,
     onEditClick: (Long) -> Unit,
+    onDeleteClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -93,7 +94,8 @@ internal fun ScheduleTab(
                 allSchedules.filter { selectedDate in (it.startDate..it.endDate) } +
                         cropSchedules.filter { selectedDate in (it.startDate..it.endDate) },
                 holidays = holidays.filter { selectedDate == it.date },
-                onEditClick = onEditClick
+                onEditClick = onEditClick,
+                onDeleteClick = onDeleteClick
             )
         }
     }
@@ -241,6 +243,7 @@ private fun ScheduleCard(
     schedules: List<ScheduleModel>,
     holidays: List<HolidayModel>,
     onEditClick: (Long) -> Unit,
+    onDeleteClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -291,6 +294,7 @@ private fun ScheduleCard(
                     ScheduleContent(
                         modifier = Modifier.padding(Paddings.medium),
                         onEditClick = { onEditClick(schedule.id) },
+                        onDeleteClick = { onDeleteClick(schedule.id) },
                         schedule = schedule
                     )
                 }
