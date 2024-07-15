@@ -170,14 +170,14 @@ private fun DiaryItemScope.DiaryCalendarDiaryRow(
         modifier = modifier,
         content = content,
         measurePolicy = { measurables, constraints ->
+            val singleWidth = constraints.maxWidth / 7
+
             val placeables = measurables.map {
                 val duration = with(it.parentData as DiaryItemParentData) {
                     Period.between(startDate, endDate).days + 1
                 }
                 it.measure(
-                    constraints.copy(
-                        maxWidth = (constraints.maxWidth / 7) * (duration)
-                    )
+                    constraints.copy(maxWidth = singleWidth * duration)
                 )
             }
 
@@ -190,14 +190,15 @@ private fun DiaryItemScope.DiaryCalendarDiaryRow(
                 placeables.forEach {
                     it.place(
                         x = with(it.parentData as DiaryItemParentData) {
+                            @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
                             when (startDate.dayOfWeek) {
                                 DayOfWeek.SUNDAY -> 0
-                                DayOfWeek.MONDAY -> (constraints.maxWidth / 7) * 1
-                                DayOfWeek.TUESDAY -> (constraints.maxWidth / 7) * 2
-                                DayOfWeek.WEDNESDAY -> (constraints.maxWidth / 7) * 3
-                                DayOfWeek.THURSDAY -> (constraints.maxWidth / 7) * 4
-                                DayOfWeek.FRIDAY -> (constraints.maxWidth / 7) * 5
-                                DayOfWeek.SATURDAY -> (constraints.maxWidth / 7) * 6
+                                DayOfWeek.MONDAY -> singleWidth * 1
+                                DayOfWeek.TUESDAY -> singleWidth * 2
+                                DayOfWeek.WEDNESDAY -> singleWidth * 3
+                                DayOfWeek.THURSDAY -> singleWidth * 4
+                                DayOfWeek.FRIDAY -> singleWidth * 5
+                                DayOfWeek.SATURDAY -> singleWidth * 6
                             }
                         },
                         y = 0

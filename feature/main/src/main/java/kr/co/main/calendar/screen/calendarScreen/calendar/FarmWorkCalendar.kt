@@ -186,11 +186,13 @@ private fun FarmWorkCalendarRow(
         modifier = modifier,
         content = content,
         measurePolicy = { measurables, constraints ->
+            val singleWidth = constraints.maxWidth / 3
+
             val placeables = measurables.mapIndexed { index, measurable ->
                 val eraLength = with(farmWorks[index]) { endEra.value - startEra.value + 1 }
                 measurable.measure(
                     constraints.copy(
-                        minWidth = (constraints.maxWidth / 3) * eraLength
+                        minWidth = singleWidth * eraLength
                     )
                 )
             }
@@ -204,8 +206,8 @@ private fun FarmWorkCalendarRow(
                     placeable.place(
                         x = when (farmWorks[index].startEra) {
                             FarmWorkEraType.EARLY -> 0
-                            FarmWorkEraType.MID -> constraints.maxWidth / 3
-                            FarmWorkEraType.LATE -> constraints.maxWidth / 3 * 2
+                            FarmWorkEraType.MID -> singleWidth
+                            FarmWorkEraType.LATE -> singleWidth * 2
                         },
                         y = yPosition
                     )
