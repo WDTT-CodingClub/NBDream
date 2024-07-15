@@ -197,6 +197,7 @@ private fun CalendarScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = Paddings.xlarge)
+                .background(MaterialTheme.colors.background)
         ) {
             NavToMyPageDialog(
                 showDialog = showNavToMyPageDialog,
@@ -213,7 +214,6 @@ private fun CalendarScreen(
                 CalendarInfoPicker(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 40.dp)
                         .background(MaterialTheme.colors.background),
                     userCrops = state.userCrops,
                     calendarYear = state.year,

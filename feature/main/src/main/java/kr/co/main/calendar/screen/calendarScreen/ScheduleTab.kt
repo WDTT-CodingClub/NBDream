@@ -62,7 +62,6 @@ internal fun ScheduleTab(
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = Paddings.xlarge)
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(Paddings.xextra))
