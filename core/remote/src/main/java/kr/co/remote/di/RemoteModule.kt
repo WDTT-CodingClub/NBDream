@@ -11,6 +11,7 @@ import kr.co.data.source.remote.AuthRemoteDataSource
 import kr.co.data.source.remote.CommunityRemoteDataSource
 import kr.co.data.source.remote.DiaryRemoteDataSource
 import kr.co.data.source.remote.FarmWorkRemoteDataSource
+import kr.co.data.source.remote.FcmRemoteDataSource
 import kr.co.data.source.remote.HolidayRemoteDataSource
 import kr.co.data.source.remote.ScheduleRemoteDataSource
 import kr.co.data.source.remote.ServerImageRemoteDataSource
@@ -22,6 +23,7 @@ import kr.co.remote.AuthRemoteDataSourceImpl
 import kr.co.remote.CommunityRemoteDataSourceImpl
 import kr.co.remote.DiaryRemoteDataSourceImpl
 import kr.co.remote.FarmWorkRemoteDataSourceImpl
+import kr.co.remote.FcmRemoteDataSourceImpl
 import kr.co.remote.HolidayRemoteDataSourceImpl
 import kr.co.remote.ScheduleRemoteDataSourceImpl
 import kr.co.remote.ServerImageRemoteDataSourceImpl
@@ -98,4 +100,10 @@ internal class RemoteModule {
     fun provideAiApi(
         client: HttpClient
     ): AiRemoteDataSource = AiRemoteDataSourceImpl(client)
+
+    @Singleton
+    @Provides
+    fun provideNotificationApi(
+        client: HttpClient
+    ): FcmRemoteDataSource = FcmRemoteDataSourceImpl(client)
 }

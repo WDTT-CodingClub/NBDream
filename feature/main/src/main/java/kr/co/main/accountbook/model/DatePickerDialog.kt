@@ -1,6 +1,5 @@
 package kr.co.main.accountbook.model
 
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -14,8 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import kr.co.ui.theme.Shapes
 import kr.co.ui.theme.colors
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -32,7 +31,6 @@ internal fun CustomDatePickerDialog(
 ) {
     val initialDateMillis = date?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
         ?: System.currentTimeMillis()
-
     val datePickerState = rememberDatePickerState(
         yearRange = IntRange(2000, 2050),
         initialDisplayMode = DisplayMode.Picker,
@@ -43,7 +41,6 @@ internal fun CustomDatePickerDialog(
             }
         }
     )
-
     val initialSelectedDate = remember { datePickerState.selectedDateMillis }
 
     LaunchedEffect(datePickerState.selectedDateMillis) {
@@ -63,7 +60,7 @@ internal fun CustomDatePickerDialog(
         colors = DatePickerDefaults.colors(
             containerColor = MaterialTheme.colors.white
         ),
-        shape = RoundedCornerShape(8.dp),
+        shape = Shapes.small,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         DatePicker(
@@ -74,6 +71,7 @@ internal fun CustomDatePickerDialog(
                 containerColor = MaterialTheme.colors.white,
                 todayDateBorderColor = MaterialTheme.colors.primary,
                 todayContentColor = MaterialTheme.colors.black,
+                selectedDayContentColor = MaterialTheme.colors.black,
                 dateTextFieldColors = TextFieldDefaults.colors(
                     unfocusedContainerColor = Color.Transparent,
                     focusedContainerColor = Color.Transparent,
