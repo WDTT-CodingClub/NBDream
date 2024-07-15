@@ -166,34 +166,32 @@ private fun CalendarScreen(
             )
         }
     ) { innerPadding ->
-        if (showDeleteScheduleDialog) {
-            DeleteScheduleDialog(
-                showDialog = showDeleteScheduleDialog,
-                onConfirm = {
-                    event.onDeleteSchedule()
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.feature_main_calendar_delete_schedule_dialog_confirm),
-                        Toast.LENGTH_LONG
-                    ).show()
-                },
-                onDismiss = { showDeleteScheduleDialog = false }
-            )
-        }
-        if (showDeleteDiaryDialog) {
-            DeleteDiaryDialog(
-                showDialog = showDeleteDiaryDialog,
-                onConfirm = {
-                    event.onDeleteDiary()
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.feature_main_calendar_delete_diary_dialog_confirm),
-                        Toast.LENGTH_LONG
-                    ).show()
-                },
-                onDismiss = { showDeleteDiaryDialog = false }
-            )
-        }
+        DeleteScheduleDialog(
+            showDialog = showDeleteScheduleDialog,
+            onConfirm = {
+                event.onDeleteSchedule()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.feature_main_calendar_delete_schedule_dialog_confirm),
+                    Toast.LENGTH_LONG
+                ).show()
+            },
+            onDismiss = { showDeleteScheduleDialog = false }
+        )
+
+        DeleteDiaryDialog(
+            showDialog = showDeleteDiaryDialog,
+            onConfirm = {
+                event.onDeleteDiary()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.feature_main_calendar_delete_diary_dialog_confirm),
+                    Toast.LENGTH_LONG
+                ).show()
+            },
+            onDismiss = { showDeleteDiaryDialog = false }
+        )
+
 
         Surface(
             modifier = Modifier.padding(innerPadding)

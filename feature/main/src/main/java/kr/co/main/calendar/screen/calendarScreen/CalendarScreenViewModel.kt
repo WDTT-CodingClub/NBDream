@@ -118,27 +118,29 @@ internal class CalendarScreenViewModel @Inject constructor(
     }
 
     override fun onDeleteScheduleSelect(scheduleId: Long) {
-        updateState { copy(deleteScheduleId = deleteScheduleId) }
+        updateState { copy(deleteScheduleId = scheduleId) }
     }
 
     override fun onDeleteDiarySelect(diaryId: Long) {
-        updateState { copy(deleteDiaryId = deleteDiaryId) }
+        updateState { copy(deleteDiaryId = diaryId) }
     }
 
     override fun onDeleteSchedule() {
         checkNotNull(currentState.deleteScheduleId)
         viewModelScopeEH.launch {
             deleteSchedule(DeleteScheduleUseCase.Params(currentState.deleteScheduleId!!))
+        }.invokeOnCompletion {
+            reinitialize()
         }
-        reinitialize()
     }
 
     override fun onDeleteDiary() {
         checkNotNull(currentState.deleteDiaryId)
         viewModelScopeEH.launch {
             deleteDiary(DeleteDiaryUseCase.Params(currentState.deleteDiaryId!!))
+        }.invokeOnCompletion {
+            reinitialize()
         }
-        reinitialize()
     }
 
     private fun updateUserCrops() {
