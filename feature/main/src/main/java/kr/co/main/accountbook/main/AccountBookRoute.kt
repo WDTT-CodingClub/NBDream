@@ -69,7 +69,6 @@ internal fun AccountBookRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-
     val reinitialize =
         navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(ACCOUNT_KEY) ?: false
 
@@ -123,7 +122,8 @@ internal fun AccountBookScreen(
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colors.gray9,
+        modifier = Modifier.navigationBarsPadding(),
+        containerColor = MaterialTheme.colors.background,
         topBar = {
             DreamTopAppBar(
                 modifier = Modifier
@@ -143,7 +143,7 @@ internal fun AccountBookScreen(
     ) { innerPadding ->
         Surface(
             modifier = Modifier.padding(innerPadding),
-            color = MaterialTheme.colors.gray9
+            color = MaterialTheme.colors.background
         ) {
             Box(
                 modifier = Modifier
@@ -263,6 +263,7 @@ internal fun AccountBookScreen(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(Paddings.extra))
                 }
                 PullToRefreshContainer(
                     state = refreshState,
@@ -338,69 +339,69 @@ private fun GraphSection(
     val (showAll, setShowAll) = remember { mutableStateOf(false) }
 
     Column {
-        if (percents != null && categories != null && percents.size == categories.size) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AccountBookOptionButton(
+                option = "지출",
+                isSelected = graphTransactionType == AccountBookEntity.TransactionType.EXPENSE,
+                onSelected = {
+                    onGraphTransactionTypeSelected(AccountBookEntity.TransactionType.EXPENSE)
+                }
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            AccountBookOptionButton(
+                option = "수입",
+                isSelected = graphTransactionType == AccountBookEntity.TransactionType.REVENUE,
+                onSelected = {
+                    onGraphTransactionTypeSelected(AccountBookEntity.TransactionType.REVENUE)
+                }
+            )
+        }
+        if (percents.isNullOrEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = Paddings.extra),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                AccountBookOptionButton(
-                    option = "지출",
-                    isSelected = graphTransactionType == AccountBookEntity.TransactionType.EXPENSE,
-                    onSelected = {
-                        onGraphTransactionTypeSelected(AccountBookEntity.TransactionType.EXPENSE)
-                    }
+                Image(
+                    painter = painterResource(
+                        id = kr.co.nbdream.core.ui.R.drawable.img_graph
+                    ),
+                    contentDescription = null
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                AccountBookOptionButton(
-                    option = "수입",
-                    isSelected = graphTransactionType == AccountBookEntity.TransactionType.REVENUE,
-                    onSelected = {
-                        onGraphTransactionTypeSelected(AccountBookEntity.TransactionType.REVENUE)
-                    }
+                Spacer(modifier = Modifier.height(Paddings.extra))
+                Text(
+                    text = if (graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
+                        "이번 달은 어디서 많이 썼을까?"
+                    else
+                        "이번 달은 어디서 많이 벌었을까?",
+                    style = MaterialTheme.typo.body2,
+                    color = MaterialTheme.colors.gray5
                 )
             }
-            if (percents.isEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = Paddings.extra),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(
-                            id = kr.co.nbdream.core.ui.R.drawable.img_graph
-                        ),
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.height(Paddings.extra))
-                    Text(
-                        text = if (graphTransactionType == AccountBookEntity.TransactionType.EXPENSE)
-                            "이번 달은 어디서 많이 썼을까?"
-                        else
-                            "이번 달은 어디서 많이 벌었을까?",
-                        style = MaterialTheme.typo.body2,
-                        color = MaterialTheme.colors.gray5
+        } else {
+            val colors = percents.size.getColorList()
+            val total = percents.sum()
+            val categoryPercent = categories?.zip(percents)
+                ?.sortedByDescending { it.second }
+                ?.mapIndexed { index, (category, percent) ->
+                    Triple(
+                        category,
+                        String.format("%.1f", (percent / total) * 100),
+                        if (index < colors.size) colors[index] else MaterialTheme.colors.gray7
                     )
                 }
-            } else {
-                val colors = percents.size.getColorList()
-                val total = percents.sum()
-                val categoryPercent = categories.zip(percents)
-                    .sortedByDescending { it.second }
-                    .mapIndexed { index, (category, percent) ->
-                        Triple(
-                            category,
-                            String.format("%.1f", (percent / total) * 100),
-                            if (index < colors.size) colors[index] else MaterialTheme.colors.gray7
-                        )
-                    }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .padding(top = Paddings.extra)
-                ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .padding(top = Paddings.extra)
+            ) {
+                if (categoryPercent != null) {
                     AccountBookGraph(
                         modifier = Modifier.fillMaxSize(),
                         colors = colors,
@@ -408,50 +409,52 @@ private fun GraphSection(
                         graphHeight = 150
                     )
                 }
+            }
 
-                Column(
-                    modifier = Modifier.padding(
-                        top = Paddings.xxlarge,
-                        bottom = Paddings.xlarge
-                    )
-                ) {
-                    val itemsToShow =
-                        if (showAll) categoryPercent else categoryPercent.take(MAX_CATEGORY_COUNT)
+            Column(
+                modifier = Modifier.padding(
+                    top = Paddings.xxlarge,
+                    bottom = Paddings.xlarge
+                )
+            ) {
+                val itemsToShow =
+                    if (showAll) categoryPercent else categoryPercent?.take(MAX_CATEGORY_COUNT)
 
-                    itemsToShow.chunked(2).forEach { rowItems ->
+                itemsToShow?.chunked(2)?.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
                         ) {
+                            GraphCategoryItem(
+                                category = rowItems.first().first,
+                                percent = rowItems.first().second,
+                                color = rowItems.first().third
+                            )
+                        }
+                        if (rowItems.size > 1) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.weight(1f)
                             ) {
+                                Spacer(modifier = Modifier.width(16.dp))
                                 GraphCategoryItem(
-                                    category = rowItems.first().first,
-                                    percent = rowItems.first().second,
-                                    color = rowItems.first().third
+                                    category = rowItems[1].first,
+                                    percent = rowItems[1].second,
+                                    color = rowItems[1].third
                                 )
-                            }
-                            if (rowItems.size > 1) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    GraphCategoryItem(
-                                        category = rowItems[1].first,
-                                        percent = rowItems[1].second,
-                                        color = rowItems[1].third
-                                    )
-                                }
                             }
                         }
                     }
                 }
+            }
 
+            if (categoryPercent != null) {
                 if (categoryPercent.size > MAX_CATEGORY_COUNT) {
                     Row(
                         modifier = Modifier
@@ -477,35 +480,35 @@ private fun GraphSection(
                         )
                     }
                 }
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colors.gray9,
-                                shape = Shapes.small
-                            )
-                            .padding(Paddings.xlarge),
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        Text(
-                            text = "${formatNumber(totalAmount ?: 0L)}원",
-                            style = MaterialTheme.typo.h3,
-                            color = MaterialTheme.colors.gray1,
-                            modifier = Modifier
-                                .padding(bottom = Paddings.large)
-                        )
-                        Text(
-                            text = "합계: ${formatNumber(totalCost ?: 0L)}원",
-                            style = MaterialTheme.typo.h3,
-                            color = MaterialTheme.colors.gray1,
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(Paddings.xlarge))
             }
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colors.gray9,
+                            shape = Shapes.small
+                        )
+                        .padding(Paddings.xlarge),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = "${formatNumber(totalAmount ?: 0L)}원",
+                        style = MaterialTheme.typo.h3,
+                        color = MaterialTheme.colors.gray1,
+                        modifier = Modifier
+                            .padding(bottom = Paddings.large)
+                    )
+                    Text(
+                        text = "합계: ${formatNumber(totalCost ?: 0L)}원",
+                        style = MaterialTheme.typo.h3,
+                        color = MaterialTheme.colors.gray1,
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
         }
     }
 }

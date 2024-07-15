@@ -172,7 +172,7 @@ internal fun CommunityScreen(
                 )
             }
         },
-        containerColor = MaterialTheme.colors.gray9,
+        containerColor = MaterialTheme.colors.background,
     ) { paddingValues ->
 
         LazyColumn(
