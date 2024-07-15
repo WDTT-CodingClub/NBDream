@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.nbdream.android.application.compose)
     alias(libs.plugins.nbdream.android.hilt)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.gms)
 }
 
 android {
@@ -99,6 +100,10 @@ dependencies {
     implementation(projects.core.oauth)
 
     implementation(libs.androidx.core.ktx)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging.ktx)
 
     App()
 }
