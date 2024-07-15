@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,9 +29,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kr.co.main.R
 import kr.co.ui.icon.DreamIcon
@@ -40,7 +41,7 @@ import kr.co.ui.icon.dreamicon.Arrowright
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import java.time.LocalDate
+import kr.co.ui.widget.InputCompleteButton
 
 private const val MIN_YEAR = 2000
 private const val MAX_YEAR = 2050
@@ -70,30 +71,29 @@ internal fun CalendarYearMonthBottomSheet(
                 .padding(16.dp)
         ) {
             YearPicker(
+                modifier = Modifier.fillMaxWidth(),
                 selectedYear = selectedYear,
                 onYearClick = {
                     selectedYear = it
                 }
             )
-            Spacer(modifier = Modifier.height(Paddings.large))
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
             MonthPicker(
-                selectedMonth = calendarMonth,
+                modifier = Modifier.fillMaxWidth(),
+                selectedMonth = selectedMonth,
                 onMonthClick = {
                     selectedMonth = it
                 }
             )
-            Spacer(modifier = Modifier.height(Paddings.large))
-            Button(
-                onClick = {
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
+            InputCompleteButton(
+                text = stringResource(id = kr.co.nbdream.core.ui.R.string.core_ui_dialog_confirm),
+                onNextClick = {
                     onYearSelect(selectedYear)
                     onMonthSelect(selectedMonth)
                     onDismissRequest()
                 }
-            ) {
-                Text(
-                    text = stringResource(id = kr.co.nbdream.core.ui.R.string.core_ui_dialog_confirm)
-                )
-            }
+            )
         }
     }
 }
@@ -113,7 +113,7 @@ private fun YearPicker(
     ) {
         Icon(
             modifier = Modifier.clickable {
-                if(selectedYear == MIN_YEAR)
+                if (selectedYear == MIN_YEAR)
                     Toast.makeText(
                         context,
                         context.getString(R.string.feature_main_calendar_year_month_picker_min_year_warning),
@@ -125,14 +125,13 @@ private fun YearPicker(
             contentDescription = ""
         )
         Text(
-            modifier = Modifier.padding(horizontal = Paddings.medium),
+            modifier = Modifier.padding(horizontal = Paddings.xlarge),
             text = selectedYear.toString(),
-            style = MaterialTheme.typo.body1,
-            color = MaterialTheme.colors.text2
+            style = MaterialTheme.typo.h4
         )
         Icon(
             modifier = Modifier.clickable {
-                if(selectedYear == MAX_YEAR)
+                if (selectedYear == MAX_YEAR)
                     Toast.makeText(
                         context,
                         context.getString(R.string.feature_main_calendar_year_month_picker_max_year_warning),
@@ -154,7 +153,7 @@ private fun MonthPicker(
 ) {
     LazyVerticalGrid(
         modifier = modifier,
-        columns = GridCells.Fixed(4),
+        columns = GridCells.Fixed(6),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -164,6 +163,7 @@ private fun MonthPicker(
                 modifier = Modifier
                     .padding(Paddings.medium)
                     .clip(CircleShape)
+                    .aspectRatio(1f)
                     .background(
                         if (month == selectedMonth) MaterialTheme.colors.primary
                         else MaterialTheme.colors.gray9
@@ -173,6 +173,7 @@ private fun MonthPicker(
                     }
             ) {
                 Text(
+                    modifier = Modifier.align(Alignment.Center),
                     text = month.toString(),
                     style = MaterialTheme.typo.body1,
                     color =

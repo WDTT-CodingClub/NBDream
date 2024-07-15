@@ -38,8 +38,8 @@
     <string name="feature_main_calendar_nav_to_my_page_dialog_description">재배 작물을 추가해야 영농 일지를 작성할 수 있어요.</string>
 
 <!--  calendar year month picker-->
-    <string name="feature_main_calendar_year_month_picker_min_year_warning">2000년도 이전으로 선택할 수 없습니다.</string>
-    <string name="feature_main_calendar_year_month_picker_max_year_warning">2050년도 이전으로 선택할 수 없습니다.</string>
+    <string name="feature_main_calendar_year_month_picker_min_year_warning">2000년도 이전 년도를 선택할 수 없습니다.</string>
+    <string name="feature_main_calendar_year_month_picker_max_year_warning">2050년도 이후 년도를 선택할 수 없습니다.</string>
 
 <!--  add diary screen-->
     <string name="feature_main_calendar_add_diary_header_date">일자</string>
