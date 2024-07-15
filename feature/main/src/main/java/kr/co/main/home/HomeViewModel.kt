@@ -71,10 +71,7 @@ internal class HomeViewModel @Inject constructor(
         }
 
         loadingScope {
-            GetSchedulesUseCase.Params.Weekly(
-                category = ScheduleType.All,
-                weekStartDate = LocalDate.now().toString()
-            ).apply {
+            GetSchedulesUseCase.Params.Weekly.apply {
                 getSchedulesUseCase(this).collectLatest {
                     it.map(HomeScheduleUiMapper::convert).also {
                         updateState {

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kr.co.domain.entity.ScheduleEntity
 
 interface ScheduleRepository {
-    suspend fun getSchedules(category: String, startDate: String):
+    suspend fun getSchedules():
             Flow<List<ScheduleEntity>>
 
     suspend fun getSchedules(category: String, year: Int, month: Int):

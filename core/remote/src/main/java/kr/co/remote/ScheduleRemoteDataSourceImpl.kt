@@ -23,11 +23,8 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
     private val client: HttpClient
 ) : ScheduleRemoteDataSource {
 
-    override suspend fun fetchList(category: String, weekStartDate: String): Flow<List<ScheduleData>> =
-        client.get(GET_SCHEDULE_LIST_WEEK) {
-            parameter("category", category)
-            parameter("startDate", weekStartDate)
-        }
+    override suspend fun fetchList(): Flow<List<ScheduleData>> =
+        client.get(GET_SCHEDULE_LIST_WEEK)
             .body<Dto<ScheduleListResponse>>()
             .data.scheduleList.map {
                 ScheduleRemoteMapper.convert(it)
