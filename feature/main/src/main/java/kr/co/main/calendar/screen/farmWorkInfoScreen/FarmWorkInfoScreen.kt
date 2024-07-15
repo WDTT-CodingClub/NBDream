@@ -69,7 +69,7 @@ private fun FarmWorkInfoScreen(
                     settings.domStorageEnabled = true
                     settings.useWideViewPort = true
                     settings.loadWithOverviewMode = true
-                    settings.cacheMode = android.webkit.WebSettings.LOAD_NO_CACHE
+                    settings.cacheMode = android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK
                     webViewClient = WebViewClient()
                     loadUrl(state.videoUrl)
                 }
