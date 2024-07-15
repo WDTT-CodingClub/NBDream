@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -35,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kr.co.common.util.format
 import kr.co.main.R
-import kr.co.main.calendar.common.CalendarContentDropDownMenuItem
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.HolidayModel
 import kr.co.main.providers.calendar.FakeDiaryModelProvider
@@ -57,8 +54,6 @@ internal fun DiaryContent(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var expandDropDown by remember { mutableStateOf(false) }
-
     Column(modifier = modifier.fillMaxWidth()) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.weight(1f)) {
@@ -75,31 +70,10 @@ internal fun DiaryContent(
                     workDescriptions = diary.workDescriptions
                 )
             }
-            Column {
-                Icon(
-                    modifier = Modifier
-                        .scale(0.8f)
-                        .clickable {
-                            expandDropDown = true
-                        },
-                    imageVector = DreamIcon.MoreVertical,
-                    tint = MaterialTheme.colors.gray5,
-                    contentDescription = ""
-                )
-                DropdownMenu(
-                    expanded = expandDropDown,
-                    onDismissRequest = { expandDropDown = false },
-                ) {
-                    CalendarContentDropDownMenuItem(
-                        menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_edit,
-                        onClick = onEditClick
-                    )
-                    CalendarContentDropDownMenuItem(
-                        menuNameId = kr.co.nbdream.core.ui.R.string.core_ui_dropdown_menu_delete,
-                        onClick = onDeleteClick
-                    )
-                }
-            }
+            CalendarContentDropDownMenu(
+                onEditClick = onEditClick,
+                onDeleteClick = onDeleteClick
+            )
         }
         DiaryImages(
             modifier = Modifier.padding(top = Paddings.medium),
