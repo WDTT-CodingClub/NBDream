@@ -62,23 +62,20 @@ internal fun ScheduleTab(
     ) {
         Column(
             modifier = Modifier
+                .padding(horizontal = Paddings.xlarge)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (calendarCrop == null) {
-                FarmWorkCropEmptyCard(
-                    modifier = Modifier.padding(Paddings.large),
-                )
-            } else {
+            Spacer(modifier = Modifier.height(Paddings.xextra))
+            if (calendarCrop == null)
+                FarmWorkCropEmptyCard()
+            else
                 FarmWorkCalendarCard(
-                    modifier = Modifier.padding(Paddings.large),
                     calenderMonth = calendarMonth,
                     farmWorks = farmWorks,
                     navToFarmWorkInfo = navToFarmWorkInfo
                 )
-            }
-
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
             ScheduleCalendarCard(
-                modifier = Modifier.padding(Paddings.large),
                 calendarCrop = calendarCrop,
                 calendarYear = calendarYear,
                 calendarMonth = calendarMonth,
@@ -88,9 +85,8 @@ internal fun ScheduleTab(
                 allSchedules = allSchedules,
                 cropSchedules = cropSchedules
             )
-
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
             ScheduleCard(
-                modifier = Modifier.padding(Paddings.large),
                 date = selectedDate,
                 schedules =
                 allSchedules.filter { selectedDate in (it.startDate..it.endDate) } +
@@ -99,6 +95,7 @@ internal fun ScheduleTab(
                 onEditClick = onEditClick,
                 onDeleteClick = onDeleteClick
             )
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
         }
     }
 }
@@ -107,7 +104,6 @@ internal fun ScheduleTab(
 private fun FarmWorkCropEmptyCard(
     modifier: Modifier = Modifier
 ) {
-    // TODO 클릭 시 온보딩 작물 선택 화면으로 이동
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(

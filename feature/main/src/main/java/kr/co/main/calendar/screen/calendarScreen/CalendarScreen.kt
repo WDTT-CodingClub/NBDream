@@ -85,7 +85,6 @@ internal fun CalendarRoute(
 
     val reinitialize =
         navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(CalendarNavGraph.ARG_REINITIALIZE)
-
     LaunchedEffect(reinitialize) {
         Timber.d("reinitialize: $reinitialize")
         if (reinitialize == true) viewModel.reinitialize()
@@ -138,7 +137,8 @@ private fun CalendarScreen(
             CalendarScreenTopAppBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Paddings.large),
+                    .padding(horizontal = Paddings.xlarge)
+                    .padding(top = Paddings.xlarge),
                 pagerState = pagerState,
                 navToAddSchedule = {
                     navToAddSchedule(
@@ -194,7 +194,9 @@ private fun CalendarScreen(
 
 
         Surface(
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = Paddings.xlarge)
         ) {
             NavToMyPageDialog(
                 showDialog = showNavToMyPageDialog,
@@ -211,7 +213,7 @@ private fun CalendarScreen(
                 CalendarInfoPicker(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Paddings.large)
+                        .padding(top = 40.dp)
                         .background(MaterialTheme.colors.background),
                     userCrops = state.userCrops,
                     calendarYear = state.year,

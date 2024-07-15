@@ -45,11 +45,9 @@ internal fun DiaryTab(
         color = MaterialTheme.colors.background
     ) {
         Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
+            modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             Card(
-                modifier = Modifier.padding(Paddings.large),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 )

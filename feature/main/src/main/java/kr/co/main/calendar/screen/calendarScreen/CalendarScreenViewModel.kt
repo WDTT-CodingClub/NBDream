@@ -53,6 +53,7 @@ internal class CalendarScreenViewModel @Inject constructor(
     private val deleteDiary: DeleteDiaryUseCase
 ) : BaseViewModel<CalendarScreenViewModel.CalendarScreenState>(savedStateHandle),
     CalendarScreenEvent {
+
     val event: CalendarScreenEvent = this@CalendarScreenViewModel
 
     data class CalendarScreenState(
