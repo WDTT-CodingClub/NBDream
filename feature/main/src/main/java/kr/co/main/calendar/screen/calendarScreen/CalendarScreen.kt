@@ -1,6 +1,5 @@
 package kr.co.main.calendar.screen.calendarScreen
 
-import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -52,6 +51,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import kr.co.main.R
 import kr.co.main.calendar.CalendarDesignToken
+import kr.co.main.calendar.common.dialog.CalendarDialogWithToast
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.CalendarTabType
 import kr.co.main.model.calendar.type.CropModelColorType
@@ -121,11 +121,7 @@ private fun CalendarScreen(
 ) {
     Timber.d("state: $state")
 
-    val context = LocalContext.current
-
     var showNavToMyPageDialog by remember { mutableStateOf(false) }
-    var showDeleteScheduleDialog by remember { mutableStateOf(false) }
-    var showDeleteDiaryDialog by remember { mutableStateOf(false) }
 
     val pagerState = rememberPagerState {
         CalendarTabType.entries.size
@@ -166,32 +162,28 @@ private fun CalendarScreen(
             )
         }
     ) { innerPadding ->
-        DeleteScheduleDialog(
-            showDialog = showDeleteScheduleDialog,
-            onConfirm = {
-                event.onDeleteSchedule()
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.feature_main_calendar_delete_schedule_dialog_confirm),
-                    Toast.LENGTH_LONG
-                ).show()
-            },
-            onDismiss = { showDeleteScheduleDialog = false }
-        )
+        state.dialogState?.let {
+            CalendarDialogWithToast(
+                context = LocalContext.current,
+                showDialog = state.showDialog,
+                headerId = it.headerId,
+                descriptionId = it.descriptionId,
+                confirmToastId = it.confirmToastId,
+                onConfirm = it.onConfirm,
+                onDismissRequest = it.onDismissRequest
+            )
+        }
 
-        DeleteDiaryDialog(
-            showDialog = showDeleteDiaryDialog,
+        NavToMyPageDialog(
+            showDialog = showNavToMyPageDialog,
             onConfirm = {
-                event.onDeleteDiary()
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.feature_main_calendar_delete_diary_dialog_confirm),
-                    Toast.LENGTH_LONG
-                ).show()
+                showNavToMyPageDialog = false
+                navToMyPage()
             },
-            onDismiss = { showDeleteDiaryDialog = false }
+            onDismiss = {
+                showNavToMyPageDialog = false
+            }
         )
-
 
         Surface(
             modifier = Modifier
@@ -199,17 +191,6 @@ private fun CalendarScreen(
                 .padding(horizontal = Paddings.xlarge)
                 .background(MaterialTheme.colors.background)
         ) {
-            NavToMyPageDialog(
-                showDialog = showNavToMyPageDialog,
-                onConfirm = {
-                    showNavToMyPageDialog = false
-                    navToMyPage()
-                },
-                onDismiss = {
-                    showNavToMyPageDialog = false
-                }
-            )
-
             Column {
                 CalendarInfoPicker(
                     modifier = Modifier
@@ -248,7 +229,7 @@ private fun CalendarScreen(
                                 },
                                 onDeleteClick = { scheduleId ->
                                     event.onDeleteScheduleSelect(scheduleId)
-                                    showDeleteScheduleDialog = true
+                                    event.showDeleteScheduleDialog()
                                 },
                                 navToFarmWorkInfo = { title, videoUrl ->
                                     navToFarmWorkInfo(
@@ -275,7 +256,7 @@ private fun CalendarScreen(
                                 },
                                 onDeleteClick = { diaryId ->
                                     event.onDeleteDiarySelect(diaryId)
-                                    showDeleteDiaryDialog = true
+                                    event.showDeleteDiaryDialog()
                                 }
                             )
                     }
@@ -418,7 +399,6 @@ private fun NavToMyPageDialog(
     showDialog: Boolean,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     if (showDialog) {
         DreamDialog(
@@ -613,40 +593,6 @@ private fun CalendarCropPickerDropDownItem(
         style = MaterialTheme.typo.body1,
         color = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.text2
     )
-}
-
-@Composable
-private fun DeleteScheduleDialog(
-    showDialog: Boolean,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    if (showDialog) {
-        DreamDialog(
-            header = stringResource(id = R.string.feature_main_calendar_delete_schedule_dialog_title),
-            description = stringResource(id = R.string.feature_main_calendar_delete_schedule_dialog_description),
-            onConfirm = onConfirm,
-            onDismissRequest = onDismiss
-        )
-    }
-}
-
-@Composable
-private fun DeleteDiaryDialog(
-    showDialog: Boolean,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    if (showDialog) {
-        DreamDialog(
-            header = stringResource(id = R.string.feature_main_calendar_delete_diary_dialog_title),
-            description = stringResource(id = R.string.feature_main_calendar_delete_diary_dialog_description),
-            onConfirm = onConfirm,
-            onDismissRequest = onDismiss
-        )
-    }
 }
 
 @Preview(showBackground = true)

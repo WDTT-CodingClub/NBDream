@@ -5,9 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kr.co.domain.usecase.calendar.DeleteDiaryUseCase
@@ -17,6 +14,7 @@ import kr.co.domain.usecase.calendar.GetFarmWorksUseCase
 import kr.co.domain.usecase.calendar.GetHolidaysUseCase
 import kr.co.domain.usecase.calendar.GetLocalUserCropsUseCase
 import kr.co.domain.usecase.calendar.GetSchedulesUseCase
+import kr.co.main.calendar.common.dialog.CalendarDialogState
 import kr.co.main.mapper.calendar.CropModelMapper
 import kr.co.main.mapper.calendar.CropModelTypeMapper
 import kr.co.main.mapper.calendar.DiaryModelMapper
@@ -43,8 +41,9 @@ internal interface CalendarScreenEvent {
 
     fun onDeleteScheduleSelect(scheduleId: Long)
     fun onDeleteDiarySelect(diaryId: Long)
-    fun onDeleteSchedule()
-    fun onDeleteDiary()
+
+    fun showDeleteScheduleDialog()
+    fun showDeleteDiaryDialog()
 }
 
 @HiltViewModel
@@ -80,7 +79,10 @@ internal class CalendarScreenViewModel @Inject constructor(
         val diaries: List<DiaryModel> = emptyList(),
 
         val deleteScheduleId: Long? = null,
-        val deleteDiaryId: Long? = null
+        val deleteDiaryId: Long? = null,
+
+        val showDialog: Boolean = false,
+        val dialogState: CalendarDialogState? = null
     ) : State
 
     override fun createInitialState(savedState: Parcelable?): CalendarScreenState =
@@ -110,7 +112,7 @@ internal class CalendarScreenViewModel @Inject constructor(
             }
         }
         viewModelScopeEH.launch {
-            _year.collect{
+            _year.collect {
                 updateHolidays()
                 updateAllSchedules()
                 updateCropSchedules()
@@ -118,7 +120,7 @@ internal class CalendarScreenViewModel @Inject constructor(
             }
         }
         viewModelScopeEH.launch {
-            _month.collect{
+            _month.collect {
                 updateFarmWorks()
                 updateHolidays()
 
@@ -179,7 +181,31 @@ internal class CalendarScreenViewModel @Inject constructor(
         updateState { copy(deleteDiaryId = diaryId) }
     }
 
-    override fun onDeleteSchedule() {
+    override fun showDeleteScheduleDialog() {
+        updateState {
+            copy(
+                showDialog = true,
+                dialogState = CalendarDialogState.DeleteScheduleDialogState(
+                    _onConfirm = this@CalendarScreenViewModel::onDeleteSchedule,
+                    _onDismissRequest = this@CalendarScreenViewModel::onDismissRequest
+                )
+            )
+        }
+    }
+
+    override fun showDeleteDiaryDialog() {
+        updateState {
+            copy(
+                showDialog = true,
+                dialogState = CalendarDialogState.DeleteDiaryDialogState(
+                    _onConfirm = this@CalendarScreenViewModel::onDeleteDiary,
+                    _onDismissRequest = this@CalendarScreenViewModel::onDismissRequest
+                )
+            )
+        }
+    }
+
+    private fun onDeleteSchedule() {
         checkNotNull(currentState.deleteScheduleId)
         viewModelScopeEH.launch {
             deleteSchedule(DeleteScheduleUseCase.Params(currentState.deleteScheduleId!!))
@@ -188,13 +214,17 @@ internal class CalendarScreenViewModel @Inject constructor(
         }
     }
 
-    override fun onDeleteDiary() {
+    private fun onDeleteDiary() {
         checkNotNull(currentState.deleteDiaryId)
         viewModelScopeEH.launch {
             deleteDiary(DeleteDiaryUseCase.Params(currentState.deleteDiaryId!!))
         }.invokeOnCompletion {
             reinitialize()
         }
+    }
+
+    private fun onDismissRequest() {
+        updateState { copy(showDialog = false) }
     }
 
     private fun updateFarmWorks() {
