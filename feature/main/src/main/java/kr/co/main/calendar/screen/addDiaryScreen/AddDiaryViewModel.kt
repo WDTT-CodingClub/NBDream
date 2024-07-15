@@ -58,9 +58,6 @@ internal class AddDiaryViewModel @Inject constructor(
 
     ) : BaseViewModel<AddDiaryViewModel.AddDiaryScreenState>(savedStateHandle),
     AddDiaryScreenEvent {
-
-    val event: AddDiaryScreenEvent = this@AddDiaryViewModel
-
     private val _diaryId = MutableStateFlow<Long?>(null)
     private val _date = MutableStateFlow<LocalDate>(LocalDate.now())
     private val _memo = MutableStateFlow("")
@@ -68,13 +65,14 @@ internal class AddDiaryViewModel @Inject constructor(
     private val _showPreviousScreen = MutableSharedFlow<Unit>()
     val showPreviousScreen = _showPreviousScreen.asSharedFlow()
 
+    val event: AddDiaryScreenEvent = this@AddDiaryViewModel
+
     data class AddDiaryScreenState(
         val screenMode: ScreenModeType = ScreenModeType.POST_MODE,
         val calendarCrop: CropModel? = null,
+        val diaryId: Long? = null,
 
         val enableAction: Boolean = false,
-
-        val diaryId: Long? = null,
 
         val date: LocalDate = LocalDate.now(),
         val isDateValid: Boolean = true,
@@ -105,12 +103,19 @@ internal class AddDiaryViewModel @Inject constructor(
         } ?: AddDiaryScreenState()
 
     init {
+        // collect error
         viewModelScopeEH.launch {
             error.collect {
                 Timber.e("error: ${it.throwable?.message}\n${it.customError}\n${it.throwable?.cause}")
             }
         }
-
+        // bind view model state to state flow
+        with(state) {
+            select { it.diaryId }.bindState(_diaryId)
+            select { it.date }.bindState(_date)
+            select { it.memo }.bindState(_memo)
+        }
+        // get navigation arguments
         with(savedStateHandle) {
             get<String>(CalendarNavGraph.ARG_CROP_NAME_ID)?.toIntOrNull()?.let { cropNameId ->
                 updateState {
@@ -128,13 +133,7 @@ internal class AddDiaryViewModel @Inject constructor(
                 }
             }
         }
-
-        with(state) {
-            select { it.diaryId }.bindState(_diaryId)
-            select { it.date }.bindState(_date)
-            select { it.memo }.bindState(_memo)
-        }
-
+        // collect state flow
         viewModelScopeEH.launch {
             _diaryId.collect { diaryId ->
                 diaryId?.let {
@@ -144,8 +143,8 @@ internal class AddDiaryViewModel @Inject constructor(
                                 date = diaryEntity.date,
                                 images = diaryEntity.images,
                                 memo = diaryEntity.memo,
-                                workDescriptions = diaryEntity.workDescriptions.map {
-                                    WorkDescriptionModelMapper.toRight(it)
+                                workDescriptions = diaryEntity.workDescriptions.map { workDescriptionEntity ->
+                                    WorkDescriptionModelMapper.toRight(workDescriptionEntity)
                                 },
                                 workLaborer = diaryEntity.workLaborer,
                                 workHour = diaryEntity.workHours,
@@ -203,7 +202,6 @@ internal class AddDiaryViewModel @Inject constructor(
     }
 
     override fun onPostClick() {
-
         if (currentState.screenMode != ScreenModeType.POST_MODE)
             throw IllegalStateException("screen mode is not post mode")
         checkNotNull(currentState.calendarCrop)
