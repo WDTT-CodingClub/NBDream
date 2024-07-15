@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.sgp) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.jetbrainsCompose) apply false
+    alias(libs.plugins.google.gms) apply false
 }
 
 buildscript {
