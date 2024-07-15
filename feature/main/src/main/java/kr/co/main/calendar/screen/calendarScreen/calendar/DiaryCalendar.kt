@@ -1,51 +1,49 @@
 package kr.co.main.calendar.screen.calendarScreen.calendar
 
-import androidx.annotation.ColorInt
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.ParentDataModifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import kr.co.common.util.LocalDateUtil
-import kr.co.common.util.iterator
 import kr.co.main.calendar.CalendarDesignToken
 import kr.co.main.model.calendar.DiaryModel
+import kr.co.main.model.calendar.DiaryStreakMapper
+import kr.co.main.model.calendar.DiaryStreakModel
 import kr.co.main.model.calendar.HolidayModel
-import kr.co.main.model.calendar.type.CropModelColorType
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
-import kr.co.ui.theme.typo
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.Period
 
 private class DiaryCalendarStateHolder(
-    @ColorInt val cropColor: Int,
     val year: Int,
     val month: Int,
     val selectedDate: LocalDate = LocalDate.now(),
     val onDateSelect: (LocalDate) -> Unit,
     val holidays: List<HolidayModel> = emptyList(),
-    val diaries: List<DiaryModel> = emptyList()
+    val diaryStreaks: List<DiaryStreakModel> = emptyList()
 ) {
     val startWeekNum = LocalDateUtil.getStartWeekNumber(year, month)
     val endWeekNum = LocalDateUtil.getEndWeekNumber(year, month)
@@ -53,7 +51,6 @@ private class DiaryCalendarStateHolder(
 
 @Composable
 internal fun DiaryCalendar(
-    @ColorInt cropColor: Int,
     calendarYear: Int,
     calendarMonth: Int,
     selectedDate: LocalDate,
@@ -63,13 +60,12 @@ internal fun DiaryCalendar(
     modifier: Modifier = Modifier
 ) {
     val stateHolder = rememberDiaryCalendarStateHolder(
-        cropColor,
-        calendarYear,
-        calendarMonth,
-        selectedDate,
-        onDateSelect,
-        holidays,
-        diaries
+        year = calendarYear,
+        month = calendarMonth,
+        selectedDate = selectedDate,
+        onDateSelect = onDateSelect,
+        holidays = holidays,
+        diaryStreaks = DiaryStreakMapper.convert(diaries)
     )
 
     StatelessDiaryCalendar(
@@ -80,16 +76,15 @@ internal fun DiaryCalendar(
 
 @Composable
 private fun rememberDiaryCalendarStateHolder(
-    @ColorInt cropColor: Int,
     year: Int,
     month: Int,
     selectedDate: LocalDate = LocalDate.now(),
     onDateSelect: (LocalDate) -> Unit,
     holidays: List<HolidayModel> = emptyList(),
-    diaries: List<DiaryModel> = emptyList()
-) = remember(cropColor, year, month, selectedDate, onDateSelect, holidays, diaries) {
+    diaryStreaks: List<DiaryStreakModel> = emptyList()
+) = remember(year, month, selectedDate, onDateSelect, holidays, diaryStreaks) {
     DiaryCalendarStateHolder(
-        cropColor, year, month, selectedDate, onDateSelect, holidays, diaries
+        year, month, selectedDate, onDateSelect, holidays, diaryStreaks
     )
 }
 
@@ -107,19 +102,20 @@ private fun StatelessDiaryCalendar(
                 .fillMaxWidth()
                 .padding(bottom = Paddings.xlarge)
         )
-
         for (weekNum in stateHolder.startWeekNum..stateHolder.endWeekNum) {
             val weekDateRange = LocalDateUtil.getWeekDateRange(stateHolder.year, weekNum)
             DiaryCalendarRow(
                 modifier = Modifier.padding(bottom = Paddings.medium),
-                cropColor = stateHolder.cropColor,
                 calendarMonth = stateHolder.month,
                 weekDateRange = weekDateRange,
                 selectedDate = stateHolder.selectedDate,
                 onDateSelect = stateHolder.onDateSelect,
                 holidays = stateHolder.holidays.filter { it.date in weekDateRange },
-                diaries = stateHolder.diaries.filter { it.date in weekDateRange }
+                diaryStreaks = stateHolder.diaryStreaks.filter {
+                    (it.startDate in weekDateRange) or (it.endDate in weekDateRange)
+                }
             )
+
         }
     }
 }
@@ -127,71 +123,128 @@ private fun StatelessDiaryCalendar(
 
 @Composable
 private fun DiaryCalendarRow(
-    @ColorInt cropColor: Int,
     calendarMonth: Int,
     weekDateRange: ClosedRange<LocalDate>,
     selectedDate: LocalDate,
     onDateSelect: (LocalDate) -> Unit,
     holidays: List<HolidayModel>,
-    diaries: List<DiaryModel>,
+    diaryStreaks: List<DiaryStreakModel>,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier) {
-        for (date in weekDateRange) {
-            DiaryCalendarDateItem(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { onDateSelect(date) }
-                    .alpha(
-                        if (date.monthValue == calendarMonth) 1f
-                        else 0.3f
-                    ),
-                cropColor = cropColor,
-                date = date,
-                isSelected = (date == selectedDate),
-                isHoliday = holidays.any { it.date == date && it.isHoliday } or (date.dayOfWeek == DayOfWeek.SUNDAY),
-                diary = diaries.firstOrNull { it.date == date }
-            )
-        }
+    Box(modifier = modifier) {
+        CalendarDateRow(
+            modifier = Modifier
+                .zIndex(1f),
+            calendarMonth = calendarMonth,
+            weekDateRange = weekDateRange,
+            selectedDate = selectedDate,
+            onDateSelect = onDateSelect,
+            holidays = holidays
+        )
+        DiaryItemScope.DiaryCalendarDiaryRow(
+            weekDateRange = weekDateRange,
+            diaryStreaks = diaryStreaks
+        )
     }
 }
 
 @Composable
-private fun DiaryCalendarDateItem(
-    @ColorInt cropColor: Int,
-    date: LocalDate,
-    isSelected: Boolean,
-    isHoliday: Boolean,
-    diary: DiaryModel?,
+private fun DiaryItemScope.DiaryCalendarDiaryRow(
+    weekDateRange: ClosedRange<LocalDate>,
+    diaryStreaks: List<DiaryStreakModel>,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor =
-        if (isSelected) Color.Black
-        else if (diary != null) Color(cropColor)
-        else Color.Transparent
+    val density = LocalDensity.current
 
-    val textColor =
-        if (isHoliday) MaterialTheme.colors.red1
-        else if (isSelected or (diary != null)) Color.White
-        else MaterialTheme.colors.text1
+    val content: @Composable () -> Unit = {
+        diaryStreaks.forEach { diaryStreak ->
+            DiaryCalendarDiaryItem(
+                diaryStreak = diaryStreak,
+                weekStartDate = weekDateRange.start,
+                weekEndDate = weekDateRange.endInclusive
+            )
+        }
+    }
 
+    Layout(
+        modifier = modifier,
+        content = content,
+        measurePolicy = { measurables, constraints ->
+            val placeables = measurables.map {
+                val duration = with(it.parentData as DiaryItemParentData) {
+                    Period.between(startDate, endDate).days + 1
+                }
+                it.measure(
+                    constraints.copy(
+                        maxWidth = (constraints.maxWidth / 7) * (duration)
+                    )
+                )
+            }
+
+            layout(
+                width = constraints.maxWidth,
+                height = with(density) {
+                    CalendarDesignToken.CALENDAR_ITEM_SIZE.dp.toPx().toInt()
+                }
+            ) {
+                placeables.forEach {
+                    it.place(
+                        x = with(it.parentData as DiaryItemParentData) {
+                            when (startDate.dayOfWeek) {
+                                DayOfWeek.SUNDAY -> 0
+                                DayOfWeek.MONDAY -> (constraints.maxWidth / 7) * 1
+                                DayOfWeek.TUESDAY -> (constraints.maxWidth / 7) * 2
+                                DayOfWeek.WEDNESDAY -> (constraints.maxWidth / 7) * 3
+                                DayOfWeek.THURSDAY -> (constraints.maxWidth / 7) * 4
+                                DayOfWeek.FRIDAY -> (constraints.maxWidth / 7) * 5
+                                DayOfWeek.SATURDAY -> (constraints.maxWidth / 7) * 6
+                            }
+                        },
+                        y = 0
+                    )
+                }
+            }
+        }
+    )
+}
+
+@Composable
+private fun DiaryItemScope.DiaryCalendarDiaryItem(
+    diaryStreak: DiaryStreakModel,
+    weekStartDate: LocalDate,
+    weekEndDate: LocalDate,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
-            .size(CalendarDesignToken.CALENDAR_ITEM_SIZE.dp)
-            .aspectRatio(1f)
+            .height(CalendarDesignToken.CALENDAR_ITEM_SIZE.dp)
+            .fillMaxWidth()
+            .diaryDateInfo(
+                startDate = if (diaryStreak.startDate <= weekStartDate) weekStartDate else diaryStreak.startDate,
+                endDate = if (weekEndDate <= diaryStreak.endDate) weekEndDate else diaryStreak.endDate
+            )
             .clip(shape = CircleShape)
-            .background(backgroundColor)
-    ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(Paddings.medium),
-            text = date.dayOfMonth.toString(),
-            style = MaterialTheme.typo.bodyR,
-            color = textColor,
-            textAlign = TextAlign.Center
-        )
-    }
+            .background(MaterialTheme.colors.primary)
+    )
+}
+
+@LayoutScopeMarker
+@Immutable
+object DiaryItemScope {
+    @Stable
+    fun Modifier.diaryDateInfo(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ) = then(
+        DiaryItemParentData(startDate, endDate)
+    )
+}
+
+private class DiaryItemParentData(
+    val startDate: LocalDate,
+    val endDate: LocalDate
+) : ParentDataModifier {
+    override fun Density.modifyParentData(parentData: Any?) = this@DiaryItemParentData
 }
 
 @Preview(showBackground = true)
@@ -202,7 +255,6 @@ private fun DiaryCalendarPreview() {
     }
     StatelessDiaryCalendar(
         stateHolder = DiaryCalendarStateHolder(
-            cropColor = CropModelColorType.POTATO.color,
             year = 2024,
             month = 6,
             selectedDate = selectedDate,

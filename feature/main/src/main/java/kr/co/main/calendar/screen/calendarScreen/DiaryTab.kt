@@ -56,7 +56,6 @@ internal fun DiaryTab(
             ) {
                 DiaryCalendar(
                     modifier = Modifier.padding(Paddings.xlarge),
-                    cropColor = calendarCrop?.color?.color ?: Color.Transparent.toArgb(),
                     calendarYear = calendarYear,
                     calendarMonth = calendarMonth,
                     selectedDate = selectedDate,

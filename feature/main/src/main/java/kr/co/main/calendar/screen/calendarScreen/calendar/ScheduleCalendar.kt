@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -155,7 +154,7 @@ private fun ScheduleCalendarRow(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
-        ScheduleCalendarDateRow(
+        CalendarDateRow(
             modifier = Modifier
                 .zIndex(1f),
             calendarMonth = calendarMonth,
@@ -168,70 +167,6 @@ private fun ScheduleCalendarRow(
             weekDateRange = weekDateRange,
             allSchedules = allSchedules,
             cropSchedules = cropSchedules
-        )
-    }
-}
-
-@Composable
-private fun ScheduleCalendarDateRow(
-    calendarMonth: Int,
-    weekDateRange: ClosedRange<LocalDate>,
-    selectedDate: LocalDate,
-    onDateSelect: (LocalDate) -> Unit,
-    holidays: List<HolidayModel>,
-    modifier: Modifier = Modifier
-) {
-    Timber.d("ScheduleCalendarDateRow) calendarMonth: $calendarMonth, selectedDate : $selectedDate")
-    Row(modifier = modifier) {
-        for (date in weekDateRange) {
-            ScheduleCalendarDateItem(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { onDateSelect(date) }
-                    .alpha(
-                        if (date.monthValue == calendarMonth) 1f
-                        else 0.3f
-                    ),
-                date = date,
-                isSelected = (date == selectedDate),
-                isHoliday = holidays.any {
-                    it.date == date && it.isHoliday
-                } or (date.dayOfWeek == DayOfWeek.SUNDAY),
-            )
-        }
-    }
-}
-
-@Composable
-private fun ScheduleCalendarDateItem(
-    date: LocalDate,
-    isSelected: Boolean,
-    isHoliday: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val backgroundColor =
-        if (isSelected) Color.Black
-        else Color.Transparent
-
-    val textColor =
-        if (isHoliday) MaterialTheme.colors.red1
-        else if (isSelected) Color.White
-        else MaterialTheme.colors.text1
-
-    Box(
-        modifier = modifier
-            .size(CalendarDesignToken.CALENDAR_ITEM_SIZE.dp)
-            .clip(shape = CircleShape)
-            .background(backgroundColor)
-    ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(Paddings.medium),
-            text = date.dayOfMonth.toString(),
-            style = MaterialTheme.typo.bodyR,
-            color = textColor,
-            textAlign = TextAlign.Center
         )
     }
 }
@@ -316,9 +251,6 @@ private fun ScheduleItemScope.ScheduleCalendarScheduleItem(
                 endDate = if (weekEndDate <= schedule.endDate) weekEndDate else schedule.endDate
             )
             .clip(shape = CircleShape)
-            .apply {
-                if (schedule.startDate == schedule.endDate) aspectRatio(1f)
-            }
             .background(
                 color = Color(schedule.type.color)
                     .copy(
