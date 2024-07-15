@@ -241,7 +241,7 @@ private fun ScheduleCard(
                     ScheduleContents(
                         startDate = startDate,
                         isToday = true,
-                        schedules = if (expanded.not())schedules.take(3) else schedules
+                        schedules = if (expanded.not()) schedules.take(3) else schedules
                     )
                 }
         }
