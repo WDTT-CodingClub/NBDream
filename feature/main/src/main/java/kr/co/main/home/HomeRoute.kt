@@ -231,8 +231,7 @@ private fun ScheduleCard(
 
     schedules.groupBy { it.startDate }.apply {
         firstNotNullOf { (startDate, schedules) ->
-            if (expanded.not()) {
-                if (schedules.size > 3) {
+                if (schedules.size < 3) {
                     ScheduleContents(
                         startDate = startDate,
                         isToday = true,
@@ -242,16 +241,9 @@ private fun ScheduleCard(
                     ScheduleContents(
                         startDate = startDate,
                         isToday = true,
-                        schedules = schedules.take(3)
+                        schedules = if (expanded.not())schedules.take(3) else schedules
                     )
                 }
-            } else {
-                ScheduleContents(
-                    startDate = startDate,
-                    isToday = true,
-                    schedules = schedules
-                )
-            }
         }
     }.entries.drop(1).forEach { (startDate, schedules) ->
 
