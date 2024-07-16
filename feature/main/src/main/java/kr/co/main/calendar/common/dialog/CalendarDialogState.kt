@@ -30,4 +30,14 @@ internal sealed class CalendarDialogState {
         override val onDismissRequest = _onDismissRequest
         override val confirmToastId = R.string.feature_main_calendar_delete_diary_dialog_confirm
     }
+
+    data class NavToMyPageDialogState(
+        val _onConfirm: () -> Unit,
+        val _onDismissRequest: () -> Unit
+    ) : CalendarDialogState() {
+        override val headerId = R.string.feature_main_calendar_nav_to_my_page_dialog_title
+        override val descriptionId = R.string.feature_main_calendar_nav_to_my_page_dialog_description
+        override val onConfirm = _onConfirm
+        override val onDismissRequest = _onDismissRequest
+    }
 }

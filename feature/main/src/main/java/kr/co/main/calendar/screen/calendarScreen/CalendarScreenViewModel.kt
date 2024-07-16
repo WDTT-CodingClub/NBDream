@@ -44,6 +44,7 @@ internal interface CalendarScreenEvent {
 
     fun showDeleteScheduleDialog()
     fun showDeleteDiaryDialog()
+    fun showNavToMyPageDialog(navToMyPage: () -> Unit)
 }
 
 @HiltViewModel
@@ -199,6 +200,18 @@ internal class CalendarScreenViewModel @Inject constructor(
                 showDialog = true,
                 dialogState = CalendarDialogState.DeleteDiaryDialogState(
                     _onConfirm = this@CalendarScreenViewModel::onDeleteDiary,
+                    _onDismissRequest = this@CalendarScreenViewModel::onDismissRequest
+                )
+            )
+        }
+    }
+
+    override fun showNavToMyPageDialog(navToMyPage: () -> Unit) {
+        updateState {
+            copy(
+                showDialog = true,
+                dialogState = CalendarDialogState.NavToMyPageDialogState(
+                    _onConfirm = navToMyPage,
                     _onDismissRequest = this@CalendarScreenViewModel::onDismissRequest
                 )
             )

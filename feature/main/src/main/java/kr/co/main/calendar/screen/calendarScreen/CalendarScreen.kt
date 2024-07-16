@@ -65,7 +65,6 @@ import kr.co.ui.icon.dreamicon.Spinner
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import kr.co.ui.widget.DreamDialog
 import kr.co.ui.widget.DreamTopAppBar
 import timber.log.Timber
 
@@ -121,8 +120,6 @@ private fun CalendarScreen(
 ) {
     Timber.d("state: $state")
 
-    var showNavToMyPageDialog by remember { mutableStateOf(false) }
-
     val pagerState = rememberPagerState {
         CalendarTabType.entries.size
     }
@@ -145,7 +142,7 @@ private fun CalendarScreen(
                 },
                 navToAddDiary = {
                     if (state.crop == null) {
-                        showNavToMyPageDialog = true
+                        event.showNavToMyPageDialog(navToMyPage)
                     } else {
                         navToAddDiary(
                             state.crop.type.nameId,
@@ -173,17 +170,6 @@ private fun CalendarScreen(
                 onDismissRequest = it.onDismissRequest
             )
         }
-
-        NavToMyPageDialog(
-            showDialog = showNavToMyPageDialog,
-            onConfirm = {
-                showNavToMyPageDialog = false
-                navToMyPage()
-            },
-            onDismiss = {
-                showNavToMyPageDialog = false
-            }
-        )
 
         Surface(
             modifier = Modifier
@@ -391,22 +377,6 @@ private fun CalendarScreenTopAppBarActions(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun NavToMyPageDialog(
-    showDialog: Boolean,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    if (showDialog) {
-        DreamDialog(
-            header = stringResource(id = R.string.feature_main_calendar_nav_to_my_page_dialog_title),
-            description = stringResource(id = R.string.feature_main_calendar_nav_to_my_page_dialog_description),
-            onConfirm = onConfirm,
-            onDismissRequest = onDismiss
-        )
     }
 }
 
