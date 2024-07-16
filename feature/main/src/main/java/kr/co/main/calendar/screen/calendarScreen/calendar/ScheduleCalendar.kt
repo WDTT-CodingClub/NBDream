@@ -1,19 +1,13 @@
 package kr.co.main.calendar.screen.calendarScreen.calendar
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.LayoutScopeMarker
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
@@ -21,21 +15,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import kr.co.common.util.LocalDateUtil
-import kr.co.common.util.iterator
 import kr.co.domain.entity.type.HolidayType
 import kr.co.main.calendar.CalendarDesignToken
 import kr.co.main.model.calendar.CropModel
@@ -44,8 +34,6 @@ import kr.co.main.model.calendar.ScheduleModel
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.ui.theme.Paddings
-import kr.co.ui.theme.colors
-import kr.co.ui.theme.typo
 import timber.log.Timber
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -155,7 +143,7 @@ private fun ScheduleCalendarRow(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
-        ScheduleCalendarDateRow(
+        CalendarDateRow(
             modifier = Modifier
                 .zIndex(1f),
             calendarMonth = calendarMonth,
@@ -168,70 +156,6 @@ private fun ScheduleCalendarRow(
             weekDateRange = weekDateRange,
             allSchedules = allSchedules,
             cropSchedules = cropSchedules
-        )
-    }
-}
-
-@Composable
-private fun ScheduleCalendarDateRow(
-    calendarMonth: Int,
-    weekDateRange: ClosedRange<LocalDate>,
-    selectedDate: LocalDate,
-    onDateSelect: (LocalDate) -> Unit,
-    holidays: List<HolidayModel>,
-    modifier: Modifier = Modifier
-) {
-    Timber.d("ScheduleCalendarDateRow) calendarMonth: $calendarMonth, selectedDate : $selectedDate")
-    Row(modifier = modifier) {
-        for (date in weekDateRange) {
-            ScheduleCalendarDateItem(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { onDateSelect(date) }
-                    .alpha(
-                        if (date.monthValue == calendarMonth) 1f
-                        else 0.3f
-                    ),
-                date = date,
-                isSelected = (date == selectedDate),
-                isHoliday = holidays.any {
-                    it.date == date && it.isHoliday
-                } or (date.dayOfWeek == DayOfWeek.SUNDAY),
-            )
-        }
-    }
-}
-
-@Composable
-private fun ScheduleCalendarDateItem(
-    date: LocalDate,
-    isSelected: Boolean,
-    isHoliday: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val backgroundColor =
-        if (isSelected) Color.Black
-        else Color.Transparent
-
-    val textColor =
-        if (isHoliday) MaterialTheme.colors.red1
-        else if (isSelected) Color.White
-        else MaterialTheme.colors.text1
-
-    Box(
-        modifier = modifier
-            .size(CalendarDesignToken.CALENDAR_ITEM_SIZE.dp)
-            .clip(shape = CircleShape)
-            .background(backgroundColor)
-    ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(Paddings.medium),
-            text = date.dayOfMonth.toString(),
-            style = MaterialTheme.typo.bodyR,
-            color = textColor,
-            textAlign = TextAlign.Center
         )
     }
 }
@@ -261,14 +185,14 @@ private fun ScheduleItemScope.ScheduleCalendarScheduleRow(
         modifier = modifier,
         content = content,
         measurePolicy = { measurables, constraints ->
+            val singleWidth = constraints.maxWidth / 7
+
             val placeables = measurables.map {
                 val duration = with(it.parentData as ScheduleItemParentData) {
                     Period.between(startDate, endDate).days + 1
                 }
                 it.measure(
-                    constraints.copy(
-                        maxWidth = (constraints.maxWidth / 7) * (duration)
-                    )
+                    constraints.copy(maxWidth = singleWidth * duration)
                 )
             }
 
@@ -281,14 +205,15 @@ private fun ScheduleItemScope.ScheduleCalendarScheduleRow(
                 placeables.forEach {
                     it.place(
                         x = with(it.parentData as ScheduleItemParentData) {
+                            @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
                             when (startDate.dayOfWeek) {
                                 DayOfWeek.SUNDAY -> 0
-                                DayOfWeek.MONDAY -> (constraints.maxWidth / 7) * 1
-                                DayOfWeek.TUESDAY -> (constraints.maxWidth / 7) * 2
-                                DayOfWeek.WEDNESDAY -> (constraints.maxWidth / 7) * 3
-                                DayOfWeek.THURSDAY -> (constraints.maxWidth / 7) * 4
-                                DayOfWeek.FRIDAY -> (constraints.maxWidth / 7) * 5
-                                DayOfWeek.SATURDAY -> (constraints.maxWidth / 7) * 6
+                                DayOfWeek.MONDAY -> singleWidth * 1
+                                DayOfWeek.TUESDAY -> singleWidth * 2
+                                DayOfWeek.WEDNESDAY -> singleWidth * 3
+                                DayOfWeek.THURSDAY -> singleWidth * 4
+                                DayOfWeek.FRIDAY -> singleWidth * 5
+                                DayOfWeek.SATURDAY -> singleWidth * 6
                             }
                         },
                         y = 0
@@ -316,9 +241,6 @@ private fun ScheduleItemScope.ScheduleCalendarScheduleItem(
                 endDate = if (weekEndDate <= schedule.endDate) weekEndDate else schedule.endDate
             )
             .clip(shape = CircleShape)
-            .apply {
-                if (schedule.startDate == schedule.endDate) aspectRatio(1f)
-            }
             .background(
                 color = Color(schedule.type.color)
                     .copy(

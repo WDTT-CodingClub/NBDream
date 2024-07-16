@@ -1,7 +1,9 @@
 package kr.co.main.calendar.screen.calendarScreen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import kr.co.main.R
@@ -37,6 +38,7 @@ internal fun DiaryTab(
     holidays: List<HolidayModel>,
     diaries: List<DiaryModel>,
     onEditClick: (Long) -> Unit,
+    onDeleteClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -44,18 +46,17 @@ internal fun DiaryTab(
         color = MaterialTheme.colors.background
     ) {
         Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
+            modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
+            Spacer(modifier = Modifier.height(Paddings.xextra))
+
             Card(
-                modifier = Modifier.padding(Paddings.large),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 )
             ) {
                 DiaryCalendar(
                     modifier = Modifier.padding(Paddings.xlarge),
-                    cropColor = calendarCrop?.color?.color ?: Color.Transparent.toArgb(),
                     calendarYear = calendarYear,
                     calendarMonth = calendarMonth,
                     selectedDate = selectedDate,
@@ -81,7 +82,8 @@ internal fun DiaryTab(
                     DiaryContent(
                         modifier = Modifier.padding(Paddings.xlarge),
                         diary = diary,
-                        onEditClick = {onEditClick(diary.id)}
+                        onEditClick = { onEditClick(diary.id) },
+                        onDeleteClick = { onDeleteClick(diary.id) }
                     )
                 }
             }

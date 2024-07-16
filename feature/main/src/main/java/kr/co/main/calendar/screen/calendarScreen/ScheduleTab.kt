@@ -52,6 +52,8 @@ internal fun ScheduleTab(
     allSchedules: List<ScheduleModel>,
     cropSchedules: List<ScheduleModel>,
     onEditClick: (Long) -> Unit,
+    onDeleteClick: (Long) -> Unit,
+    navToFarmWorkInfo: (String?, String?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -62,20 +64,17 @@ internal fun ScheduleTab(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
         ) {
-            if (calendarCrop == null) {
-                FarmWorkCropEmptyCard(
-                    modifier = Modifier.padding(Paddings.large),
-                )
-            } else {
+            Spacer(modifier = Modifier.height(Paddings.xextra))
+            if (calendarCrop == null)
+                FarmWorkCropEmptyCard()
+            else
                 FarmWorkCalendarCard(
-                    modifier = Modifier.padding(Paddings.large),
                     calenderMonth = calendarMonth,
-                    farmWorks = farmWorks
+                    farmWorks = farmWorks,
+                    navToFarmWorkInfo = navToFarmWorkInfo
                 )
-            }
-
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
             ScheduleCalendarCard(
-                modifier = Modifier.padding(Paddings.large),
                 calendarCrop = calendarCrop,
                 calendarYear = calendarYear,
                 calendarMonth = calendarMonth,
@@ -85,16 +84,17 @@ internal fun ScheduleTab(
                 allSchedules = allSchedules,
                 cropSchedules = cropSchedules
             )
-
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
             ScheduleCard(
-                modifier = Modifier.padding(Paddings.large),
                 date = selectedDate,
                 schedules =
                 allSchedules.filter { selectedDate in (it.startDate..it.endDate) } +
                         cropSchedules.filter { selectedDate in (it.startDate..it.endDate) },
                 holidays = holidays.filter { selectedDate == it.date },
-                onEditClick = onEditClick
+                onEditClick = onEditClick,
+                onDeleteClick = onDeleteClick
             )
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
         }
     }
 }
@@ -103,7 +103,6 @@ internal fun ScheduleTab(
 private fun FarmWorkCropEmptyCard(
     modifier: Modifier = Modifier
 ) {
-    // TODO 클릭 시 온보딩 작물 선택 화면으로 이동
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -126,6 +125,7 @@ private fun FarmWorkCropEmptyCard(
 private fun FarmWorkCalendarCard(
     calenderMonth: Int,
     farmWorks: List<FarmWorkModel>,
+    navToFarmWorkInfo: (String?, String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Timber.d("FarmWorkCalendarCard) farmWorks: $farmWorks")
@@ -141,7 +141,12 @@ private fun FarmWorkCalendarCard(
                 .fillMaxWidth()
                 .padding(Paddings.large),
             calendarMonth = calenderMonth,
-            farmWorks = farmWorks
+            farmWorks = farmWorks,
+            onFarmWorkClick = { farmWorkModel ->
+                with(farmWorkModel) {
+                    if (videoUrl?.isNotBlank() == true) navToFarmWorkInfo(farmWork, videoUrl)
+                }
+            }
         )
     }
 }
@@ -241,6 +246,7 @@ private fun ScheduleCard(
     schedules: List<ScheduleModel>,
     holidays: List<HolidayModel>,
     onEditClick: (Long) -> Unit,
+    onDeleteClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -291,6 +297,7 @@ private fun ScheduleCard(
                     ScheduleContent(
                         modifier = Modifier.padding(Paddings.medium),
                         onEditClick = { onEditClick(schedule.id) },
+                        onDeleteClick = { onDeleteClick(schedule.id) },
                         schedule = schedule
                     )
                 }

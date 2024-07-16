@@ -3,17 +3,18 @@ package kr.co.main.calendar.screen.calendarScreen
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
+import kr.co.domain.usecase.calendar.DeleteDiaryUseCase
+import kr.co.domain.usecase.calendar.DeleteScheduleUseCase
 import kr.co.domain.usecase.calendar.GetDiariesUseCase
 import kr.co.domain.usecase.calendar.GetFarmWorksUseCase
 import kr.co.domain.usecase.calendar.GetHolidaysUseCase
+import kr.co.domain.usecase.calendar.GetLocalUserCropsUseCase
 import kr.co.domain.usecase.calendar.GetSchedulesUseCase
-import kr.co.domain.usecase.calendar.GetUserCropsUseCase
+import kr.co.main.calendar.common.dialog.CalendarDialogState
 import kr.co.main.mapper.calendar.CropModelMapper
 import kr.co.main.mapper.calendar.CropModelTypeMapper
 import kr.co.main.mapper.calendar.DiaryModelMapper
@@ -37,18 +38,31 @@ internal interface CalendarScreenEvent {
     fun onMonthSelect(month: Int)
     fun onCropSelect(crop: CropModel)
     fun onDateSelect(date: LocalDate)
+
+    fun onDeleteScheduleSelect(scheduleId: Long)
+    fun onDeleteDiarySelect(diaryId: Long)
+
+    fun showDeleteScheduleDialog()
+    fun showDeleteDiaryDialog()
+    fun showNavToMyPageDialog(navToMyPage: () -> Unit)
 }
 
 @HiltViewModel
 internal class CalendarScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getUserCrops: GetUserCropsUseCase,
+    private val getLocalUserCrops: GetLocalUserCropsUseCase,
     private val getFarmWorks: GetFarmWorksUseCase,
     private val getHolidays: GetHolidaysUseCase,
     private val getSchedules: GetSchedulesUseCase,
-    private val getDiaries: GetDiariesUseCase
+    private val getDiaries: GetDiariesUseCase,
+    private val deleteSchedule: DeleteScheduleUseCase,
+    private val deleteDiary: DeleteDiaryUseCase
 ) : BaseViewModel<CalendarScreenViewModel.CalendarScreenState>(savedStateHandle),
     CalendarScreenEvent {
+    private val _crop = MutableStateFlow<CropModel?>(null)
+    private val _year = MutableStateFlow(LocalDate.now().year)
+    private val _month = MutableStateFlow(LocalDate.now().monthValue)
+
     val event: CalendarScreenEvent = this@CalendarScreenViewModel
 
     data class CalendarScreenState(
@@ -63,7 +77,13 @@ internal class CalendarScreenViewModel @Inject constructor(
         val holidays: List<HolidayModel> = emptyList(),
         val allSchedules: List<ScheduleModel> = emptyList(),
         val cropSchedules: List<ScheduleModel> = emptyList(),
-        val diaries: List<DiaryModel> = emptyList()
+        val diaries: List<DiaryModel> = emptyList(),
+
+        val deleteScheduleId: Long? = null,
+        val deleteDiaryId: Long? = null,
+
+        val showDialog: Boolean = false,
+        val dialogState: CalendarDialogState? = null
     ) : State
 
     override fun createInitialState(savedState: Parcelable?): CalendarScreenState =
@@ -71,15 +91,59 @@ internal class CalendarScreenViewModel @Inject constructor(
 
     init {
         Timber.d("init) called")
+        // collect error
         viewModelScopeEH.launch {
             error.collect {
                 Timber.e("error: ${it.throwable?.message}\n${it.customError}\n${it.throwable?.cause}")
             }
         }
 
-        updateUserCrops()
-        updateHolidays()
-        updateAllSchedules()
+        // bind view model state to state flow
+        with(state) {
+            select { it.crop }.bindState(_crop)
+            select { it.year }.bindState(_year)
+            select { it.month }.bindState(_month)
+        }
+        // collect state flow
+        viewModelScopeEH.launch {
+            _crop.collect {
+                updateFarmWorks()
+                updateCropSchedules()
+                updateDiaries()
+            }
+        }
+        viewModelScopeEH.launch {
+            _year.collect {
+                updateHolidays()
+                updateAllSchedules()
+                updateCropSchedules()
+                updateDiaries()
+            }
+        }
+        viewModelScopeEH.launch {
+            _month.collect {
+                updateFarmWorks()
+                updateHolidays()
+
+                updateAllSchedules()
+                updateCropSchedules()
+                updateDiaries()
+            }
+        }
+        // collect room flow
+        viewModelScopeEH.launch {
+            getLocalUserCrops().collect { userCrops ->
+                Timber.d("getUserCrops) userCrops: $userCrops")
+                userCrops.map { CropModelMapper.toRight(it) }.let {
+                    updateState {
+                        copy(userCrops = it)
+                    }
+                    updateState {
+                        copy(crop = it.firstOrNull())
+                    }
+                }
+            }
+        }
     }
 
     fun reinitialize() {
@@ -91,17 +155,17 @@ internal class CalendarScreenViewModel @Inject constructor(
 
     override fun onYearSelect(year: Int) {
         Timber.d("onYearSelect) year: $year")
-        updateYear(year)
+        updateState { copy(year = year) }
     }
 
     override fun onMonthSelect(month: Int) {
         Timber.d("onMonthSelect) month: $month")
-        updateMonth(month)
+        updateState { copy(month = month) }
     }
 
     override fun onCropSelect(crop: CropModel) {
         Timber.d("onCropSelect) crop: $crop")
-        updateCrop(crop)
+        updateState { copy(crop = crop) }
     }
 
     override fun onDateSelect(date: LocalDate) {
@@ -110,54 +174,70 @@ internal class CalendarScreenViewModel @Inject constructor(
         Timber.d("onDateSelect) updated date: ${currentState.selectedDate}")
     }
 
-    private fun updateUserCrops() {
-        Timber.d("updateUserCrops) called")
-        viewModelScopeEH.launch {
-            getUserCrops().collect { userCrops ->
-                Timber.d("getUserCrops) userCrops: $userCrops")
-                userCrops.map { CropModelMapper.toRight(it) }.let {
-                    updateState {
-                        copy(userCrops = it)
-                    }
-                    updateCrop(currentState.userCrops.firstOrNull())
-                }
-            }
+    override fun onDeleteScheduleSelect(scheduleId: Long) {
+        updateState { copy(deleteScheduleId = scheduleId) }
+    }
+
+    override fun onDeleteDiarySelect(diaryId: Long) {
+        updateState { copy(deleteDiaryId = diaryId) }
+    }
+
+    override fun showDeleteScheduleDialog() {
+        updateState {
+            copy(
+                showDialog = true,
+                dialogState = CalendarDialogState.DeleteScheduleDialogState(
+                    _onConfirm = this@CalendarScreenViewModel::onDeleteSchedule,
+                    _onDismissRequest = this@CalendarScreenViewModel::onDismissRequest
+                )
+            )
         }
     }
 
-    private fun updateCrop(newCrop: CropModel?) {
-        Timber.d("updateCrop) new crop: $newCrop")
-        if (currentState.crop == newCrop) return
-
-        updateState { copy(crop = newCrop) }
-        updateFarmWorks()
-        updateCropSchedules()
-        updateDiaries()
+    override fun showDeleteDiaryDialog() {
+        updateState {
+            copy(
+                showDialog = true,
+                dialogState = CalendarDialogState.DeleteDiaryDialogState(
+                    _onConfirm = this@CalendarScreenViewModel::onDeleteDiary,
+                    _onDismissRequest = this@CalendarScreenViewModel::onDismissRequest
+                )
+            )
+        }
     }
 
-    private fun updateYear(newYear: Int) {
-        Timber.d("updateYear) newYear: $newYear")
-        if (currentState.year == newYear) return
-
-        updateState { copy(year = newYear) }
-        updateHolidays()
-        updateAllSchedules()
-        updateCropSchedules()
-        updateDiaries()
+    override fun showNavToMyPageDialog(navToMyPage: () -> Unit) {
+        updateState {
+            copy(
+                showDialog = true,
+                dialogState = CalendarDialogState.NavToMyPageDialogState(
+                    _onConfirm = navToMyPage,
+                    _onDismissRequest = this@CalendarScreenViewModel::onDismissRequest
+                )
+            )
+        }
     }
 
-    private fun updateMonth(newMonth: Int) {
-        Timber.d("updateMonth) newMonth: $newMonth")
-        if (currentState.month == newMonth) return
+    private fun onDeleteSchedule() {
+        checkNotNull(currentState.deleteScheduleId)
+        viewModelScopeEH.launch {
+            deleteSchedule(DeleteScheduleUseCase.Params(currentState.deleteScheduleId!!))
+        }.invokeOnCompletion {
+            reinitialize()
+        }
+    }
 
-        updateState { copy(month = newMonth) }
+    private fun onDeleteDiary() {
+        checkNotNull(currentState.deleteDiaryId)
+        viewModelScopeEH.launch {
+            deleteDiary(DeleteDiaryUseCase.Params(currentState.deleteDiaryId!!))
+        }.invokeOnCompletion {
+            reinitialize()
+        }
+    }
 
-        updateFarmWorks()
-        updateHolidays()
-
-        updateAllSchedules()
-        updateCropSchedules()
-        updateDiaries()
+    private fun onDismissRequest() {
+        updateState { copy(showDialog = false) }
     }
 
     private fun updateFarmWorks() {
@@ -206,11 +286,12 @@ internal class CalendarScreenViewModel @Inject constructor(
                     year = currentState.year,
                     month = currentState.month
                 )
-            ).collect { allSchedules ->
+            ).cancellable().collect { allSchedules ->
                 Timber.d("getSchedules) allSchedules: ${allSchedules.map { it.title }}")
                 updateState {
                     copy(allSchedules = allSchedules.map { ScheduleModelMapper.toRight(it) })
                 }
+                this.coroutineContext.job.cancel()
             }
         }
     }
@@ -231,11 +312,12 @@ internal class CalendarScreenViewModel @Inject constructor(
                     year = currentState.year,
                     month = currentState.month
                 )
-            ).collect { cropSchedules ->
+            ).cancellable().collect { cropSchedules ->
                 Timber.d("getSchedules) cropSchedules: ${cropSchedules.map { it.title }}")
                 updateState {
                     copy(cropSchedules = cropSchedules.map { ScheduleModelMapper.toRight(it) })
                 }
+                this.coroutineContext.job.cancel()
             }
         }
     }
@@ -254,11 +336,12 @@ internal class CalendarScreenViewModel @Inject constructor(
                     year = currentState.year,
                     month = currentState.month
                 )
-            ).collect { diaries ->
+            ).cancellable().collect { diaries ->
                 Timber.d("getDiaries) diaries: ${diaries.map { it.date }}")
                 updateState {
                     copy(diaries = diaries.map { DiaryModelMapper.toRight(it) })
                 }
+                this.coroutineContext.job.cancel()
             }
         }
     }
