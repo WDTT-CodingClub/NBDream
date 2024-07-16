@@ -231,11 +231,19 @@ private fun ScheduleCard(
 
     schedules.groupBy { it.startDate }.apply {
         firstNotNullOf { (startDate, schedules) ->
-            ScheduleContents(
-                startDate = startDate,
-                isToday = true,
-                schedules = schedules
-            )
+                if (schedules.size < 3) {
+                    ScheduleContents(
+                        startDate = startDate,
+                        isToday = true,
+                        schedules = schedules
+                    )
+                } else {
+                    ScheduleContents(
+                        startDate = startDate,
+                        isToday = true,
+                        schedules = if (expanded.not()) schedules.take(3) else schedules
+                    )
+                }
         }
     }.entries.drop(1).forEach { (startDate, schedules) ->
 
@@ -251,27 +259,29 @@ private fun ScheduleCard(
 
     Spacer(modifier = Modifier.height(48.dp))
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .noRippleClickable(onClick = { expanded = !expanded }),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = if (!expanded) "펼쳐보기" else "접기",
-            style = MaterialTheme.typo.label,
-            color = MaterialTheme.colors.gray3
-        )
+    if (schedules.size > 3) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .noRippleClickable(onClick = { expanded = !expanded }),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = if (!expanded) "펼쳐보기" else "접기",
+                style = MaterialTheme.typo.label,
+                color = MaterialTheme.colors.gray3
+            )
 
-        Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(4.dp))
 
-        Icon(
-            modifier = Modifier.size(20.dp),
-            imageVector = if (!expanded) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowUp,
-            contentDescription = "expand",
-            tint = MaterialTheme.colors.gray5
-        )
+            Icon(
+                modifier = Modifier.size(20.dp),
+                imageVector = if (!expanded) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowUp,
+                contentDescription = "expand",
+                tint = MaterialTheme.colors.gray5
+            )
+        }
     }
 }
 
@@ -314,6 +324,7 @@ private fun ScheduleContents(
         style = MaterialTheme.typo.body1,
         color = MaterialTheme.colors.primary
     )
+
     Spacer(modifier = Modifier.height(36.dp))
 
     Column(

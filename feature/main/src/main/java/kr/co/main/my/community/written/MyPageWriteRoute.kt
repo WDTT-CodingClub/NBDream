@@ -190,7 +190,7 @@ private fun MyPageCommunityScreen(
 }
 
 @Composable
-fun <T> ContentPage(
+private fun <T> ContentPage(
     items: List<T>,
     emptyText: String,
     content: @Composable (T) -> Unit

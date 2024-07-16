@@ -4,10 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kr.co.data.model.data.calendar.ScheduleData
 
 interface ScheduleRemoteDataSource {
-    suspend fun fetchList(
-        category:String,
-        weekStartDate:String
-    ): Flow<List<ScheduleData>>
+    suspend fun fetchList(): Flow<List<ScheduleData>>
 
     suspend fun fetchList(
         category:String,

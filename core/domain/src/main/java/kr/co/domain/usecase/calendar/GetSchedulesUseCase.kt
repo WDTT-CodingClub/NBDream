@@ -14,10 +14,7 @@ class GetSchedulesUseCase @Inject constructor(
 ) : SuspendFlowUseCase<GetSchedulesUseCase.Params, List<ScheduleEntity>>() {
 
     sealed class Params {
-        data class Weekly(
-            val category: ScheduleType,
-            val weekStartDate: String
-        ) : Params()
+        data object Weekly : Params()
 
         data class Monthly(
             val category: ScheduleType,
@@ -29,10 +26,7 @@ class GetSchedulesUseCase @Inject constructor(
     override suspend fun build(params: Params?): Flow<List<ScheduleEntity>> {
         checkNotNull(params)
         return when (params) {
-            is Params.Weekly -> repository.getSchedules(
-                category = params.category.koreanName,
-                startDate = params.weekStartDate
-            )
+            is Params.Weekly -> repository.getSchedules()
             is Params.Monthly -> repository.getSchedules(
                 category = params.category.koreanName,
                 year = params.year,

@@ -11,8 +11,8 @@ import javax.inject.Inject
 internal class ScheduleRepositoryImpl @Inject constructor(
     private val remote: ScheduleRemoteDataSource
 ) : ScheduleRepository {
-    override suspend fun getSchedules(category: String, startDate: String): Flow<List<ScheduleEntity>> =
-        remote.fetchList(category, startDate).transform {
+    override suspend fun getSchedules(): Flow<List<ScheduleEntity>> =
+        remote.fetchList().transform {
             emit(
                 it.map { scheduleData -> ScheduleMapper.convert(scheduleData) }
             )
