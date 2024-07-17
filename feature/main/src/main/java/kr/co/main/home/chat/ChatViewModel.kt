@@ -41,11 +41,17 @@ internal class ChatViewModel @Inject constructor(
 
             2 -> {
                 updateState {
-                    copy(
-                        chats = this.chats + (false to "작물별로 어떤 토양이 적합한지 궁금해!")
-                                + (true to "어떤 작물이 궁금하신가요? \n 작물을 선택해주세요"),
-                        chatType = 1
-                    )
+                    copy(chats = this.chats + (false to "작물별로 어떤 토양이 적합한지 궁금해!"))
+                }
+
+                loadingScope {
+                    if (currentState.address.isNullOrBlank()) throw CustomException(customError = CustomErrorType.NOT_FOUND)
+                    updateState {
+                        copy(
+                            chats = this.chats + (true to "어떤 작물이 궁금하신가요? \n 작물을 선택해주세요"),
+                            chatType = 1
+                        )
+                    }
                 }
             }
         }
