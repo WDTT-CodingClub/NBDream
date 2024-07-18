@@ -1,5 +1,6 @@
 package kr.co.main.calendar.screen.calendarScreen
 
+import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import kr.co.main.R
@@ -130,6 +132,8 @@ private fun FarmWorkCalendarCard(
 ) {
     Timber.d("FarmWorkCalendarCard) farmWorks: $farmWorks")
 
+    val context = LocalContext.current
+
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -145,6 +149,11 @@ private fun FarmWorkCalendarCard(
             onFarmWorkClick = { farmWorkModel ->
                 with(farmWorkModel) {
                     if (videoUrl?.isNotBlank() == true) navToFarmWorkInfo(farmWork, videoUrl)
+                    else Toast.makeText(
+                        context,
+                        context.getString(R.string.feature_main_calendar_farm_work_no_video),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         )
