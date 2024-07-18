@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import kr.co.data.source.remote.AccountBookRemoteDataSource
 import kr.co.data.source.remote.AiRemoteDataSource
+import kr.co.data.source.remote.AlarmStatusDataSource
 import kr.co.data.source.remote.AuthRemoteDataSource
 import kr.co.data.source.remote.CommunityRemoteDataSource
 import kr.co.data.source.remote.DiaryRemoteDataSource
@@ -19,6 +20,7 @@ import kr.co.data.source.remote.UserRemoteDataSource
 import kr.co.data.source.remote.WeatherRemoteDataSource
 import kr.co.remote.AccountBookRemoteDataSourceImpl
 import kr.co.remote.AiRemoteDataSourceImpl
+import kr.co.remote.AlarmStatusRemoteDataSourceImpl
 import kr.co.remote.AuthRemoteDataSourceImpl
 import kr.co.remote.CommunityRemoteDataSourceImpl
 import kr.co.remote.DiaryRemoteDataSourceImpl
@@ -106,4 +108,9 @@ internal class RemoteModule {
     fun provideNotificationApi(
         client: HttpClient
     ): FcmRemoteDataSource = FcmRemoteDataSourceImpl(client)
+    @Singleton
+    @Provides
+    fun provideAlarmApi(
+        client: HttpClient
+    ): AlarmStatusDataSource = AlarmStatusRemoteDataSourceImpl(client)
 }

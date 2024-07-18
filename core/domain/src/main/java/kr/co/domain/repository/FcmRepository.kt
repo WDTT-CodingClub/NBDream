@@ -1,19 +1,10 @@
 package kr.co.domain.repository
 
-import kr.co.domain.entity.AlarmStatusEntity
+import kotlinx.coroutines.flow.Flow
 
 interface FcmRepository {
-    suspend fun updateFcmToken(
-        token: String
-    )
-    suspend fun sendFcmMessage(
-        token: String,
-        title: String,
-        body: String
-    )
-    suspend fun getAlarmStatus(): AlarmStatusEntity
-    suspend fun updateAlarmSettings(
-        commentAlarm: Boolean,
-        scheduleAlarm: Boolean
-    )
+    suspend fun saveFcmToken(token: String)
+    suspend fun invalidateFcmToken()
+    fun fetchFcmToken(): Flow<String?>
+    suspend fun sendFcmMessage(token: String, title: String, body: String)
 }

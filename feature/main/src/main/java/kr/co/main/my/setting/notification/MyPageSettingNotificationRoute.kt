@@ -17,8 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -44,14 +42,18 @@ internal fun MyPageSettingNotificationRoute(
 
     MyPageSettingNotificationScreen(
         state = state,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        onCommentAlarmChanged = viewModel::updateCommentAlarm,
+        onScheduleAlarmChanged = viewModel::updateScheduleAlarm
     )
 }
 
 @Composable
 private fun MyPageSettingNotificationScreen(
     popBackStack: () -> Unit,
-    state: MyPageSettingNotificationViewModel.State = MyPageSettingNotificationViewModel.State()
+    state: MyPageSettingNotificationViewModel.State,
+    onCommentAlarmChanged: (Boolean) -> Unit,
+    onScheduleAlarmChanged: (Boolean) -> Unit
 ) {
    Scaffold(
        containerColor = MaterialTheme.colors.white,
@@ -82,7 +84,10 @@ private fun MyPageSettingNotificationScreen(
        ) {
            MyPageNotificationSetting.Group.entries.forEachIndexed { index, group ->
                NotificationColumn(
-                   group = group
+                   group = group,
+                   state = state,
+                   onCommentAlarmChanged = onCommentAlarmChanged,
+                   onScheduleAlarmChanged = onScheduleAlarmChanged
                )
                if (index != MyPageNotificationSetting.Group.entries.lastIndex)
                    HorizontalDivider(
@@ -91,12 +96,15 @@ private fun MyPageSettingNotificationScreen(
                    )
            }
        }
-   } 
+   }
 }
 
 @Composable
 private fun NotificationColumn(
-    group: MyPageNotificationSetting.Group
+    group: MyPageNotificationSetting.Group,
+    state: MyPageSettingNotificationViewModel.State,
+    onCommentAlarmChanged: (Boolean) -> Unit,
+    onScheduleAlarmChanged: (Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -112,10 +120,21 @@ private fun NotificationColumn(
         Column(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            MyPageNotificationSetting.getByGroup(
-                group
-            ).forEach { setting ->
-                NotificationRow(stringResource(setting.nameRes))
+            MyPageNotificationSetting.getByGroup(group).forEach { setting ->
+                val checked = when (setting) {
+                    MyPageNotificationSetting.COMMENT -> state.commentAlarm ?: false
+                    MyPageNotificationSetting.SCHEDULE -> state.scheduleAlarm ?: false
+                }
+                NotificationRow(
+                    text = stringResource(setting.nameRes),
+                    checked = checked,
+                    onCheckedChange = {
+                        when (setting) {
+                            MyPageNotificationSetting.COMMENT -> onCommentAlarmChanged(it)
+                            MyPageNotificationSetting.SCHEDULE -> onScheduleAlarmChanged(it)
+                        }
+                    }
+                )
             }
         }
     }
@@ -124,13 +143,14 @@ private fun NotificationColumn(
 @Composable
 private fun NotificationRow(
     text: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val (checked, onCheckedChange) = remember { mutableStateOf(false) }
         Text(
             text = text,
             style = MaterialTheme.typo.body1,
@@ -148,6 +168,15 @@ private fun NotificationRow(
 @Composable
 private fun Preview() {
     NBDreamTheme {
-        MyPageSettingNotificationScreen(popBackStack = { /*TODO*/ })
+        val state = MyPageSettingNotificationViewModel.State(
+            commentAlarm = true,
+            scheduleAlarm = false
+        )
+
+        MyPageSettingNotificationScreen(
+            state = state,
+            popBackStack = { /*TODO*/ },
+            onCommentAlarmChanged = { /*TODO*/ },
+            onScheduleAlarmChanged = { /*TODO*/ })
     }
 }

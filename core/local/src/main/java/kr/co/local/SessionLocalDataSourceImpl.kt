@@ -22,7 +22,7 @@ internal class SessionLocalDataSourceImpl @Inject constructor(
     override fun fetchUserName(): Flow<String?> =
         dataStore.data.map { pref ->
             pref[USER_NAME]
-    }
+        }
 
     override suspend fun updateAccessToken(accessToken: String) {
         dataStore.edit { pref ->
@@ -54,9 +54,24 @@ internal class SessionLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun saveFcmToken(token: String) {
+        val currentToken = fetchFcmToken().firstOrNull()
+        if (currentToken != token) {
+            dataStore.edit { pref ->
+                pref[FCM_TOKEN] = token
+            }
+        }
+    }
+
+    override fun fetchFcmToken(): Flow<String?> =
+        dataStore.data.map { pref ->
+            pref[FCM_TOKEN]
+        }
+
     companion object {
         private val USER_NAME = stringPreferencesKey("user_name")
         private val ACCESS_TOKEN = stringPreferencesKey("access_token")
         private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+        private val FCM_TOKEN = stringPreferencesKey("fcm_token")
     }
 }
