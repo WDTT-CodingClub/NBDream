@@ -15,7 +15,9 @@ internal object ScheduleRemoteMapper
                 title = title,
                 startDate = startDate,
                 endDate = endDate,
-                memo = memo
+                memo = memo,
+                alarmOn = alarmOn,
+                alarmDateTime = alarmDateTime
             )
         }
 }

@@ -17,7 +17,11 @@ internal object ScheduleMapper
                 title = title,
                 startDate = LocalDate.parse(startDate),
                 endDate = LocalDate.parse(endDate),
-                memo = memo
+                memo = memo,
+                isAlarmOn = alarmOn,
+                alarmDateTime =
+                if (alarmDateTime.isBlank()) null
+                else LocalDateTime.parse(alarmDateTime) //TODO 서버 응답 형식에 맞게 파싱
             )
         }
 }

@@ -10,7 +10,9 @@ data class ScheduleEntity(
     val title: String,
     val startDate: LocalDate,
     val endDate: LocalDate = startDate,
-    val memo: String = ""
+    val memo: String = "",
+    val isAlarmOn: Boolean = false,
+    val alarmDateTime: LocalDateTime? = null
 )
 
 
