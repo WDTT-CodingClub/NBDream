@@ -49,7 +49,6 @@ internal fun DiaryTab(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(Paddings.xextra))
-
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
@@ -65,13 +64,8 @@ internal fun DiaryTab(
                     diaries = diaries
                 )
             }
-
-            if (calendarCrop == null) {
-                DiaryCropEmptyCard(
-                    modifier = Modifier.padding(Paddings.large)
-                )
-            }
-
+            Spacer(modifier = Modifier.height(Paddings.xlarge))
+            if (calendarCrop == null) DiaryCropEmptyCard()
             diaries.firstOrNull { it.date == selectedDate }?.let { diary ->
                 Card(
                     modifier = Modifier.padding(Paddings.large),
@@ -95,7 +89,6 @@ internal fun DiaryTab(
 private fun DiaryCropEmptyCard(
     modifier: Modifier = Modifier
 ) {
-    // TODO 클릭 시 온보딩 작물 선택 화면으로 이동
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
