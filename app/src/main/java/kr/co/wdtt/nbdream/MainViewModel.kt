@@ -54,7 +54,7 @@ internal class MainViewModel @Inject constructor(
             val token = FirebaseMessaging.getInstance().token.await()
             token
         } catch (e: Exception) {
-            Timber.d("Fetching FCM registration token failed", e)
+            Timber.d("Fetching FCM registration token failed: $e")
             null
         }
     }
