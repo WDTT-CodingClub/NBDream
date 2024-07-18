@@ -10,6 +10,7 @@ import kr.co.data.repository.CommunityRepositoryImpl
 import kr.co.data.repository.AuthRepositoryImpl
 import kr.co.data.repository.DiaryRepositoryImpl
 import kr.co.data.repository.FarmWorkRepositoryImpl
+import kr.co.data.repository.FcmRepositoryImpl
 import kr.co.data.repository.HolidayRepositoryImpl
 import kr.co.data.repository.ScheduleRepositoryImpl
 import kr.co.data.repository.ServerImageRepositoryImpl
@@ -22,6 +23,7 @@ import kr.co.domain.repository.AuthRepository
 import kr.co.domain.repository.CommunityRepository
 import kr.co.domain.repository.DiaryRepository
 import kr.co.domain.repository.FarmWorkRepository
+import kr.co.domain.repository.FcmRepository
 import kr.co.domain.repository.HolidayRepository
 import kr.co.domain.repository.ScheduleRepository
 import kr.co.domain.repository.ServerImageRepository
@@ -77,4 +79,7 @@ internal abstract class DataModule {
     @Singleton
     @Binds
     abstract fun bindsAiChatRepository(repositoryImpl: AiRepositoryImpl): AiRepository
+    @Singleton
+    @Binds
+    abstract fun bindsFcmRepository(repositoryImpl: FcmRepositoryImpl): FcmRepository
 }
