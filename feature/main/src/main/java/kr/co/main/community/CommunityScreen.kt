@@ -31,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,11 +48,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.type.CropType
-import kr.co.main.navigation.BulletinRoute
 import kr.co.main.ui.DreamMainPostCard
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
@@ -74,17 +74,21 @@ internal fun CommunityRoute(
     viewModel: CommunityViewModel = hiltViewModel(),
     navController: NavController,
 ) {
-    val reinitialize =
-        navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(BulletinRoute.BULLETIN_KEY)
-            ?: false
-    LaunchedEffect(reinitialize) {
-        if (reinitialize) {
-            viewModel.getBulletins()
-        }
-        navController.currentBackStackEntry?.savedStateHandle?.set(
-            BulletinRoute.BULLETIN_KEY,
-            false
-        )
+//    val reinitialize =
+//        navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(BulletinRoute.BULLETIN_KEY)
+//            ?: false
+//    LaunchedEffect(reinitialize) {
+//        if (reinitialize) {
+//            viewModel.getBulletins()
+//        }
+//        navController.currentBackStackEntry?.savedStateHandle?.set(
+//            BulletinRoute.BULLETIN_KEY,
+//            false
+//        )
+//    }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.getBulletins()
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -172,7 +176,7 @@ internal fun CommunityScreen(
                 )
             }
         },
-        containerColor = MaterialTheme.colors.gray9,
+        containerColor = MaterialTheme.colors.background,
     ) { paddingValues ->
 
         LazyColumn(

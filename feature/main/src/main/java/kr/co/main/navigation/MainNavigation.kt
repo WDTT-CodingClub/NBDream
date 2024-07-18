@@ -16,6 +16,7 @@ import kr.co.main.accountbook.model.EntryType
 import kr.co.main.calendar.screen.addDiaryScreen.AddDiaryRoute
 import kr.co.main.calendar.screen.addScheduleScreen.AddScheduleRoute
 import kr.co.main.calendar.screen.calendarScreen.CalendarRoute
+import kr.co.main.calendar.screen.farmWorkInfoScreen.FarmWorkInfoRoute
 import kr.co.main.calendar.screen.searchDiaryScreen.SearchDiaryRoute
 import kr.co.main.community.CommunityRoute
 import kr.co.main.community.detail.BulletinDetailRoute
@@ -35,6 +36,8 @@ import kr.co.main.my.setting.policy.MyPageSettingPrivacyPolicyRoute
 import kr.co.main.navigation.AccountBookRoute.ACCOUNT_KEY
 import kr.co.main.notification.NotificationRoute
 import timber.log.Timber
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 
 const val MAIN_ROUTE = "mainRoute"
@@ -151,6 +154,19 @@ fun NavGraphBuilder.mainNavGraph(
                                 )
                             )
                         },
+                        navToFarmWorkInfo = { title, videoUrl ->
+                            navController.navigate(
+                                CalendarNavGraph.FarmWorkInfoRoute.buildRoute(
+                                    listOf(
+                                        title,
+                                        URLEncoder.encode(
+                                            videoUrl,
+                                            StandardCharsets.UTF_8.toString()
+                                        )
+                                    )
+                                )
+                            )
+                        }
                     )
                 }
 
@@ -267,6 +283,15 @@ fun NavGraphBuilder.mainNavGraph(
             popBackStack = navController::popBackStack,
         )
     }
+    composable(
+        route = CalendarNavGraph.FarmWorkInfoRoute.route,
+        arguments = CalendarNavGraph.FarmWorkInfoRoute.arguments
+    ) {
+        FarmWorkInfoRoute(
+            popBackStack = navController::popBackStack
+        )
+    }
+
 
     composable(
         route = "${AccountBookRoute.ACCOUNT_BOOK_CREATE_ROUTE}?entryType={entryType}"

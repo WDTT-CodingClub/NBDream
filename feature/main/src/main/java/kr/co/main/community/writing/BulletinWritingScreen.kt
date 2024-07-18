@@ -200,7 +200,6 @@ internal fun BulletinWritingScreen(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
-                            cursorColor = Color.Transparent
                         ),
                         modifier = Modifier
                             .fillMaxSize()

@@ -70,7 +70,7 @@ internal fun MainRoute(
             .navigationBarsPadding()
     ) {
         Scaffold(
-            containerColor = MaterialTheme.colors.gray9,
+            containerColor = MaterialTheme.colors.background,
             bottomBar = {
                 MainBottomBar(
                     mainNavController = mainNavController

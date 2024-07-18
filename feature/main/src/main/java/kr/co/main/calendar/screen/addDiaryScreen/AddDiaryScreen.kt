@@ -121,8 +121,6 @@ private fun AddDiaryScreen(
         onResult = event::onAddImage
     )
 
-    val enableAction = true
-
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -136,7 +134,7 @@ private fun AddDiaryScreen(
                 postModeTitleId = R.string.feature_main_calendar_top_app_bar_add_diary,
                 editModeTitleId = R.string.feature_main_calendar_top_app_bar_edit_diary,
                 actionHintId = R.string.feature_main_calendar_add_diary_input_hint_memo,
-                enableAction = enableAction,
+                enableAction = state.enableAction,
                 popBackStack = popBackStack,
                 onPostClick = {
                     event.onPostClick()
@@ -144,10 +142,6 @@ private fun AddDiaryScreen(
                 },
                 onEditClick = {
                     event.onEditClick()
-                    navToCalendar()
-                },
-                onDeleteClick = {
-                    event.onDeleteClick()
                     navToCalendar()
                 }
             )

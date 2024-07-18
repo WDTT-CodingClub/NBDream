@@ -55,7 +55,6 @@ import kr.co.ui.icon.dreamicon.DropDown
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import kr.co.ui.widget.DreamDialog
 import timber.log.Timber
 import java.time.LocalDate
 
@@ -89,7 +88,6 @@ private fun AddScheduleScreen(
     val enableAction by remember(state.title) {
         mutableStateOf(state.title.isNotEmpty())
     }
-    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -110,9 +108,6 @@ private fun AddScheduleScreen(
                 onEditClick = {
                     event.onEditClick()
                     navigateToCalendar()
-                },
-                onDeleteClick = {
-                    showDeleteDialog = true
                 }
             )
         }
@@ -123,15 +118,6 @@ private fun AddScheduleScreen(
                 .navigationBarsPadding()
                 .imePadding()
         ) {
-            DeleteScheduleDialog(
-                showDialog = showDeleteDialog,
-                onConfirm = {
-                    event.onDeleteClick()
-                    navigateToCalendar()
-                },
-                onDismiss = { showDeleteDialog = false }
-            )
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -168,24 +154,6 @@ private fun AddScheduleScreen(
         }
     }
 }
-
-@Composable
-private fun DeleteScheduleDialog(
-    showDialog: Boolean,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    if (showDialog) {
-        DreamDialog(
-            header = stringResource(id = R.string.feature_main_calendar_add_schedule_delete_dialog_title),
-            description = stringResource(id = R.string.feature_main_calendar_add_schedule_delete_dialog_description),
-            onConfirm = onConfirm,
-            onDismissRequest = onDismiss
-        )
-    }
-}
-
 
 @Composable
 private fun ScheduleCategoryPicker(

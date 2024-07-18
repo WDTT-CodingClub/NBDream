@@ -11,17 +11,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +51,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import kr.co.main.R
 import kr.co.main.calendar.CalendarDesignToken
+import kr.co.main.calendar.common.dialog.CalendarDialogWithToast
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.CalendarTabType
 import kr.co.main.model.calendar.type.CropModelColorType
@@ -67,7 +65,6 @@ import kr.co.ui.icon.dreamicon.Spinner
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import kr.co.ui.widget.DreamDialog
 import kr.co.ui.widget.DreamTopAppBar
 import timber.log.Timber
 
@@ -79,6 +76,7 @@ internal fun CalendarRoute(
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
+    navToFarmWorkInfo: (String?, String?) -> Unit,
     viewModel: CalendarScreenViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -86,7 +84,6 @@ internal fun CalendarRoute(
 
     val reinitialize =
         navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(CalendarNavGraph.ARG_REINITIALIZE)
-
     LaunchedEffect(reinitialize) {
         Timber.d("reinitialize: $reinitialize")
         if (reinitialize == true) viewModel.reinitialize()
@@ -103,6 +100,7 @@ internal fun CalendarRoute(
         navToAddSchedule = navToAddSchedule,
         navToAddDiary = navToAddDiary,
         navToSearchDiary = navToSearchDiary,
+        navToFarmWorkInfo = navToFarmWorkInfo,
         state = state,
         event = viewModel.event
     )
@@ -115,25 +113,25 @@ private fun CalendarScreen(
     navToAddSchedule: (Int?, Int?, Long?) -> Unit,
     navToAddDiary: (Int?, Int?, Long?) -> Unit,
     navToSearchDiary: (Int?) -> Unit,
+    navToFarmWorkInfo: (String?, String?) -> Unit,
     state: CalendarScreenViewModel.CalendarScreenState,
     event: CalendarScreenEvent,
     modifier: Modifier = Modifier,
 ) {
     Timber.d("state: $state")
 
-    var showNavToMyPageDialog by remember { mutableStateOf(false) }
-
     val pagerState = rememberPagerState {
         CalendarTabType.entries.size
     }
     Scaffold(
         modifier = modifier,
-        containerColor = MaterialTheme.colors.gray9,
+        containerColor = MaterialTheme.colors.background,
         topBar = {
             CalendarScreenTopAppBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Paddings.large),
+                    .padding(horizontal = Paddings.xlarge)
+                    .padding(top = Paddings.xlarge),
                 pagerState = pagerState,
                 navToAddSchedule = {
                     navToAddSchedule(
@@ -144,7 +142,7 @@ private fun CalendarScreen(
                 },
                 navToAddDiary = {
                     if (state.crop == null) {
-                        showNavToMyPageDialog = true
+                        event.showNavToMyPageDialog(navToMyPage)
                     } else {
                         navToAddDiary(
                             state.crop.type.nameId,
@@ -161,26 +159,29 @@ private fun CalendarScreen(
             )
         }
     ) { innerPadding ->
-        Surface(
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            NavToMyPageDialog(
-                showDialog = showNavToMyPageDialog,
-                onConfirm = {
-                    showNavToMyPageDialog = false
-                    navToMyPage()
-                },
-                onDismiss = {
-                    showNavToMyPageDialog = false
-                }
+        state.dialogState?.let {
+            CalendarDialogWithToast(
+                context = LocalContext.current,
+                showDialog = state.showDialog,
+                headerId = it.headerId,
+                descriptionId = it.descriptionId,
+                confirmToastId = it.confirmToastId,
+                onConfirm = it.onConfirm,
+                onDismissRequest = it.onDismissRequest
             )
+        }
 
+        Surface(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = Paddings.xlarge)
+                .background(MaterialTheme.colors.background)
+        ) {
             Column {
                 CalendarInfoPicker(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Paddings.large)
-                        .background(MaterialTheme.colors.gray9),
+                        .background(MaterialTheme.colors.background),
                     userCrops = state.userCrops,
                     calendarYear = state.year,
                     calendarMonth = state.month,
@@ -191,7 +192,6 @@ private fun CalendarScreen(
                 )
 
                 HorizontalPager(
-                    modifier = Modifier.background(MaterialTheme.colors.gray9),
                     state = pagerState
                 ) {
                     when (pagerState.currentPage) {
@@ -212,6 +212,15 @@ private fun CalendarScreen(
                                         ScreenModeType.EDIT_MODE.id,
                                         scheduleId
                                     )
+                                },
+                                onDeleteClick = { scheduleId ->
+                                    event.onDeleteScheduleSelect(scheduleId)
+                                    event.showDeleteScheduleDialog()
+                                },
+                                navToFarmWorkInfo = { title, videoUrl ->
+                                    navToFarmWorkInfo(
+                                        title, videoUrl
+                                    )
                                 }
                             )
 
@@ -230,6 +239,10 @@ private fun CalendarScreen(
                                         ScreenModeType.EDIT_MODE.id,
                                         diaryId
                                     )
+                                },
+                                onDeleteClick = { diaryId ->
+                                    event.onDeleteDiarySelect(diaryId)
+                                    event.showDeleteDiaryDialog()
                                 }
                             )
                     }
@@ -368,23 +381,6 @@ private fun CalendarScreenTopAppBarActions(
 }
 
 @Composable
-private fun NavToMyPageDialog(
-    showDialog: Boolean,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    if (showDialog) {
-        DreamDialog(
-            header = stringResource(id = R.string.feature_main_calendar_nav_to_my_page_dialog_title),
-            description = stringResource(id = R.string.feature_main_calendar_nav_to_my_page_dialog_description),
-            onConfirm = onConfirm,
-            onDismissRequest = onDismiss
-        )
-    }
-}
-
-@Composable
 private fun CalendarInfoPicker(
     userCrops: List<CropModel>,
     calendarYear: Int,
@@ -424,13 +420,13 @@ private fun CalendarYearMonthPicker(
     onSelectMonth: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expandDropDown by remember { mutableStateOf(false) }
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     Column {
         Row(
             modifier = modifier
                 .clickable {
-                    expandDropDown = true
+                    showBottomSheet = true
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -448,63 +444,16 @@ private fun CalendarYearMonthPicker(
                 contentDescription = ""
             )
         }
-        CalendarYearMonthPickerDropDown(
-            modifier = Modifier
-                .height(CalendarDesignToken.YEAR_MONTH_PICKER_DROP_DOWN_HEIGHT.dp),
-            expandDropDown = expandDropDown,
+    }
+
+    if (showBottomSheet) {
+        CalendarYearMonthBottomSheet(
             calendarYear = calendarYear,
             calendarMonth = calendarMonth,
             onYearSelect = onSelectYear,
             onMonthSelect = onSelectMonth,
-            onDismissDropDown = { expandDropDown = false },
+            onDismissRequest = { showBottomSheet = false }
         )
-    }
-}
-
-@Composable
-private fun CalendarYearMonthPickerDropDown(
-    expandDropDown: Boolean,
-    calendarYear: Int,
-    calendarMonth: Int,
-    onYearSelect: (Int) -> Unit,
-    onMonthSelect: (Int) -> Unit,
-    onDismissDropDown: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val scrollState = rememberScrollState(
-        initial = CalendarDesignToken.YEAR_MONTH_PICKER_DROP_DOWN_ITEM_HEIGHT * ((calendarYear - 2000) * 12)
-    )
-
-    DropdownMenu(
-        modifier = modifier,
-        expanded = expandDropDown,
-        onDismissRequest = onDismissDropDown,
-        scrollState = scrollState
-    ) {
-        for (year in 2000..2050) {
-            for (month in 1..12) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(CalendarDesignToken.YEAR_MONTH_PICKER_DROP_DOWN_ITEM_HEIGHT.dp),
-                            text = "${year}년 ${month}월",
-                            style = MaterialTheme.typo.body1,
-                            color =
-                            if (year == calendarYear && month == calendarMonth) MaterialTheme.colors.primary
-                            else MaterialTheme.colors.text2,
-                            textAlign = TextAlign.Center
-                        )
-                    },
-                    onClick = {
-                        onYearSelect(year)
-                        onMonthSelect(month)
-                        onDismissDropDown()
-                    }
-                )
-            }
-        }
     }
 }
 

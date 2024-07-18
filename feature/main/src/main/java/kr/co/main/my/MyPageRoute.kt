@@ -101,7 +101,7 @@ private fun MyPageScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = MaterialTheme.colors.gray9)
+                .background(color = MaterialTheme.colors.background)
                 .padding(horizontal = 16.dp)
         ) {
             item {

@@ -11,7 +11,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GetUserCropsUseCase @Inject constructor(
+class GetLocalUserCropsUseCase @Inject constructor(
     private val repository: UserRepository
 ) : FlowUseCase<Unit, List<CropEntity>>() {
 

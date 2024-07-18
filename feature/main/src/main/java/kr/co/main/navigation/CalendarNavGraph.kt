@@ -48,10 +48,6 @@ internal sealed class CalendarNavGraph {
                 nullable = true
             }
         )
-
-        init{
-            Timber.d("AddScheduleRoute: ${AddScheduleRoute.route}")
-        }
     }
 
     data object AddDiaryRoute : CalendarNavGraph() {
@@ -68,10 +64,6 @@ internal sealed class CalendarNavGraph {
                 nullable = true
             }
         )
-
-        init{
-            Timber.d("AddDiaryRoute: ${AddDiaryRoute.route}")
-        }
     }
 
     data object SearchDiaryRoute : CalendarNavGraph() {
@@ -81,16 +73,27 @@ internal sealed class CalendarNavGraph {
                 nullable = true
             }
         )
+    }
 
-        init{
-            Timber.d("SearchDiaryRoute: ${SearchDiaryRoute.route}")
-        }
+    data object FarmWorkInfoRoute : CalendarNavGraph() {
+        override val baseRoute = FARM_WORK_INFO_BASE_ROUTE
+        override val arguments = listOf(
+            navArgument(ARG_FARM_WORK_TITLE) {
+                type = NavType.StringType
+                nullable = true
+            },
+            navArgument(ARG_FARM_WORK_VIDEO_URL){
+                type = NavType.StringType
+                nullable = true
+            }
+        )
     }
 
     companion object {
         private const val ADD_SCHEDULE_BASE_ROUTE = "add_schedule_route"
         private const val ADD_DIARY_BASE_ROUTE = "add_diary_route"
         private const val SEARCH_DIARY_BASE_ROUTE = "search_diary_route"
+        private const val FARM_WORK_INFO_BASE_ROUTE = "farm_work_info_route"
 
         const val ARG_CROP_NAME_ID = "crop_name_id"
         const val ARG_SCREEN_MODE_ID = "screen_mode_id"
@@ -98,5 +101,8 @@ internal sealed class CalendarNavGraph {
         const val ARG_DIARY_ID = "diary_id"
 
         const val ARG_REINITIALIZE = "reinitialize"
+
+        const val ARG_FARM_WORK_TITLE = "farm_work_title"
+        const val ARG_FARM_WORK_VIDEO_URL = "farm_work_video_url"
     }
 }
