@@ -6,6 +6,7 @@ import kr.co.domain.entity.ScheduleEntity
 import kr.co.domain.entity.type.ScheduleType
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 internal object ScheduleMapper
     : Mapper<ScheduleData, ScheduleEntity> {
@@ -21,7 +22,7 @@ internal object ScheduleMapper
                 isAlarmOn = alarmOn,
                 alarmDateTime =
                 if (alarmDateTime.isBlank()) null
-                else LocalDateTime.parse(alarmDateTime) //TODO 서버 응답 형식에 맞게 파싱
+                else LocalDateTime.parse(alarmDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
             )
         }
 }

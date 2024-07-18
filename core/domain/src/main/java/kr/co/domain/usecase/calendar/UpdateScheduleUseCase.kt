@@ -3,7 +3,9 @@ package kr.co.domain.usecase.calendar
 import kr.co.domain.entity.type.ScheduleType
 import kr.co.domain.repository.ScheduleRepository
 import kr.co.domain.usecase.SuspendUseCase
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,9 +17,11 @@ class UpdateScheduleUseCase @Inject constructor(
         val id: Long,
         val category: ScheduleType,
         val title: String,
-        val startDate: String,
-        val endDate: String,
-        val memo: String
+        val startDate: LocalDate,
+        val endDate: LocalDate,
+        val memo: String,
+        val alarmOn: Boolean,
+        val alarmDateTime: LocalDateTime?
     )
 
     override suspend fun build(params: Params?) {
@@ -26,9 +30,12 @@ class UpdateScheduleUseCase @Inject constructor(
             id = params.id,
             category = params.category.koreanName,
             title = params.title,
-            startDate = params.startDate,
-            endDate = params.endDate,
-            memo = params.memo
+            startDate = params.startDate.toString(),
+            endDate = params.endDate.toString(),
+            memo = params.memo,
+            alarmOn = params.alarmOn,
+            alarmDateTime =
+            params.alarmDateTime?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) ?: ""
         )
     }
 }

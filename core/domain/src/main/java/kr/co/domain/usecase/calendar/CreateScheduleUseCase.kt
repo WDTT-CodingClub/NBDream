@@ -5,13 +5,14 @@ import kr.co.domain.repository.ScheduleRepository
 import kr.co.domain.usecase.SuspendUseCase
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class CreateScheduleUseCase @Inject constructor(
     private val repository: ScheduleRepository
-): SuspendUseCase<CreateScheduleUseCase.Params, Unit>(){
+) : SuspendUseCase<CreateScheduleUseCase.Params, Unit>() {
     data class Params(
         val category: ScheduleType,
         val title: String,
@@ -31,7 +32,8 @@ class CreateScheduleUseCase @Inject constructor(
             endDate = params.endDate.toString(),
             memo = params.memo,
             alarmOn = params.alarmOn,
-            alarmDateTime = params.alarmDateTime?.toString() ?: "" // 서버 요청 형식에 맞게 파싱
+            alarmDateTime =
+            params.alarmDateTime?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) ?: ""
         )
     }
 }
