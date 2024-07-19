@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kr.co.domain.entity.AccountBookEntity
-import kr.co.main.accountbook.model.CustomDatePickerDialog
+import kr.co.ui.widget.CustomDatePickerDialog
 import kr.co.main.accountbook.model.DatePickerType
 import kr.co.main.accountbook.model.DateRangeOption
 import kr.co.main.accountbook.model.getDisplay

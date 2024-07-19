@@ -65,7 +65,7 @@ import kr.co.domain.entity.AccountBookEntity
 import kr.co.main.accountbook.main.AccountBookCategoryBottomSheet
 import kr.co.main.accountbook.main.AccountBookOptionButton
 import kr.co.main.accountbook.main.CircleProgress
-import kr.co.main.accountbook.model.CustomDatePickerDialog
+import kr.co.ui.widget.CustomDatePickerDialog
 import kr.co.main.accountbook.model.EntryType
 import kr.co.main.accountbook.model.formatNumber
 import kr.co.main.accountbook.model.getDisplay

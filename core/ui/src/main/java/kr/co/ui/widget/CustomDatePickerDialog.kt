@@ -1,4 +1,4 @@
-package kr.co.main.accountbook.model
+package kr.co.ui.widget
 
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
@@ -24,7 +24,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CustomDatePickerDialog(
+fun CustomDatePickerDialog(
     date: LocalDate? = LocalDate.now(),
     onClickCancel: () -> Unit,
     onClickConfirm: (yyyyMMdd: String) -> Unit
@@ -46,7 +46,7 @@ internal fun CustomDatePickerDialog(
     LaunchedEffect(datePickerState.selectedDateMillis) {
         if (initialSelectedDate != datePickerState.selectedDateMillis) {
             datePickerState.selectedDateMillis?.let { selectedDateMillis ->
-                val formatter = SimpleDateFormat(DATE_FORMAT_PATTERN, Locale.getDefault())
+                val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
                 val formattedDate = formatter.format(Date(selectedDateMillis))
 
                 onClickConfirm(formattedDate)
