@@ -427,7 +427,7 @@ private fun CommentItem(
             contentScale = ContentScale.Crop,
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Row {
                 Text(
                     comment.nickname,
@@ -457,7 +457,6 @@ private fun CommentItem(
                 style = MaterialTheme.typo.body2,
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
         IconButton(onClick = onMoreVertClick) {
             Icon(
                 painter = painterResource(id = kr.co.nbdream.core.ui.R.drawable.baseline_more_vert_24),
