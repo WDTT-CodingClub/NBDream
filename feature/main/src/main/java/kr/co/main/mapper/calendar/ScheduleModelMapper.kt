@@ -14,6 +14,9 @@ internal object ScheduleModelMapper
                 title = title,
                 startDate = startDate,
                 endDate = endDate,
+                memo = memo,
+                isAlarmOn = isAlarmOn,
+                alarmDateTime = alarmDateTime
             )
         }
 
@@ -25,6 +28,9 @@ internal object ScheduleModelMapper
                 title = title,
                 startDate = startDate,
                 endDate = endDate,
+                memo = memo,
+                isAlarmOn = isAlarmOn,
+                alarmDateTime = alarmDateTime
             )
         }
 }

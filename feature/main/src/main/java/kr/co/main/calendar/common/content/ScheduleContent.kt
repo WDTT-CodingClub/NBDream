@@ -1,10 +1,13 @@
 package kr.co.main.calendar.common.content
 
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,13 +15,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import kr.co.main.calendar.common.CalendarCategoryIndicator
 import kr.co.main.model.calendar.ScheduleModel
 import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.main.providers.calendar.FakeScheduleModelProvider
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Bell
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -43,6 +50,12 @@ internal fun ScheduleContent(
                 ScheduleDate(
                     startDate = schedule.startDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
                     endDate = schedule.endDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+                )
+            }
+            if (schedule.isAlarmOn) {
+                ScheduleAlarm(
+                    modifier = Modifier.padding(start = Paddings.xlarge),
+                    alarmDateTime = schedule.alarmDateTime
                 )
             }
             ScheduleMemo(
@@ -92,6 +105,30 @@ private fun ScheduleDate(
         style = MaterialTheme.typo.labelL,
         color = MaterialTheme.colors.text2
     )
+}
+
+@Composable
+private fun ScheduleAlarm(
+    alarmDateTime: LocalDateTime,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier.size(14.dp),
+            imageVector = DreamIcon.Bell,
+            contentDescription = "",
+            tint = MaterialTheme.colors.yellow1
+        )
+        Text(
+            modifier = Modifier.padding(start = Paddings.medium),
+            text = alarmDateTime.format(DateTimeFormatter.ofPattern("yyyy.MM.dd a hh:mm")),
+            style = MaterialTheme.typo.labelL,
+            color = MaterialTheme.colors.text2
+        )
+    }
 }
 
 @Composable

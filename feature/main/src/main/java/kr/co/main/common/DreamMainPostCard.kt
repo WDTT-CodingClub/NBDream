@@ -1,4 +1,4 @@
-package kr.co.main.ui
+package kr.co.main.common
 
 import Bookmarkon
 import androidx.compose.foundation.background

@@ -19,7 +19,9 @@ interface ScheduleRemoteDataSource {
         title:String,
         startDate:String,
         endDate: String,
-        memo:String
+        memo:String,
+        alarmOn:Boolean,
+        alarmDateTime:String
     )
 
     suspend fun update(
@@ -28,7 +30,9 @@ interface ScheduleRemoteDataSource {
         title:String,
         startDate:String,
         endDate: String,
-        memo:String
+        memo:String,
+        alarmOn:Boolean,
+        alarmDateTime:String
     )
 
     suspend fun delete(id:Long)

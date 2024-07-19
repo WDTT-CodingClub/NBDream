@@ -17,7 +17,9 @@ interface ScheduleRepository {
         title: String,
         startDate: String,
         endDate: String,
-        memo: String
+        memo: String,
+        alarmOn: Boolean,
+        alarmDateTime: String
     )
 
     suspend fun updateSchedule(
@@ -26,7 +28,9 @@ interface ScheduleRepository {
         title: String,
         startDate: String,
         endDate: String,
-        memo: String
+        memo: String,
+        alarmOn: Boolean,
+        alarmDateTime: String
     )
 
     suspend fun deleteSchedule(id: Long)
