@@ -54,7 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kr.co.domain.entity.BulletinEntity
 import kr.co.domain.entity.type.CropType
-import kr.co.main.ui.DreamMainPostCard
+import kr.co.main.common.DreamMainPostCard
 import kr.co.ui.ext.scaffoldBackground
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.Search
