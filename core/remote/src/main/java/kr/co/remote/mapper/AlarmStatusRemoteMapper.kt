@@ -6,10 +6,11 @@ import kr.co.remote.model.response.fcm.GetAlarmStatusResponse
 
 internal object AlarmStatusRemoteMapper :
     Mapper<GetAlarmStatusResponse, AlarmStatusData> {
-    override fun convert(param: GetAlarmStatusResponse): AlarmStatusData {
-        return AlarmStatusData(
-            commentAlarm = param.commentAlarm,
-            scheduleAlarm = param.scheduleAlarm
+    override fun convert(param: GetAlarmStatusResponse): AlarmStatusData =
+        with(param.data) {
+        AlarmStatusData(
+            commentAlarm = commentAlarm,
+            scheduleAlarm = scheduleAlarm
         )
     }
 }

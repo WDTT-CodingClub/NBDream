@@ -5,8 +5,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class GetAlarmStatusResponse(
-    @SerialName("commentAlarm")
-    val commentAlarm: Boolean,
-    @SerialName("scheduleAlarm")
-    val scheduleAlarm: Boolean
-)
+    val code: Int,
+    val status: String,
+    val message: String,
+    val data: Data
+) {
+    @Serializable
+    data class Data(
+        @SerialName("commentAlarm")
+        val commentAlarm: Boolean,
+        @SerialName("scheduleAlarm")
+        val scheduleAlarm: Boolean
+    )
+}
