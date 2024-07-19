@@ -6,6 +6,7 @@ import kr.co.domain.entity.ScheduleEntity
 import kr.co.domain.entity.type.ScheduleType
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 internal object ScheduleMapper
@@ -21,8 +22,16 @@ internal object ScheduleMapper
                 memo = memo,
                 isAlarmOn = alarmOn,
                 alarmDateTime =
-                if (alarmDateTime.isBlank()) null
-                else LocalDateTime.parse(alarmDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+                if (alarmDateTime.isBlank())
+                    LocalDateTime.of(
+                        LocalDate.parse(startDate),
+                        LocalTime.of(7, 0)
+                    )
+                else
+                    LocalDateTime.parse(
+                        alarmDateTime,
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+                    )
             )
         }
 }

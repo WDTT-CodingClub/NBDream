@@ -20,7 +20,7 @@ class CreateScheduleUseCase @Inject constructor(
         val endDate: LocalDate,
         val memo: String,
         val alarmOn: Boolean,
-        val alarmDateTime: LocalDateTime?
+        val alarmDateTime: LocalDateTime
     )
 
     override suspend fun build(params: Params?) {
@@ -33,7 +33,9 @@ class CreateScheduleUseCase @Inject constructor(
             memo = params.memo,
             alarmOn = params.alarmOn,
             alarmDateTime =
-            params.alarmDateTime?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) ?: ""
+            if (params.alarmOn)
+                params.alarmDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+            else ""
         )
     }
 }
