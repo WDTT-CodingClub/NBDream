@@ -25,39 +25,6 @@ internal const val TEXT_FIELD_LIMIT_SINGLE = 40
 internal const val TEXT_FIELD_LIMIT_MULTI = 3000
 
 @Composable
-internal fun CalendarUnderLineTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    placeHolder: @Composable () -> Unit = {},
-    maxLines: Int = 1,
-    textAlign: TextAlign = TextAlign.Start,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
-) {
-    BasicTextField(
-        modifier = modifier,
-        value = value,
-        onValueChange = onValueChange,
-        maxLines = maxLines,
-        textStyle = TextStyle.Default.copy(
-            textAlign = textAlign
-        ),
-        keyboardOptions = keyboardOptions
-    ) { innerTextField ->
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(modifier = Modifier) {
-                if (value.isEmpty()) placeHolder()
-                innerTextField()
-            }
-            HorizontalDivider()
-        }
-    }
-}
-
-@Composable
 internal fun CalendarContainerTextField(
     value: String,
     onValueChange: (String) -> Unit,
