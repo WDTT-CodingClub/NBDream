@@ -69,7 +69,7 @@ internal fun CalendarDateTimePicker(
         ) {
             Text(
                 modifier = Modifier.weight(9f),
-                text = dateTime.format(DateTimeFormatter.ofPattern("yyyy.MM.dd hh:mm a")),
+                text = dateTime.format(DateTimeFormatter.ofPattern("yyyy.MM.dd a hh:mm")),
                 style = MaterialTheme.typo.body1,
                 color = MaterialTheme.colors.gray1
             )
