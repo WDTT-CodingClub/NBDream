@@ -24,9 +24,9 @@ import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 
 private const val TOGGLE_SWITCH_RADIUS = 25
-private const val TOGGLE_SWITCH_HEIGHT = 30
-private const val TOGGLE_SWITCH_WIDTH = 66
-private const val TOGGLE_SWITCH_HANDLE_SIZE = 20
+private const val TOGGLE_SWITCH_HEIGHT = 24
+private const val TOGGLE_SWITCH_WIDTH = 48
+private const val TOGGLE_SWITCH_HANDLE_SIZE = 16
 
 @Composable
 fun DreamToggleSwitch(
