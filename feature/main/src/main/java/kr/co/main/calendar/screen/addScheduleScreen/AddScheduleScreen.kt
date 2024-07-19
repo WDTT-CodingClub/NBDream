@@ -45,18 +45,23 @@ import kr.co.main.calendar.common.AddScreenCenterTopAppBar
 import kr.co.main.calendar.common.CalendarCategoryIndicator
 import kr.co.main.calendar.common.CalendarContainerTextField
 import kr.co.main.calendar.common.CalendarDatePicker
+import kr.co.main.calendar.common.CalendarDateTimePicker
 import kr.co.main.calendar.common.TEXT_FIELD_LIMIT_MULTI
 import kr.co.main.calendar.common.TEXT_FIELD_LIMIT_SINGLE
 import kr.co.main.model.calendar.CropModel
 import kr.co.main.model.calendar.type.ScheduleModelType
 import kr.co.ui.ext.noRippleClickable
 import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.DatePicker
 import kr.co.ui.icon.dreamicon.DropDown
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
+import kr.co.ui.widget.DreamToggleSwitch
 import timber.log.Timber
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun AddScheduleRoute(
@@ -125,28 +130,31 @@ private fun AddScheduleScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 ScheduleCategoryPicker(
-                    modifier = Modifier.fillMaxWidth(),
                     calendarCrop = state.calendarCrop,
                     selectedType = state.scheduleType,
                     onTypeSelect = event::onTypeSelect
                 )
                 Spacer(modifier = Modifier.height(Paddings.extra))
                 ScheduleTitleInput(
-                    modifier = Modifier.fillMaxWidth(),
                     title = state.title,
                     onTitleInput = event::onTitleInput
                 )
                 Spacer(modifier = Modifier.height(Paddings.extra))
                 ScheduleDatePicker(
-                    modifier = Modifier.fillMaxWidth(),
                     startDate = state.startDate,
                     endDate = state.endDate,
                     onStartDateSelect = event::onStartDateSelect,
                     onEndDateSelect = event::onEndDateSelect
                 )
                 Spacer(modifier = Modifier.height(Paddings.extra))
+                ScheduleAlarmInput(
+                    alarmOn = state.alarmOn,
+                    alarmDateTime = state.alarmDateTime,
+                    onAlarmOnSelect = event::onAlarmOnSelect,
+                    onAlarmDateTimeSelect = event::onAlarmDateTimeSelect
+                )
+                Spacer(modifier = Modifier.height(Paddings.extra))
                 ScheduleMemoInput(
-                    modifier = Modifier.fillMaxWidth(),
                     memo = state.memo,
                     onMemoInput = event::onMemoInput
                 )
@@ -365,6 +373,76 @@ private fun ScheduleDatePicker(
     }
 }
 
+@Composable
+private fun ScheduleAlarmInput(
+    alarmOn: Boolean,
+    alarmDateTime: LocalDateTime,
+    onAlarmOnSelect: (Boolean) -> Unit,
+    onAlarmDateTimeSelect: (LocalDateTime) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(id = R.string.feature_main_calendar_add_schedule_header_alarm),
+            style = MaterialTheme.typo.h4,
+            color = MaterialTheme.colors.gray1
+        )
+        Spacer(modifier = Modifier.height(Paddings.large))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if(alarmOn) {
+                CalendarDateTimePicker(
+                    modifier = Modifier.weight(1f),
+                    dateTime = alarmDateTime,
+                    onDateTimeSelect = onAlarmDateTimeSelect
+                )
+            }
+            else{
+                ScheduleAlarmInputHint(
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            Spacer(modifier = Modifier.width(Paddings.xlarge))
+            DreamToggleSwitch(
+                toggleState = alarmOn,
+                onToggleStateChange = {
+                    onAlarmOnSelect(!alarmOn)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ScheduleAlarmInputHint(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS.dp))
+            .background(MaterialTheme.colors.gray9)
+    ) {
+        Row(
+            modifier = Modifier.padding(Paddings.xlarge),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Text(
+                modifier = Modifier.weight(9f),
+                text = stringResource(id = R.string.feature_main_calendar_add_schedule_input_hint_alarm),
+                style = MaterialTheme.typo.body1,
+                color = MaterialTheme.colors.gray1
+            )
+            Icon(
+                modifier = Modifier.weight(1f),
+                imageVector = DreamIcon.DatePicker,
+                tint = MaterialTheme.colors.gray4,
+                contentDescription = ""
+            )
+        }
+    }
+}
 @Composable
 private fun ScheduleMemoInput(
     memo: String,

@@ -73,10 +73,13 @@
     <string name="feature_main_calendar_add_schedule_header_title">제목</string>
     <string name="feature_main_calendar_add_schedule_header_start_date">시작일</string>
     <string name="feature_main_calendar_add_schedule_header_end_date">종료일</string>
+    <string name="feature_main_calendar_add_schedule_header_alarm">알람 설정</string>
     <string name="feature_main_calendar_add_schedule_header_memo">메모</string>
+
 
     <string name="feature_main_calendar_add_schedule_type_picker_toast">재배 작물을 추가하고 분류별 일정을 작성해 보세요.</string>
 
     <string name="feature_main_calendar_add_schedule_input_hint_title">일정 제목을 입력해 주세요.</string>
+    <string name="feature_main_calendar_add_schedule_input_hint_alarm">알람을 설정해 주세요.</string>
     <string name="feature_main_calendar_add_schedule_input_hint_memo">메모를 입력해 주세요.</string>
 </resources>
