@@ -99,7 +99,9 @@ internal class AddScheduleViewModel @Inject constructor(
                                 title = it.title,
                                 startDate = it.startDate,
                                 endDate = it.endDate,
-                                memo = it.memo
+                                memo = it.memo,
+                                alarmOn = it.isAlarmOn,
+                                alarmDateTime = it.alarmDateTime
                             )
                         }
                     }
