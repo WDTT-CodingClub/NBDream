@@ -15,6 +15,6 @@ data class ScheduleListResponse (
         val endDate: String,
         val memo:String,
         val alarmOn:Boolean,
-        val alarmDateTime:String
+        val alarmDateTime:String? = null
     )
 }
