@@ -2,14 +2,19 @@ package kr.co.remote
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import kr.co.data.model.data.AlarmHistoryListData
 import kr.co.data.model.data.AlarmStatusData
 import kr.co.data.source.remote.AlarmStatusDataSource
+import kr.co.remote.mapper.AlarmHistoryListRemoteMapper
 import kr.co.remote.mapper.AlarmStatusRemoteMapper
 import kr.co.remote.model.request.fcm.AlarmUpdateRequest
-import kr.co.remote.model.response.fcm.GetAlarmStatusResponse
+import kr.co.remote.model.response.alarm.GetAlarmHistoryListResponse
+import kr.co.remote.model.response.alarm.GetAlarmStatusResponse
 import javax.inject.Inject
 
 internal class AlarmStatusRemoteDataSourceImpl @Inject constructor(
@@ -18,6 +23,9 @@ internal class AlarmStatusRemoteDataSourceImpl @Inject constructor(
     companion object {
         private const val GET_ALARM_STATUS = "api/alarm/status"
         private const val PUT_ALARM_UPDATE = "api/alarm/update"
+        private const val GET_ALARM_HISTORY = "api/alarm/history"
+        private const val POST_ALARM_CHECK = "api/alarm/history/check"
+        private const val DELETE_ALARM_HISTORY = "api/alarm/history/delete"
     }
 
     override suspend fun getAlarmStatus(): AlarmStatusData {
@@ -25,9 +33,26 @@ internal class AlarmStatusRemoteDataSourceImpl @Inject constructor(
             .let(AlarmStatusRemoteMapper::convert)
     }
 
-    override suspend fun updateAlarmSettings(commentAlarm: Boolean, scheduleAlarm: Boolean): AlarmStatusData {
+    override suspend fun updateAlarmSettings(
+        commentAlarm: Boolean,
+        scheduleAlarm: Boolean
+    ): AlarmStatusData {
         return client.put(PUT_ALARM_UPDATE) {
             setBody(AlarmUpdateRequest(commentAlarm = commentAlarm, scheduleAlarm = scheduleAlarm))
         }.body<GetAlarmStatusResponse>().let(AlarmStatusRemoteMapper::convert)
+    }
+
+    override suspend fun getAlarmHistory(): AlarmHistoryListData {
+        return client.get(GET_ALARM_HISTORY).body<GetAlarmHistoryListResponse>().let(
+            AlarmHistoryListRemoteMapper::convert
+        )
+    }
+
+    override suspend fun checkAlarmHistory(id: Long) {
+        client.post("$POST_ALARM_CHECK/$id")
+    }
+
+    override suspend fun deleteAlarmHistory(id: Long) {
+        client.delete("$DELETE_ALARM_HISTORY/$id")
     }
 }

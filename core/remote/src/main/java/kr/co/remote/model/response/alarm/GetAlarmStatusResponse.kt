@@ -1,4 +1,4 @@
-package kr.co.remote.model.response.fcm
+package kr.co.remote.model.response.alarm
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
