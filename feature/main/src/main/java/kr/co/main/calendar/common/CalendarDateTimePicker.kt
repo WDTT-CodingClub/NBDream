@@ -20,32 +20,42 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kr.co.ui.widget.CustomDatePickerDialog
 import kr.co.main.calendar.CalendarDesignToken
 import kr.co.ui.icon.DreamIcon
 import kr.co.ui.icon.dreamicon.DatePicker
 import kr.co.ui.theme.Paddings
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
-import timber.log.Timber
+import kr.co.ui.widget.CustomDatePickerDialog
+import kr.co.ui.widget.CustomTimePickerDialog
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-internal fun CalendarDatePicker(
-    date: LocalDate,
-    onDateSelect: (LocalDate) -> Unit,
+internal fun CalendarDateTimePicker(
+    dateTime: LocalDateTime,
+    onDateTimeSelect: (LocalDateTime) -> Unit,
     modifier: Modifier = Modifier,
     minDate: LocalDate? = null,
     maxDate: LocalDate? = null
 ) {
     val context = LocalContext.current
+
+    // LocalDate selected via CustomDatePicker
+    var selectedDate by remember {
+        mutableStateOf(
+            LocalDate.of(dateTime.year, dateTime.monthValue, dateTime.dayOfMonth)
+        )
+    }
+
     var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(CalendarDesignToken.INPUT_BOX_CORNER_RADIUS.dp))
             .background(MaterialTheme.colors.gray9)
@@ -54,12 +64,12 @@ internal fun CalendarDatePicker(
             }
     ) {
         Row(
-            modifier = modifier.padding(Paddings.xlarge),
+            modifier = Modifier.padding(Paddings.xlarge),
             verticalAlignment = Alignment.Bottom
         ) {
             Text(
                 modifier = Modifier.weight(9f),
-                text = date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
+                text = dateTime.format(DateTimeFormatter.ofPattern("yyyy.MM.dd a hh:mm")),
                 style = MaterialTheme.typo.body1,
                 color = MaterialTheme.colors.gray1
             )
@@ -73,15 +83,13 @@ internal fun CalendarDatePicker(
     }
     if (showDatePicker) {
         CustomDatePickerDialog(
-            date = date,
+            date = LocalDate.of(dateTime.year, dateTime.monthValue, dateTime.dayOfMonth),
             onClickCancel = {
                 showDatePicker = false
             }
         ) { dateString ->
-            val selectedDate =
-                LocalDate.parse(dateString, DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+            selectedDate = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("yyyy.MM.dd"))
             var isValid = true
-            Timber.d("onClickConfirm) selectedDate: $selectedDate")
 
             minDate?.let { minDate ->
                 if (selectedDate < minDate) {
@@ -104,19 +112,20 @@ internal fun CalendarDatePicker(
                 }
             }
 
-            if(isValid) onDateSelect(selectedDate)
             showDatePicker = false
+            if(isValid) showTimePicker = true
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-private fun CalendarDatePickerPreview() {
-    CalendarDatePicker(
-        modifier = Modifier.fillMaxWidth(),
-        date = LocalDate.now(),
-        onDateSelect = {}
-    )
+    if(showTimePicker){
+        CustomTimePickerDialog(
+            time = LocalTime.of(dateTime.hour, dateTime.minute),
+            onClickCancel = {
+                showTimePicker = false
+            }
+        ) { timeString ->
+            val selectedTime = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("HH:mm"))
+            showTimePicker = false
+            onDateTimeSelect(LocalDateTime.of(selectedDate, selectedTime))
+        }
+    }
 }

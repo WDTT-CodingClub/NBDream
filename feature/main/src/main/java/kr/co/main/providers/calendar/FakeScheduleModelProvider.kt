@@ -7,6 +7,7 @@ import kr.co.main.model.calendar.type.CropModelColorType
 import kr.co.main.model.calendar.type.CropModelType
 import kr.co.main.model.calendar.type.ScheduleModelType
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 internal class FakeScheduleModelProvider : PreviewParameterProvider<ScheduleModel> {
     override val values = sequenceOf(
@@ -21,6 +22,8 @@ internal class FakeScheduleModelProvider : PreviewParameterProvider<ScheduleMode
             startDate = LocalDate.of(2024, 5, 21),
             endDate = LocalDate.of(2024, 5, 25),
             memo = "봄 감자, 알 감자 수확",
+            isAlarmOn = true,
+            alarmDateTime = LocalDateTime.of(2024, 5, 21, 7, 30)
         )
     )
 

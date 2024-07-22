@@ -16,6 +16,8 @@ import kr.co.main.navigation.CalendarNavGraph
 import kr.co.ui.base.BaseViewModel
 import timber.log.Timber
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import javax.inject.Inject
 
 internal interface AddScheduleScreenEvent {
@@ -27,6 +29,9 @@ internal interface AddScheduleScreenEvent {
     fun onStartDateSelect(startDate: LocalDate)
     fun onEndDateSelect(endDate: LocalDate)
     fun onMemoInput(memo: String)
+
+    fun onAlarmOnSelect(alarmOn: Boolean)
+    fun onAlarmDateTimeSelect(alarmDateTime: LocalDateTime)
 }
 
 @HiltViewModel
@@ -48,7 +53,9 @@ internal class AddScheduleViewModel @Inject constructor(
         val title: String = "",
         val startDate: LocalDate = LocalDate.now(),
         val endDate: LocalDate = LocalDate.now(),
-        val memo: String = ""
+        val memo: String = "",
+        val alarmOn: Boolean = false,
+        val alarmDateTime: LocalDateTime = LocalDateTime.of(startDate, LocalTime.of(7, 0))
     ) : State {
         override fun toParcelable(): Parcelable? {
             // TODO ("serialize")
@@ -92,7 +99,9 @@ internal class AddScheduleViewModel @Inject constructor(
                                 title = it.title,
                                 startDate = it.startDate,
                                 endDate = it.endDate,
-                                memo = it.memo
+                                memo = it.memo,
+                                alarmOn = it.isAlarmOn,
+                                alarmDateTime = it.alarmDateTime
                             )
                         }
                     }
@@ -111,9 +120,11 @@ internal class AddScheduleViewModel @Inject constructor(
                 CreateScheduleUseCase.Params(
                     category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType),
                     title = currentState.title,
-                    startDate = currentState.startDate.toString(),
-                    endDate = currentState.endDate.toString(),
-                    memo = currentState.memo
+                    startDate = currentState.startDate,
+                    endDate = currentState.endDate,
+                    memo = currentState.memo,
+                    alarmOn = currentState.alarmOn,
+                    alarmDateTime = currentState.alarmDateTime
                 )
             )
         }
@@ -132,9 +143,11 @@ internal class AddScheduleViewModel @Inject constructor(
                     id = currentState.scheduleId!!,
                     category = ScheduleModelTypeMapper.toLeft(currentState.scheduleType),
                     title = currentState.title,
-                    startDate = currentState.startDate.toString(),
-                    endDate = currentState.endDate.toString(),
-                    memo = currentState.memo
+                    startDate = currentState.startDate,
+                    endDate = currentState.endDate,
+                    memo = currentState.memo,
+                    alarmOn = currentState.alarmOn,
+                    alarmDateTime = currentState.alarmDateTime
                 )
             )
         }
@@ -154,7 +167,8 @@ internal class AddScheduleViewModel @Inject constructor(
         updateState {
             copy(
                 startDate = startDate,
-                endDate = startDate
+                endDate = startDate,
+                alarmDateTime = LocalDateTime.of(startDate, LocalTime.of(7, 0))
             )
         }
     }
@@ -166,5 +180,15 @@ internal class AddScheduleViewModel @Inject constructor(
 
     override fun onMemoInput(memo: String) {
         updateState { copy(memo = memo) }
+    }
+
+    override fun onAlarmOnSelect(alarmOn: Boolean) {
+        updateState { copy(alarmOn = alarmOn) }
+        if (alarmOn)
+            updateState { copy(alarmDateTime = LocalDateTime.of(startDate, LocalTime.of(7, 0))) }
+    }
+
+    override fun onAlarmDateTimeSelect(alarmDateTime: LocalDateTime) {
+        updateState { copy(alarmDateTime = alarmDateTime) }
     }
 }

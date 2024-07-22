@@ -37,14 +37,18 @@ internal class ScheduleRepositoryImpl @Inject constructor(
         title: String,
         startDate: String,
         endDate: String,
-        memo: String
+        memo: String,
+        alarmOn: Boolean,
+        alarmDateTime: String
     ) {
         remote.create(
             category = category,
             title = title,
             startDate = startDate,
             endDate = endDate,
-            memo = memo
+            memo = memo,
+            alarmOn = alarmOn,
+            alarmDateTime = alarmDateTime
         )
     }
 
@@ -54,7 +58,9 @@ internal class ScheduleRepositoryImpl @Inject constructor(
         title: String,
         startDate: String,
         endDate: String,
-        memo: String
+        memo: String,
+        alarmOn: Boolean,
+        alarmDateTime: String
     ) {
         remote.update(
             id = id,
@@ -62,7 +68,9 @@ internal class ScheduleRepositoryImpl @Inject constructor(
             title = title,
             startDate = startDate,
             endDate = endDate,
-            memo = memo
+            memo = memo,
+            alarmOn = alarmOn,
+            alarmDateTime = alarmDateTime
         )
     }
 

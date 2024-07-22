@@ -58,7 +58,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kr.co.common.util.DateFormatter
 import kr.co.common.util.format
 import kr.co.main.R
-import kr.co.main.accountbook.model.CustomDatePickerDialog
+import kr.co.ui.widget.CustomDatePickerDialog
 import kr.co.main.model.calendar.DiaryModel
 import kr.co.main.model.calendar.type.CalendarSortType
 import kr.co.ui.ext.noRippleClickable

@@ -55,7 +55,9 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
         title: String,
         startDate: String,
         endDate: String,
-        memo: String
+        memo: String,
+        alarmOn: Boolean,
+        alarmDateTime: String
     ) {
         client.post(POST_SCHEDULE) {
             setBody(
@@ -64,7 +66,9 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
                     title = title,
                     startDate = startDate,
                     endDate = endDate,
-                    memo = memo
+                    memo = memo,
+                    alarmOn = alarmOn,
+                    alarmDateTime = alarmDateTime
                 )
             )
         }
@@ -76,7 +80,9 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
         title: String,
         startDate: String,
         endDate: String,
-        memo: String
+        memo: String,
+        alarmOn: Boolean,
+        alarmDateTime: String
     ) {
         client.put("$PUT_SCHEDULE/$id") {
             setBody(
@@ -86,7 +92,9 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor(
                     title = title,
                     startDate = startDate,
                     endDate = endDate,
-                    memo = memo
+                    memo = memo,
+                    alarmOn = alarmOn,
+                    alarmDateTime = alarmDateTime
                 )
             )
         }
