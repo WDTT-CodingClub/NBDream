@@ -15,7 +15,8 @@ internal object AlarmHistoryListRemoteMapper :
                         alarmType = it.alarmType,
                         title = it.title,
                         content = it.content,
-                        checked = it.checked
+                        checked = it.checked,
+                        createdDate = it.createdDate
                     )
                 }
             )

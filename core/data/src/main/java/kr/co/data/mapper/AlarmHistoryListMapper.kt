@@ -12,7 +12,8 @@ internal object AlarmHistoryListMapper : Mapper<AlarmHistoryListData, List<Alarm
                 alarmType = it.alarmType,
                 title = it.title,
                 content = it.content,
-                checked = it.checked
+                checked = it.checked,
+                createdDate = it.createdDate
             )
         }
 }

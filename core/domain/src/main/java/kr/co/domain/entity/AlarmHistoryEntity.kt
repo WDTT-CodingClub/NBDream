@@ -5,5 +5,6 @@ data class AlarmHistoryEntity(
     val alarmType: String,
     val title: String,
     val content: String,
-    val checked: Boolean
+    val checked: Boolean,
+    val createdDate: String
 )

@@ -3,8 +3,8 @@ package kr.co.main.my.setting.notification
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kr.co.domain.usecase.notification.AlarmFetchUseCase
-import kr.co.domain.usecase.notification.AlarmUpdateUseCase
+import kr.co.domain.usecase.alarm.AlarmFetchUseCase
+import kr.co.domain.usecase.alarm.AlarmUpdateUseCase
 import kr.co.ui.base.BaseViewModel
 import javax.inject.Inject
 
