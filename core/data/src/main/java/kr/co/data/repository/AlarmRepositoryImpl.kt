@@ -23,7 +23,7 @@ internal class AlarmRepositoryImpl @Inject constructor(
     override suspend fun getAlarmHistory(): List<AlarmHistoryEntity> =
         remote.getAlarmHistory().let(AlarmHistoryListMapper::convert)
 
-    override suspend fun checkAlarmHistory(id: Long) = remote.checkAlarmHistory(id)
+    override suspend fun checkAlarmHistory(ids: List<Long>) = remote.checkAlarmHistory(ids)
 
-    override suspend fun deleteAlarmHistory(id: Long) = remote.deleteAlarmHistory(id)
+    override suspend fun deleteAlarmHistory(ids: List<Long>) = remote.deleteAlarmHistory(ids)
 }

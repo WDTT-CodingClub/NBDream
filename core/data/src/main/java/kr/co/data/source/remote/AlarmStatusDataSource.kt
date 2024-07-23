@@ -7,6 +7,6 @@ interface AlarmStatusDataSource {
     suspend fun getAlarmStatus(): AlarmStatusData
     suspend fun updateAlarmSettings(commentAlarm: Boolean, scheduleAlarm: Boolean): AlarmStatusData
     suspend fun getAlarmHistory(): AlarmHistoryListData
-    suspend fun checkAlarmHistory(id: Long)
-    suspend fun deleteAlarmHistory(id: Long)
+    suspend fun checkAlarmHistory(ids: List<Long>)
+    suspend fun deleteAlarmHistory(ids: List<Long>)
 }

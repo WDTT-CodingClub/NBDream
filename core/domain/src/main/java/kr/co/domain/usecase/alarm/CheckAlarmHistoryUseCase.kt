@@ -9,10 +9,10 @@ import javax.inject.Singleton
 class CheckAlarmHistoryUseCase @Inject constructor(
     private val alarmRepository: AlarmRepository
 ) : SuspendUseCase<CheckAlarmHistoryUseCase.Params, Unit>() {
-    data class Params(val id: Long)
+    data class Params(val ids: List<Long>)
 
     override suspend fun build(params: Params?) {
         checkNotNull(params)
-        alarmRepository.checkAlarmHistory(params.id)
+        alarmRepository.checkAlarmHistory(params.ids)
     }
 }

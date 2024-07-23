@@ -7,6 +7,6 @@ interface AlarmRepository {
     suspend fun getAlarmStatus(): AlarmStatusEntity
     suspend fun updateAlarmSettings(commentAlarm: Boolean, scheduleAlarm: Boolean): AlarmStatusEntity
     suspend fun getAlarmHistory(): List<AlarmHistoryEntity>
-    suspend fun checkAlarmHistory(id: Long)
-    suspend fun deleteAlarmHistory(id: Long)
+    suspend fun checkAlarmHistory(ids: List<Long>)
+    suspend fun deleteAlarmHistory(ids: List<Long>)
 }
