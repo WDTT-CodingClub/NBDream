@@ -7,6 +7,8 @@ import kr.co.domain.usecase.alarm.CheckAlarmHistoryUseCase
 import kr.co.domain.usecase.alarm.DeleteAlarmHistoryUseCase
 import kr.co.domain.usecase.alarm.GetAlarmHistoryUseCase
 import kr.co.ui.base.BaseViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,10 +37,29 @@ internal class NotificationViewModel @Inject constructor(
                     title = alarm.title,
                     content = alarm.content,
                     checked = alarm.checked,
-                    createdDate = alarm.createdDate
+                    createdDate = alarm.createdDate,
+                    targetId = alarm.targetId
                 )
+            }.sortedByDescending { alarm ->
+                SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(alarm.createdDate)
             }
             updateAlarmHistoryList(alarmHistories)
+        }.invokeOnCompletion {
+            if (it == null) {
+                checkUncheckedAlarmHistories()
+            }
+        }
+    }
+
+    private fun checkUncheckedAlarmHistories() {
+        val uncheckedAlarmIds = currentState.alarmHistories
+            .filterNot { it.checked }
+            .map { it.id }
+
+        if (uncheckedAlarmIds.isNotEmpty()) {
+            loadingScope {
+                checkAlarmHistoryUseCase(CheckAlarmHistoryUseCase.Params(uncheckedAlarmIds))
+            }
         }
     }
 
@@ -54,6 +75,21 @@ internal class NotificationViewModel @Inject constructor(
         }
     }
 
+    fun onDeleteClicked(id: Long? = null) {
+        loadingScope {
+            if (id == null) {
+                val allIds = currentState.alarmHistories.map { it.id }
+                deleteAlarmHistoryUseCase(DeleteAlarmHistoryUseCase.Params(ids = allIds))
+            } else {
+                deleteAlarmHistoryUseCase(DeleteAlarmHistoryUseCase.Params(ids = listOf(id)))
+            }
+        }.invokeOnCompletion {
+            if (it == null) {
+                fetchHistories()
+            }
+        }
+    }
+
     data class State(
         val setting: Boolean = false,
         val selectedTab: Int = 0,
@@ -66,7 +102,8 @@ internal class NotificationViewModel @Inject constructor(
             val title: String,
             val content: String,
             val checked: Boolean,
-            val createdDate: String
+            val createdDate: String,
+            val targetId: Long
         )
     }
 

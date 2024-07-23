@@ -241,7 +241,23 @@ fun NavGraphBuilder.mainNavGraph(
         route = NOTIFICATION_ROUTE
     ) {
         NotificationRoute(
-            popBackStack = navController::popBackStack
+            popBackStack = navController::popBackStack,
+            navigationToSchedule = {
+                MainNav.controller.navigate(
+                    MainBottomRoute.CALENDAR.route
+                ) {
+                    popUpTo(MainNav.controller.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+            navigationToCommunity = { id ->
+                navController.navigate(
+                    BulletinRoute.BULLETIN_DETAIL_ROUTE_SEND.format(id)
+                )
+            }
         )
     }
 
