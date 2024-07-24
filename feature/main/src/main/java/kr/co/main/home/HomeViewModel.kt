@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kr.co.domain.usecase.alarm.AlarmUpdateUseCase
 import kr.co.domain.usecase.alarm.GetAlarmHistoryUseCase
 import kr.co.domain.usecase.calendar.GetSchedulesUseCase
 import kr.co.domain.usecase.user.FetchUserUseCase
@@ -20,7 +21,8 @@ internal class HomeViewModel @Inject constructor(
     private val fetchUserUseCase: FetchUserUseCase,
     private val weatherUseCase: GetDayWeatherForecastUseCase,
     private val getSchedulesUseCase: GetSchedulesUseCase,
-    private val getAlarmHistoryUseCase: GetAlarmHistoryUseCase
+    private val getAlarmHistoryUseCase: GetAlarmHistoryUseCase,
+    private val alarmUpdateUseCase: AlarmUpdateUseCase
 ) : BaseViewModel<HomeViewModel.State>(savedStateHandle) {
 
     private fun onTodayWeather(weather: State.WeatherDetail) = updateState {

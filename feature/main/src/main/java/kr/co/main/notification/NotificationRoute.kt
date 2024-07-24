@@ -1,5 +1,8 @@
 package kr.co.main.notification
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,12 +29,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -55,6 +60,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import android.provider.Settings
 
 @Composable
 internal fun NotificationRoute(
@@ -65,6 +71,17 @@ internal fun NotificationRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var isShowDeleteDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEffects.collect { effect ->
+            when (effect) {
+                is NotificationViewModel.NotificationViewEffect.NavigateToAppSettings -> {
+                    context.openAppSettings()
+                }
+            }
+        }
+    }
 
     NotificationScreen(
         state = state,
@@ -83,6 +100,15 @@ internal fun NotificationRoute(
             description = "모든 알림을 삭제 하시겠습니까?",
             onConfirm = viewModel::onDeleteClicked,
             onDismissRequest = { isShowDeleteDialog = false }
+        )
+    }
+
+    if (state.showPermissionDialog) {
+        DreamDialog(
+            header = "권한 설정 필요",
+            description = "알림을 받기 위해서는 권한을 설정해야 합니다.",
+            onConfirm = viewModel::onPermissionGrantedClick,
+            onDismissRequest = viewModel::onPermissionDialogDismiss
         )
     }
 }
@@ -128,46 +154,48 @@ private fun NotificationScreen(
                     padding = PaddingValues(0.dp)
                 )
         ) {
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = MaterialTheme.colors.green8)
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "일정/커뮤니티 소식을 받아보세요!",
-                        style = MaterialTheme.typo.body1.copy(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = MaterialTheme.colors.gray1
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.width(42.dp))
-
-                    Text(
-                        text = "알림 받기",
-                        style = MaterialTheme.typo.body1.copy(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = MaterialTheme.colors.gray1
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    DreamSwitch(
+            if (!state.setting) {
+                item {
+                    Row(
                         modifier = Modifier
-                            .size(
-                                width = 48.dp,
-                                height = 24.dp
-                            ),
-                        checked = state.setting,
-                        onCheckedChange = onCheckedNotification
-                    )
+                            .fillMaxWidth()
+                            .background(color = MaterialTheme.colors.green8)
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "일정/커뮤니티 소식을 받아보세요!",
+                            style = MaterialTheme.typo.body1.copy(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = MaterialTheme.colors.gray1
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.width(42.dp))
+
+                        Text(
+                            text = "알림 받기",
+                            style = MaterialTheme.typo.body1.copy(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = MaterialTheme.colors.gray1
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        DreamSwitch(
+                            modifier = Modifier
+                                .size(
+                                    width = 48.dp,
+                                    height = 24.dp
+                                ),
+                            checked = state.setting,
+                            onCheckedChange = onCheckedNotification
+                        )
+                    }
                 }
             }
 
@@ -392,6 +420,13 @@ private fun formatRelativeDate(createdDate: String): String {
         diffInDays < 1 -> "1일전"
         else -> SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(created)
     }
+}
+
+fun Context.openAppSettings() {
+    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+        data = Uri.fromParts("package", packageName, null)
+    }
+    startActivity(intent)
 }
 
 @Preview

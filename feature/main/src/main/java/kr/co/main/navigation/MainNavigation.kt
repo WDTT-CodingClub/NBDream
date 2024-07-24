@@ -44,7 +44,7 @@ const val MAIN_ROUTE = "mainRoute"
 
 internal const val CHAT_ROUTE = "chatRoute"
 
-internal const val NOTIFICATION_ROUTE = "notificationRoute"
+internal const val NOTIFICATION_ROUTE = "notificationRoute/?grant={grant}"
 
 internal data object AccountBookRoute {
     const val ACCOUNT_BOOK_CREATE_ROUTE = "accountBookCreateRoute"
@@ -73,7 +73,7 @@ internal data object MyPageRoute {
     const val EDIT_ROUTE = "myPageProfileEditRoute"
 
     const val SETTING_ROUTE = "myPageSettingRoute"
-    const val SETTING_NOTIFICATION_ROUTE = "myPageSettingNotificationRoute"
+    const val SETTING_NOTIFICATION_ROUTE = "myPageSettingNotificationRoute/?grant={grant}"
     const val SETTING_PRIVACY_POLICY_ROUTE = "myPageSettingPrivacyPolicyRoute"
     const val SETTING_LOGOUT_ROUTE = "myPageSettingLogoutRoute"
     const val SETTING_APP_INFO_ROUTE = "myPageSettingAppInfoRoute"
@@ -86,7 +86,8 @@ internal data object MyPageRoute {
 
 
 fun NavGraphBuilder.mainNavGraph(
-    navController: NavController
+    navController: NavController,
+    isPermissionGranted: Boolean
 ) {
     composable(route = MAIN_ROUTE) {
         MainRoute(
@@ -96,7 +97,8 @@ fun NavGraphBuilder.mainNavGraph(
                 ) {
                     HomeRoute(
                         navigateToNotification = {
-                            navController.navigate(NOTIFICATION_ROUTE)
+                            val formattedRoute = NOTIFICATION_ROUTE.replace("{grant}", isPermissionGranted.toString())
+                            navController.navigate(formattedRoute)
                         },
                         navigateToAddress = {
                             navController.navigate(MyPageRoute.EDIT_ROUTE)
@@ -238,7 +240,13 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = NOTIFICATION_ROUTE
+        route = NOTIFICATION_ROUTE,
+        arguments = listOf(
+            navArgument("grant") {
+                type = NavType.BoolType
+                nullable = false
+            },
+        ),
     ) {
         NotificationRoute(
             popBackStack = navController::popBackStack,
@@ -456,7 +464,8 @@ fun NavGraphBuilder.mainNavGraph(
         MyPageSettingRoute(
             popBackStack = navController::popBackStack,
             navigateToNotification = {
-                navController.navigate(MyPageRoute.SETTING_NOTIFICATION_ROUTE)
+                val formattedRoute = MyPageRoute.SETTING_NOTIFICATION_ROUTE.replace("{grant}", isPermissionGranted.toString())
+                navController.navigate(formattedRoute)
             },
             navigateToPrivacyPolicy = {
                 navController.navigate(MyPageRoute.SETTING_PRIVACY_POLICY_ROUTE)
@@ -471,7 +480,13 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable(
-        route = MyPageRoute.SETTING_NOTIFICATION_ROUTE
+        route = MyPageRoute.SETTING_NOTIFICATION_ROUTE,
+        arguments = listOf(
+            navArgument("grant") {
+                type = NavType.BoolType
+                nullable = false
+            },
+        ),
     ) {
         MyPageSettingNotificationRoute(
             popBackStack = navController::popBackStack

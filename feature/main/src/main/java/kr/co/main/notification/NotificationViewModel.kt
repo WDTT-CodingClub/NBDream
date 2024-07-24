@@ -2,7 +2,13 @@ package kr.co.main.notification
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import kr.co.domain.usecase.alarm.AlarmFetchUseCase
+import kr.co.domain.usecase.alarm.AlarmUpdateUseCase
 import kr.co.domain.usecase.alarm.CheckAlarmHistoryUseCase
 import kr.co.domain.usecase.alarm.DeleteAlarmHistoryUseCase
 import kr.co.domain.usecase.alarm.GetAlarmHistoryUseCase
@@ -16,15 +22,36 @@ internal class NotificationViewModel @Inject constructor(
     private val getAlarmHistoryUseCase: GetAlarmHistoryUseCase,
     private val checkAlarmHistoryUseCase: CheckAlarmHistoryUseCase,
     private val deleteAlarmHistoryUseCase: DeleteAlarmHistoryUseCase,
+    private val alarmFetchUseCase: AlarmFetchUseCase,
+    private val alarmUpdateUseCase: AlarmUpdateUseCase,
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<NotificationViewModel.State>(savedStateHandle) {
+    private val isPermissionGranted: Boolean = savedStateHandle.get<Boolean>("grant") ?: false
+    private val _navigationEffects = MutableSharedFlow<NotificationViewEffect>()
+    val navigationEffects = _navigationEffects.asSharedFlow()
+
     init {
+        fetchAlarmStatus()
         fetchHistories()
     }
 
     private fun updateAlarmHistoryList(alarmHistoryList: List<State.AlarmHistory>) {
         updateState {
             copy(alarmHistories = alarmHistoryList)
+        }
+    }
+
+    private fun fetchAlarmStatus() {
+        loadingScope {
+            val alarmStatus = alarmFetchUseCase()
+            val setting = alarmStatus.commentAlarm && alarmStatus.scheduleAlarm
+            updateState {
+                copy(setting = setting)
+            }
+
+            if (setting) {
+                updateAlarmSettings()
+            }
         }
     }
 
@@ -63,9 +90,39 @@ internal class NotificationViewModel @Inject constructor(
         }
     }
 
-    fun onCheckedNotification(b: Boolean) {
+    fun onCheckedNotification(isChangedStatus: Boolean) {
+        if (isChangedStatus && !isPermissionGranted) {
+            updateState {
+                copy(showPermissionDialog = true)
+            }
+        } else {
+            updateState {
+                copy(setting = isChangedStatus)
+            }
+
+            if (isChangedStatus) {
+                updateAlarmSettings()
+            }
+        }
+    }
+
+    private fun updateAlarmSettings() {
+        loadingScope {
+            alarmUpdateUseCase(AlarmUpdateUseCase.Params(commentAlarm = true, scheduleAlarm = true))
+        }.invokeOnCompletion {
+
+        }
+    }
+
+    fun onPermissionGrantedClick() {
+        viewModelScope.launch {
+            _navigationEffects.emit(NotificationViewEffect.NavigateToAppSettings)
+        }
+    }
+
+    fun onPermissionDialogDismiss() {
         updateState {
-            copy(setting = b)
+            copy(showPermissionDialog = false)
         }
     }
 
@@ -94,7 +151,8 @@ internal class NotificationViewModel @Inject constructor(
         val setting: Boolean = false,
         val selectedTab: Int = 0,
         val notificationList: List<String> = emptyList(),
-        val alarmHistories: List<AlarmHistory> = emptyList()
+        val alarmHistories: List<AlarmHistory> = emptyList(),
+        val showPermissionDialog: Boolean = false
     ) : BaseViewModel.State {
         data class AlarmHistory(
             val id: Long,
@@ -105,6 +163,10 @@ internal class NotificationViewModel @Inject constructor(
             val createdDate: String,
             val targetId: Long
         )
+    }
+
+    sealed class NotificationViewEffect {
+        data object NavigateToAppSettings : NotificationViewEffect()
     }
 
     override fun createInitialState(savedState: Parcelable?) = State()

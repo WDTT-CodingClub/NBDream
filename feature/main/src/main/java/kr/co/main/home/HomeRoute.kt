@@ -82,7 +82,7 @@ internal fun HomeRoute(
     LifecycleResumeEffect(Unit) {
         viewModel.refresh()
 
-        onPauseOrDispose {  }
+        onPauseOrDispose { }
     }
 
     HomeScreen(
@@ -235,19 +235,19 @@ private fun ScheduleCard(
 
     schedules.groupBy { it.startDate }.apply {
         firstNotNullOf { (startDate, schedules) ->
-                if (schedules.size < 3) {
-                    ScheduleContents(
-                        startDate = startDate,
-                        isToday = true,
-                        schedules = schedules
-                    )
-                } else {
-                    ScheduleContents(
-                        startDate = startDate,
-                        isToday = true,
-                        schedules = if (expanded.not()) schedules.take(3) else schedules
-                    )
-                }
+            if (schedules.size < 3) {
+                ScheduleContents(
+                    startDate = startDate,
+                    isToday = true,
+                    schedules = schedules
+                )
+            } else {
+                ScheduleContents(
+                    startDate = startDate,
+                    isToday = true,
+                    schedules = if (expanded.not()) schedules.take(3) else schedules
+                )
+            }
         }
     }.entries.drop(1).forEach { (startDate, schedules) ->
 
