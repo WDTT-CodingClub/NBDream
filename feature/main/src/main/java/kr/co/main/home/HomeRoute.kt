@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -57,6 +58,9 @@ import kr.co.main.home.HomeViewModel.State.WeatherSimple
 import kr.co.main.mapper.home.WeatherSkyMapper
 import kr.co.main.model.home.WeatherMetrics
 import kr.co.ui.ext.noRippleClickable
+import kr.co.ui.icon.DreamIcon
+import kr.co.ui.icon.dreamicon.Bell
+import kr.co.ui.icon.dreamicon.Bellon
 import kr.co.ui.theme.NBDreamTheme
 import kr.co.ui.theme.colors
 import kr.co.ui.theme.typo
@@ -78,7 +82,7 @@ internal fun HomeRoute(
     LifecycleResumeEffect(Unit) {
         viewModel.refresh()
 
-        onPauseOrDispose {  }
+        onPauseOrDispose { }
     }
 
     HomeScreen(
@@ -115,12 +119,12 @@ private fun HomeScreen(
                     },
                     descriptionAction = navigateToAddress,
                     actions = {
-//                        IconButton(onClick = navigateToNotification) {
-//                            Icon(
-//                                imageVector = DreamIcon.Bell,
-//                                contentDescription = "notification"
-//                            )
-//                        }
+                        IconButton(onClick = navigateToNotification) {
+                            Icon(
+                                imageVector = if (state.hasCheckedAlarm) DreamIcon.Bell else DreamIcon.Bellon,
+                                contentDescription = "notification"
+                            )
+                        }
                     }
                 )
             }
@@ -231,19 +235,19 @@ private fun ScheduleCard(
 
     schedules.groupBy { it.startDate }.apply {
         firstNotNullOf { (startDate, schedules) ->
-                if (schedules.size < 3) {
-                    ScheduleContents(
-                        startDate = startDate,
-                        isToday = true,
-                        schedules = schedules
-                    )
-                } else {
-                    ScheduleContents(
-                        startDate = startDate,
-                        isToday = true,
-                        schedules = if (expanded.not()) schedules.take(3) else schedules
-                    )
-                }
+            if (schedules.size < 3) {
+                ScheduleContents(
+                    startDate = startDate,
+                    isToday = true,
+                    schedules = schedules
+                )
+            } else {
+                ScheduleContents(
+                    startDate = startDate,
+                    isToday = true,
+                    schedules = if (expanded.not()) schedules.take(3) else schedules
+                )
+            }
         }
     }.entries.drop(1).forEach { (startDate, schedules) ->
 

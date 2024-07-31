@@ -1,10 +1,10 @@
-package kr.co.remote.model.response.fcm
+package kr.co.remote.model.request.alarm
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class GetAlarmStatusResponse(
+internal data class AlarmUpdateRequest(
     @SerialName("commentAlarm")
     val commentAlarm: Boolean,
     @SerialName("scheduleAlarm")

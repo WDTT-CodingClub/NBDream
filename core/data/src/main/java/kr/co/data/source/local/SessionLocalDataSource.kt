@@ -20,8 +20,4 @@ interface SessionLocalDataSource {
     suspend fun getRefreshToken(): String?
 
     suspend fun removeAll()
-
-    suspend fun saveFcmToken(token: String)
-
-    fun fetchFcmToken(): Flow<String?>
 }

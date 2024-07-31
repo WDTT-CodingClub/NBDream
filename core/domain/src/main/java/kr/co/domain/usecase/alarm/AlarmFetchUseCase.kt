@@ -1,4 +1,4 @@
-package kr.co.domain.usecase.notification
+package kr.co.domain.usecase.alarm
 
 import kr.co.domain.entity.AlarmStatusEntity
 import kr.co.domain.repository.AlarmRepository

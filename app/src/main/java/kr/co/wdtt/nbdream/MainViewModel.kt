@@ -9,13 +9,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kr.co.domain.usecase.auth.CheckLoginUseCase
 import kr.co.ui.base.BaseViewModel
 import kr.co.domain.usecase.auth.FetchAuthUseCase
-import kr.co.domain.usecase.fcm.FetchFcmTokenUseCase
 import kr.co.domain.usecase.fcm.SaveFcmTokenUseCase
 import timber.log.Timber
 import javax.inject.Inject
@@ -25,8 +23,7 @@ internal class MainViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchAuthUseCase: FetchAuthUseCase,
     private val checkLoginUseCase: CheckLoginUseCase,
-    private val saveFcmTokenUseCase: SaveFcmTokenUseCase,
-    private val fetchFcmTokenUseCase: FetchFcmTokenUseCase
+    private val saveFcmTokenUseCase: SaveFcmTokenUseCase
 ) : BaseViewModel<MainViewModel.State>(savedStateHandle) {
     private val _isAuthorized: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     val isAuthorized = _isAuthorized.asStateFlow()
@@ -61,9 +58,8 @@ internal class MainViewModel @Inject constructor(
 
     private fun fetchAndSaveFcmToken() {
         viewModelScopeEH.launch {
-            val localToken = fetchFcmTokenUseCase(Unit).firstOrNull()
             val newToken = getFcmToken()
-            if (newToken != null && localToken != newToken) {
+            if (newToken != null) {
                 saveFcmTokenUseCase(newToken)
             }
         }
