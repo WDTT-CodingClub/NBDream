@@ -1,6 +1,9 @@
 ## 농부의 꿈
 농사에 대한 기본적인 지식이 부족한 초보 농부들에게 농업 정보를 제공하는 서비스
 
+<img src="https://github.com/user-attachments/assets/b60c83a6-7455-46bb-9862-7992ffcf7854" width="500"/>  
+
+
 ### 스플래시
 <img src="https://github.com/user-attachments/assets/289967ac-5939-4ef2-9d7d-75569e1fa700" width="200"/>  
 
